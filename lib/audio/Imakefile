@@ -140,7 +140,7 @@ InstallNonExec(AuErrorDB,$(LIBDIR))
 #endif
 
 #if defined(LinuxArchitecture)
-REQUIREDLIBS = -lm
+REQUIREDLIBS = -L/usr/X11R6/lib -lXt -lXau -lm 
 #endif
 
 #if DoSharedLib
