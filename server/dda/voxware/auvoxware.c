@@ -1,3 +1,5 @@
+/* $Id$ */
+
 /*
    SCCS: @(#) auvoxware.c 11.4 95/04/14 
 */
@@ -129,8 +131,13 @@ PERFORMANCE OF THIS SOFTWARE.
  *   [chris]
  */
 
+/*JET - REVISIT */
+#define RELINQUISH
+
 #include <stdio.h>
+#include <stdlib.h>
 #include "config.h"
+#include "aulog.h"
 
 FILE	*yyin;
 
@@ -140,12 +147,6 @@ static char *searchpath = CONFSEARCHPATH;
 int dspin, dspout;
 #endif
 
-#  define PRMSG(x, a, b) \
-  if (doDebug) { \
-    fprintf(stderr, "auvoxware.c:  %*s", debug_msg_indentation, ""); \
-    fprintf(stderr, (x), (a), (b)); \
-    fflush(stderr); \
-  } 
 #  define IDENTMSG (debug_msg_indentation += 2)
 #  define UNIDENTMSG (debug_msg_indentation -= 2)
 
@@ -162,10 +163,15 @@ static int debug_msg_indentation = 0;
 #include <assert.h>
 
 #ifdef __FreeBSD__
-#include <machine/soundcard.h>
-#include <machine/pcaudioio.h>
+# include <machine/soundcard.h>
+# include <machine/pcaudioio.h>
 #else
-#include <sys/soundcard.h>
+# ifdef __NetBSD__
+#  include <sys/ioctl.h>
+#  include <soundcard.h>
+# else
+#  include <sys/soundcard.h>
+# endif
 #endif
 
 #include <audio/audio.h>
@@ -177,6 +183,7 @@ static AuBool   scoAudioBlocked = AuFalse;
 #endif /* sco */
 
 static AuBool   processFlowEnabled;
+static void disableProcessFlow(void);
 
 #define	SERVER_CLIENT		0
 
@@ -192,6 +199,10 @@ static AuBool   processFlowEnabled;
     PAD4(auMinibufSamples * auNativeBytesPerSample * 2)
 
 /* VOXware sound driver mixer control variables */
+
+static AuBool  relinquish_device = 0;
+static AuBool  leave_mixer = 0;
+static AuBool  share_in_out = 0;
 
 static int      Letsplay;
 static int      level[100];
@@ -331,7 +342,7 @@ AuUint32 *auServerDeviceListSize,
                        auNumServerBuckets, /* number of server owned buckets */
                        auNumServerRadios; /* number of server owned radios */
   
-  PRMSG("createServerComponents(...);\n", 0, 0);
+  osLogMsg("createServerComponents(...);\n");
   IDENTMSG;
 
   *auServerMinRate = aumax(sndStatIn.minSampleRate,
@@ -448,6 +459,16 @@ AuUint32 *auServerDeviceListSize,
     initialized = AuTrue;
     setPhysicalOutputGain(auDefaultOutputGain);
     setPhysicalInputGainAndLineMode(auDefaultInputGain, 0);
+
+    /*JET - this was part of Steve McIntyre's mondo
+            patch I applied for 1.3b.  Unfortunately it causes
+	    the intervalProc sighandler to not get setup properly the first 
+	    time around... ie: The first connection after server startup will 
+	    always cause the server to go into an infinite loop until the
+	    client is killed.  Then everyhting starts working again.
+
+	    disableProcessFlow();
+     */
   }
 
   UNIDENTMSG;
@@ -462,7 +483,7 @@ AuInt32 rate;
   AuInt32          foo;
   struct itimerval ntval, otval;
 
-  PRMSG("setTimer(rate = %d);\n", rate, 0);
+  osLogMsg("setTimer(rate = %d);\n", rate);
   IDENTMSG;
 
   /* change timer according to new sample rate */
@@ -534,7 +555,7 @@ AuUint32 rate;
   int numSamplesIn, numSamplesOut;
   AuBlock l;
 
-  PRMSG("setSampleRate(rate = %d);\n", rate, 0);
+  osLogMsg("setSampleRate(rate = %d);\n", rate);
   IDENTMSG;
 
   l = AuBlockAudio();
@@ -575,10 +596,136 @@ AuUint32 rate;
   return sndStatOut.curSampleRate;
 }
 
+static void setupSoundcard(SndStat* sndStatPtr);
+
+static AuBool
+openDevice(wait)
+AuBool wait;
+{
+#ifdef RELINQUISH
+    osLogMsg("openDevice\n");
+
+    if(sndStatOut.fd == -1)
+    {
+       while ((sndStatOut.fd = open(sndStatOut.device, O_RDWR|O_SYNC)) == -1 && wait)
+       {
+           osLogMsg("openDevice: waiting on output device\n");
+           sleep(1);
+       }
+       setupSoundcard(&sndStatOut);
+    }
+    else
+       osLogMsg("openDevice: output device already open\n");
+
+    if(sndStatIn.fd == -1 && !share_in_out)
+    {
+       while ((sndStatIn.fd = open(sndStatIn.device, O_RDONLY, 0)) == -1 && wait)
+       {
+           osLogMsg("openDevice: waiting on input device\n");
+           sleep(1);
+       }
+       if (sndStatOut.fd != sndStatIn.fd)
+           setupSoundcard(&sndStatIn);
+    }
+    else
+    {
+       sndStatIn.fd=sndStatOut.fd;
+       osLogMsg("openDevice: input device already open\n");
+    }
+
+    if(mixerfd == -1)
+       while ((mixerfd = open("/dev/mixer", O_RDONLY, 0)) == -1 && wait)
+       {
+           osLogMsg("openDevice: waiting on mixer device\n");
+           sleep(1);
+       }
+    else
+       osLogMsg("openDevice: mixer device already open\n");
+
+    osLogMsg("openDevice() - dsp_sync;\n");
+    ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
+#ifndef sco
+    osLogMsg("openDevice() - dsp_speed;\n");
+    ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
+#endif /* sco */
+
+    if (sndStatOut.fd != sndStatIn.fd)
+    {
+       osLogMsg("openDevice() - dsp_sync;\n");
+       ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
+#ifndef sco
+       osLogMsg("openDevice() - dsp_speed;\n");
+       ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
+#endif /* sco */
+    }
+    osLogMsg("openDevice() - dsp_speed=%d;\n",sndStatIn.curSampleRate);
+
+    setSampleRate(sndStatIn.curSampleRate);
+
+    return AuTrue;
+#endif /* RELINQUISH */
+}
+
+static void
+closeDevice()
+{
+#ifdef RELINQUISH
+    osLogMsg("closeDevice: out\n");
+    if(-1==sndStatOut.fd)
+    {
+       osLogMsg("closeDevice: output device already closed\n");
+    }
+
+    else
+    {
+       while(close(sndStatOut.fd))
+       {
+           osLogMsg("closeDevice: waiting on output device\n");
+           sleep(1);
+       }
+    }
+
+    if(!share_in_out)
+    {
+       osLogMsg("closeDevice: in\n");
+       if(-1==sndStatIn.fd)
+       {
+           osLogMsg("closeDevice: input device already closed\n");
+       }
+       else
+       {
+           while(close(sndStatIn.fd))
+           {
+               osLogMsg("closeDevice: waiting on input device\n");
+               sleep(1);
+           }
+       }
+    }
+
+    osLogMsg("closeDevice: mixer\n");
+    if(-1==mixerfd)
+    {
+       osLogMsg("closeDevice: mixerdevice already closed\n");
+    }
+    else
+    {
+       while(close(mixerfd))
+       {
+           osLogMsg("closeDevice: waiting on mixer device\n");
+           sleep(1);
+       }
+    }
+
+    sndStatIn.fd=-1;
+    sndStatOut.fd=-1;
+    mixerfd=-1;
+#endif /* RELINQUISH */
+}
+
 
 static void serverReset()
 {
-  PRMSG("serverReset();\n", 0, 0);
+  osLogMsg("serverReset();\n");
   IDENTMSG;
 
   setTimer(0);
@@ -586,7 +733,7 @@ static void serverReset()
   signal(SIGALRM, SIG_IGN);
 #endif /* sco */
 
-  PRMSG("Audio Synchronisation...", 0, 0);
+  osLogMsg("Audio Synchronisation...\n");
 
 #if defined(AUDIO_DRAIN)
   if (sndStatOut.isPCSpeaker)
@@ -594,17 +741,20 @@ static void serverReset()
   else {
 #endif
 
-    ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
-    if (sndStatOut.fd != sndStatIn.fd)
-      ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
+      osLogMsg("serverReset() - sync;\n");
+      ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
+      if (sndStatOut.fd != sndStatIn.fd)
+         ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
 
 #if defined(AUDIO_DRAIN)
   }
 #endif
 
+  if (relinquish_device)
+      closeDevice();
+
   if (doDebug) {
-    fputs(" done.\n", stderr);
-    fflush(stderr);
+    osLogMsg(" done.\n");
   }
   UNIDENTMSG;
 }
@@ -683,6 +833,7 @@ setPhysicalOutputGain(gain)
     Letsplay = g;
     gusvolume = g | (g << 8);
     if (mixerfd != -1)
+        if(!leave_mixer)
 	i = ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume);
 }
 
@@ -728,7 +879,10 @@ static void enableProcessFlow()
 {
   AuUint8        *p;
 
-  PRMSG("enableProcessFlow();\n", 0, 0);
+  osLogMsg("enableProcessFlow();\n");
+
+  if (relinquish_device)
+      openDevice(AuTrue);
 
 #ifdef sco
     if (!processFlowEnabled)
@@ -739,6 +893,7 @@ static void enableProcessFlow()
 
 #ifndef sco
 	signal(SIGALRM, intervalProc);
+        osLogMsg("enableProcessFlow() - set SIGALRM handler to intervalProc");
 #else
 	setTimer(sndStatOut.curSampleRate);
 #endif /* sco */
@@ -755,31 +910,42 @@ static void disableProcessFlow()
 	signal(SIGALRM, SIG_IGN);
 #endif /* sco */
 
-  PRMSG("disableProcessFlow();\n", 0, 0);
+  osLogMsg("disableProcessFlow() - starting\n");
 
 #ifdef sco
  if (processFlowEnabled)
  {
 #endif /* sco */
 
+  osLogMsg("disableProcessFlow() - dsp_sync;\n");
   ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
+  osLogMsg("disableProcessFlow() - dsp_speed;\n");
   ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
 #endif /* sco */
+  osLogMsg("disableProcessFlow() - Out DSP done\n");
 
   if (sndStatOut.fd != sndStatIn.fd)
   {
-    ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
+      osLogMsg("disableProcessFlow() - dsp_sync;\n");
+      ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
-    ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
+      osLogMsg("disableProcessFlow() - dsp_speed;\n");
+      ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
 #endif /* sco */
   }
+  osLogMsg("disableProcessFlow() - In DSP done;\n");
 
 #ifdef sco
   oneMoreTick();
 #endif
 
   processFlowEnabled = AuFalse;
+  osLogMsg("disableProcessFlow() processFlowEnabled = AuFalse;\n");
+
+  if (relinquish_device)
+      closeDevice();
+  osLogMsg("disableProcessFlow() - done;\n");
 
 #ifdef sco
  }
@@ -787,7 +953,7 @@ static void disableProcessFlow()
 }
 
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void monoToStereoLinearSigned16LSB(numSamples)
@@ -802,7 +968,7 @@ AuUint32 numSamples;
   }
 }
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void monoToStereoLinearUnsigned8(numSamples)
@@ -863,7 +1029,7 @@ static void writePhysicalOutputsMono()
   AuUnBlockAudio(l);
 }
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void stereoToMonoLinearSigned16LSB(numSamples)
@@ -878,7 +1044,7 @@ AuUint32 numSamples;
   }
 }
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void stereoToMonoLinearUnsigned8(numSamples)
@@ -1033,18 +1199,23 @@ SndStat* sndStatPtr;
 {
   int samplesize;
 
-  PRMSG("setupSoundcard(...);\n", 0, 0);
+  osLogMsg("setupSoundcard(...);\n");
   IDENTMSG;
 
   if (beVerbose)
     if (sndStatPtr == &sndStatOut)
-      fprintf (stderr, "++ Setting up Output device\n");
+    {
+       osLogMsg("++ Setting up Output device\n");
+    }
     else
-      fprintf (stderr, "++ Setting up Input device\n");
+    {
+       osLogMsg("++ Setting up Input device\n");
+    }
+
 	
   if (sndStatPtr->isPCSpeaker) {
     if (beVerbose)
-      fprintf(stderr, "+++ Device is a PC speaker\n");
+      osLogMsg("+++ Device is a PC speaker\n");
     sndStatPtr->curSampleRate = sndStatPtr->maxSampleRate
       = sndStatPtr->minSampleRate = 8000;
     sndStatPtr->isStereo = 0;
@@ -1052,36 +1223,36 @@ SndStat* sndStatPtr;
   }
   else {
     if (beVerbose)
-      fprintf(stderr, "+++ requesting wordsize of %d, ", sndStatPtr->wordSize);
+      osLogMsg("+++ requesting wordsize of %d, ", sndStatPtr->wordSize);
     if (ioctl(sndStatPtr->fd, SNDCTL_DSP_SAMPLESIZE, &sndStatPtr->wordSize)
         || sndStatPtr->wordSize != 16) {
       sndStatPtr->wordSize = 8;
       ioctl(sndStatPtr->fd, SNDCTL_DSP_SAMPLESIZE, &sndStatPtr->wordSize);
     }
     if (beVerbose)
-      fprintf(stderr, "got %d\n", sndStatPtr->wordSize);
+      osLogMsg("got %d\n", sndStatPtr->wordSize);
   
     if (beVerbose)
-      fprintf(stderr, "+++ requesting %d channel(s), ", sndStatPtr->isStereo + 1);
+      osLogMsg("+++ requesting %d channel(s), ", sndStatPtr->isStereo + 1);
     if (ioctl(sndStatPtr->fd, SNDCTL_DSP_STEREO, &sndStatPtr->isStereo) == -1
         || !sndStatPtr->isStereo) {
       sndStatPtr->isStereo = 0;
       ioctl(sndStatPtr->fd, SNDCTL_DSP_STEREO, &sndStatPtr->isStereo);
     }
     if (beVerbose)
-      fprintf(stderr, "got %d channel(s)\n", sndStatPtr->isStereo + 1);
+      osLogMsg("got %d channel(s)\n", sndStatPtr->isStereo + 1);
 
     if (beVerbose)
-      fprintf (stderr, "+++ Requesting minimum sample rate of %d, ", sndStatPtr->minSampleRate);
+      osLogMsg("+++ Requesting minimum sample rate of %d, ", sndStatPtr->minSampleRate);
     ioctl(sndStatPtr->fd, SNDCTL_DSP_SPEED, &sndStatPtr->minSampleRate);
     if (beVerbose)
-      fprintf (stderr, "got %d\n", sndStatPtr->minSampleRate);
+      osLogMsg("got %d\n", sndStatPtr->minSampleRate);
   
     if (beVerbose)
-      fprintf (stderr, "+++ Requesting maximum sample rate of %d, ", sndStatPtr->maxSampleRate);
+      osLogMsg("+++ Requesting maximum sample rate of %d, ", sndStatPtr->maxSampleRate);
     ioctl(sndStatPtr->fd, SNDCTL_DSP_SPEED, &sndStatPtr->maxSampleRate);
     if (beVerbose)
-      fprintf (stderr, "got %d\n", sndStatPtr->maxSampleRate);
+      osLogMsg("got %d\n", sndStatPtr->maxSampleRate);
 
     sndStatPtr->curSampleRate = sndStatPtr->maxSampleRate;
 
@@ -1142,12 +1313,30 @@ AuBool AuInitPhysicalDevices()
   extern AuUint8  *auPhysicalOutputBuffers;
   extern AuUint32  auPhysicalOutputBuffersSize;
   extern void      AuProcessData();
+  char            *nas_device_policy;
+  char            *nas_mixer_policy;
 #if defined(AUDIO_GETINFO)
   audio_info_t     spkrinf;
 #endif
 
-  PRMSG("AuInitPhysicalDevices();\n", 0, 0);
+  osLogMsg("AuInitPhysicalDevices();\n");
   IDENTMSG;
+
+  /* JET - REVISIT */
+  nas_device_policy=getenv("NAS_DEVICE_POLICY");
+  if (nas_device_policy && !strcmp(nas_device_policy, "relinquish"))
+  {
+      osLogMsg("Init: setup to relinquish audio device when not in use.\n");
+      relinquish_device = AuTrue;
+  }
+  /* JET - REVISIT */
+  nas_mixer_policy=getenv("NAS_MIXER_POLICY");
+  if (nas_mixer_policy && !strcmp(nas_mixer_policy, "leave"))
+  {
+      osLogMsg("Init: Leaving the mixer device options alone at startup.\n");
+      printf("wibble!\n");
+      leave_mixer = AuTrue;
+  }
 
   /*
    * create the input and output ports
@@ -1161,7 +1350,7 @@ AuBool AuInitPhysicalDevices()
     if ((yyin = openConfigFile (CONFSEARCHPATH)) != NULL)
         yyparse();
 
-    if ((fd = open(sndStatOut.device, O_RDWR, 0)) == -1) {
+    if ((fd = open(sndStatOut.device, O_RDWR|O_SYNC, 0)) == -1) {
         UNIDENTMSG;
         return AuFalse;
     }
@@ -1185,7 +1374,10 @@ AuBool AuInitPhysicalDevices()
     if ((fd = open(sndStatIn.device, O_RDONLY, 0)) != -1)
       sndStatIn.fd = fd;
     else
-      sndStatIn.fd = sndStatOut.fd;
+    {
+       sndStatIn.fd = sndStatOut.fd;
+       share_in_out = AuTrue;
+    }
 
     setupSoundcard(&sndStatOut);
     if (sndStatOut.fd != sndStatIn.fd)
@@ -1210,11 +1402,14 @@ AuBool AuInitPhysicalDevices()
            * control which is active via level setting later. There
            * should be a better way to do this!
            */
-          int mask = SOUND_MASK_MIC | SOUND_MASK_LINE; /* enable these */
-          mask &= recmask;    /* if supported */
-          if (ioctl(mixerfd, SOUND_MIXER_WRITE_RECSRC, &mask) == -1) {
-            return AuFalse;
-          }
+         if (!leave_mixer)
+         {
+             int mask = SOUND_MASK_MIC | SOUND_MASK_LINE; /* enable these */
+             mask &= recmask;    /* if supported */
+             if (ioctl(mixerfd, SOUND_MIXER_WRITE_RECSRC, &mask) == -1) {
+               return AuFalse;
+             }
+         }
         }
 
         if (ioctl(mixerfd, SOUND_MIXER_READ_RECSRC, &recsrc) == -1) {

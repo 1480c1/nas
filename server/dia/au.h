@@ -20,28 +20,41 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  * $NCDId: @(#)au.h,v 1.22 1995/11/29 00:50:13 greg Exp $
+ * $Id$
  */
 
 #ifndef _AU_H_
 #define _AU_H_
 
 #ifdef sun
-#include "../dda/sun/ausun.h"
+# define SUN_SERVER
 #endif						/* sun */
 
 #ifdef sgi
-#include "../dda/sgi/ausgi.h"
+# define SGI_SERVER
 #endif						/* sgi */
 
-#if defined(__FreeBSD__) || defined(linux) || (defined(SVR4) && defined(SYSV386))
-#include "../dda/voxware/auvoxware.h"
-#endif
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386)))
+# define VOXWARE_SERVER
+#endif                                          /* voxware */
 
 #ifdef hpux
-#include "../dda/hpux/auhpux.h"
+# define HPUX_SERVER
 #endif						/* hpux */
 
-typedef AuUint32 AuPointer;
+/* JET - last one wins... */
+
+#if defined(HPUX_SERVER)	/* hpux */
+# include "../dda/hpux/auhpux.h"
+#elif defined(SUN_SERVER)	/* sun */
+# include "../dda/sun/ausun.h"
+#elif defined(SGI_SERVER)	/* SGI */
+# include "../dda/sgi/ausgi.h"
+#elif defined(VOXWARE_SERVER)	/* voxware */
+# include "../dda/voxware/auvoxware.h"
+#endif
+
+typedef void * AuPointer;
 
 #define auMaxTracks			32
 
@@ -82,6 +95,11 @@ void            auProtectedFree();
 #define PhysicalInputMono		(1L << 4)
 #define PhysicalInputStereo		(1L << 5)
 #define AllPhysicalInputs	      (((1L << 6) - 1) ^ AllPhysicalOutputs)
+
+#define PhysicalFeedbackMono           (1L << 6)
+#define PhysicalFeedbackStereo         (1L << 7)
+#define AllPhysicalFeedbacks         (((1L << 8) - 1) ^ AllPhysicalOutputs \
+                                                      ^ AllPhysicalInputs)
 
 
 #define AuValidState(s)							       \
@@ -404,6 +422,10 @@ enum _auCallbackTypes
     AuEventPostedCB,
     AuSetPhysicalOutputModeCB,
     AuGetPhysicalOutputModeCB,
+    AuSetPhysicalFeedbackGainCB,
+    AuGetPhysicalFeedbackGainCB,
+    AuGetPhysicalInputGainCB,
+    AuGetPhysicalInputModeCB,
 
     AuMaxCB
 };
