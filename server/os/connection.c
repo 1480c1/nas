@@ -63,6 +63,8 @@ SOFTWARE.
  *
  *****************************************************************/
 
+#include "nasconfig.h"
+
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #ifndef _MINIX
@@ -191,8 +193,6 @@ typedef long CCID;      /* mask of indices into client socket table */
 #define X_UNIX_PATH	"/tmp/.sockets/audio"
 #endif
 #endif
-
-extern Bool	allow_any_host;	/* simplistic access control */
 
 #ifdef SERVER_LOCALCONN
 #include <sys/stream.h>
@@ -347,7 +347,12 @@ open_tcp_socket ()
 #endif
     insock.sin_family = AF_INET;
     insock.sin_port = htons ((unsigned short)(AudioListenPort + atoi (display)));
-    insock.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    if (NasConfig.LocalOnly)
+      insock.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    else
+      insock.sin_addr.s_addr = htonl(INADDR_ANY);
+    
     retry = 20;
     while (bind(request, (struct sockaddr *) &insock, sizeof (insock)))
     {
@@ -1356,7 +1361,7 @@ ClientAuthorized(client, proto_n, auth_proto, string_n, auth_string)
 				  string_n, auth_string);
 
     priv = (OsCommPtr)client->osPrivate;
-    if (auth_id == (AuID) ~0L && !allow_any_host)
+    if (auth_id == (AuID) ~0L && !NasConfig.AllowAny)
     {
 	if (getpeername (priv->fd, &from.sa, &fromlen) != -1)
 	{

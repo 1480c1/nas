@@ -107,7 +107,6 @@ extern Bool PartialNetwork;
 Bool CoreDump;
 Bool noTestExtensions;
 
-Bool allow_any_host = FALSE;
 #ifdef STARTSERVER
 int timeoutWithNoClients = 0;
 #endif /* STARTSERVER */
@@ -271,18 +270,19 @@ AdjustWaitForDelay (waitTime, newdelay)
 void UseMsg()
 {
     ErrorF("Usage: nasd [:<listen port offset>] [option]\n");
-    ErrorF(" -aa		allow any host to connect\n");
-#ifndef AMOEBA
-#ifdef PART_NET
-    ErrorF(" -pn		partial networking enabled [default]\n");
-    ErrorF(" -nopn		partial networking disabled\n");
-#else
-    ErrorF(" -pn		partial networking enabled\n");
-    ErrorF(" -nopn		partial networking disabled [default]\n");
-#endif
-#endif
+    ErrorF(" -aa                allow any client to connect\n");
+    ErrorF(" -local             allow local clients only\n");
     ErrorF(" -v                 enable verbose messages\n");
     ErrorF(" -d <num>           enable debug messages at level <num>\n");
+#ifndef AMOEBA
+#ifdef PART_NET
+    ErrorF(" -pn                partial networking enabled [default]\n");
+    ErrorF(" -nopn              partial networking disabled\n");
+#else
+    ErrorF(" -pn                partial networking enabled\n");
+    ErrorF(" -nopn              partial networking disabled [default]\n");
+#endif
+#endif
     ddaUseMsg();		/* print dda specific usage */
 }
 
@@ -308,7 +308,7 @@ char	*argv[];
 	    display = argv[i];
 	    display++;
 	} else if (strcmp(argv[i], "-aa") == 0)
-	    allow_any_host = TRUE;
+	    NasConfig.AllowAny = TRUE;
 #ifdef STARTSERVER
 	else if (strcmp(argv[i], "-timeout") == 0) {
 	    i++;
@@ -339,6 +339,10 @@ char	*argv[];
 	      UseMsg();
 	      exit(1);
 	    }
+	  }
+	else if (strcmp(argv[i], "-local") == 0)
+	  {
+	    NasConfig.LocalOnly = TRUE;
 	  }
 	else 
 	  {

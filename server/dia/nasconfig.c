@@ -21,6 +21,9 @@ void diaInitGlobalConfig()
   NasConfig.DoVerbose = FALSE;
   NasConfig.DoDeviceRelease = TRUE;
   NasConfig.DoDaemon = FALSE;
+  NasConfig.LocalOnly = FALSE;	/* allow only local connections */
+  NasConfig.AllowAny = FALSE;	/* allow any host to connect w/o
+				   authentication */
 
   				/* that be it */
   return;

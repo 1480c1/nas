@@ -21,6 +21,8 @@ typedef struct {
   int DoVerbose;
   int DoDeviceRelease;
   int DoDaemon;
+  int LocalOnly;
+  int AllowAny;
 } NasConfig_t;
 
 GEXTERN NasConfig_t NasConfig;
