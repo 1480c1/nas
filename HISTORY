@@ -1,5 +1,35 @@
 $Id$
 
+06/20/2004 1.6d
+
+        - add autoconf/configure support for config/. Now, during the
+          'includes' phase of the nas build, configure will try to
+          figure out some things about your system and build a
+          config.h file that the rest of nas can use.   Prompted by
+          John Wehle's patch below.
+        
+          NOTE: you still build nas like always with the imake
+          facility.  configure in this case is only concerned with
+          locating various header files, functions, and the like.
+
+        - added FreeBSD 5.x patches from John Wehle correcting
+          malloc.h/stdlib.h use and other issues.  
+
+        - remove ioctl(devAudio, AUDIO_DRAIN, 0) call from
+          disableProcessFlow() in dda/sun/ausuni.c that seems to cause
+          problems (server hangs) with certain sun audio
+          hardware/kernel drivers. 
+
+        - applied patch from James Lee correcting a coredump in
+          audemo. 
+
+        - corrected problem with dia/auprocess.c that caused SIGFPE's
+          in nasd when a element with a samplerate of 0 was
+          processed. Thanks to Tobias Diedrich for a test case.
+
+        - removed some pre-R5 cruft from lib/audio/ConnSvr.c that
+          caused build problems on some solaris systems.
+
 02/14/2004 1.6c
 
         - Fixed up some Cygwin issues... All of the clients and the
@@ -24,8 +54,7 @@ $Id$
 
         - preparing a long overdue development release
 
-        - ANSI'ification of libaudio.  What a fun job.  There
-          were a few errors in libaudio that were pointed out.  
+        - ANSI'ification of libaudio.  
 
           There seemed to be some confusion with the order of
           arguments to the AuSoundRecordToFile*() functions.  
