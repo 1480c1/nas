@@ -1351,7 +1351,7 @@ static char *_SysErrorMsg (n)
     extern char *sys_errlist[];
 #endif
     extern int sys_nerr;
-    char *s = ((n >= 0 && n < sys_nerr) ? sys_errlist[n] : "unknown error");
+    char *s = (char *)((n >= 0 && n < sys_nerr) ? sys_errlist[n] : "unknown error");
 
     return (s ? s : "no such error");
 }

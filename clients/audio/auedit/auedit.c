@@ -2232,6 +2232,9 @@ int             start,
     int             n,
                     fileFormat,
                     dataFormat,
+#if defined(HAS_MKSTEMP)
+                    fd = -1,
+#endif
                     status;
 
     XtVaGetValues(g->fileFormatMenuButton, XtNlabel, &st, NULL);
@@ -2254,9 +2257,14 @@ int             start,
     }
 
     sprintf(tmpName, "%sXXXXXX", name);
-    tmpName = mktemp(tmpName);
 
+#if defined(HAS_MKSTEMP)
+    fd = mkstemp(tmpName);
+    if (-1 == fd || !SoundOpenFileForWriting(tmpName, s))
+#else
+    tmpName = mktemp(tmpName);
     if (!SoundOpenFileForWriting(tmpName, s))
+#endif
     {
 	free(tmpName);
 	SoundDestroy(s);
@@ -2274,8 +2282,12 @@ int             start,
 
     if (status || SoundCloseFile(s))
     {
-	free(tmpName);
-	ERRORf("Error writing output file");
+#if defined(HAS_MKSTEMP)
+      if (fd != -1)
+	close(fd);
+#endif
+      free(tmpName);
+      ERRORf("Error writing output file");
     }
 
     /* if the file exists then back it up */

@@ -24,6 +24,10 @@
 
 #include "../../../config/NetAudio.tmpl"
 
+#if defined(LinuxArchitecture) || defined(FreeBSDArchitecture)
+ EXTRA_DEFINES = -DHAS_MKSTEMP
+#endif
+
 FILES = Auedit.ad Graph.h auedit.c play.xbm GraphP.h auedit.man resources.h \
         Graph.c pause.xbm stop.xbm
   DIR = auedit

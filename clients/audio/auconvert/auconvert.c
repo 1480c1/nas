@@ -24,6 +24,7 @@
  * 		350 North Bernardo Ave.
  * 		Mountain View, CA  94043
  *
+ * $Id$
  * $NCDId: @(#)auconvert.c,v 1.8 1994/04/07 18:09:30 greg Exp $
  */
 
@@ -229,6 +230,9 @@ char          **argv;
                     vol,
                     rawFormat = -1,
                     rawTracks,
+#if defined(HAS_MKSTEMP)
+                    fd = -1, 
+#endif
                     outputDataFormat;
     AuUint32        rate = 0,
                     numBytes;
@@ -354,13 +358,22 @@ char          **argv;
 	    fatalError("Malloc error");
 
 	sprintf(outName, "%sXXXXXX", inputFile);
+#if defined(HAS_MKSTEMP)
+	fd = mkstemp(outName);
+#else
 	outName = mktemp(outName);
+#endif
+
     }
     else
 	outName = outputFile;
 
+#if defined(HAS_MKSTEMP)
+    if ((-1 == fd) || (!SoundOpenFileForWriting(outName, out)))
+#else
     if (!SoundOpenFileForWriting(outName, out))
-	fatalError("Can't open output file %s", outName);
+#endif
+      fatalError("Can't open output file %s", outName);
 
     numBytes = numBytes / sizeof(short) * SoundBytesPerSample(out);
 
@@ -376,8 +389,14 @@ char          **argv;
 	fatalError("Error closing output file");
 
     if (!outputFile)
+      {
+#if defined(HAS_MKSTEMP)
+	if (fd != -1)
+	  close(fd);
+#endif
 	if (rename(outName, inputFile))
-	    fatalError("Error renaming temp file");
+	  fatalError("Error renaming temp file");
+      }
 
     exit(0);
 }

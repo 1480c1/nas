@@ -259,7 +259,7 @@ static ElementListPtr ElementList;
 static int      ElementCount,
                 MonitorCount;
 
-#ifndef sun					/* who else doesn't have
+#if !defined(sun) && !defined(linux)		/* who else doesn't have
 						 * this? */
 #define strdup ncd_strdup			/* To avoid conflicting with
 						 * headers on hosts that *do*
