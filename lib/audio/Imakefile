@@ -58,7 +58,7 @@
    SYSV_DEFINES = -DAU_NOT_STDC_ENV -D_AuNEEDBCOPYFUNC -DNEED_FAKE_XWIN
 #endif
 
-#if defined(HasBSD44Sockets)
+#if defined(HasBSD44Sockets) && !defined(LinuxArchitecture) && !defined(SVR4)
 	EXTRA_DEFINES = -DBSD44SOCKETS
 #endif
 
