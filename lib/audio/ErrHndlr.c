@@ -61,7 +61,9 @@ register AuIOErrorHandler handler;
     if (!oldhandler)
        oldhandler = (AuIOErrorHandler) _AuDefaultIOError;
 
-    aud->funcs.ioerror_handler = handler ? handler :
-       (AuIOErrorHandler) _AuDefaultIOError;
+    aud->funcs.ioerror_handler = ((handler) ? 
+      (AuIOErrorHandler) handler :
+       (AuIOErrorHandler) _AuDefaultIOError);
+
     return oldhandler;
 }

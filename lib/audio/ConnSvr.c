@@ -245,7 +245,7 @@ _AuStartServer()
 	/* grandchild -- start server */
 	(void)signal(SIGUSR1, SIG_IGN);
 	/* start server.  Ideally the command should be set by some resource */
-	(void)execlp("au", "au", "-timeout",  "600", (char *)NULL);
+	(void)execlp("nasd", "nasd", "-timeout",  "600", (char *)NULL);
 	perror("exec");
 	_AuServerUp = -1;
        kill(getppid(), SIGUSR1);       /* wake up parent */
