@@ -60,6 +60,10 @@ globstmt	: VERBOSE
 			  else
 			    NasConfig.DoDeviceRelease = j; 
 			}
+                | MIXERINIT string
+                        { ddaSetConfig(MIXERINIT, (void *)parsebool($2)); }  
+                | OUTDEVTYPE string
+                        { ddaSetConfig(OUTDEVTYPE, (void *)$2); }  
 		;
 
 sectconfigs	: /* Empty */
@@ -117,10 +121,6 @@ stmt		: error
 			{ ddaSetConfig(MAXRATE, (void *)$2); }
 		| MINRATE number
 			{ ddaSetConfig(MINRATE, (void *)$2); }
-                | OUTDEVTYPE string
-                        { ddaSetConfig(OUTDEVTYPE, (void *)$2); }  
-                | MIXERINIT string
-                        { ddaSetConfig(MIXERINIT, (void *)parsebool($2)); }  
 
 string		: STRING		{ ptr = (char *)malloc(strlen($1)+1);
 					  strcpy(ptr, $1);

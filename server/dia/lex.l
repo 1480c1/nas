@@ -29,7 +29,7 @@ number				[0-9]+
 [Mm][Ii][Nn][Rr][Aa][Tt][Ee]		{ return MINRATE; }
 [Dd][Ee][Vv][Ii][Cc][Ee]		{ return DEVICE; }
 [Mm][Ii][Xx][Ee][Rr][Ii][Nn][Ii][Tt]    { return MIXERINIT; }
-[Oo][Uu][Tt][Dd][Ee][Vv][Tt][Yy][Pp][Ee] { return OUTDEVTYPE; }
+[Oo][Uu][Tt][Dd][Ee][Vv][Tt][Yy][Pp][Ee]  { return OUTDEVTYPE; }
 
 
 {string}			{ yylval.ptr = (char *)yytext; return STRING; }

@@ -337,8 +337,12 @@ AuUint32 *auServerDeviceListSize,
                        auNumServerBuckets, /* number of server owned buckets */
                        auNumServerRadios; /* number of server owned radios */
   
-  osLogMsg("createServerComponents(...);\n");
-  IDENTMSG;
+
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("createServerComponents(...);\n");
+      IDENTMSG;
+    }
 
   *auServerMinRate = aumax(sndStatIn.minSampleRate,
 			   sndStatOut.minSampleRate);
@@ -478,8 +482,11 @@ AuInt32 rate;
   AuInt32          foo;
   struct itimerval ntval, otval;
 
-  osLogMsg("setTimer(rate = %d);\n", rate);
-  IDENTMSG;
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("setTimer(rate = %d);\n", rate);
+      IDENTMSG;
+    }
 
   /* change timer according to new sample rate */
   if (rate == 0) {		/* Disable timer case */
@@ -550,8 +557,11 @@ AuUint32 rate;
   int numSamplesIn, numSamplesOut;
   AuBlock l;
 
-  osLogMsg("setSampleRate(rate = %d);\n", rate);
-  IDENTMSG;
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("setSampleRate(rate = %d);\n", rate);
+      IDENTMSG;
+    }
 
   l = AuBlockAudio();
 
@@ -598,7 +608,10 @@ openDevice(wait)
 AuBool wait;
 {
 #ifdef RELINQUISH
-    osLogMsg("openDevice\n");
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("openDevice\n");
+    }
 
     if(sndStatOut.fd == -1)
     {
@@ -610,7 +623,12 @@ AuBool wait;
        setupSoundcard(&sndStatOut);
     }
     else
-       osLogMsg("openDevice: output device already open\n");
+      {
+	if (NasConfig.DoDebug)
+	  {
+	    osLogMsg("openDevice: output device already open\n");
+	  }
+      }
 
     if(sndStatIn.fd == -1 && !share_in_out)
     {
@@ -625,7 +643,10 @@ AuBool wait;
     else
     {
        sndStatIn.fd=sndStatOut.fd;
-       osLogMsg("openDevice: input device already open\n");
+       if (NasConfig.DoDebug)
+	 {
+	   osLogMsg("openDevice: input device already open\n");
+	 }
     }
 
     if(mixerfd == -1)
@@ -635,25 +656,25 @@ AuBool wait;
            sleep(1);
        }
     else
-       osLogMsg("openDevice: mixer device already open\n");
+      {
+	if (NasConfig.DoDebug)
+	  {
+	    osLogMsg("openDevice: mixer device already open\n");
+	  }
+      }
 
-    osLogMsg("openDevice() - dsp_sync;\n");
     ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
-    osLogMsg("openDevice() - dsp_speed;\n");
     ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
 #endif /* sco */
 
     if (sndStatOut.fd != sndStatIn.fd)
     {
-       osLogMsg("openDevice() - dsp_sync;\n");
        ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
-       osLogMsg("openDevice() - dsp_speed;\n");
        ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
 #endif /* sco */
     }
-    osLogMsg("openDevice() - dsp_speed=%d;\n",sndStatIn.curSampleRate);
 
     setSampleRate(sndStatIn.curSampleRate);
 
@@ -665,10 +686,16 @@ static void
 closeDevice()
 {
 #ifdef RELINQUISH
-    osLogMsg("closeDevice: out\n");
-    if(-1==sndStatOut.fd)
+  if (NasConfig.DoDebug)
     {
-       osLogMsg("closeDevice: output device already closed\n");
+      osLogMsg("closeDevice: out\n");
+    }
+    if (sndStatOut.fd == -1)
+    {
+      if (NasConfig.DoDebug)
+	{
+	  osLogMsg("closeDevice: output device already closed\n");
+	}
     }
 
     else
@@ -682,10 +709,16 @@ closeDevice()
 
     if(!share_in_out)
     {
-       osLogMsg("closeDevice: in\n");
-       if(-1==sndStatIn.fd)
+      if (NasConfig.DoDebug)
+	{
+	  osLogMsg("closeDevice: in\n");
+	}
+       if (sndStatIn.fd == -1)
        {
-           osLogMsg("closeDevice: input device already closed\n");
+	 if (NasConfig.DoDebug)
+	   {
+	     osLogMsg("closeDevice: input device already closed\n");
+	   }
        }
        else
        {
@@ -697,10 +730,16 @@ closeDevice()
        }
     }
 
-    osLogMsg("closeDevice: mixer\n");
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("closeDevice: mixer\n");
+    }
     if(-1==mixerfd)
     {
-       osLogMsg("closeDevice: mixerdevice already closed\n");
+      if (NasConfig.DoDebug)
+	{
+	  osLogMsg("closeDevice: mixerdevice already closed\n");
+	}
     }
     else
     {
@@ -720,15 +759,16 @@ closeDevice()
 
 static void serverReset()
 {
-  osLogMsg("serverReset();\n");
-  IDENTMSG;
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("serverReset();\n");
+      IDENTMSG;
+    }
 
   setTimer(0);
 #ifndef sco
   signal(SIGALRM, SIG_IGN);
 #endif /* sco */
-
-  osLogMsg("Audio Synchronisation...\n");
 
 #if defined(AUDIO_DRAIN)
   if (sndStatOut.isPCSpeaker)
@@ -736,11 +776,10 @@ static void serverReset()
   else {
 #endif
 
-      osLogMsg("serverReset() - sync;\n");
-      ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
-      if (sndStatOut.fd != sndStatIn.fd)
-         ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
-
+    ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
+    if (sndStatOut.fd != sndStatIn.fd)
+      ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
+    
 #if defined(AUDIO_DRAIN)
   }
 #endif
@@ -751,7 +790,11 @@ static void serverReset()
   if (NasConfig.DoDebug > 2) {
     osLogMsg(" done.\n");
   }
-  UNIDENTMSG;
+
+  if (NasConfig.DoDebug)
+    {
+      UNIDENTMSG;
+    }
 }
 
 
@@ -874,7 +917,10 @@ static void enableProcessFlow()
 {
   AuUint8        *p;
 
-  osLogMsg("enableProcessFlow();\n");
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("enableProcessFlow();\n");
+    }
 
   if (relinquish_device)
       openDevice(AuTrue);
@@ -888,7 +934,10 @@ static void enableProcessFlow()
 
 #ifndef sco
 	signal(SIGALRM, intervalProc);
-        osLogMsg("enableProcessFlow() - set SIGALRM handler to intervalProc");
+	if (NasConfig.DoDebug > 1)
+	  {
+	    osLogMsg("enableProcessFlow() - set SIGALRM handler to intervalProc");
+	  }
 #else
 	setTimer(sndStatOut.curSampleRate);
 #endif /* sco */
@@ -905,42 +954,42 @@ static void disableProcessFlow()
 	signal(SIGALRM, SIG_IGN);
 #endif /* sco */
 
-  osLogMsg("disableProcessFlow() - starting\n");
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("disableProcessFlow() - starting\n");
+    }
 
 #ifdef sco
  if (processFlowEnabled)
  {
 #endif /* sco */
 
-  osLogMsg("disableProcessFlow() - dsp_sync;\n");
   ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
-  osLogMsg("disableProcessFlow() - dsp_speed;\n");
   ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
 #endif /* sco */
-  osLogMsg("disableProcessFlow() - Out DSP done\n");
 
   if (sndStatOut.fd != sndStatIn.fd)
   {
-      osLogMsg("disableProcessFlow() - dsp_sync;\n");
       ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
-      osLogMsg("disableProcessFlow() - dsp_speed;\n");
       ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
 #endif /* sco */
   }
-  osLogMsg("disableProcessFlow() - In DSP done;\n");
 
 #ifdef sco
   oneMoreTick();
 #endif
 
   processFlowEnabled = AuFalse;
-  osLogMsg("disableProcessFlow() processFlowEnabled = AuFalse;\n");
 
   if (relinquish_device)
       closeDevice();
-  osLogMsg("disableProcessFlow() - done;\n");
+
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("disableProcessFlow() - done;\n");
+    }
 
 #ifdef sco
  }
@@ -1194,8 +1243,11 @@ SndStat* sndStatPtr;
 {
   int samplesize;
 
-  osLogMsg("setupSoundcard(...);\n");
-  IDENTMSG;
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("setupSoundcard(...);\n");
+      IDENTMSG;
+    }
 
   if (NasConfig.DoVerbose)
     if (sndStatPtr == &sndStatOut)
@@ -1295,8 +1347,11 @@ AuBool AuInitPhysicalDevices()
   audio_info_t     spkrinf;
 #endif
 
-  osLogMsg("AuInitPhysicalDevices();\n");
-  IDENTMSG;
+  if (NasConfig.DoDebug)
+    {
+      osLogMsg("AuInitPhysicalDevices();\n");
+      IDENTMSG;
+    }
 
   if (NasConfig.DoDeviceRelease)
     {  

@@ -1337,36 +1337,7 @@ AuInitPhysicalDevices()
     /* JET - init dev start */
 
     InitDevice();
-#if 0
-    /* JET - reset Device */
-    if (ioctl(devAudio,
-	      AUDIO_RESET,(RESET_RX_BUF | RESET_TX_BUF | RESET_RX_OVF | 
-			   RESET_TX_UNF)) == -1 ) 
-      {
-	osLogMsg("ERROR: AUDIO_RESET: %s\n", 
-		 strerror(errno));
-      }
-    else
-      {
-	if (NasConfig.DoDebug > 5)
-	  osLogMsg("AUDIO_RESET Done.\n");
-      }
 
-    /*
-     * Get Device Information
-     */
-#ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_DESCRIBE, &audio_describe)==-1)
-      osLogMsg("ERROR: AUDIO_DESCRIBE: %s\n", 
-	       strerror(errno));
-    errno = 0;
-
-    if (ioctl(devAudio,AUDIO_RAW_GET_PARAMS, &raw_params)==-1)
-      osLogMsg("ERROR: AUDIO_RAW_GET_PARAMS: %s\n", 
-	       strerror(errno));
-    errno = 0;
-#endif
-#endif /* 0 JET */
     /*
      * Display configuration
      */
@@ -1374,7 +1345,7 @@ AuInitPhysicalDevices()
     {
     case AUDIO_ID_CS4215 :
 
-      if (NasConfig.DoDebug)
+      if (NasConfig.DoVerbose)
 	{
 	  osLogMsg("AUDIO_ID_CS4215: \n");
 	  osLogMsg("audio_describe.flags & AD_F_NOBEEPER = %d\n",
