@@ -13,7 +13,7 @@ Debug 0
 Verbose
 
 # set this to "yes" or "no" to indicate whether nasd should release the
-#  audio device when don't playing a sound.
+#  audio device when finished playing a sound.
 # Only the voxware and sun servers understand this for now.
 ReleaseDevice "yes"
 

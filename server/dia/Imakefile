@@ -52,8 +52,6 @@ YaccFile(gram,$(YFLAGS))
 LexFile(lex)
 
 
-InstallNonExecFile(nasd.conf.eg,$(NASCONFSEARCHPATH))
-
 /* JET - need to install a config manpage around here somewhere */
 
 DependTarget()
