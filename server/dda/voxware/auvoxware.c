@@ -226,7 +226,7 @@ SndStat sndStatIn =
 	32,			/* maxFrags */
 	"/dev/dsp1",		/* device */
 	"/dev/mixer1",		/* mixer */
-	O_RDWR,			/* howToOpen */
+	O_RDONLY,		/* howToOpen */
 	1,			/* autoOpen */
 	0,			/* forceRate */
 	0			/* isPCSpeaker */

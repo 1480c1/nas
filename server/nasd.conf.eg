@@ -41,7 +41,7 @@ inputsection
 	forcerate	"no"			# forces input rate to current
         autoOpen        "yes"			# whether to open the dev
 						# at init
-	readwrite	"yes"			# open read only if "no"
+	readwrite	"no"			# open read only if "no"
 end
 
 # These are used by voxware only for now.
