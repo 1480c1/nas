@@ -459,7 +459,16 @@ AuUint32 *auServerDeviceListSize,
     initialized = AuTrue;
     setPhysicalOutputGain(auDefaultOutputGain);
     setPhysicalInputGainAndLineMode(auDefaultInputGain, 0);
-    disableProcessFlow();
+
+    /*JET - this was part of Steve McIntyre's mondo
+            patch I applied for 1.3b.  Unfortunately it causes
+	    the intervalProc sighandler to not get setup properly the first 
+	    time around... ie: The first connection after server startup will 
+	    always cause the server to go into an infinite loop until the
+	    client is killed.  Then everyhting starts working again.
+
+	    disableProcessFlow();
+     */
   }
 
   UNIDENTMSG;
@@ -884,6 +893,8 @@ static void enableProcessFlow()
 
 #ifndef sco
 	signal(SIGALRM, intervalProc);
+        PRMSG("enableProcessFlow() - set SIGALRM handler to intervalProc",
+	0, 0);
 #else
 	setTimer(sndStatOut.curSampleRate);
 #endif /* sco */
@@ -900,7 +911,7 @@ static void disableProcessFlow()
 	signal(SIGALRM, SIG_IGN);
 #endif /* sco */
 
-  PRMSG("disableProcessFlow();\n", 0, 0);
+  PRMSG("disableProcessFlow() - starting\n", 0, 0);
 
 #ifdef sco
  if (processFlowEnabled)
@@ -913,7 +924,7 @@ static void disableProcessFlow()
   PRMSG("disableProcessFlow() - dsp_speed;\n", 0, 0);
   ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, sndStatOut.curSampleRate);
 #endif /* sco */
-  PRMSG("disableProcessFlow();\n", 0, 0);
+  PRMSG("disableProcessFlow() - Out DSP done\n", 0, 0);
 
   if (sndStatOut.fd != sndStatIn.fd)
   {
@@ -924,18 +935,18 @@ static void disableProcessFlow()
       ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, sndStatIn.curSampleRate);
 #endif /* sco */
   }
-  PRMSG("disableProcessFlow();\n", 0, 0);
+  PRMSG("disableProcessFlow() - In DSP done;\n", 0, 0);
 
 #ifdef sco
   oneMoreTick();
 #endif
 
   processFlowEnabled = AuFalse;
-  PRMSG("disableProcessFlow();\n", 0, 0);
+  PRMSG("disableProcessFlow() processFlowEnabled = AuFalse;\n", 0, 0);
 
   if (relinquish_device)
       closeDevice();
-  PRMSG("disableProcessFlow();\n", 0, 0);
+  PRMSG("disableProcessFlow() - done;\n", 0, 0);
 
 #ifdef sco
  }
