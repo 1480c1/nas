@@ -127,6 +127,7 @@
 ./clients
 ./TODO
 ./config/NetAudio.tmpl
+./config/NetAudio.def
 ./config/NasConfig.h
 ./config/makesrcpkg
 ./config/mungeman
