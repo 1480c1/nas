@@ -48,10 +48,10 @@ AuBool AuRequeueEvent (aud, event, skip)
     register _AuQEvent *qelt;
     register _AuQEvent *prev;
 
-    _AuLockServer (aud);
+    _AuLockServer ();
     if (!aud->qfree) {
 	if (!(aud->qfree = (_AuQEvent *) Aumalloc (sizeof (_AuQEvent)))) {
-	    _AuUnlockServer (aud);
+	    _AuUnlockServer ();
 	    return AuFalse;
 	}
 	aud->qfree->next = (_AuQEvent *) NULL;
@@ -84,7 +84,7 @@ AuBool AuRequeueEvent (aud, event, skip)
 	aud->tail = qelt;
 
     aud->qlen++;
-    _AuUnlockServer (aud);
+    _AuUnlockServer ();
 
     return AuTrue;
 }

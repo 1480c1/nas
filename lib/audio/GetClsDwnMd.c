@@ -32,11 +32,11 @@ AuStatus       *ret_status;
     auGetCloseDownModeReply rep;
     register auReq *req;
 
-    _AuLockServer(aud);
+    _AuLockServer();
 
     _AuGetEmptyReq(GetCloseDownMode, req, aud);
     (void) _AuReply(aud, (auReply *) & rep, 0, auTrue, (AuStatus *) NULL);
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     return rep.closeDownMode;
 }

@@ -41,7 +41,7 @@ AuStatus       *ret_status;
     if (ret_status)
 	*ret_status = AuSuccess;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetResReq(SetDeviceAttributes, device, req, aud);
 
     stringLen = (AuDeviceValueMask(attr) & AuCompCommonDescriptionMask) ?
@@ -58,6 +58,6 @@ AuStatus       *ret_status;
 
     AuDeviceValueMask(attr) = savemask;
     (void) _AuIfRoundTrip(aud, ret_status);
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 }

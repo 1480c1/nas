@@ -66,9 +66,9 @@ _VocConst char *name;
 
     if (!fread(buf, VOC_ID_SIZE, 1, vi->fp) ||
 	strncmp(buf, VOC_ID, VOC_ID_SIZE) ||
-	FileReadS(vi->fp, BIG_ENDIAN) != VOC_DATA_OFFSET ||
-	FileReadS(vi->fp, BIG_ENDIAN) != VOC_VERSION ||
-	FileReadS(vi->fp, BIG_ENDIAN) != VOC_VERSION_CHK)
+	FileReadS(vi->fp, NAS_BIG_ENDIAN) != VOC_DATA_OFFSET ||
+	FileReadS(vi->fp, NAS_BIG_ENDIAN) != VOC_VERSION ||
+	FileReadS(vi->fp, NAS_BIG_ENDIAN) != VOC_VERSION_CHK)
 	Err();
 
     do
@@ -153,9 +153,9 @@ VocInfo        *vi;
 
     if (!(vi->fp = fopen(name, AU_WRITE_BINARY)) ||
 	!fwrite(VOC_ID, VOC_ID_SIZE, 1, vi->fp) ||
-	!FileWriteS(VOC_DATA_OFFSET, vi->fp, BIG_ENDIAN) ||
-	!FileWriteS(VOC_VERSION, vi->fp, BIG_ENDIAN) ||
-	!FileWriteS(VOC_VERSION_CHK, vi->fp, BIG_ENDIAN))
+	!FileWriteS(VOC_DATA_OFFSET, vi->fp, NAS_BIG_ENDIAN) ||
+	!FileWriteS(VOC_VERSION, vi->fp, NAS_BIG_ENDIAN) ||
+	!FileWriteS(VOC_VERSION_CHK, vi->fp, NAS_BIG_ENDIAN))
 	Err();
 
     if ((n = strlen(vi->comment)))

@@ -332,7 +332,7 @@ static int _execute_help (aud, argc, argv)
 "The following commands are supported:",
 "",
 "    help                             print this message",
-"    set device ID gain = PERCENT     set the gain on a device",
+"    set device ID gain =/+/- PERCENT set the gain on a device",
 "    set device ID linemode = low     set the device line mode",
 "    set device ID linemode = high    set the device line mode",
 "    list device ID gain              list the gain of a device",
@@ -375,13 +375,24 @@ static int _execute_set_gain (aud, argc, argv, data)
     int p;
     AuDeviceAttributes attr;
     AuStatus status;
+    int delta = 0;
 
     /*
-     *     ["="] PERCENTAGE
+     *     ["=","+","-" ] PERCENTAGE
      */
     switch (argc) {
       case 2:
-	if (argv[0][0] != '=') {
+	switch (argv[0][0]) {
+	  case '=':
+	    delta = 0;
+	    break;
+	  case '+':
+	    delta = +1;
+	    break;
+	  case '-':
+	    delta = -1;
+	    break;
+	  default:
 	  usage:
 	    fprintf (stderr, "%s: invalid gain syntax\n", ProgramName);
 	    return 1;
@@ -390,10 +401,41 @@ static int _execute_set_gain (aud, argc, argv, data)
 	/* fall through */
       case 1:
 	p = atoi (argv[0]);
+	if (delta) {
+	    delta *= p;
+	    if (!delta)  /* no change (i.e. +/- 0), so we're done */
+		return 0;
+	}
 	break;
 
       default:
 	goto usage;
+    }
+
+    if (delta) {
+
+	AuDeviceAttributes *d = AuGetDeviceAttributes (aud, id, &status);
+
+	if (!d) {
+	    fprintf (stderr, "%s: unable to get device 0x%lx gain\n",
+		     ProgramName, id);
+	    return 1;
+	}
+	if (!(AuDeviceValueMask(d) & AuCompDeviceGainMask)) {
+	    fprintf (stderr, "%s: device 0x%lx does not provide current gain\n",
+		     ProgramName, id);
+	    return 1;
+	} else {
+	    p = AuFixedPointRoundDown(AuDeviceGain(d));
+	}
+
+	AuFreeDeviceAttributes (aud, 1, d);
+
+	p += delta;
+	if (p < 0)
+	    p = 0;
+	else if (p > 100)
+	    p = 100;
     }
 
     /* okay, we can now set the gain for the specified device */

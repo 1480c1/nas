@@ -37,11 +37,11 @@ AuStatus       *ret_status;
 
     _AuRemoveFromBucketCache(aud, bucket);
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetResReq(DestroyBucket, bucket, req, aud);
 
     (void) _AuIfRoundTrip(aud, ret_status);
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 }

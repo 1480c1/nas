@@ -64,7 +64,7 @@ AuStatus       *ret_status;
     b.bucket.sample_rate = sample_rate;
     b.bucket.num_samples = num_samples;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetResReq(CreateBucket, bucket, req, aud);
 
     req->length += (SIZEOF(auBucketAttributes) +
@@ -78,7 +78,7 @@ AuStatus       *ret_status;
     if (!_AuIfRoundTrip(aud, ret_status))
 	bucket = AuNone;
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 
     return bucket;

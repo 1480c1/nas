@@ -20,8 +20,8 @@ When the Network Audio System server starts up, it takes over /dev/dsp &
 Note
 that applications that attempt to access these devices themselves will
 fail while it is running.
-It will look for a configuration file of the name AUVoxConfig in the X11
-library config directory, e.g. /usr/X11R6/lib. If it finds one, it will
+It will look for a configuration file of the name nasd.conf in the
+config directory, e.g. /etc/nas/nasd.conf. If it finds one, it will
 then open it and parse the contents, setting up the inputs and outputs as
 required.
 .SH OPTIONS
@@ -59,7 +59,7 @@ Unix domain socket
 /dev/audio
 Audio device
 .SH "SEE ALSO"
-nas(1), auinfo(1), auplay(1), auctl(1) AUVoxConfig(1)
+nas(1), auinfo(1), auplay(1), auctl(1), nasd.conf(1)
 .SH BUGS
 .PP
 If

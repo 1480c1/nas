@@ -72,7 +72,7 @@ extern char *alloca();
 #endif /* defined(__HIGHC__) */
 
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(alloca)
 #define alloca __builtin_alloca
 #endif
 

@@ -1,0 +1,21 @@
+/* Imakefile
+ *
+ * $Id$
+ *
+ * Jon Trulson 9/11/1999
+ *
+ */
+
+#include "NetAudio.tmpl"
+
+INSTALLFLAGS = $(INSTINCFLAGS)
+
+HEADERS = NasConfig.h
+
+all::
+depend::
+
+BuildIncludes($(HEADERS),,)
+
+
+

@@ -51,9 +51,9 @@ AuStatus       *ret_status;
     if (ret_status)
 	*ret_status = AuSuccess;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetResReq(KillClient, resource, req, aud);
     (void) _AuIfRoundTrip(aud, ret_status);
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 }

@@ -28,12 +28,8 @@
  * Copyright (C) Siemens Nixdorf Informationssysteme AG 1993 All rights reserved
  */
 
-#ifdef DEBUG
 #include <stdio.h>
-#define PRMSG(x,a,b)    fprintf(stderr, x,a,b); fflush(stdout)
-#else
-#define PRMSG(x,a,b)
-#endif
+#include "aulog.h"
 
 #define _BSD_SIGNALS
 
@@ -130,7 +126,7 @@ AuUint32       *auServerDeviceListSize,
                     auNumServerRadios;		/* number of server owned
 						 * radios */
 
-    PRMSG("ausgi: AuCreateServerComponents()\n", 0, 0);
+    osLogMsg("ausgi: AuCreateServerComponents()\n");
 
     *auServerMinRate = auMinSampleRate;
     *auServerMaxRate = auMaxSampleRate;
@@ -256,7 +252,8 @@ AuUint32        rate;
     /* change timer according to new sample rate */
     timer_ms = (auMinibufSamples * 1000) / rate;
 
-    PRMSG("ausgi: setSampleRate(%d) setitimer to %ld ms \n", rate, timer_ms);
+    osLogMsg("ausgi: setSampleRate(%d) setitimer to %ld ms \n", rate, 
+	      timer_ms);
 
     ntval.it_interval.tv_sec = 0;
     ntval.it_interval.tv_usec = timer_ms;
@@ -275,7 +272,7 @@ AuUint32        rate;
     /**
      * set queue size according to sampling rate.
      * queue_size = MAX((rate/10), minALqueueSize);
-     * PRMSG ("	ALsetqueuesize() to %ld\n", queue_size, 0);
+     * osLogMsg ("	ALsetqueuesize() to %ld\n", queue_size, 0);
      * ALsetqueuesize (in_conf, queue_size);
      * ALsetqueuesize (out_mono_conf, queue_size);
      * ALsetqueuesize (out_stereo_conf, (2 * queue_size));
@@ -294,7 +291,7 @@ AuUint32        rate;
 static void
 eventPosted()
 {
-    PRMSG("ausgi: eventPosted()\n", 0, 0);
+    osLogMsg("ausgi: eventPosted()\n");
 }
 #endif
 
@@ -302,7 +299,7 @@ static void
 serverReset()
 {
     signal(SIGALRM, SIG_IGN);
-    PRMSG("ausgi: serverReset()\n", 0, 0);
+    osLogMsg("ausgi: serverReset()\n");
 }
 
 #ifdef DEBUG
@@ -311,7 +308,7 @@ errorHandler(errnum, fmt)
 long            errnum;
 const char     *fmt;
 {
-    PRMSG("ausgi: errorHandler()\n", 0, 0);
+    osLogMsg("ausgi: errorHandler()\n");
 }
 #endif
 
@@ -366,7 +363,8 @@ AuFixedPoint    gain;
 	/* (gain - 50) * (205 / 50) + 50 */
 	outputGain = ((0x41999 * (g - 50)) >> 16) + 50;
 
-    PRMSG("ausgi: setPhysicalOutputGain(%d) -> %d\n", g, outputGain);
+    osLogMsg("ausgi: setPhysicalOutputGain(%d) -> %d\n", g, 
+	      outputGain);
 
     params[0] = AL_LEFT_SPEAKER_GAIN;
     params[1] = (AuInt32) outputGain;
@@ -411,7 +409,8 @@ AuUint8         lineMode;
     AuInt16         inputAttenuation;
     AuInt32         params[4];
 
-    PRMSG("ausgi: setPhysicalInputGainAndLineMode(%d,%d)\n", g, lineMode);
+    osLogMsg("ausgi: setPhysicalInputGainAndLineMode(%d,%d)\n", g, 
+	      lineMode);
 
     if (g < 50)
 	/* gain  * (-205 / 50) + 255 */
@@ -420,7 +419,7 @@ AuUint8         lineMode;
 	/* -gain + 100 */
 	inputAttenuation = 100 - g;
 
-    PRMSG("	mapped to %d\n", inputAttenuation, 0);
+    osLogMsg("	mapped to %d\n", inputAttenuation);
 
     params[0] = AL_LEFT_INPUT_ATTEN;
     params[1] = (AuInt32) inputAttenuation;
@@ -434,7 +433,7 @@ enableProcessFlow()
 {
     AuUint8        *p;
 
-    PRMSG("ausgi: AuEnableProcessFlow()\n", 0, 0);
+    osLogMsg("ausgi: AuEnableProcessFlow()\n");
 
     processFlowEnabled = AuTrue;
 
@@ -446,7 +445,7 @@ disableProcessFlow()
 {
     signal(SIGALRM, SIG_IGN);
 
-    PRMSG("ausgi: AuDisableProcessFlow()\n", 0, 0);
+    osLogMsg("ausgi: AuDisableProcessFlow()\n");
 
     processFlowEnabled = AuFalse;
 }
@@ -454,7 +453,7 @@ disableProcessFlow()
 static void
 writePhysicalOutputsMono()
 {
-    PRMSG("wm=%ld", ALgetfilled(out_mono_port), 0);
+    osLogMsg("wm=%ld", ALgetfilled(out_mono_port));
 
     ALwritesamps(out_mono_port, auOutputMono, *monoSamples);
 }
@@ -462,7 +461,7 @@ writePhysicalOutputsMono()
 static void
 writePhysicalOutputsStereo()
 {
-    PRMSG("ws=%ld", ALgetfilled(out_stereo_port), 0);
+    osLogMsg("ws=%ld", ALgetfilled(out_stereo_port));
 
     ALwritesamps(out_stereo_port, auOutputStereo, 2 * *stereoSamples);
 }
@@ -470,7 +469,8 @@ writePhysicalOutputsStereo()
 static void
 writePhysicalOutputsBoth()
 {
-    PRMSG("wb=%ld=%ld", ALgetfilled(out_mono_port), ALgetfilled(out_stereo_port));
+    osLogMsg("wb=%ld=%ld", ALgetfilled(out_mono_port), 
+	      ALgetfilled(out_stereo_port));
 
     ALwritesamps(out_stereo_port, auOutputStereo, 2 * *stereoSamples);
     ALwritesamps(out_mono_port, auOutputMono, *monoSamples);
@@ -481,7 +481,7 @@ readPhysicalInputs()
 {
     int             n;
 
-    PRMSG("r %ld", ALgetfillable(in_port), 0);
+    osLogMsg("r %ld", ALgetfillable(in_port));
 
     ALreadsamps(in_port, auInputMono, auMinibufSamples);
 }
@@ -568,7 +568,7 @@ AuInitPhysicalDevices()
 	AL_INPUT_SOURCE, AL_INPUT_MIC
     };
 
-    PRMSG("ausgi: AuInitPhysicalDevices()\n", 0, 0);
+    osLogMsg("ausgi: AuInitPhysicalDevices()\n", 0, 0);
 
     if (physicalBuffers)
 	aufree(physicalBuffers);
@@ -606,7 +606,7 @@ AuInitPhysicalDevices()
 	 * big for slower sampling rates :-(
 	 */
 	queue_size = MAX((auMaxSampleRate / 10), minALqueueSize);
-	PRMSG("ausgi: ALsetqueuesize to %ld\n", queue_size, 0);
+	osLogMsg("ausgi: ALsetqueuesize to %ld\n", queue_size);
 
 	in_conf = ALnewconfig();
 	ALsetwidth(in_conf, AL_SAMPLE_16);
@@ -640,7 +640,7 @@ AuInitPhysicalDevices()
 	 * sample rate.
 	 */
 	timer_ms = (auMinibufSamples * 1000) / AL_RATE_8000;
-	PRMSG("ausgi: setitimer to %ld ms\n", timer_ms, 0);
+	osLogMsg("ausgi: setitimer to %ld ms\n", timer_ms);
 	ntval.it_interval.tv_sec = 0;
 	ntval.it_interval.tv_usec = timer_ms;
 	ntval.it_value.tv_sec = 0;

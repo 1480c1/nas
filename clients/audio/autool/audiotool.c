@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)audiotool.c,v 1.27 1994/11/01 23:16:14 greg Exp $
  */
 
@@ -503,7 +504,7 @@ char          **argv;
 	    argv++;
 	    argc--;
 	}
-	else if (!strcmp("-v", *argv))
+	else if (!strcmp("-v", *argv) || !strcmp("-volume", *argv))
 	{
 	    if (argv[1])
 		globals->volume = atoi(argv[1]);

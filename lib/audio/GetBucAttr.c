@@ -41,7 +41,7 @@ AuStatus       *ret_status;
     if (attr = _AuLookupBucketInCache(aud, bucket))
 	return attr;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetResReq(GetBucketAttributes, bucket, req, aud);
 
     (void) _AuReply(aud, (auReply *) & rep, 0, auFalse, ret_status);
@@ -51,7 +51,7 @@ AuStatus       *ret_status;
     if (!(attr = (AuBucketAttributes *)
 	  Aucalloc(1, sizeof(AuBucketAttributes))))
     {
-	_AuUnlockServer(aud);
+	_AuUnlockServer();
 	_AuSyncHandle(aud);
 	return NULL;
     }
@@ -65,7 +65,7 @@ AuStatus       *ret_status;
 	      Aumalloc(AuBucketDescription(attr)->len + 1)))
 	{
 	    AuFreeBucketAttributes(aud, 1, attr);
-	    _AuUnlockServer(aud);
+	    _AuUnlockServer();
 	    _AuSyncHandle(aud);
 	    return NULL;
 	}
@@ -76,7 +76,7 @@ AuStatus       *ret_status;
 	AuBucketDescription(attr)->data[AuBucketDescription(attr)->len] = 0;
     }
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 
     _AuAddToBucketCache(aud, attr);
