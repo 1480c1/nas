@@ -131,10 +131,12 @@ typedef struct _AuSQEvent {
 #endif
 
 #ifndef AU_NOT_STDC_ENV
-#include <stdlib.h>
-#include <string.h>
+# include <stdlib.h>
+# include <string.h>
 #else
-extern char *malloc(), *realloc(), *calloc();
+# ifndef hpux
+   extern char *malloc(), *realloc(), *calloc();
+# endif
 void exit();
 #ifdef SYSV
 #include <string.h>
@@ -229,8 +231,10 @@ extern int errno;			/* Internal system error number. */
  * "req" is the name of the request pointer.
  *
  */
-
-#if __STDC__ && !defined(UNIXCPP)
+#ifdef UNIXCPP
+#error "bummer"
+#endif
+#if defined(__STDC__) && !defined(UNIXCPP)
 #define _AuGetReq(name, req, aud) \
         WORD64ALIGN\
 	if ((aud->bufptr + SIZEOF(au##name##Req)) > aud->bufmax)\
@@ -256,7 +260,7 @@ extern int errno;			/* Internal system error number. */
 /* _AuGetReqExtra is the same as _AuGetReq, but allocates "n" additional
    bytes after the request. "n" must be a multiple of 4!  */
 
-#if __STDC__ && !defined(UNIXCPP)
+#if  defined(__STDC__) && !defined(UNIXCPP)
 #define _AuGetReqExtra(name, n, req, aud) \
         WORD64ALIGN\
 	if ((aud->bufptr + SIZEOF(au##name##Req) + n) > aud->bufmax)\
@@ -285,7 +289,7 @@ extern int errno;			/* Internal system error number. */
  * "rid" is the name of the resource. 
  */
 
-#if __STDC__ && !defined(UNIXCPP)
+#if  defined(__STDC__) && !defined(UNIXCPP)
 #define _AuGetResReq(name, rid, req, aud) \
         WORD64ALIGN\
 	if ((aud->bufptr + SIZEOF(auResourceReq)) > aud->bufmax)\
@@ -313,7 +317,7 @@ extern int errno;			/* Internal system error number. */
  * _AuGetEmptyReq is for those requests that have no arguments
  * at all. 
  */
-#if __STDC__ && !defined(UNIXCPP)
+#if  defined(__STDC__) && !defined(UNIXCPP)
 #define _AuGetEmptyReq(name, req, aud) \
         WORD64ALIGN\
 	if ((aud->bufptr + SIZEOF(auReq)) > aud->bufmax)\

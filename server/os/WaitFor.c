@@ -71,6 +71,11 @@ SOFTWARE.
 #include <assert.h>
 #endif /* _MINIX */
 
+/* JET - an attempt to get us out of a race */
+#ifdef hpux
+#define WATCHDOG 60
+#endif
+
 #include "osdep.h"
 #include "dixstruct.h"
 #include "opaque.h"
@@ -171,7 +176,7 @@ WaitForSomething(pClientsReady)
 {
     int i;
     struct timeval waittime, *wt;
-#ifdef STARTSERVER
+#if defined(STARTSERVER) || defined(hpux)
     struct timeval wtim;
 #endif /* STARTSERVER */
     long timeout;
@@ -234,6 +239,11 @@ WaitForSomething(pClientsReady)
 			(fd_set *)LastWriteMask, (fd_set *) NULL, wt);
 #else
 #ifdef hpux
+	/* JET - 12/30/99 - let's try to time out once and awhile */
+
+	    wtim.tv_sec = WATCHDOG;
+       	    wtim.tv_usec = 0;
+	    wt = &wtim;
 
 	    i = select (MAXSOCKS, (int *)LastSelectMask,
 			(int *) NULL, (int *) NULL, wt);

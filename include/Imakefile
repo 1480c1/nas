@@ -29,5 +29,11 @@
 
 SUBDIRS = audio
 
+HEADERS = NasConfig.h au.h aulog.h
+
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
+
+clean::
+	rm -f $(HEADERS)
+

@@ -218,7 +218,7 @@ FILE           *fp;
     char            n;
 
     if ((status = fread(c, sizeof(AiffChunk), 1, fp)))
-	if (LITTLE_ENDIAN)
+	if (NAS_LITTLE_ENDIAN)
 	    swapl(&c->ckSize, n);
 
     return status;
@@ -262,9 +262,9 @@ _AiffConst char *name;
 	{
 	    char            rate[AIFF_SizeofExtended];
 
-	    ai->channels = FileReadS(ai->fp, LITTLE_ENDIAN);
-	    ai->numSamples = FileReadL(ai->fp, LITTLE_ENDIAN);
-	    ai->bitsPerSample = FileReadS(ai->fp, LITTLE_ENDIAN);
+	    ai->channels = FileReadS(ai->fp, NAS_LITTLE_ENDIAN);
+	    ai->numSamples = FileReadL(ai->fp, NAS_LITTLE_ENDIAN);
+	    ai->bitsPerSample = FileReadS(ai->fp, NAS_LITTLE_ENDIAN);
 
 	    if (!fread(rate, AIFF_SizeofExtended, 1, ai->fp))
 		Err();
@@ -277,8 +277,8 @@ _AiffConst char *name;
 	    AuInt32            blockSize,
 	                    offset;
 
-	    offset = FileReadL(ai->fp, LITTLE_ENDIAN);
-	    blockSize = FileReadL(ai->fp, LITTLE_ENDIAN);
+	    offset = FileReadL(ai->fp, NAS_LITTLE_ENDIAN);
+	    blockSize = FileReadL(ai->fp, NAS_LITTLE_ENDIAN);
 	    ai->dataOffset = ftell(ai->fp) - sizeof(long) * 3 + offset;
 	    ai->dataSize = ck.ckSize - 8;
 
@@ -290,7 +290,7 @@ _AiffConst char *name;
 	{
 	    unsigned short  numComments;
 
-	    numComments = FileReadS(ai->fp, LITTLE_ENDIAN);
+	    numComments = FileReadS(ai->fp, NAS_LITTLE_ENDIAN);
 
 	    if (numComments)
 	    {
@@ -298,9 +298,9 @@ _AiffConst char *name;
 		AIFF_MARKER_ID  marker;
 		unsigned short  count;
 
-		timeStamp = FileReadL(ai->fp, LITTLE_ENDIAN);
-		marker = FileReadS(ai->fp, LITTLE_ENDIAN);
-		count = FileReadS(ai->fp, LITTLE_ENDIAN);
+		timeStamp = FileReadL(ai->fp, NAS_LITTLE_ENDIAN);
+		marker = FileReadS(ai->fp, NAS_LITTLE_ENDIAN);
+		count = FileReadS(ai->fp, NAS_LITTLE_ENDIAN);
 
 		if (count)
 		{
@@ -353,7 +353,7 @@ AiffInfo       *ai;
 
     ai->sizeOffset = ftell(ai->fp);
 
-    if (!FileWriteL(0, ai->fp, LITTLE_ENDIAN) ||
+    if (!FileWriteL(0, ai->fp, NAS_LITTLE_ENDIAN) ||
 	!fwrite(AIFF_AiffID, sizeof(AIFF_ID), 1, ai->fp))
 	Err();
 
@@ -367,15 +367,15 @@ AiffInfo       *ai;
 	size = AIFF_SizeofCommentChunk + PAD2(n);
 
 	if (!fwrite(AIFF_CommentID, sizeof(AIFF_ID), 1, ai->fp) ||
-	    !FileWriteL(size, ai->fp, LITTLE_ENDIAN) ||
+	    !FileWriteL(size, ai->fp, NAS_LITTLE_ENDIAN) ||
 	/* one comment */
-	    !FileWriteS(1, ai->fp, LITTLE_ENDIAN) ||
+	    !FileWriteS(1, ai->fp, NAS_LITTLE_ENDIAN) ||
 	/* XXX: maybe we should use the real time */
-	    !FileWriteL(0, ai->fp, LITTLE_ENDIAN) ||
+	    !FileWriteL(0, ai->fp, NAS_LITTLE_ENDIAN) ||
 	/* no marker */
-	    !FileWriteS(0, ai->fp, LITTLE_ENDIAN) ||
+	    !FileWriteS(0, ai->fp, NAS_LITTLE_ENDIAN) ||
 	/* comment length */
-	    !FileWriteS(n, ai->fp, LITTLE_ENDIAN) ||
+	    !FileWriteS(n, ai->fp, NAS_LITTLE_ENDIAN) ||
 	    !fwrite(ai->comment, n, 1, ai->fp))
 	    Err();
 
@@ -388,10 +388,10 @@ AiffInfo       *ai;
     ConvertToIeeeExtended((double) ai->sampleRate, rate);
 
     if (!fwrite(AIFF_CommonID, sizeof(AIFF_ID), 1, ai->fp) ||
-	!FileWriteL(AIFF_SizeofCommonChunk, ai->fp, LITTLE_ENDIAN) ||
-	!FileWriteS(ai->channels, ai->fp, LITTLE_ENDIAN) ||
-	!FileWriteL(ai->numSamples, ai->fp, LITTLE_ENDIAN) ||
-	!FileWriteS(ai->bitsPerSample, ai->fp, LITTLE_ENDIAN) ||
+	!FileWriteL(AIFF_SizeofCommonChunk, ai->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteS(ai->channels, ai->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteL(ai->numSamples, ai->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteS(ai->bitsPerSample, ai->fp, NAS_LITTLE_ENDIAN) ||
 	!fwrite(rate, AIFF_SizeofExtended, 1, ai->fp))
 	Err();
 
@@ -402,11 +402,11 @@ AiffInfo       *ai;
 
     ai->dataOffset = ftell(ai->fp);
 
-    if (!FileWriteL(0, ai->fp, LITTLE_ENDIAN) ||
+    if (!FileWriteL(0, ai->fp, NAS_LITTLE_ENDIAN) ||
     /* offset */
-	!FileWriteL(0, ai->fp, LITTLE_ENDIAN) ||
+	!FileWriteL(0, ai->fp, NAS_LITTLE_ENDIAN) ||
     /* block size */
-	!FileWriteL(0, ai->fp, LITTLE_ENDIAN))
+	!FileWriteL(0, ai->fp, NAS_LITTLE_ENDIAN))
 	Err();
 
     ai->fileSize += sizeof(AiffChunk) + AIFF_SizeofSoundDataChunk;
@@ -430,9 +430,9 @@ AiffInfo       *ai;
 
 	    fseek(ai->fp, ai->sizeOffset, 0);
 	    FileWriteL(ai->fileSize + PAD2(ai->dataSize), ai->fp,
-		       LITTLE_ENDIAN);
+		       NAS_LITTLE_ENDIAN);
 	    fseek(ai->fp, ai->dataOffset, 0);
-	    FileWriteL(ai->dataSize, ai->fp, LITTLE_ENDIAN);
+	    FileWriteL(ai->dataSize, ai->fp, NAS_LITTLE_ENDIAN);
 	}
 
 	status = fclose(ai->fp);

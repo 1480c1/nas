@@ -69,12 +69,12 @@ AuStatus       *ret_status;
     AuBucketAttributes *ba;
 
     if (!(flow = AuGetScratchFlow(aud, ret_status)))
-	return NULL;
+       return 0;
 
     if (!(ba = AuGetBucketAttributes(aud, bucket, ret_status)))
     {
 	AuReleaseScratchFlow(aud, flow, ret_status);
-	return NULL;
+       return 0;
     }
 
     AuMakeElementImportClient(&elements[0], AuBucketSampleRate(ba),
@@ -103,12 +103,12 @@ AuStatus       *ret_status;
     AuBucketAttributes *ba;
 
     if (!(flow = AuGetScratchFlow(aud, ret_status)))
-	return NULL;
+       return 0;
 
     if (!(ba = AuGetBucketAttributes(aud, bucket, ret_status)))
     {
 	AuReleaseScratchFlow(aud, flow, ret_status);
-	return NULL;
+       return 0;
     }
 
     AuMakeElementImportBucket(&elements[0], AuBucketSampleRate(ba), bucket,
