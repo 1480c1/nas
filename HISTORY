@@ -1,4 +1,131 @@
+$Id$
 $NCDId: @(#)HISTORY,v 1.27 1996/09/05 18:46:47 greg Exp $
+
+Version 1.4 2/27/2000:
+
+	Release of 1.4
+
+	Removes USE_BSD* dependancies on Linux builds.  
+
+	- 1.3e 02/12/2000:
+
+	This is a pre-release 1.4 candidate.
+
+	corrected a problem in the voxware server where when
+		ReleaseDevice was enabled, the device would be held
+		open when nasd was first started until the first
+		connection was made.
+
+	added config/NetAudio.def to set various configurables like
+		NasConfigSearchPath.
+
+	changed documentation regarding the new location of the web 
+		site (http://radscan.com/nas.html)
+
+	- 1.3d 01/05/2000:
+
+	corrected some build problems on Sparc Solaris 2.6 with native 
+		compiler/X11 env
+
+	corrected build problems on native Unixware compiler and X11R5
+		Note, to get this to work, you need 3 corrected
+		/usr/X/lib/config/ files from me...
+
+	integrated config handling in all servers, based on a 
+		lex/yacc parser from Stephen Hocking that was in the 
+		voxware server.
+
+		config file is /etc/nas/nasd.conf
+			an example config file (/etc/nas/nasd.conf.eg) 
+				is installed.
+		parser errors are a bit more informative ;-)
+		no more parser in voxware server... moved into dia/
+			for general purpose use.
+		each server now has a config.c and config.h file that 
+			provides the ddaSetConfig() functionality required
+			of each server by dia/.  In the SGI case, 
+			it's just a stub. ddaSetConfig() ignores options
+			it doesn't understand (required behavior).
+		server cmdline options '-v' (verbose) and '-d <num>'
+			(debug messages) added.  These override 
+			nasd.conf settings.
+		hooks added to all servers in config.c - ddaProcessArg() 
+			and ddaUseMsg() for integrated arg handling.
+
+
+	voxware server:
+		release device functionality now controlled by
+			nasd.conf
+		mixer init policy now controlled by nasd.conf
+
+	sun server:
+		added integrated sun (ausuni) module (now built by 
+			default) into the distribution.  
+		release device functionality now controlled by
+			nasd.conf
+
+	hpux server:
+		added device release (ReleaseDevice) capability to hpux
+			server.  All servers except for sgi now
+			support this functionality.
+		fixed sample rate change problem in hpux server
+		separated hardware init code for ReleaseDevice 
+			functionality
+		added new option in nasd.conf to select either the
+			EXT (external - headphones/speakers) or INT
+			(internal speaker) output device by default
+
+	renamed generated server binary from au* to nasd for all
+			servers
+			man pages updated (auserver.man and 
+				AUVoxConfig.man	respectively).
+	- 1.3c 10/24/99:
+
+	Added patches from Mark Davies for NetBSD.  
+
+	changed BIG_ENDIAN ->NAS_BIG_ENDIAN and LITTLE_ENDIAN to
+		NAS_LITTLE_ENDIAN per Mark's suggestion globally
+
+	Added global NasConfig struct for configurables global to all 
+		servers.
+
+	More prep work for unified arg/config handling
+
+	Some bug fixed related to the 'mondo' patch.
+
+	Replacement of PRMSG() macros with a varargs logging function:
+		osLogMsg(...).  If your working on a server and want to
+		use these, #include "aulog.h" (in 1.3c+) and go for it.
+
+	I've added a NasConfig.h file to config/ that defines (or will)
+		a few things (like whether you want to use syslog,
+		etc).  Initially you will need to tweak this manually 
+		for your site... 
+
+	Changes made to the way various include files are generated
+		during a build... Basically any module that contains
+		header files needed by other modules have the
+		appropriate header files exported into TOPLEV/include 
+		during the includes phase of the build using the imake
+		BuildIncludes() macros.  
+	
+	- 1.3b 9/4/1999:
+
+	Addition of Steve McIntyre's Mondo patch.
+
+	- 1.3a 8/1/1999:
+
+	First test version incorporating many patches from around
+	the planet, based on original 1.2p5 sources.
+
+
+
+#
+#
+############################################################################
+
+# the following is included for historical reasons, and concerns
+#  changes to 1.2p5 and earlier versions. 
 
 ** 1.2 - PATCH 05 **
 

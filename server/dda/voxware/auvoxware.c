@@ -802,7 +802,7 @@ intervalProc()
 #ifndef sco
 	signal(SIGALRM, SIG_IGN);
 
-#if (defined(linux) && defined(__USE_BSD_SIGNAL))
+#if defined(linux) 
        /* this looks funny and stupid, but BSD not only provide
         * reliable signals but also block this signal while executing
         * this handler
@@ -827,7 +827,7 @@ intervalProc()
 #endif /* sco */
 		AuProcessData();
 #ifndef sco
-#if (defined(linux) && defined(__USE_BSD_SIGNAL))
+#if defined(linux)
                 /* block the signal again */
                 {
                         sigset_t set;
