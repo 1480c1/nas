@@ -36,7 +36,7 @@
 
 /* JET  - 7/20/2002
    Due to issues with cygwin's inability to import an array of structs
-   fro a DLL, we will put the declaration of SoundFileInfo[] here (from
+   for a DLL, we will put the declaration of SoundFileInfo[] here (from
    sound.h) and provide a function that will return the appropriate
    struct based on an index supplied.
    Since apps shouldn't have been accessing this struct directly anyway,
@@ -125,6 +125,21 @@ char *SoundFileFormatToSuffixes(int _i)
   return(_SoundFileInfo[_i].suffixes);
 }
 
+SoundFileInfoProc SoundFileGetProc(int format, int proc)
+{
+  switch (proc)
+    {
+    case SoundFileInfoProcTo:
+      return(_SoundFileInfo[format].toSound);
+      break;
+    case SoundFileInfoProcFrom:
+      return(_SoundFileInfo[format].fromSound);
+      break;
+    default:
+      return(NULL);
+    }
+}
+   
 
 static int
 SndToSoundFormat(fmt)

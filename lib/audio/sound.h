@@ -79,8 +79,10 @@ typedef struct
     void           *formatInfo;
 }               SoundRec, *Sound;
 
-char *SoundFileFormatString(Sound s);
-int   SoundValidDataFormat(int _f, int _d);
+typedef int (*SoundFileInfoProc)(Sound);
+
+extern char *SoundFileFormatString(Sound s);
+extern int   SoundValidDataFormat(int _f, int _d);
 
 #define SoundFileFormat(_s)	((_s)->fileFormat)
 #define SoundDataFormat(_s) 	((_s)->dataFormat)
@@ -244,6 +246,11 @@ typedef struct
                     (*toSound) (),
                     (*fromSound) ();
 }               SoundInfo;
+
+#define SoundFileInfoProcTo 0
+#define SoundFileInfoProcFrom 1
+
+extern SoundFileInfoProc SoundFileGetProc(int format, int proc);
 
 extern _SoundConst int SoundNumFileFormats;
 

@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)audiolib.h,v 1.67 1995/12/28 19:46:49 greg Exp $
  * 
  * <audio/audiolib.h>
@@ -34,8 +35,11 @@
  *				    VERSION				     *
  *****************************************************************************/
 
-#define AudioLibraryVersion	2
+#define AudioLibraryVersion             2
 
+#define AudioLibraryVersionMajor        AudioLibraryVersion
+#define AudioLibraryVersionMinor        3
+#define AudioLibraryVersionTeeny        0
 
 
 /*****************************************************************************
