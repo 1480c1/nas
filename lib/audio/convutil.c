@@ -107,7 +107,7 @@ AuPointer       data;
 	    convert(char, x << 8);
 	    break;
 	case AuFormatLinearSigned16MSB:
-	    if (LITTLE_ENDIAN)
+	    if (NAS_LITTLE_ENDIAN)
 		convert(short, ((((unsigned short) x) >> 8) | (x << 8)));
 #if 0
 	    else
@@ -115,14 +115,14 @@ AuPointer       data;
 #endif
 	    break;
 	case AuFormatLinearUnsigned16MSB:
-	    if (LITTLE_ENDIAN)
+	    if (NAS_LITTLE_ENDIAN)
 		convert(short,
 			(((((unsigned short) x) >> 8) | (x << 8)) ^ 0x8000));
 	    else
 		convert(short, x ^ 0x8000);
 	    break;
 	case AuFormatLinearSigned16LSB:
-	    if (BIG_ENDIAN)
+	    if (NAS_BIG_ENDIAN)
 		convert(short, ((((unsigned short) x) >> 8) | (x << 8)));
 #if 0
 	    else
@@ -130,7 +130,7 @@ AuPointer       data;
 #endif
 	    break;
 	case AuFormatLinearUnsigned16LSB:
-	    if (BIG_ENDIAN)
+	    if (NAS_BIG_ENDIAN)
 		convert(short,
 			(((((unsigned short) x) >> 8) | (x << 8)) ^ 0x8000));
 	    else
@@ -266,7 +266,7 @@ AuPointer          data;
 	    convert(char, x >> 8);
 	    break;
 	case AuFormatLinearSigned16MSB:
-	    if (LITTLE_ENDIAN)
+	    if (NAS_LITTLE_ENDIAN)
 		convert(short, ((((unsigned short) x) >> 8) | (x << 8)));
 #if 0
 	    else
@@ -276,7 +276,7 @@ AuPointer          data;
 #endif
 	    break;
 	case AuFormatLinearUnsigned16MSB:
-	    if (LITTLE_ENDIAN)
+	    if (NAS_LITTLE_ENDIAN)
 	    {
 		convert(short,
 			(((((unsigned short) x) >> 8) | (x << 8)) ^ 0x8000));
@@ -287,7 +287,7 @@ AuPointer          data;
 	    }
 	    break;
 	case AuFormatLinearSigned16LSB:
-	    if (BIG_ENDIAN)
+	    if (NAS_BIG_ENDIAN)
 		convert(short, ((((unsigned short) x) >> 8) | (x << 8)));
 #if 0
 	    else
@@ -297,7 +297,7 @@ AuPointer          data;
 #endif
 	    break;
 	case AuFormatLinearUnsigned16LSB:
-	    if (BIG_ENDIAN)
+	    if (NAS_BIG_ENDIAN)
 	    {
 		convert(short,
 			(((((unsigned short) x) >> 8) | (x << 8)) ^ 0x8000));

@@ -28,10 +28,21 @@
  */
 
 #ifndef WIN32
-#include <values.h>
+# ifdef __NetBSD__
+#  include <limits.h>
+#  define MAXSHORT SHRT_MAX
+#  define MINSHORT SHRT_MIN
+# else
+#  include <values.h>
+# endif
 #else /* WIN32 */
-#define MAXSHORT 0x7fff
+# define MAXSHORT 0x7fff
 #endif /* WIN32 */
+
+#ifndef MINSHORT
+# define MINSHORT -MAXSHORT
+#endif
+
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include "GraphP.h"
@@ -323,7 +334,7 @@ GraphWidget     w;
 		for (x = 0; x < (int) w->core.width; x++)
 		{
 		    minY = MAXSHORT;
-		    maxY = -MAXSHORT;
+		    maxY = MINSHORT;
 
 		    for (; (int) k == x && p < end; k += w->graph.hscale)
 		    {
@@ -391,7 +402,7 @@ recalc(w)
 GraphWidget     w;
 {
     w->graph.vscale = (float) w->core.height / w->graph.numTracks /
-	(MAXSHORT - -MAXSHORT + 1);
+	(MAXSHORT - MINSHORT + 1);
 
     w->graph.hscale = (float) ((int) w->core.width - 1) /
 	(w->graph.end - w->graph.start);

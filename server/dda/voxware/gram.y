@@ -2,8 +2,18 @@
 
 %{
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
+
 #include "config.h"
+#include "aulog.h"
+
+#  define IDENTMSG (debug_msg_indentation += 2)
+#  define UNIDENTMSG (debug_msg_indentation -= 2)
+
+static int doDebug = 0;
+static int debug_msg_indentation = 0;
 
 extern SndStat sndStatOut, sndStatIn, *confStat;
 
@@ -81,7 +91,7 @@ stmt		: error
 		| WORDSIZE number
 			{
 			   if ($2 != 8 && $2 != 16) {
-			     fprintf(stderr, "*** Wordsize not 8 or 16, setting to 8\n");
+			     osLogMsg("*** Wordsize (%d) not 8 or 16, setting to 8\n", $2);
 			     confStat->wordSize = 8;
 			   }
 			   else

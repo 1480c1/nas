@@ -19,10 +19,14 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)NetAudio.tmpl,v 1.28 1996/09/04 22:30:36 greg Exp $
  */
 
-#define HasSharedLibraries	YES
+/* JET - this should be properly defined by your imake config system */
+
+#define DoSharedLib             HasSharedLibraries
+#define DoNormalLib             YES
 
 #ifndef WIN32
 #define Date @date
@@ -114,7 +118,7 @@ EXTRA_LOAD_FLAGS=/link /nodefaultlib:libc /*/force:multiple /debug:full /debugty
  * Shared library support is unfortunatly different on every machine
  */
 #ifndef SharedAudioRev
-#define SharedAudioRev 2.0
+#define SharedAudioRev 1.3
 #endif
     SOAUDIOREV = SharedAudioRev
 /* 
@@ -159,10 +163,11 @@ EXTRA_LOAD_FLAGS=/link /nodefaultlib:libc /*/force:multiple /debug:full /debugty
 #else /* WIN32 */
      AUDIOLIBS = $(AULIB)
 #endif /* WIN32 */
-  BUILDINCROOT = $(TOP)/usr.include
+  BUILDINCROOT = $(TOP)/include
    BUILDINCDIR = $(BUILDINCROOT)
+   BUILDINCTOP = ..
 EXTRA_INCLUDES = -I$(BUILDINCROOT)
-    INCLUDESRC = $(TOP)/usr.include
+    INCLUDESRC = $(TOP)/include
         INCDIR = $(INCROOT)/audio
     WIDGET_DIR = $(TOP)/clients/audio/widgets
     WIDGET_LIB = $(WIDGET_DIR)/Lib(widgets)
