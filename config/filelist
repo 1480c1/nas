@@ -382,6 +382,7 @@
 ./server/dda/sgi
 ./server/dda/sun/Imakefile
 ./server/dda/sun/audbri.c
+./server/dda/sun/ausuni.c
 ./server/dda/sun/ausun.c
 ./server/dda/sun/ausun.h
 ./server/dda/sun

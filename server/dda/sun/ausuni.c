@@ -55,10 +55,10 @@ from the copyright holder.
 
 #define _AUSUN_C_
 
-#include "dixstruct.h"				/* for RESTYPE */
-#include "os.h"					/* for xalloc/xfree and NULL */
 #include <stdio.h>				/* for sprintf */
 #include <stdlib.h>				/* for getenv */
+#include "dixstruct.h"				/* for RESTYPE */
+#include "os.h"					/* for xalloc/xfree and NULL */
 #include <fcntl.h>
 #include <stropts.h>
 #include <string.h>				/* for strcmp */

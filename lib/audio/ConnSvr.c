@@ -58,10 +58,10 @@
 #include <sys/param.h>
 #endif /* __FreeBSD__ */
 #include <ctype.h>
+#include <X11/Xauth.h>			/* to get at the .Xauthority */
 #include <audio/Alibint.h>
 #include <audio/Aos.h>
 #include "Alibnet.h"
-#include <X11/Xauth.h>			/* to get at the .Xauthority */
 #include <stdio.h>
 #ifdef DNETCONN
 #include <netdnet/dn.h>
