@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)Alibint.c,v 1.28 1995/12/28 19:42:47 greg Exp $
  */
 
@@ -518,34 +519,37 @@ _AuRead (aud, data, size)
 
 	if ((aud->flags & AuServerFlagsIOError) || size == 0) return;
 	errno = 0;
+
 	while ((bytes_read = ReadFromServer(aud->fd, data, (int)size))
-		!= size) {
-
-	    	if (bytes_read > 0) {
-		    size -= bytes_read;
-		    data += bytes_read;
-		    }
-		else if (ETEST(errno)) {
-		    _AuWaitForReadable(aud);
-		    errno = 0;
-		}
+	       != size) 
+	  {
+     
+	    if (bytes_read > 0) {
+	      size -= bytes_read;
+	      data += bytes_read;
+	    }
+	    else if (ETEST(errno)) {
+	      _AuWaitForReadable(aud);
+	      errno = 0;
+	    }
 #ifdef SUNSYSV
-		else if (errno == 0) {
-		    _AuWaitForReadable(aud);
-		}
+	    else if (errno == 0) {
+	      _AuWaitForReadable(aud);
+	    }
 #endif
-		else if (bytes_read == 0) {
-		    /* Read failed because of end of file! */
-		    errno = EPIPE;
-		    _AuIOError(aud);
-		    }
+	    else if (bytes_read == 0) {
+	      /* Read failed because of end of file! */
+	      errno = EPIPE;
+	      _AuIOError(aud);
+	    }
+	    
+	    else  /* bytes_read is less than 0; presumably -1 */ {
+	      /* If it's a system call interrupt, it's not an error. */
+	      if (errno != EINTR)
+		_AuIOError(aud);
+	    }
 
-		else  /* bytes_read is less than 0; presumably -1 */ {
-		    /* If it's a system call interrupt, it's not an error. */
-		    if (errno != EINTR)
-		    	_AuIOError(aud);
-		    }
-	    	 }
+	  }
 }
 
 #ifdef WORD64
@@ -702,11 +706,19 @@ _AuReadPad (aud, data, size)
 		size -= bytes_read;
 	    	if ((iov[0].iov_len -= bytes_read) < 0) {
 		    iov[1].iov_len += iov[0].iov_len;
+#if defined(hpux)
+		    (caddr_t)iov[1].iov_base -= iov[0].iov_len;
+#else
 		    iov[1].iov_base -= iov[0].iov_len;
+#endif
 		    iov[0].iov_len = 0;
 		    }
 	    	else
+#if defined(hpux)
+	    	    (caddr_t)iov[0].iov_base += bytes_read;
+#else
 	    	    iov[0].iov_base += bytes_read;
+#endif
 	    	}
 	    else if (ETEST(errno)) {
 		_AuWaitForReadable(aud);
@@ -1324,7 +1336,7 @@ register auEvent *event;			/* wire protocol event */
 static char *_SysErrorMsg (n)
     int n;
 {
-#if !defined(__FreeBSD__) && !defined(__linux__)
+#if !defined(__FreeBSD__) && !defined(__linux__) && !defined(__NetBSD__)
     extern char *sys_errlist[];
 #endif
     extern int sys_nerr;
@@ -1901,7 +1913,8 @@ int iovcnt;
 
 #endif /* SYSV && SYSV386 && !STREAMSCONN */
 
-#ifdef STREAMSCONN
+#if defined(STREAMSCONN) 
+
 #define HAS_FAKE_IOV
 /*
  * Copyright 1988, 1989 AT&T, Inc.
@@ -1941,8 +1954,7 @@ int iovcnt;
 	END USER STAMP AREA
 */
 
-
-extern char _AusTypeofStream[];
+extern char _AusTypeOfStream[];
 extern Austream _AusStream[];
 
 #define MAX_WORKAREA 4096
