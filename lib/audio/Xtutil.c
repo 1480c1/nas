@@ -48,10 +48,7 @@ typedef struct
 
 /* ARGSUSED */
 void
-AuXtHandleAudioEvents(closure, pfd, pinputid)
-XtPointer       closure;
-int            *pfd;
-XtInputId      *pinputid;
+AuXtHandleAudioEvents(XtPointer closure, int *pfd, XtInputId *pinputid)
 {
     AuServer       *aud = (AuServer *) closure;
 
@@ -62,8 +59,7 @@ XtInputId      *pinputid;
 }
 
 static Boolean
-_au_xt_syncWorkProc(data)
-XtPointer       data;
+_au_xt_syncWorkProc(XtPointer data)
 {
     PrivData       *priv = (PrivData *) data;
 
@@ -76,8 +72,7 @@ XtPointer       data;
 }
 
 static Boolean
-_au_xt_eventEnqWorkProc(data)
-XtPointer       data;
+_au_xt_eventEnqWorkProc(XtPointer data)
 {
     PrivData       *priv = (PrivData *) data;
 
@@ -91,10 +86,7 @@ XtPointer       data;
 
 /* ARGSUSED */
 static void
-_au_xt_synchandler(aud, handler, data)
-AuServer       *aud;
-AuSyncHandlerRec *handler;
-XtPointer       data;
+_au_xt_synchandler(AuServer *aud, AuSyncHandlerRec *handler, XtPointer data)
 {
     PrivData       *priv = (PrivData *) data;
 
@@ -108,11 +100,8 @@ XtPointer       data;
 
 /* ARGSUSED */
 static void
-_au_xt_eventenqhandler(aud, handler, event, data)
-AuServer       *aud;
-AuEventEnqHandlerRec *handler;
-AuEvent        *event;
-XtPointer       data;
+_au_xt_eventenqhandler(AuServer *aud, AuEventEnqHandlerRec *handler, 
+		       AuEvent *event, XtPointer data)
 {
     PrivData       *priv = (PrivData *) data;
 
@@ -137,9 +126,7 @@ static HandlerPtr handlerListHead,
                 handlerListTail;
 
 XtInputId
-AuXtAppAddAudioHandler(app_context, aud)
-XtAppContext    app_context;
-AuServer       *aud;
+AuXtAppAddAudioHandler( XtAppContext app_context, AuServer *aud)
 {
     PrivData       *priv;
     HandlerPtr      h;
@@ -202,9 +189,7 @@ AuServer       *aud;
 }
 
 void
-AuXtAppRemoveAudioHandler(aud, id)
-AuServer       *aud;
-XtInputId       id;
+AuXtAppRemoveAudioHandler(AuServer *aud, XtInputId id)
 {
     HandlerPtr      h = handlerListHead,
                     p = NULL;

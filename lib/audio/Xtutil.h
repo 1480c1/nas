@@ -68,12 +68,12 @@ extern void AuXtHandleAudioEvents (
 extern XtInputId AuXtAppAddAudioHandler (
 #if NeedFunctionPrototypes
 	XtAppContext,	/* app_context */
-	AuServer *	/* server */
+AuServer *	/* server */
 #endif
 );
 
 extern void
-AuXtAppRemoveAudioHandler(
+AuXtppRemoveAudioHandler(
 #if NeedFunctionPrototypes
        AuServer *,		/* server */
        XtInputId

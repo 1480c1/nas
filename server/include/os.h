@@ -111,23 +111,23 @@ extern void debug_dealloca();
 #endif
 
 #ifndef ALLOCATE_LOCAL
-#define ALLOCATE_LOCAL(size) Xalloc((unsigned long)(size))
+#define ALLOCATE_LOCAL(size) Xalloc((size))
 #define DEALLOCATE_LOCAL(ptr) Xfree((pointer)(ptr))
 #endif /* ALLOCATE_LOCAL */
 
 
 #ifndef sgi
-#define xalloc(size) Xalloc(((unsigned long)(size)))
-#define xrealloc(ptr, size) Xrealloc(((pointer)(ptr)), ((unsigned long)(size)))
+#define xalloc(size) Xalloc(((size)))
+#define xrealloc(ptr, size) Xrealloc(((pointer)(ptr)), ((size)))
 #define xfree(ptr) Xfree(((pointer)(ptr)))
 #else /* sgi */
 extern void *safe_alloc(size_t size);
 extern void *safe_realloc(void *ptr, size_t size);
 extern void safe_free(void *ptr);
 
-#define xalloc(size) safe_alloc(((unsigned long)(size)))
+#define xalloc(size) safe_alloc((size))
 #define xrealloc(ptr, size) \
-	safe_realloc(((pointer)(ptr)), ((unsigned long)(size)))
+	safe_realloc(((pointer)(ptr)), (size))
 #define xfree(ptr) safe_free(((pointer)(ptr)))
 #endif /* sgi */
 
@@ -156,15 +156,16 @@ void		ProcessCommandLine();
 void		FlushAllOutput();
 void		FlushIfCriticalOutputPending();
 #ifndef CAHILL_MALLOC
-void		Xfree();
-unsigned long	*Xalloc();
-unsigned long	*Xcalloc();
-unsigned long	*Xrealloc();
+void		Xfree(register pointer ptr);
+void            *Xalloc(unsigned long size);
+void            *Xcalloc(unsigned long amount);
+void            *Xrealloc(register pointer ptr, unsigned long amount);
 #else
-void		debug_Xfree();
-unsigned long	*debug_Xalloc();
-unsigned long	*debug_Xcalloc();
-unsigned long	*debug_Xrealloc();
+void		debug_Xfree(char *file, int line, register pointer ptr);
+void            *debug_Xalloc(char *file, int line, unsigned long amount);
+void            *debug_Xcalloc(char *file, int line, unsigned long amount);
+void            *debug_Xrealloc(char *file, int line, register pointer ptr,
+				unsigned long amount);
 #endif
 long		GetTimeInMillis();
 
