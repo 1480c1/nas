@@ -19,6 +19,9 @@ $Id$
           Now we just turn off the timer as the first thing in
           setSampleRate() so DSP_SYNC can actually finish.
 
+          We also turn off the timer when openDevice is called, so the
+          'wait for device to become available' code can work too.
+
         - Patch from Tobias Diedrich that allows mixer init to
           fail in the voxware server. 
 

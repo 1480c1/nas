@@ -651,6 +651,7 @@ AuBool wait;
   unsigned int extramode = 0;
   int retries;
 
+  setTimer(0);                  /* no timers here */
 #if defined(__CYGWIN__)		/* we want the file to be created if necc under
 				   windows */
   extramode = O_CREAT;
@@ -777,7 +778,6 @@ closeDevice()
 	  osLogMsg("closeDevice: output device already closed\n");
 	}
     }
-
     else
     {
       if (NasConfig.DoDebug)
