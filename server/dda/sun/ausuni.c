@@ -76,6 +76,7 @@ from the copyright holder.
 
 #include <stdio.h>				/* for sprintf */
 #include <stdlib.h>				/* for getenv */
+#include <errno.h>
 #include "dixstruct.h"				/* for RESTYPE */
 #include "os.h"					/* for xalloc/xfree and NULL */
 #include "nasconfig.h"
@@ -116,6 +117,8 @@ static char name_CS4231[]  = "SUNW,CS4231";
 static char name_dbri[]    = "SUNW,dbri";
 static char name_unknown[] = "unknown audio device";
 static char *name_of_physical_device;	/* must point to one of the above */
+
+extern int errno;
 
 #ifndef SVR4
 typedef int     audio_device_t;

@@ -80,24 +80,34 @@ XCOMM
 #ifdef SunArchitecture
 #define CanBuildAuServer	YES
 ALL1 = nasd
+RCMANDIR = $(MANDIR)
 #define BuildSunServer
 #endif
 
 #ifdef SGIArchitecture
 #define CanBuildAuServer	YES
 ALL1 = nasd
+RCMANDIR = $(MANDIR)
 #define BuildSGIServer
 #endif
 
 #ifdef HPArchitecture
 #define CanBuildAuServer        YES
 ALL1 = nasd
+RCMANDIR = $(MANDIR)
 #define BuildHPServer
 #endif
 
 
 #if defined(i386SVR4Architecture) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture)
-#define CanBuildAuServer	YES
+# define CanBuildAuServer	YES
+
+# if defined(LinuxArchitecture)
+    RCMANDIR = $(FILEMANDIR)
+# else
+    RCMANDIR = $(MANDIR)
+# endif
+
 ALL1 = nasd
 #define BuildVoxServer
 #endif
@@ -209,7 +219,7 @@ clean::
  ETCDIR = NasConfigSearchPath
 
 InstallManPage(nasd,$(MANDIR))
-InstallManPage(nasd.conf,$(MANDIR))
+InstallManPage(nasd.conf,$(RCMANDIR))
 InstallNonExecFile(nasd.conf.eg,$(ETCDIR))
 
 #else /* CanBuildAuServer */

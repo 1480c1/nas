@@ -27,9 +27,11 @@ The following commands may be used with \fIauctl\fP:
 .B "help"
 This command prints a list of the commands that may be given.
 .TP 8
-.B "set device \fIid\fP gain = \fIpercent\fP"
-This command sets the gain on the device specified by \fIid\fP to the indicated
-percentage.  If the \fIid\fP is a decimal number \fBn\fP, the \fInth\fP 
+.B "set device \fIid\fP gain [=,+,-] \fIpercent\fP"
+With \fI=\fP, this command sets the gain on the device specified by
+\fIid\fP to the indicated percentage, or alters it by the given number
+of percentage points if \fI+\fP or \fI-\fP is used.
+If the \fIid\fP is a decimal number \fBn\fP, the \fInth\fP 
 device returned by the server (see \fIauinfo\fP) is used.  Otherwise, \fIid\fP
 should be a hexidecimal number specifying the resource identifier of the
 desired device.
