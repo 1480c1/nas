@@ -1,5 +1,193 @@
 $Id$
-$NCDId: @(#)HISTORY,v 1.27 1996/09/05 18:46:47 greg Exp $
+
+Version 1.6 10/23/2002
+
+	- Release!
+
+	## 1.5h    10/12/2002
+
+	- Added SoundFileGetProc() to get access to the toSound and
+          fromSound procs in _SoundFileInfo[].  Needed for xemacs.
+
+	- Added AudioLibraryVersionMajor, AudioLibraryVersionMinor,
+          and AudioLibraryVersionTeeny to audiolib.h.  Somewhat more
+          informative than just the old AudioLibraryVersion which was
+          set at '2'.  
+
+	  The old AudioLibraryVersion define is still there however,
+          and is defined to be equal to AudioLibraryVersionMajor.
+
+	## 1.5g    10/7/2002
+
+	- changed inputsection defaults in nasd.conf.eg to 44.1Khz, 2
+          channel 16b sound.
+
+	  outputsection also defaults to 44.1Khz now, instead of 33Khz.
+
+	- began some CC ANSI'fication of libaudio.  So far only a
+          couple of files have been 'upgraded' just to see what the
+          implications are.  It's going to be a bitch ;-) And there is
+          the likelyhood of introducing errors, so I'll get a stable
+          release out first before finishing this task.  The result
+          however should be worth it.  I've a feeling a few obscure
+          bugs will be found and fixed doing this.
+
+	- some cleanup in server/os/utils.c and server/include/os.h.
+          removing K&R style prototype decls, #including unistd.h, and
+          setting Xalloc() et. al. to use proper void * rather than
+          unsigned longs.
+
+	- changed hardcoded '-L/usr/X11R6/lib' for REQUIRED libs in
+	  lib/audio/Imakefile to '-L$(USRLIBDIR)'
+
+	- it doesn't have the HPUX 11 build fixes - I think I will
+          really need access to a machine, or someone who does have
+          access to one and wants to fix the build, in order to solve
+          this... The bcopy problem seems to be in the HPUX X11
+          config/ stuff.
+
+	- We really should release this one unless there are big
+          problems. ;-)
+
+	## 1.5f	8/26/2002
+
+	- time for another development update.  Should probably go
+          final with a 1.5.1 version soon...
+
+        7/23/2002
+
+	- removed fdset.h stuff for cygwin - no longer needed.
+
+	- auvoxware - added __CYGWIN__ checks (equal to linux)
+
+	- added __CYGWIN__ to dia/auservertype.h 
+
+	- changed server imake to build nasd.exe on cygwin rather than nasd.
+
+
+        7/20/2002
+
+	- added cygwinArchitecture to the server Imakefile so
+          auvoxware will be built on cygwin systems.
+
+	- Removed the SoundFileInfo[] array in sound.h so cygwin would
+          be happy.  Apps should not have been accessing that array
+          directly anyways.
+
+	  Added the following new functions to sound.c (that used to
+	  be macros in sound.h):
+
+	     SoundFileFormatString, SoundValidDataFormat,
+	     SoundFileFormatToString, SoundFileFormatToAbbrev,
+	     SoundFileFormatToSuffixes
+
+	  Assuming your code did not attempt to directly access
+	  SoundFileInfo[], no changes should be required.
+
+	  libaudio.so revision bumped to 2.3
+
+        7/15/2002
+
+	- patch from Nicholas Wourms.
+
+	  - fixed FIONREAD in Alibint.c for cygwin
+	  - fixed Imake for libaudio on cygwin
+
+        7/9/2002
+
+	- rename dia/nasconfig.* to dia/nasconf.* to avoid name
+          collision with NasConfig.h on windows systems.
+
+	## 1.5e    7/7/2002
+
+	- added patch from Nicolas Escuder that adds support for
+          Windows operating systems using Cygwin.  Even the NAS server
+          is now supported.  There are still issues with the clients. 
+
+	  I will provide a link on the nas-links page to precompiled
+	  windows binaries for libaudio.dll, nasd, and some clients -
+	  provided by Nicolas.
+
+	- based on idea from Nicolas, added background (-b) mode to
+          nasd, to force it to run in the background.  Actually, he
+          supplied a patch, but I just redid it to work properly with unix
+          systems.
+
+	  If you want to see error messages from nasd while starting
+	  up, do not run it in daemon mode or you won't see the error
+	  messages as stdout/stderr are closed.  Someday, I'll track
+	  down all of these and have them use osLogMsg(), which would
+	  work regardless.
+
+	- added NAS_AUDIOMSGFILE in config/NasConfig.h to specify
+          where audio messages are stored (ADMPATH in os/osinit.c).
+
+	- Yes, we are at 1.5e now. Sorry I didn't release 1.5b-d.  Was
+          a little busy with the day job ;-)
+	
+	## 1.5d    6/1/2002
+
+	- added .ps -> .pdf conversions in doc/pdf/
+
+	- added html versions of man pages in doc/html/
+
+	## 1.5b    3/16/2002
+
+        - added patch from Marco Molteni to add a '-local' option to
+	  nasd.  Specifying this option allows only local clients to
+	  connect.
+
+        - fix nasd.man to describe this and other supported options.
+
+        - moved allow_any_host into the NasConfig struct.  Along with
+          the new '-local' option.
+
+	## 1.5a    2/23/2002
+
+	- more STARTSERVER fixes - there was still one case where when
+          STARTSERVER was defined, nasd could be called with the wrong
+          display number due to a bug in _AuConnectServer.
+
+	- changed LEX/YACC DEBUG token to CDEBUG to avoid conflicts
+          when building nas with '-DDEBUG'
+
+	- DEFAULT_AUSERVER is now ":0" rather than
+          "tcp/localhost:8000".  A local socket connection will startup
+          faster than a tcp connection.
+	
+	- mutex.h
+		- corrected unixware 7.x build problem
+                  (XMUTEX_INITIALIZER) in mutex.h 
+		- added same check for sun/solaris boxes
+		- got rid of XUSE_MTSAFE_API - now controlled by
+                  NAS_USEMTSAFEAPI defined in config/NasConfig.h
+
+		  If you think you are having mutex problems, you can
+		  edit config/NasConfig.h and '#undef'
+		  NAS_USEMTSAFEAPI, then rebuild everthing.  This will
+		  turn off threadsafety in libaudio.
+
+	- added patch from Tobias Diedrich to fix deadlock in
+          AuNextEvent().
+
+	- added new mutex in audio/Alibint.c to protect
+          _AuReadEvents() since it can no longer rely on the server
+          lock as a result of Tobias's patch above.
+
+	- added new option, 'gain', to config file in the input/output
+          sections.  This sets the default gains when nasd starts up
+          (if MixerInit is enabled).  Only in voxware for now.
+
+        1/5/2002
+
+	added -lXt and -lXau to the lib dependancy for libaudio.so on
+	Linux systems per a request from Lorenzo Delana.
+
+        1/20/2002
+
+	- fixed bug in ConnSvr.c that could cause the wrong server
+          number to passed to nasd when STARTSERVER is defined.
+
 
 Version 1.5 12/26/2001
 
@@ -266,6 +454,9 @@ Version 1.4 2/27/2000:
 ############################################################################
 # the following is included for historical reasons, and concerns
 #  changes to 1.2p5 and earlier versions. 
+#
+# $NCDId: @(#)HISTORY,v 1.27 1996/09/05 18:46:47 greg Exp $
+#
 
 ** 1.2 - PATCH 05 **
 
@@ -281,8 +472,7 @@ Server
 
 	o add a bit to the component use field to indicate that using
 	  that component will override the use of other components.  This
-	  bit is used on input devices when the audio hardware does not
-	  support recording and playing simultaneously.
+	  bit is used on input devices when the audio hardware does not	  support recording and playing simultaneously.
 
 	o fix a problem with limiting samples on waveform devices.  if you
 	  used anything other than AuUnlimitedSamples, bad things would

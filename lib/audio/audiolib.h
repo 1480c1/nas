@@ -35,12 +35,13 @@
  *				    VERSION				     *
  *****************************************************************************/
 
-#define AudioLibraryVersion             2
 
-#define AudioLibraryVersionMajor        AudioLibraryVersion
+
+#define AudioLibraryVersionMajor        2
 #define AudioLibraryVersionMinor        3
 #define AudioLibraryVersionTeeny        0
 
+#define AudioLibraryVersion             AudioLibraryVersionMajor
 
 /*****************************************************************************
  *			    GET NEEDED HEADER FILES			     *
