@@ -1,7 +1,31 @@
 $Id$
 # $NCDId: @(#)BUILDNOTES,v 1.7 1995/11/28 23:25:57 greg Exp $
 
-This file contains information on the following topics:
+
+BUILDING:
+
+	Look at config/NasConfig.h, and make sure everything is
+	okay for your site (it should be). 
+
+	Also look at config/NetAudio.def and make sure it's okay
+	for your site as well.  
+
+	Then, to compile NAS, all you should need to do is:
+
+	xmkmf
+	make World
+
+	Then to install it:
+
+	make install
+	make install.man
+
+########################################################################
+[ Note: The following contains building information on 1.2p5 and
+earlier releases.  It hasn't been updated recently, and will probably
+not provide any useful information on modern OS's. -JET ]
+
+This following contains information on the following topics:
 
 	1. Solaris 2.3 OpenWindows notes
 	2. System V Release 4.0 notes

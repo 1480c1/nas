@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)access.c,v 1.6 1994/06/01 21:02:36 greg Exp $
  */
 /***********************************************************
@@ -58,7 +59,7 @@ SOFTWARE.
 #include <sys/ioctl.h>
 #include <X11/Xauth.h>
 
-#if defined(TCPCONN) || defined(ISC)
+#if defined(TCPCONN) || defined(ISC) || defined(USL)
 #ifndef _MINIX
 #include <netinet/in.h>
 #else

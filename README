@@ -4,7 +4,7 @@
     *                                                                     *
     *			 An Audio Protocol For Networks                   *
     *                                                                     *
-    *                      Release 1.2 - June 3, 1994			  *
+    *                      Release 1.4 - Feb 27, 2000			  *
     *                                                                     *
     ***********************************************************************
 
@@ -102,8 +102,6 @@ To build the software:
     3.	Do "xmkmf" to create the initial Makefile.
 
     4.	Do "make World" (note the uppercase World) to build the distribution.
-	(Attention Linux Users: instead of "make World" you should do
-	 make WORLDOPTS="-k CDEBUGFLAGS='-O2 -D__USE_BSD_SIGNAL'" World)
 
 	If you'd like to enable the option of having the audio library
 	automatically start up an NAS server on the local host when
@@ -182,7 +180,7 @@ III.  Using the Network Audio System
 Now that you have things built, you can use the Network Audio System
 as follows:
 
-	%  ausun -aa &		# -aa allows any host access
+	%  nasd -aa &		# -aa allows any host access
 	%  setenv AUDIOSERVER `hostname`:0
 	%  auinfo
 	%  audemo examples/sounds
@@ -231,7 +229,7 @@ rec.games.misc contains a detailed list of machines, bulletin boards, etc.
 
 VII.  For More Information
 
-We've set up a mailing list for folks who are working with the Network
+There is mailing list for folks who are working with the Network
 Audio System:
 
     nas@radscan.com		General discussion of the Network
@@ -252,7 +250,13 @@ Audio System:
         http://www.picante.com/~gtaylor/archives/nas/ or
         http://gatekeeper.picante.com/~gtaylor/archives/nas/
 
+    A web page dedicated to NAS can be found at 
 
+	http://radscan.com/nas.html
+
+	This site will contain up to date information on
+	NAS, and probably the most recent version (including
+	development versions).
 
 The Network Audio System has benefited greatly from the testing and
 contributions of many people on the mailing list.  We'd like to thank
@@ -268,8 +272,12 @@ you can't beat the price!  :-)
 				Jim Fulton, Greg Renda, Dave Lemke
 				Network Computing Devices, Inc.
 
+				Jon Trulson
+				Me, at home.
 
---------------------------------------------------------------------------------
+				All the fine people on the NAS mailing list.
+
+-----------------------------------------------------------------------------
 
 		 Copyright 1995 Network Computing Devices, Inc.
 
