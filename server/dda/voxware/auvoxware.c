@@ -133,7 +133,9 @@ PERFORMANCE OF THIS SOFTWARE.
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef SVR4
 #include <getopt.h>
+#endif
 #include <sys/types.h>
 #include <errno.h>
 #ifndef _POSIX_SOURCE
@@ -148,7 +150,7 @@ extern int errno;
 #endif
 
 
-#include "nasconfig.h"
+#include "nasconf.h"
 #include "config.h"
 #include "aulog.h"
 

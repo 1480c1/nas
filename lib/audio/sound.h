@@ -245,7 +245,7 @@ typedef struct
 }               SoundInfo;
 
 #ifndef _SOUND_C_
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 #define SoundFileInfo		(*SoundFileInfo_p)
 #define SoundNumFileFormats	(*SoundNumFileFormats_p)
 #endif /* WIN32 */

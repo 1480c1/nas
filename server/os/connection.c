@@ -63,7 +63,7 @@ SOFTWARE.
  *
  *****************************************************************/
 
-#include "nasconfig.h"
+#include "nasconf.h"
 
 #if defined(__CYGWIN__)
 #define S_IFSOCK        _IFSOCK

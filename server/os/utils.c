@@ -50,7 +50,7 @@ SOFTWARE.
 #include <audio/audio.h>
 #include <audio/Aos.h>
 #include <stdio.h>
-#include "nasconfig.h"
+#include "nasconf.h"
 #include "misc.h"
 #include "opaque.h"
 #include <signal.h>

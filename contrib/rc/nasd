@@ -17,7 +17,7 @@ AU=/usr/X11R6/bin/nasd
 start ()
 {
 	echo "Starting nasd"
-	$AU -aa
+	$AU -aa &
 	AUPID=$!
 	umask 077
 	rm -f $PIDFILE

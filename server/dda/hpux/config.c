@@ -4,7 +4,7 @@
  *
  */
 
-#include "nasconfig.h"
+#include "nasconf.h"
 #include "config.h"
 #include "aulog.h"
 #include "../../dia/gram.h"

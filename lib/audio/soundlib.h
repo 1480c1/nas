@@ -34,7 +34,7 @@
 /*****************************************************************************
  * 			       PUBLIC VARIABLES			     	     *
  *****************************************************************************/
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 #define AuSoundFileChunkSize		(*AuSoundFileChunkSize_p)
 #define AuSoundPortDuration		(*AuSoundPortDuration_p)
 #define AuSoundPortLowWaterMark		(*AuSoundPortLowWaterMark_p)

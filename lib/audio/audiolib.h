@@ -1669,7 +1669,7 @@ _AUFUNCPROTOEND
  * that errors in the open procedure are handled.
  */
 
-#if defined(WIN32) && !defined(_OPENSVR_C_)
+#if defined(WIN32) && (!defined(_OPENSVR_C_) && !defined(__CYGWIN__))
 #define AuDefaultErrorHandler	(*AuDefaultErrorHandler_p)
 #define AuDefaultIOErrorHandler	(*AuDefaultIOErrorHandler_p)
 #endif /* WIN32 && !_OPENSVR_C_ */

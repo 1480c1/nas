@@ -61,7 +61,7 @@
 #include <audio/Aproto.h>
 #include <errno.h>
 
-#include "nasconfig.h"
+#include "nasconf.h"
 #include "dixstruct.h"				/* for RESTYPE */
 #include "os.h"					/* for xalloc/xfree and NULL */
 #include "au.h"

@@ -79,7 +79,7 @@ from the copyright holder.
 #include <errno.h>
 #include "dixstruct.h"				/* for RESTYPE */
 #include "os.h"					/* for xalloc/xfree and NULL */
-#include "nasconfig.h"
+#include "nasconf.h"
 #include <fcntl.h>
 #include <stropts.h>
 #include <string.h>				/* for strcmp */
