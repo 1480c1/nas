@@ -33,7 +33,7 @@
 #include "../dda/sgi/ausgi.h"
 #endif						/* sgi */
 
-#if defined(__FreeBSD__) || defined(linux) || (defined(SVR4) && defined(SYSV386))
+#if defined(__FreeBSD__) || defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386)))
 #include "../dda/voxware/auvoxware.h"
 #endif
 

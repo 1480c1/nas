@@ -1,3 +1,5 @@
+/* $Id$ */
+
 /*
    SCCS: @(#) auvoxware.c 11.4 95/04/14 
 */
@@ -787,7 +789,7 @@ static void disableProcessFlow()
 }
 
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void monoToStereoLinearSigned16LSB(numSamples)
@@ -802,7 +804,7 @@ AuUint32 numSamples;
   }
 }
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void monoToStereoLinearUnsigned8(numSamples)
@@ -863,7 +865,7 @@ static void writePhysicalOutputsMono()
   AuUnBlockAudio(l);
 }
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void stereoToMonoLinearSigned16LSB(numSamples)
@@ -878,7 +880,7 @@ AuUint32 numSamples;
   }
 }
 
-#if defined(__GNUC__) && !defined(linux)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL)
 inline
 #endif
 static void stereoToMonoLinearUnsigned8(numSamples)
