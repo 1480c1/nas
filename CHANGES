@@ -1,16 +1,20 @@
 CHANGES file listing changes to nas during the various iterations.
-Jon Trulson 10/24/99
 
 1.3e
 	02/12/2000
 
+	This is a pre-release 1.4 candidate.
+
 	corrected a problem in the voxware server where when
-		ReleaseDevice was enabled, the device would be help
+		ReleaseDevice was enabled, the device would be held
 		open when nasd was first started until the first
 		connection was made.
 
 	added config/NetAudio.def to set various configurables like
 		NasConfigSearchPath.
+
+	changed documentation regarding the new location of the web 
+		site (http://radscan.com/nas.html)
 
 1.3d
 	01/05/2000
@@ -136,4 +140,5 @@ re-added them where appropriate.  Any reason these were removed?
 the planet, based on original 1.2p5 sources.
 
 
+Jon Trulson 10/24/99
 
