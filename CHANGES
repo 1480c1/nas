@@ -7,6 +7,8 @@ Jon Trulson 10/24/99
 	10/24/99:
 
 	Added patches from Mark Davies for NetBSD.  
+	changed BIG_ENDIAN ->NAS_BIG_ENDIAN and LITTLE_ENDIAN to
+		NAS_LITTLE_ENDIAN per Mark's suggestion in lib/audio
 	Added global NasConfig struct for configurables global to all 
 		servers.
 	More prep work for unified arg/config handling

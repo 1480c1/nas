@@ -120,7 +120,7 @@ SpecialObjectRule(Astreams.o,/**/,$(CONN_DEFINES))
 SpecialObjectRule(globals.o,/**/,$(CONN_DEFINES))
 
 #endif
-BuildIncludes($(HEADERS),audio,.)
+BuildIncludes($(HEADERS),audio,..)
 InstallMultiple($(HEADERS),$(INCDIR))
 #if ProjectX >= 5
 InstallNonExecFile(AuErrorDB,$(LIBDIR))
