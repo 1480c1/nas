@@ -36,14 +36,6 @@
 #include	<audio/8svx.h>
 #include	<audio/audio.h>
 
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif						/* NeedFunctionPrototypes */
-
 #ifndef _SoundConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _SoundConst const
@@ -103,99 +95,75 @@ _FUNCPROTOBEGIN
 
 extern          Sound
 SoundOpenFileForReading(
-#if NeedFunctionPrototypes
 			_SoundConst char *	/* file name */
-#endif
 );
 
 extern          Sound
 SoundOpenFileForWriting(
-#if NeedFunctionPrototypes
 			_SoundConst char *,	/* file name */
 			Sound			/* sound */
-#endif
 );
 
 #define SoundDestroy SoundCloseFile
 
 extern int
 SoundCloseFile(
-#if NeedFunctionPrototypes
 	       Sound
-#endif
 );
 
 extern int
 SoundReadFile(
-#if NeedFunctionPrototypes
 	      char *,				/* buffer */
 	      int,				/* num bytes */
 	      Sound
-#endif
 );
 
 extern int
 SoundWriteFile(
-#if NeedFunctionPrototypes
 	      char *,				/* buffer */
 	      int,				/* num bytes */
 	      Sound
-#endif
 );
 
 extern          Sound
 SoundCreate(
-#if NeedFunctionPrototypes
 	    int,				/* file format */
 	    int,				/* data format */
 	    int,				/* num tracks */
 	    int,				/* sample rate */
 	    int,				/* num samples */
 	    _SoundConst char *			/* comment */
-#endif
 );
 
 extern int
 SoundStringToFileFormat(
-#if NeedFunctionPrototypes
 			_SoundConst char *	/* string */
-#endif
 );
 
 extern int
 SoundAbbrevToFileFormat(
-#if NeedFunctionPrototypes
 			_SoundConst char *	/* string */
-#endif
 );
 
 extern int
 SoundRewindFile(
-#if NeedFunctionPrototypes
 		Sound
-#endif
 );
 
 extern int
 SoundSeekFile(
-#if NeedFunctionPrototypes
 	      int,				/* number of audio bytes */
 	      Sound
-#endif
 );
 
 extern int
 SoundTellFile(
-#if NeedFunctionPrototypes
 	      Sound
-#endif
 );
 
 extern int
 SoundFlushFile(
-#if NeedFunctionPrototypes
 		Sound
-#endif
 );
 
 _FUNCPROTOEND

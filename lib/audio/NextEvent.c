@@ -46,10 +46,11 @@ without express or implied warranty.
  */
 
 void
-AuNextEvent (aud, dequeue, event)
-	register AuServer *aud;
-	AuBool dequeue;
-	register AuEvent *event;
+AuNextEvent (
+             register AuServer *aud,
+             AuBool dequeue,
+             register AuEvent *event
+             )
 {
 	register _AuQEvent *qelt;
 	

@@ -32,14 +32,6 @@
  * some ANSIfication definitions.
  */
 
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif				/* NeedFunctionPrototypes */
-
 #ifndef _FileConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _FileConst const
@@ -81,60 +73,46 @@ _FUNCPROTOBEGIN
 #ifndef mips
 extern unsigned short
 FileSwapS(
-#if NeedFunctionPrototypes
 			unsigned short
-#endif
 );
 #endif	/* mips */
 
 extern AuUint32
 FileSwapL(
-#if NeedFunctionPrototypes
 			AuUint32
-#endif
 );
 
 extern unsigned short
 FileReadS(
-#if NeedFunctionPrototypes
 			FILE	*,
                         int			/* swap? */
-#endif
 );
 
 extern AuUint32
 FileReadL(
-#if NeedFunctionPrototypes
 			FILE	*,
                         int			/* swap? */
-#endif
 );
 
 #ifndef mips
 extern int
 FileWriteS(
-#if NeedFunctionPrototypes
                         unsigned short,
 			FILE	*,
                         int			/* swap? */
-#endif
 );
 #endif
 
 extern int
 FileWriteL(
-#if NeedFunctionPrototypes
                         AuUint32,
 			FILE	*,
                         int			/* swap? */
-#endif
 );
 
 extern char	*
 FileCommentFromFilename(
-#if NeedFunctionPrototypes
                         _FileConst char	*		/* file name */
-#endif
 );
 
 _FUNCPROTOEND

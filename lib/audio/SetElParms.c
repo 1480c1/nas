@@ -25,11 +25,12 @@
 #include "Alibint.h"
 
 void
-AuSetElementParameters(aud, num_changes, parms, ret_status)
-AuServer *aud;
-int num_changes;
-AuElementParameters *parms;
-AuStatus *ret_status;
+AuSetElementParameters(
+                       AuServer *aud,
+                       int num_changes,
+                       AuElementParameters *parms,
+                       AuStatus *ret_status
+                       )
 {
     register auSetElementParametersReq *req;
     int i, total_parameters = 0;

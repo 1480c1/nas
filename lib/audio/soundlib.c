@@ -40,12 +40,13 @@ extern int      AuMonitorRate,
                 AuMonitorFormat;
 
 AuBucketID
-AuSoundCreateBucketFromFile(aud, filename, access, ret_attr, ret_status)
-AuServer       *aud;
-_SoundConst char *filename;
-AuUint32   access;
-AuBucketAttributes **ret_attr;			/* RETURN */
-AuStatus       *ret_status;
+AuSoundCreateBucketFromFile(
+                            AuServer       *aud,
+                            _SoundConst char *filename,
+                            AuUint32   access,
+                            AuBucketAttributes **ret_attr,
+                            AuStatus       *ret_status
+                            )
 {
     Sound           s;
     AuBucketID      bucket;
@@ -116,12 +117,13 @@ AuStatus       *ret_status;
 }
 
 AuBool
-AuSoundCreateFileFromBucket(aud, filename, fileFormat, bucket, ret_status)
-AuServer       *aud;
-_AuConst char  *filename;
-int             fileFormat;
-AuBucketID      bucket;
-AuStatus       *ret_status;
+AuSoundCreateFileFromBucket(
+                            AuServer       *aud,
+                            _AuConst char  *filename,
+                            int             fileFormat,
+                            AuBucketID      bucket,
+                            AuStatus       *ret_status
+                            )
 {
     AuBucketAttributes *ba;
     AuFlowID        flow;
@@ -195,13 +197,14 @@ AuStatus       *ret_status;
 }
 
 AuBucketID
-AuSoundCreateBucketFromData(aud, s, data, access, ret_attr, ret_status)
-AuServer       *aud;
-Sound           s;
-AuPointer       data;
-AuUint32   access;
-AuBucketAttributes **ret_attr;			/* RETURN */
-AuStatus       *ret_status;
+AuSoundCreateBucketFromData(
+                            AuServer       *aud,
+                            Sound           s,
+                            AuPointer       data,
+                            AuUint32   access,
+                            AuBucketAttributes **ret_attr, /* RETURN */
+                            AuStatus       *ret_status
+                            )
 {
     AuBucketID      bucket;
     AuFlowID        flow;
@@ -247,11 +250,12 @@ AuStatus       *ret_status;
 }
 
 AuPointer
-AuSoundCreateDataFromBucket(aud, bucket, ps, ret_status)
-AuServer       *aud;
-AuBucketID      bucket;
-Sound          *ps;
-AuStatus       *ret_status;
+AuSoundCreateDataFromBucket(
+                            AuServer       *aud,
+                            AuBucketID      bucket,
+                            Sound          *ps,
+                            AuStatus       *ret_status
+                            )
 {
     AuBucketAttributes *ba;
     AuFlowID        flow;
@@ -303,10 +307,11 @@ AuStatus       *ret_status;
 }
 
 static void
-sendData(aud, priv, numBytes)
-AuServer       *aud;
-AuSoundDataPtr  priv;
-AuUint32   numBytes;
+sendData(
+         AuServer       *aud,
+         AuSoundDataPtr  priv,
+         AuUint32   numBytes
+         )
 {
     int             n = aumin(numBytes, priv->numBytes);
 
@@ -338,10 +343,11 @@ AuUint32   numBytes;
 }
 
 static void
-receiveData(aud, priv, numBytes)
-AuServer       *aud;
-AuSoundDataPtr  priv;
-AuUint32   numBytes;
+receiveData(
+            AuServer       *aud,
+            AuSoundDataPtr  priv,
+            AuUint32   numBytes
+            )
 {
     AuUint32   n;
 
@@ -351,10 +357,11 @@ AuUint32   numBytes;
 }
 
 static void
-sendFile(aud, priv, numBytes)
-AuServer       *aud;
-AuSoundDataPtr  priv;
-AuUint32   numBytes;
+sendFile(
+         AuServer       *aud,
+         AuSoundDataPtr  priv,
+         AuUint32   numBytes
+         )
 {
     int             n;
 
@@ -387,10 +394,11 @@ AuUint32   numBytes;
 }
 
 static void
-receiveFile(aud, priv, numBytes)
-AuServer       *aud;
-AuSoundDataPtr  priv;
-AuUint32   numBytes;
+receiveFile(
+            AuServer       *aud,
+            AuSoundDataPtr  priv,
+            AuUint32   numBytes
+            )
 {
     AuUint32   n;
 
@@ -399,10 +407,11 @@ AuUint32   numBytes;
 }
 
 static          AuBool
-EventHandler(aud, ev, handler)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
+EventHandler(
+             AuServer       *aud,
+             AuEvent        *ev,
+             AuEventHandlerRec *handler
+             )
 {
     AuSoundDataPtr  priv = (AuSoundDataPtr) handler->data;
 
@@ -479,17 +488,17 @@ AuEventHandlerRec *handler;
 
 /* play from any source */
 AuEventHandlerRec *
-AuSoundPlay(aud, device, volume, mode, sound_data, ret_flow, ret_mult_elem,
-            ret_mon_elem, ret_status)
-AuServer       *aud;
-AuDeviceID      device;
-AuFixedPoint    volume;
-int             mode;
-AuSoundDataPtr  sound_data;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem,
-               *ret_mon_elem;
-AuStatus       *ret_status;
+AuSoundPlay(
+            AuServer       *aud,
+            AuDeviceID      device,
+            AuFixedPoint    volume,
+            int             mode,
+            AuSoundDataPtr  sound_data,
+            AuFlowID       *ret_flow,
+            int            *ret_mult_elem,
+            int            *ret_mon_elem,
+            AuStatus       *ret_status
+            )
 {
     AuElement       elements[4];
     unsigned int    importSize,
@@ -588,17 +597,17 @@ AuStatus       *ret_status;
 
 /* record to any destination */
 AuEventHandlerRec *
-AuSoundRecord(aud, device, gain, numSamples, mode, sound_data, ret_flow,
-              ret_mult_elem, ret_status)
-AuServer       *aud;
-AuDeviceID      device;
-AuFixedPoint    gain;
-AuUint32        numSamples;
-int             mode;
-AuSoundDataPtr  sound_data;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem;
-AuStatus       *ret_status;
+AuSoundRecord(
+              AuServer       *aud,
+              AuDeviceID      device,
+              AuFixedPoint    gain,
+              AuUint32        numSamples,
+              int             mode,
+              AuSoundDataPtr  sound_data,
+              AuFlowID       *ret_flow,
+              int            *ret_mult_elem,
+              AuStatus       *ret_status
+              )
 {
     AuElementAction actions[1];
     AuElement       elements[2];
@@ -683,18 +692,18 @@ AuStatus       *ret_status;
 /* ARGSUSED */
 /* play a Sound file */
 AuEventHandlerRec *
-AuSoundPlayFromFile(aud, filename, device, volume, callback, callback_data,
-		    ret_flow, ret_mult_elem, ret_mon_elem, ret_status)
-AuServer       *aud;
-_AuConst char  *filename;
-AuDeviceID      device;
-AuFixedPoint    volume;
-AuSoundCallback callback;
-AuPointer       callback_data;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem,
-               *ret_mon_elem;
-AuStatus       *ret_status;
+AuSoundPlayFromFile(
+                    AuServer       *aud,
+                    _AuConst char  *filename,
+                    AuDeviceID      device,
+                    AuFixedPoint    volume,
+                    AuSoundCallback callback,
+                    AuPointer       callback_data,
+                    AuFlowID       *ret_flow,
+                    int            *ret_mult_elem,
+                    int            *ret_mon_elem,
+                    AuStatus       *ret_status
+                    )
 {
     AuSoundDataPtr  priv;
     unsigned int    importSize,
@@ -740,52 +749,50 @@ AuStatus       *ret_status;
 /* ARGSUSED */
 /* record a Sound file */
 AuEventHandlerRec *
-AuSoundRecordToFile(aud, filename, device, gain, callback, callback_data,
-		    mode, fileFormat, comment, rate, dataFormat, ret_flow,
-		    ret_mult_elem, ret_status)
-AuServer       *aud;
-_AuConst char  *filename;
-AuDeviceID      device;
-AuFixedPoint    gain;
-AuSoundCallback callback;
-AuPointer       callback_data;
-int             mode,
-                dataFormat,
-                fileFormat;
-AuUint32   rate;
-char           *comment;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem;
-AuStatus       *ret_status;
+AuSoundRecordToFile(
+                    AuServer       *aud,
+                    _AuConst char  *filename,
+                    AuDeviceID      device,
+                    AuFixedPoint    gain,
+                    AuSoundCallback callback,
+                    AuPointer       callback_data,
+                    int             mode,
+                    int             fileFormat,
+                    char           *comment,
+                    AuUint32   rate,
+                    int             dataFormat,
+                    AuFlowID       *ret_flow,
+                    int            *ret_mult_elem,
+                    AuStatus       *ret_status
+                    )
 {
     return AuSoundRecordToFileN(aud, filename, device, gain,
-				AuUnlimitedSamples, callback,
-			     callback_data, mode, fileFormat, comment, rate,
-				dataFormat, ret_flow, ret_mult_elem,
+				AuUnlimitedSamples, callback, callback_data, 
+                                mode, fileFormat, comment, rate, dataFormat, 
+                                ret_flow, ret_mult_elem,
 				ret_status);
 }
 
 /* ARGSUSED */
 /* record a Sound file */
 AuEventHandlerRec *
-AuSoundRecordToFileN(aud, filename, device, gain, numSamples, callback,
-		     callback_data, mode, fileFormat, comment, rate,
-		     dataFormat, ret_flow, ret_mult_elem, ret_status)
-AuServer       *aud;
-_AuConst char  *filename;
-AuDeviceID      device;
-AuFixedPoint    gain;
-AuSoundCallback callback;
-AuPointer       callback_data;
-int             mode,
-                dataFormat,
-                fileFormat;
-AuUint32   rate,
-                numSamples;
-char           *comment;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem;
-AuStatus       *ret_status;
+AuSoundRecordToFileN(
+                     AuServer       *aud,
+                     _AuConst char  *filename,
+                     AuDeviceID      device,
+                     AuFixedPoint    gain,
+                     AuUint32 numSamples,
+                     AuSoundCallback callback,
+                     AuPointer       callback_data,
+                     int             mode,
+                     int fileFormat,
+                     char           *comment,
+                     AuUint32   rate,
+                     int dataFormat,
+                     AuFlowID       *ret_flow,
+                     int            *ret_mult_elem,
+                     AuStatus       *ret_status
+                     )
 {
     AuSoundDataPtr  priv;
     unsigned int    exportSize,
@@ -846,11 +853,12 @@ AuStatus       *ret_status;
 
 /* ARGSUSED */
 static void
-sync_play_cb(aud, handler, ev, data)
-AuServer       *aud;
-AuEventHandlerRec *handler;
-AuEvent        *ev;
-AuPointer       data;
+sync_play_cb(
+             AuServer       *aud,
+             AuEventHandlerRec *handler,
+             AuEvent        *ev,
+             AuPointer       data
+             )
 {
     int            *d = (int *) data;
 
@@ -858,10 +866,11 @@ AuPointer       data;
 }
 
 AuBool
-AuSoundPlaySynchronousFromFile(aud, fname, volume)
-AuServer       *aud;
-_AuConst char  *fname;
-int             volume;
+AuSoundPlaySynchronousFromFile(
+                               AuServer       *aud,
+                               _AuConst char  *fname,
+                               int             volume
+                               )
 {
     int             d = 0;
     AuStatus        ret;
@@ -887,18 +896,18 @@ int             volume;
 /* ARGSUSED */
 /* record into a bucket */
 AuEventHandlerRec *
-AuSoundRecordToBucket(aud, bucket, device, gain, callback, callback_data,
-		      mode, ret_flow, ret_mult_elem, ret_status)
-AuServer       *aud;
-AuBucketID      bucket;
-AuDeviceID      device;
-AuFixedPoint    gain;
-AuSoundCallback callback;
-AuPointer       callback_data;
-int             mode;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem;
-AuStatus       *ret_status;
+AuSoundRecordToBucket(
+                      AuServer       *aud,
+                      AuBucketID      bucket,
+                      AuDeviceID      device,
+                      AuFixedPoint    gain,
+                      AuSoundCallback callback,
+                      AuPointer       callback_data,
+                      int             mode,
+                      AuFlowID       *ret_flow,
+                      int            *ret_mult_elem,
+                      AuStatus       *ret_status
+                      )
 {
     AuElement       elements[2];
     AuSoundDataPtr  priv;
@@ -990,19 +999,19 @@ AuStatus       *ret_status;
 
 /* play from a bucket */
 AuEventHandlerRec *
-AuSoundPlayFromBucket(aud, bucket, device, volume, callback, callback_data,
-		   count, ret_flow, ret_mult_elem, ret_mon_elem, ret_status)
-AuServer       *aud;
-AuBucketID      bucket;
-AuDeviceID      device;
-AuFixedPoint    volume;
-AuSoundCallback callback;
-AuPointer       callback_data;
-int             count;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem,
-               *ret_mon_elem;
-AuStatus       *ret_status;
+AuSoundPlayFromBucket(
+                      AuServer       *aud,
+                      AuBucketID      bucket,
+                      AuDeviceID      device,
+                      AuFixedPoint    volume,
+                      AuSoundCallback callback,
+                      AuPointer       callback_data,
+                      int             count,
+                      AuFlowID       *ret_flow,
+                      int            *ret_mult_elem,
+                      int            *ret_mon_elem,
+                      AuStatus       *ret_status
+                      )
 {
     AuElement       elements[4];
     AuElementAction actions[4];
@@ -1120,19 +1129,19 @@ AuStatus       *ret_status;
 
 /* play from data in memory */
 AuEventHandlerRec *
-AuSoundPlayFromData(aud, s, data, device, volume, callback, callback_data,
-		    ret_flow, ret_mult_elem, ret_mon_elem, ret_status)
-AuServer       *aud;
-Sound           s;
-AuPointer       data;
-AuDeviceID      device;
-AuFixedPoint    volume;
-AuSoundCallback callback;
-AuPointer       callback_data;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem,
-               *ret_mon_elem;
-AuStatus       *ret_status;
+AuSoundPlayFromData(
+                    AuServer       *aud,
+                    Sound           s,
+                    AuPointer       data,
+                    AuDeviceID      device,
+                    AuFixedPoint    volume,
+                    AuSoundCallback callback,
+                    AuPointer       callback_data,
+                    AuFlowID       *ret_flow,
+                    int            *ret_mult_elem,
+                    int            *ret_mon_elem,
+                    AuStatus       *ret_status
+                    )
 {
     AuSoundDataPtr  priv;
 
@@ -1156,19 +1165,19 @@ AuStatus       *ret_status;
 
 /* record into data in memory */
 AuEventHandlerRec *
-AuSoundRecordToData(aud, s, data, device, gain, callback, callback_data,
-		    mode, ret_flow, ret_mult_elem, ret_status)
-AuServer       *aud;
-Sound           s;
-AuPointer       data;
-AuDeviceID      device;
-AuFixedPoint    gain;
-AuSoundCallback callback;
-AuPointer       callback_data;
-int             mode;
-AuFlowID       *ret_flow;
-int            *ret_mult_elem;
-AuStatus       *ret_status;
+AuSoundRecordToData(
+                    AuServer       *aud,
+                    Sound           s,
+                    AuPointer       data,
+                    AuDeviceID      device,
+                    AuFixedPoint    gain,
+                    AuSoundCallback callback,
+                    AuPointer       callback_data,
+                    int             mode,
+                    AuFlowID       *ret_flow,
+                    int            *ret_mult_elem,
+                    AuStatus       *ret_status
+                    )
 {
     AuSoundDataPtr  priv;
 
@@ -1191,8 +1200,7 @@ AuStatus       *ret_status;
 /* length of data recorded to memory */
 /*ARGSUSED*/
 AuUint32
-AuSoundRecordToDataLength(handler)
-AuEventHandlerRec *handler;
+AuSoundRecordToDataLength(AuEventHandlerRec *handler)
 {
     AuSoundDataPtr  priv = (AuSoundDataPtr) handler->data;
 

@@ -213,10 +213,7 @@ _AusErrorCall()
 
 
 static	void
-Que(head, lc, flag)
-register struct listenQue *head;
-register struct listenCall *lc;
-char	 flag;
+Que(register struct listenQue *head, register struct listenCall *lc, char flag)
 {
 	if(flag == CLEAR)
 		ClearCall(lc->CurrentCall);
@@ -240,9 +237,7 @@ char	 flag;
  */
 
 static void
-pQue(head, lc)
-register struct listenQue *head;
-register struct listenCall *lc;
+pQue(register struct listenQue *head, register struct listenCall *lc)
 {
 	if (head->QueHead == (struct listenCall *) NULL) {
 		lc->NextCall = (struct listenCall *) NULL;
@@ -263,8 +258,7 @@ register struct listenCall *lc;
 
 
 static struct listenCall *
-deQue(head)
-register struct listenQue *head;
+deQue(register struct listenQue *head)
 {
 	register struct listenCall *ret;
 
@@ -279,16 +273,10 @@ register struct listenQue *head;
 	return(ret);
 }
 
-
-
-
-
 /* Routines for handling local Named streams  */
 
 #ifdef SVR4
-_AusSetupNamedStream(display, stype)
-char *	display;
-char	*stype;
+_AusSetupNamedStream(char *display, char *stype)
 {
 	int 	munix, sunix;
 	char *	slave;
@@ -351,16 +339,15 @@ char	*stype;
 /* Enhanced Application Compatibility Support */
 
 int
-_AusSetupSpStream (display, stype)
-char *display;
-char *stype;
+_AusSetupSpStream (char *display, char *stype)
 {
+  return 0;
 }
 
 int
-_AusConnectSpClient (connmaster)		/* Add connection to new slave */
-	int			connmaster; /* Master request connection */
+_AusConnectSpClient (int connmaster)		/* Add connection to new slave */
 {
+  return 0;
 }
 /* End Enhanced Application Compatibility Support */
 
@@ -370,10 +357,8 @@ _AusConnectSpClient (connmaster)		/* Add connection to new slave */
 
 
 /* Routines for handling local streams (streams-pipes) */
-
-_AusSetupLocalStream(display, stype)
-char *	display;
-char	*stype;
+int
+_AusSetupLocalStream(char *display, char *stype)
 {
 	int 	munix, sunix;
 	char *	slave;
@@ -459,10 +444,8 @@ char	*stype;
 	return(munix);
 }
 
-_AusConnectLocalClient(ufd, MoreConnections)
-
-int	ufd;
-char	* MoreConnections;
+int
+_AusConnectLocalClient(int ufd, char *MoreConnections)
 {
 	
 	int fd;
@@ -535,20 +518,19 @@ char	* MoreConnections;
 	return(fd);
 }
 
-static void dummy (sig)
-int sig;
+static void dummy (int sig)
 {
+  return;
 }
 
-_AusCallLocalServer(host, idisplay, nettype)
-char	*host;
-int	idisplay;
+int
+_AusCallLocalServer(char *host, int idisplay,
 #ifdef SVR4
-struct netconfig *nettype;
+                    struct netconfig *nettype,
 #else
-char	*nettype;
+                    char *nettype,
 #endif
-
+                    )
 {
 	char	buf[MAX_AUTO_BUF_LEN];
 	char    *listener;
@@ -625,7 +607,7 @@ char	*nettype;
 
 #ifdef SVR4
 static int
-OpenNamedServer(node)
+OpenNamedServer(char *node)
 char *node;
 {
 	int fld;
@@ -650,17 +632,16 @@ char *node;
 /* Enhanced Application Compatibility Support */
 
 static int
-_AusOpenSpServer(node)
-char *node;
+_AusOpenSpServer(char *node)
 {
+  return 0;
 }
 /* End Enhanced Application Compatibility Support */
 
 #endif /* SVR4 */
 
 static int
-OpenLocalServer(node)
-    char	*node;
+OpenLocalServer(char *node)
 {
 	int 	server, fd, c;
 	char	buf[MAX_AUTO_BUF_LEN], *slave;
@@ -736,16 +717,16 @@ OpenLocalServer(node)
 }
 
 #ifdef DEBUG
-static dumpBytes (len, data)
-    int len;
-    char *data;
+static void dumpBytes (int len, char *data)
 {
-	int i;
-
-	fprintf(stderr, "%d: ", len);
-	for (i = 0; i < len; i++)
-		fprintf(stderr, "%02x ", data[i] & 0377);
-	fprintf(stderr, "\n");
+  int i;
+  
+  fprintf(stderr, "%d: ", len);
+  for (i = 0; i < len; i++)
+    fprintf(stderr, "%02x ", data[i] & 0377);
+  fprintf(stderr, "\n");
+  
+  return;
 }
 #endif
 
@@ -757,13 +738,8 @@ static dumpBytes (len, data)
 #endif
 #undef AuSTREAMS_COMPILE
 
-
-_AusReadLocalStream(fd, buf, count, do_buffering)
-
-int	fd;
-char	*buf;
-int	count;
-int	do_buffering;
+int
+_AusReadLocalStream(int fd, char *buf, int count, int do_buffering)
 {
 	int	amount;
 	InputBuffer *ioptr = &_AusInputBuffer[fd];
@@ -814,45 +790,39 @@ int	do_buffering;
 
 }
 
-_AusWriteLocalStream(fd, buf, count)
-int	fd;
-char	*buf;
-int	count;
+int
+_AusWriteLocalStream(int fd, char *buf, int count)
 {
-/* obsolete code */
-	return (write(fd, buf, count));
+  /* obsolete code */
+  return (write(fd, buf, count));
 }
 
-_AusCloseLocalStream(fd)
-int	fd;
+int
+_AusCloseLocalStream(int fd)
 {
-/* obvsolete code */
-	return (close(fd));
+  /* obsolete code */
+  return (close(fd));
 } 
 
 
 
-
-_AusConnectTliClient(sfd,MoreConnections)
-
-int    sfd;
-char  * MoreConnections;
+int
+_AusConnectTliClient(int sfd, char *MoreConnections)
 {
-	register	char	type = _AusTypeOfStream[sfd];
-	register	struct  listenQue *freeq, *pendq;
-
-	freeq = &Network.FreeList[type];
-	pendq = &Network.PendingQue[type];
-
-	PRMSG("Calling ConnectTliClient(%d)\n", sfd,0);
-	LookForEvents(freeq, pendq, sfd);
-	return (CheckListenQue(freeq, pendq, sfd, MoreConnections));
+  register	char	type = _AusTypeOfStream[sfd];
+  register	struct  listenQue *freeq, *pendq;
+  
+  freeq = &Network.FreeList[type];
+  pendq = &Network.PendingQue[type];
+  
+  PRMSG("Calling ConnectTliClient(%d)\n", sfd,0);
+  LookForEvents(freeq, pendq, sfd);
+  return (CheckListenQue(freeq, pendq, sfd, MoreConnections));
 }
 
 
 static void
-checkNewEvent(fd)
-int	fd;
+checkNewEvent(int fd)
 {
 	int	t;
 
@@ -881,40 +851,31 @@ int	fd;
   	}
 }
 
-_AusReadTliStream(fd, buf, count, do_buffering)
-int	fd;
-char	*buf;
-int	count;
-int	do_buffering;
+int
+_AusReadTliStream(int fd, char *buf, int count, int do_buffering)
 {
-	int n;
-	int flags;
-
-/* obsolete code */
+  /* obsolete code */
+  return 0;
 }
 
-_AusWriteTliStream(fd, buf, count)
-int	fd;
-char	*buf;
-int	count;
+_AusWriteTliStream(int fd, char *buf, int count)
 {
-
-
-/* obsolete code */
+  return 0;
+  /* obsolete code */
 }
 
 static void
-OnError(sig)
+OnError(int sig)
 int	sig;
 {
+  return;
 }
 
-_AusCloseTliStream(fd)
-int	fd;
+int
+_AusCloseTliStream(int fd)
 {
-
-
-/* obsolete code */
+  /* obsolete code */
+  return 0;
 }
 
 /*
@@ -922,10 +883,7 @@ int	fd;
  */
 
 static void
-LookForEvents(FreeHead, PendHead, fd)
-struct listenQue *FreeHead;
-struct listenQue *PendHead;
-int fd;
+LookForEvents(struct listenQue *FreeHead, struct listenQue *PendHead, int fd)
 {
 	int	address;
 	short	port, nf;
@@ -984,11 +942,8 @@ int fd;
  */
 
 static int
-CheckListenQue(FreeHead, PendHead, fd, MoreConnections)
-struct listenQue *FreeHead;
-struct listenQue *PendHead;
-int fd;
-char * MoreConnections;
+CheckListenQue(struct listenQue *FreeHead, struct listenQue *PendHead, 
+               int fd, char *MoreConnections)
 {
 	register struct listenCall *current;
 	register struct t_call *call;
@@ -1084,8 +1039,7 @@ char * MoreConnections;
  */
 
 static void
-ClearCall(call)
-struct t_call *call;
+ClearCall(struct t_call *call)
 {
 	call->sequence = 0;
 	call->addr.len = 0;
@@ -1102,10 +1056,8 @@ struct t_call *call;
  */
 
 static void
-RemoveCall(freeq, pendq, disc)
-struct listenQue *freeq;
-struct listenQue *pendq;
-struct t_discon *disc;
+RemoveCall(struct listenQue *freeq, struct listenQue *pendq, 
+           struct t_discon *disc)
 {
 	register struct listenCall *p, *oldp;
 
@@ -1144,16 +1096,16 @@ struct t_discon *disc;
 
 
 static int
-nameserver(fd, nettype, service, arg1, arg2, arg3)
-    int       fd;
+nameserver(int fd, 
 #ifdef SVR4
-    struct netconfig *nettype;
+           struct netconfig *nettype;
 #else
-    char     *nettype;
+           char *nettype;
 #endif 
-    int	      service;
-    char     **arg1, **arg2;
-    int	     *arg3;
+           int service;
+           char **arg1, **arg2;
+           int  *arg3;
+           }
 {
 
     char	*ptr;
@@ -1244,9 +1196,7 @@ static	int	_hlen = 0;
 static	char	*_hptr = NULL;
 
 static char	**
-addheader(string, len)
-char	*string;
-int	len;
+addheader(char *string, int len)
 {
 
 	int	n, m, p;
@@ -1282,9 +1232,8 @@ int	len;
 	return(&_hptr);
 }
 
-static char	**
-addtliheader(call)
-struct t_call *call;
+static char **
+addtliheader(struct t_call *call)
 {
 
 	
@@ -1343,9 +1292,7 @@ struct t_call *call;
 }
 
 
-int _AuBytesReadable (fd, ptr)
-int fd;
-int * ptr;
+int _AuBytesReadable (int fd, int *ptr)
 {
 	int inbuf;
 	int n;
@@ -1434,12 +1381,8 @@ int * ptr;
 extern long ulimit();
 
 int
-pollselect (nfds, rfds, wfds, efds, timeout)
-int nfds;
-unsigned long *rfds;
-unsigned long *wfds;
-unsigned long *efds;
-struct timeval *timeout;
+pollselect (int nfds, unsigned long *rfds, unsigned long *wfds, 
+            unsigned long *efds, struct timeval *timeout)
 {
 	int i, rc, ev, timevalue;
 	struct pollfd pfds[NOFILES_MAX];
@@ -1531,10 +1474,8 @@ struct timeval *timeout;
 */
 
 int
-_AuSelect(nfds, r_mask, w_mask, e_mask, timeout)
-  int			nfds;
-  unsigned long		*r_mask, *w_mask, *e_mask;
-  struct timeval	*timeout;
+_AuSelect(int nfds, unsigned long *r_mask, unsigned long *w_mask, 
+          unsigned long *e_mask, struct timeval *timeout)
 {
   int			retval = 0;
   int			count = 0;

@@ -32,14 +32,6 @@
  * some ANSIfication definitions.
  */
 
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif						/* NeedFunctionPrototypes */
-
 #ifndef _SvxConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _SvxConst const
@@ -99,71 +91,53 @@ _FUNCPROTOBEGIN
 
 extern SvxInfo *
 SvxOpenFileForReading(
-#if NeedFunctionPrototypes
 		      _SvxConst char *		/* file name */
-#endif
 );
 
 extern SvxInfo *
 SvxOpenFileForWriting(
-#if NeedFunctionPrototypes
 		      _SvxConst char *,		/* file name */
 		      SvxInfo *			/* info */
-#endif
 );
 
 extern int
 SvxCloseFile(
-#if NeedFunctionPrototypes
 	     SvxInfo *				/* info */
-#endif
 );
 
 extern int
 SvxReadFile(
-#if NeedFunctionPrototypes
 	    char *,				/* buffer */
 	    int,				/* num bytes */
 	    SvxInfo *				/* info */
-#endif
 );
 
 extern int
 SvxWriteFile(
-#if NeedFunctionPrototypes
 	     char *,				/* buffer */
 	     int,				/* num bytes */
 	     SvxInfo *				/* info */
-#endif
 );
 
 extern int
 SvxSeekFile(
-#if NeedFunctionPrototypes
 	      int,                              /* number of audio bytes */
 	      SvxInfo *				/* info */
-#endif
 );
 
 extern int
 SvxTellFile(
-#if NeedFunctionPrototypes
 	      SvxInfo *				/* info */
-#endif
 );
 
 extern int
 SvxFlushFile(
-#if NeedFunctionPrototypes
 	      SvxInfo *				/* info */
-#endif
 );
 
 extern int
 SvxRewindFile(
-#if NeedFunctionPrototypes
 	      SvxInfo *				/* info */
-#endif
 );
 
 _FUNCPROTOEND

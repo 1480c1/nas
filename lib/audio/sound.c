@@ -142,8 +142,7 @@ SoundFileInfoProc SoundFileGetProc(int format, int proc)
    
 
 static int
-SndToSoundFormat(fmt)
-int             fmt;
+SndToSoundFormat(int fmt)
 {
     switch (fmt)
     {
@@ -159,8 +158,7 @@ int             fmt;
 }
 
 static int
-SoundToSndFormat(fmt)
-int             fmt;
+SoundToSndFormat(int fmt)
 {
     switch (fmt)
     {
@@ -176,8 +174,7 @@ int             fmt;
 }
 
 static int
-sndToSound(s)
-Sound           s;
+sndToSound(Sound s)
 {
     SndInfo        *p = (SndInfo *)s->formatInfo;
     SndHeader      *h = &p->h;
@@ -199,8 +196,7 @@ Sound           s;
 }
 
 static int
-soundToSnd(s)
-Sound           s;
+soundToSnd(Sound s)
 {
     SndInfo        *si;
 
@@ -220,8 +216,7 @@ Sound           s;
 }
 
 static int
-vocToSound(s)
-Sound           s;
+vocToSound(Sound s)
 {
     VocInfo        *p = (VocInfo *)s->formatInfo;
 
@@ -236,8 +231,7 @@ Sound           s;
 }
 
 static int
-soundToVoc(s)
-Sound           s;
+soundToVoc(Sound s)
 {
     VocInfo        *vi;
 
@@ -253,8 +247,7 @@ Sound           s;
 }
 
 static int
-WaveToSoundFormat(wi)
-WaveInfo       *wi;
+WaveToSoundFormat(WaveInfo *wi)
 {
     if (wi->bitsPerSample == 8)
 	return AuFormatLinearUnsigned8;
@@ -266,8 +259,7 @@ WaveInfo       *wi;
 }
 
 static int
-waveToSound(s)
-Sound           s;
+waveToSound(Sound s)
 {
     WaveInfo       *wi = (WaveInfo *)s->formatInfo;
 
@@ -282,8 +274,7 @@ Sound           s;
 }
 
 static int
-soundToWave(s)
-Sound           s;
+soundToWave(Sound s)
 {
     WaveInfo       *wi;
 
@@ -300,8 +291,7 @@ Sound           s;
 }
 
 static int
-AiffToSoundFormat(ai)
-AiffInfo       *ai;
+AiffToSoundFormat(AiffInfo *ai)
 {
     if (ai->bitsPerSample == 8)
 	return AuFormatLinearSigned8;
@@ -313,8 +303,7 @@ AiffInfo       *ai;
 }
 
 static int
-aiffToSound(s)
-Sound           s;
+aiffToSound(Sound s)
 {
     AiffInfo       *ai = (AiffInfo *)s->formatInfo;
 
@@ -329,8 +318,7 @@ Sound           s;
 }
 
 static int
-soundToAiff(s)
-Sound           s;
+soundToAiff(Sound s)
 {
     AiffInfo       *ai;
 
@@ -347,8 +335,7 @@ Sound           s;
 }
 
 static int
-svxToSound(s)
-Sound           s;
+svxToSound(Sound s)
 {
     SvxInfo        *si = (SvxInfo *)s->formatInfo;
 
@@ -363,8 +350,7 @@ Sound           s;
 }
 
 static int
-soundToSvx(s)
-Sound           s;
+soundToSvx(Sound s)
 {
     SvxInfo        *si;
 
@@ -379,8 +365,7 @@ Sound           s;
 }
 
 Sound
-SoundOpenFileForReading(name)
-_SoundConst char *name;
+SoundOpenFileForReading(_SoundConst char *name)
 {
     Sound           s;
     int             i;
@@ -411,9 +396,10 @@ _SoundConst char *name;
 }
 
 Sound
-SoundOpenFileForWriting(name, s)
-_SoundConst char *name;
-Sound           s;
+SoundOpenFileForWriting(
+                        _SoundConst char *name,
+                        Sound           s
+                        )
 {
     if (SoundFileFormat(s) != SoundFileFormatNone &&
 	(_SoundFileInfo[SoundFileFormat(s)].openFileForWriting) (name,
@@ -427,19 +413,21 @@ Sound           s;
 }
 
 int
-SoundReadFile(p, n, s)
-char           *p;
-int             n;
-Sound           s;
+SoundReadFile(
+              char           *p,
+              int             n,
+              Sound           s
+              )
 {
     return (_SoundFileInfo[SoundFileFormat(s)].readFile) (p, n, s->formatInfo);
 }
 
 int
-SoundWriteFile(p, n, s)
-char           *p;
-int             n;
-Sound           s;
+SoundWriteFile(
+               char           *p,
+               int             n,
+               Sound           s
+               )
 {
     int             num;
 
@@ -453,37 +441,34 @@ Sound           s;
 }
 
 int
-SoundRewindFile(s)
-Sound           s;
+SoundRewindFile(Sound s)
 {
     return (_SoundFileInfo[SoundFileFormat(s)].rewindFile) (s->formatInfo);
 }
 
 int
-SoundSeekFile(n, s)
-int             n;
-Sound           s;
+SoundSeekFile(
+              int             n,
+              Sound           s
+              )
 {
     return (_SoundFileInfo[SoundFileFormat(s)].seekFile) (n, s->formatInfo);
 }
 
 int
-SoundTellFile(s)
-Sound           s;
+SoundTellFile(Sound s)
 {
     return (_SoundFileInfo[SoundFileFormat(s)].tellFile) (s->formatInfo);
 }
 
 int
-SoundFlushFile(s)
-Sound           s;
+SoundFlushFile(Sound s)
 {
     return (_SoundFileInfo[SoundFileFormat(s)].flushFile) (s->formatInfo);
 }
 
 int
-SoundCloseFile(s)
-Sound           s;
+SoundCloseFile(Sound s)
 {
     int             status = 0;
 
@@ -500,13 +485,14 @@ Sound           s;
 }
 
 Sound
-SoundCreate(fileFormat, dataFormat, numTracks, sampleRate, numSamples, comment)
-int             fileFormat,
-                dataFormat,
-                numTracks,
-                sampleRate,
-                numSamples;
-_SoundConst char *comment;
+SoundCreate(
+            int fileFormat,
+            int dataFormat,
+            int numTracks,
+            int sampleRate,
+            int numSamples,
+            _SoundConst char *comment
+            )
 {
     Sound           s;
 
@@ -565,8 +551,7 @@ _SoundConst char *comment;
 }
 
 int
-SoundStringToFileFormat(s)
-_SoundConst char *s;
+SoundStringToFileFormat(_SoundConst char *s)
 {
     int             i;
 
@@ -578,8 +563,7 @@ _SoundConst char *s;
 }
 
 int
-SoundAbbrevToFileFormat(s)
-_SoundConst char *s;
+SoundAbbrevToFileFormat(_SoundConst char *s)
 {
     int             i;
 

@@ -40,10 +40,11 @@ without express or implied warranty.
 
 #include "Alibint.h"
 
-AuBool AuRequeueEvent (aud, event, skip)
-    register AuServer *aud;
-    register AuEvent *event;
-    register int skip;
+AuBool AuRequeueEvent (
+                       register AuServer *aud,
+                       register AuEvent *event,
+                       register int skip
+                       )
 {
     register _AuQEvent *qelt;
     register _AuQEvent *prev;

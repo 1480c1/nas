@@ -63,30 +63,24 @@ extern AuBool   AuSoundRestartHardwarePauses;	/* re-start a flow if the
  *				  DATA TYPES				     *
  *****************************************************************************/
 
-#if NeedFunctionPrototypes
 /* struct pre-declarations */
 struct _AuSoundDataRec;
-#endif
 
 typedef void
 (*AuSoundDataHandler)
 (
-#if NeedFunctionPrototypes
     AuServer *,			/* server */
     struct _AuSoundDataRec *,   /* private handler data */
     AuUint32                    /* number of bytes to handle */
-#endif
 );
 
 typedef void
 (*AuSoundCallback)
 (
-#if NeedFunctionPrototypes
     AuServer *,                 /* server */
     AuEventHandlerRec *,	/* which */
     AuEvent *,	                /* event */
     AuPointer	        	/* callback data */
-#endif
 );
 
 typedef struct _AuSoundDataRec
@@ -111,51 +105,42 @@ _AUFUNCPROTOBEGIN
 
 extern          AuBucketID
 AuSoundCreateBucketFromFile(
-#if NeedFunctionPrototypes
 			    AuServer *,		/* server */
 			    _AuConst char *,	/* filename */
 			    AuUint32,	/* access */
 			    AuBucketAttributes **,	/* RETURN_attributes */
 			    AuStatus *		/* RETURN_status */
-#endif
 );
 
 extern          AuBool
 AuSoundCreateFileFromBucket(
-#if NeedFunctionPrototypes
 			    AuServer *,		/* server */
 			    _AuConst char *,	/* filename */
 			    int,		/* file format */
 			    AuBucketID,		/* bucket */
 			    AuStatus *		/* RETURN_status */
-#endif
 );
 
 extern          AuBucketID
 AuSoundCreateBucketFromData(
-#if NeedFunctionPrototypes
 			    AuServer *,		/* server */
 			    Sound,		/* sound */
 			    AuPointer,		/* data */
 			    AuUint32,	/* access */
 			    AuBucketAttributes **,	/* RETURN_attributes */
 			    AuStatus *		/* RETURN_status */
-#endif
 );
 
 extern AuPointer
 AuSoundCreateDataFromBucket(
-#if NeedFunctionPrototypes
 			    AuServer *,		/* server */
 			    AuBucketID,		/* bucket */
 			    Sound *,		/* RETURN_sound */
 			    AuStatus *		/* RETURN_status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundPlay(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    AuDeviceID,			/* destination */
 		    AuFixedPoint,		/* volume */
@@ -165,12 +150,10 @@ AuSoundPlay(
 		    int *,			/* RETURN_volume_mult_elem */
 		    int *,			/* RETURN_monitor_element */
 		    AuStatus *			/* RETURN_status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundRecord(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    AuDeviceID,			/* source */
 		    AuFixedPoint,		/* gain */
@@ -180,12 +163,10 @@ AuSoundRecord(
 		    AuFlowID *,			/* RETURN_flow */
 		    int *,			/* RETURN_volume_mult_elem */
 		    AuStatus *			/* RETURN status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundPlayFromFile(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    _AuConst char *,		/* filename */
 		    AuDeviceID,			/* destination */
@@ -196,12 +177,10 @@ AuSoundPlayFromFile(
 		    int *,			/* RETURN_volume_mult_elem */
 		    int *,			/* RETURN_monitor_element */
 		    AuStatus *			/* RETURN_status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundPlayFromData(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    Sound,			/* sound */
 		    AuPointer,			/* data */
@@ -213,12 +192,10 @@ AuSoundPlayFromData(
 		    int *,			/* RETURN_volume_mult_elem */
 		    int *,			/* RETURN_monitor_element */
 		    AuStatus *			/* RETURN_status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundRecordToData(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    Sound,			/* sound */
 		    AuPointer,			/* data */
@@ -230,12 +207,10 @@ AuSoundRecordToData(
 		    AuFlowID *,			/* RETURN_flow */
 		    int *,			/* RETURN_volume_mult_elem */
 		    AuStatus *			/* RETURN_status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundRecordToFile(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    _AuConst char *,		/* filename */
 		    AuDeviceID,			/* source */
@@ -250,17 +225,15 @@ AuSoundRecordToFile(
 		    AuFlowID *,			/* RETURN_flow */
 		    int *,			/* RETURN_volume_mult_elem */
 		    AuStatus *			/* RETURN status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundRecordToFileN(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    _AuConst char *,		/* filename */
 		    AuDeviceID,			/* source */
 		    AuFixedPoint,		/* gain */
-                    AuUint32,		        /* num samples */
+                    AuUint32,		        /* num samples */	
 		    AuSoundCallback,		/* done_callback */
 		    AuPointer,			/* callback data */
 		    int,			/* mode */
@@ -268,24 +241,20 @@ AuSoundRecordToFileN(
 		    char *,			/* comment */
 		    AuUint32,		/* rate */
 		    int,			/* data format */
-		    AuFlowID *,			/* RETURN_flow */
+                    AuFlowID *,			/* RETURN_flow */
 		    int *,			/* RETURN_volume_mult_elem */
 		    AuStatus *			/* RETURN status */
-#endif
 );
 
 extern          AuBool
 AuSoundPlaySynchronousFromFile(
-#if NeedFunctionPrototypes
 			       AuServer *,	/* server */
 			       _AuConst char *,	/* filename */
 			       int		/* volume */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundRecordToBucket(
-#if NeedFunctionPrototypes
 		      AuServer *,		/* server */
 		      AuBucketID,		/* destination */
 		      AuDeviceID,		/* source */
@@ -296,12 +265,10 @@ AuSoundRecordToBucket(
 		      AuFlowID *,		/* RETURN_flow */
 		      int *,			/* RETURN_volume_mult_elem */
 		      AuStatus *		/* RETURN status */
-#endif
 );
 
 extern AuEventHandlerRec *
 AuSoundPlayFromBucket(
-#if NeedFunctionPrototypes
 		      AuServer *,		/* server */
 		      AuBucketID,		/* source */
 		      AuDeviceID,		/* destination */
@@ -313,14 +280,11 @@ AuSoundPlayFromBucket(
 		      int *,			/* RETURN_volume_mult_elem */
 		      int *,			/* RETURN_monitor_element */
 		      AuStatus *		/* RETURN_status */
-#endif
 );
 
 extern AuUint32
 AuSoundRecordToDataLength(
-#if NeedFunctionPrototypes
 		    AuEventHandlerRec *		/* which */
-#endif
 );
 _AUFUNCPROTOEND
 

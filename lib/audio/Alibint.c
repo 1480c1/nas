@@ -117,29 +117,23 @@ typedef union {
 } _AuAlignedBuffer;
 
 static char *_AuAsyncReply (
-#if NeedFunctionPrototypes
-    AuServer *,		/* server */
-    auReply *,		/* rep */
-    char *,		/* buf */
-    int *, 		/* lenp */
-    AuBool		/* discard */
-#endif
+                            AuServer *,		/* server */
+                            auReply *,		/* rep */
+                            char *,		/* buf */
+                            int *, 		/* lenp */
+                            AuBool		/* discard */
 );
 
-static void _AuEnq(
-#if NeedFunctionPrototypes
-    AuServer *,			/* server */
-    auEvent *,			/* event */
-    int				/* who */
-#endif
+static void _AuEnq(AuServer *,	/* server */
+                   auEvent *,   /* event */
+                   int		/* who */
+
 );
 
 static void _AuEventEnqueued(
-#if NeedFunctionPrototypes
-    AuServer *,			/* server */
-    int,			/* who */
-    AuEvent *			/* event */
-#endif
+                             AuServer *,			/* server */
+                             int,			/* who */
+                             AuEvent *			/* event */
 );
 
 /*
@@ -179,8 +173,7 @@ static auReq _dummy_request = {
  * until the connection is writable.
  */
 static void
-_AuWaitForWritable(aud)
-    AuServer *aud;
+_AuWaitForWritable(AuServer *aud)
 {
 #if !defined(AMOEBA) && !defined(_MINIX)
 #ifndef WIN32
@@ -281,8 +274,7 @@ _AuWaitForWritable(aud)
 
 
 static void
-_AuWaitForReadable(aud)
-  AuServer *aud;
+_AuWaitForReadable(AuServer *aud)
 {
 #ifndef WIN32
 #if !defined(AMOEBA) && !defined(_MINIX)
@@ -325,8 +317,7 @@ _AuWaitForReadable(aud)
  * This routine may have to be reworked if int < AuInt32.
  */
 void
-_AuFlush (aud)
-	register AuServer *aud;
+_AuFlush (register AuServer *aud)
 {
 	register AuInt32 size, todo;
 	register int write_stat;
@@ -371,9 +362,7 @@ _AuFlush (aud)
 }
 
 int
-_AuEventsQueued (aud, mode)
-    register AuServer *aud;
-    int mode;
+_AuEventsQueued (register AuServer *aud, int mode)
 {
 	register int len;
 	int pend;
@@ -458,8 +447,7 @@ _AuEventsQueued (aud, mode)
  * then read as many events as possible (but at least 1) and enqueue them
  */
 void
-_AuReadEvents(aud)
-	register AuServer *aud;
+_AuReadEvents(register AuServer *aud)
 {
   _AuAlignedBuffer buf;
   int pend;
@@ -525,10 +513,7 @@ _AuReadEvents(aud)
  * reads.  This routine may have to be reworked if int < AuInt32.
  */
 void
-_AuRead (aud, data, size)
-	register AuServer *aud;
-	register char *data;
-	register AuInt32 size;
+_AuRead (register AuServer *aud, register char *data, register AuInt32 size)
 {
 	register AuInt32 bytes_read;
 
@@ -582,11 +567,8 @@ _AuRead (aud, data, size)
  *            into a AuInt32 (64 bits on a CRAY computer).
  * 
  */
-static _doXRead32 (aud, data, size, packbuffer)
-        register AuServer *aud;
-        register AuInt32 *data;
-        register AuInt32 size;
-	register char *packbuffer;
+static _doXRead32 (register AuServer *aud, register AuInt32 *data, 
+                   register AuInt32 size, register char *packbuffer)
 {
  AuInt32 *lpack,*lp;
  AuInt32 mask32 = 0x00000000ffffffff;
@@ -609,10 +591,7 @@ static _doXRead32 (aud, data, size, packbuffer)
         }
 }
 
-_AuRead32 (aud, data, len)
-    AuServer *aud;
-    AuInt32 *data;
-    AuInt32 len;
+_AuRead32 (AuServer *aud, AuInt32 *data, AuInt32 len)
 {
     char packbuffer[PACKBUFFERSIZE];
     unsigned nunits = PACKBUFFERSIZE >> 2;
@@ -630,7 +609,8 @@ _AuRead32 (aud, data, len)
  *            into a AuInt32 (64 bits on a CRAY computer).
  *
  */
-static _doXRead16 (aud, data, size, packbuffer)
+static _doXRead16 (register AuServer *aud, register short *data, 
+                   register AuInt32 size, char *packbuffer)
         register AuServer *aud;
         register short *data;
         register AuInt32 size;
@@ -657,10 +637,7 @@ static _doXRead16 (aud, data, size, packbuffer)
         }
 }
 
-_AuRead16 (aud, data, len)
-    AuServer *aud;
-    short *data;
-    AuInt32 len;
+_AuRead16 (AuServer *aud, short *data, AuInt32 len)
 {
     char packbuffer[PACKBUFFERSIZE];
     unsigned nunits = PACKBUFFERSIZE >> 1;
@@ -671,10 +648,7 @@ _AuRead16 (aud, data, len)
     if (len) _doXRead16 (aud, data, len, packbuffer);
 }
 
-_AuRead16Pad (aud, data, size)
-    AuServer *aud;
-    short *data;
-    AuInt32 size;
+_AuRead16Pad (AuServer *aud, short *data, AuInt32 size)
 {
     int slop = (size & 3);
     short slopbuf[3];
@@ -693,10 +667,7 @@ _AuRead16Pad (aud, data, size)
  * bytes. This routine may have to be reworked if int < AuInt32.
  */
 void
-_AuReadPad (aud, data, size)
-    	register AuServer *aud;	
-	register char *data;
-	register AuInt32 size;
+_AuReadPad (register AuServer *aud, register char *data, register AuInt32 size)
 {
     	register AuInt32 bytes_read;
 	struct iovec iov[2];
@@ -775,10 +746,7 @@ _AuReadPad (aud, data, size)
  * This routine may have to be reworked if int < AuInt32;
  */
 void
-_AuSend (aud, data, size)
-	register AuServer *aud;
-	char *data;
-	register AuInt32 size;
+_AuSend (register AuServer *aud, char *data, register AuInt32 size)
 {
 	struct iovec iov[3];
 	static char pad[3] = {0, 0, 0};
@@ -871,8 +839,7 @@ _AuSend (aud, data, size)
  * can roll his own and instatantiate it if he wants, but must
  * follow the rules.
  */
-AuID _AuAllocID (aud)
-    register AuServer *aud;
+AuID _AuAllocID (register AuServer *aud)
 {
    AuID id;
 
@@ -900,9 +867,7 @@ AuID _AuAllocID (aud)
  */
 
 AuUint32
-_AuSetLastRequestRead(aud, rep)
-    register AuServer *aud;
-    register auGenericReply *rep;
+_AuSetLastRequestRead(register AuServer *aud, register auGenericReply *rep)
 {
     register AuUint32	newseq, lastseq;
 
@@ -929,13 +894,12 @@ _AuSetLastRequestRead(aud, rep)
  * _AuReply - Wait for a reply packet and copy its contents into the
  * specified rep.  Mean while we must handle error and event packets that
  * we may encounter.
+ *
+ *   int extra;		number of 32-bit words expected after the reply 
+ *   AuBool discard;	should I discard data following "extra" words? 
  */
-AuBool _AuReply (aud, rep, extra, discard, ret_status)
-    register AuServer *aud;
-    register auReply *rep;
-    int extra;		/* number of 32-bit words expected after the reply */
-    AuBool discard;	/* should I discard data following "extra" words? */
-    AuStatus *ret_status;
+AuBool _AuReply (register AuServer *aud, register auReply *rep, 
+                 int extra, AuBool discard, AuStatus *ret_status)
 {
     /* Pull out the serial number now, so that (currently illegal) requests
      * generated by an error handler don't confuse us.
@@ -1056,12 +1020,8 @@ AuBool _AuReply (aud, rep, extra, discard, ret_status)
 }   
 
 static char *
-_AuAsyncReply(aud, rep, buf, lenp, discard)
-    AuServer *aud;
-    register auReply *rep;
-    char *buf;
-    register int *lenp;
-    AuBool discard;
+_AuAsyncReply(AuServer *aud, register auReply *rep, char *buf, 
+              register int *lenp, AuBool discard)
 {
     register _AuAsyncHandler *async, *next;
     register int len;
@@ -1117,12 +1077,8 @@ _AuAsyncReply(aud, rep, buf, lenp, discard)
  * error_code, major, and minor all to 0 to catch all errors.
  */
 AuBool
-_AuForceRoundTrip (aud, error_code, majorop, minorop, ret_status)
-    AuServer *aud;
-    int error_code;
-    int majorop;
-    int minorop;
-    AuStatus *ret_status;
+_AuForceRoundTrip (AuServer *aud, int error_code, int majorop, int minorop, 
+                   AuStatus *ret_status)
 {
     AuUint32 seq = aud->request;	 /* get previous request */
     auGetCloseDownModeReply rep;
@@ -1158,9 +1114,7 @@ _AuForceRoundTrip (aud, error_code, majorop, minorop, ret_status)
 
 /* Read and discard "n" 8-bit bytes of data */
 
-void _AuEatData (aud, n)
-    AuServer *aud;
-    register AuUint32 n;
+void _AuEatData (AuServer *aud, register AuUint32 n)
 {
 #define SCRATCHSIZE 2048
     char buf[SCRATCHSIZE];
@@ -1174,11 +1128,9 @@ void _AuEatData (aud, n)
 }
 
 AuEventEnqHandlerRec *
-AuRegisterEventEnqHandler(aud, who, callback, data)
-AuServer       *aud;
-int             who;
-AuEventEnqHandlerCallback callback;
-AuPointer       data;
+AuRegisterEventEnqHandler(AuServer *aud, int who, 
+                          AuEventEnqHandlerCallback callback, 
+                          AuPointer data)
 {
     AuEventEnqHandlerRec *handler;
 
@@ -1196,19 +1148,14 @@ AuPointer       data;
 }
 
 void
-AuUnregisterEventEnqHandler(aud, handler)
-AuServer       *aud;
-AuEventEnqHandlerRec *handler;
+AuUnregisterEventEnqHandler(AuServer *aud, AuEventEnqHandlerRec *handler)
 {
     _AuRemoveFromLinkedList(aud->eventenqhandlerq, handler);
     Aufree(handler);
 }
 
 static void
-_AuEventEnqueued(aud, who, event)
-AuServer       *aud;
-int             who;
-AuEvent        *event;
+_AuEventEnqueued(AuServer *aud, int who, AuEvent *event)
 {
     AuEventEnqHandlerRec *p = aud->eventenqhandlerq,
                    *next;
@@ -1226,10 +1173,7 @@ AuEvent        *event;
  * _AuEnq - Place event packets on the server's queue.
  */
 static void
-_AuEnq (aud, event, who)
-	register AuServer *aud;
-	register auEvent *event;
-        int who;
+_AuEnq (register AuServer *aud, register auEvent *event, int who)
 {
 	register _AuQEvent *qelt;
 
@@ -1261,14 +1205,16 @@ _AuEnq (aud, event, who)
 }
 /*
  * EventToWire in separate file in that often not needed.
+ *
+ * AuServer *aud;	 pointer to server structure 
+ * AuEvent *re;	         pointer to where event should be reformatted 
+ * auEvent *event;	 wire protocol event 
  */
 
 /*ARGSUSED*/
 AuBool
-_AuUnknownWireEvent(aud, re, event)
-register AuServer *aud;	/* pointer to server structure */
-register AuEvent *re;	/* pointer to where event should be reformatted */
-register auEvent *event;	/* wire protocol event */
+_AuUnknownWireEvent(register AuServer *aud, register AuEvent *re, 
+                    register auEvent *event)
 {
 #ifdef notdef
 	(void) fprintf(stderr, 
@@ -1280,10 +1226,8 @@ register auEvent *event;	/* wire protocol event */
 
 /*ARGSUSED*/
 AuStatus
-_AuUnknownNativeEvent(aud, re, event)
-register AuServer *aud;	/* pointer to server structure */
-register AuEvent *re;	/* pointer to where event should be reformatted */
-register auEvent *event;	/* wire protocol event */
+_AuUnknownNativeEvent(register AuServer *aud, register AuEvent *re, 
+                      register auEvent *event)
 {
 #ifdef notdef
 	(void) fprintf(stderr, 
@@ -1296,12 +1240,8 @@ register auEvent *event;	/* wire protocol event */
  * reformat a wire event into an AuEvent structure of the right type.
  */
 AuBool
-_AuWireToEvent(aud, re, event)
-register AuServer *aud;				/* pointer to server
-						 * structure */
-register AuEvent *re;				/* pointer to where event
-						 * should be reformatted */
-register auEvent *event;			/* wire protocol event */
+_AuWireToEvent(register AuServer *aud, register AuEvent *re, 
+               register auEvent *event)
 {
 
     re->type = event->u.u.type & 0x7f;
@@ -1372,8 +1312,7 @@ static char *_SysErrorMsg (int n)
  * when an Au internal system error is encountered.
  */
 void
-_AuDefaultIOError (aud)
-	AuServer *aud;
+_AuDefaultIOError (AuServer *aud)
 {
 	if (errno == EPIPE) {
 	    (void) fprintf (stderr,
@@ -1389,14 +1328,12 @@ _AuDefaultIOError (aud)
 			AuServerQLength(aud));
 
 	}
-	exit(1);
+	exit(1);                /* JET - is there a way to handle this
+                                   w/o being so heavy-handed? */
 }
 
 
-int _AuPrintDefaultError (aud, event, fp)
-    AuServer *aud;
-    AuErrorEvent *event;
-    FILE *fp;
+int _AuPrintDefaultError (AuServer *aud, AuErrorEvent *event, FILE *fp)
 {
     char buffer[BUFSIZ];
     char mesg[BUFSIZ];
@@ -1483,9 +1420,7 @@ int _AuPrintDefaultError (aud, event, fp)
     return 1;
 }
 
-int _AuDefaultError(aud, event)
-	AuServer *aud;
-	AuErrorEvent *event;
+int _AuDefaultError(AuServer *aud, AuErrorEvent *event)
 {
     if (_AuPrintDefaultError (aud, event, stderr) == 0) return 0;
     exit(1);
@@ -1493,10 +1428,8 @@ int _AuDefaultError(aud, event)
 }
 
 /*ARGSUSED*/
-AuBool _AuDefaultWireError(server, he, we)
-    AuServer     *server;
-    AuErrorEvent *he;
-    auError      *we;
+AuBool _AuDefaultWireError(AuServer *server, AuErrorEvent *he, 
+                           auError *we)
 {
     return AuTrue;
 }
@@ -1504,9 +1437,7 @@ AuBool _AuDefaultWireError(server, he, we)
 /*
  * _AuError - upcall internal or user protocol error handler
  */
-int _AuError (aud, rep)
-    AuServer *aud;
-    register auError *rep;
+int _AuError (AuServer *aud, register auError *rep)
 {
     /* 
      * Au_Error packet encountered!  We need to unpack the error before
@@ -1552,8 +1483,7 @@ int _AuError (aud, rep)
 /*
  * _AuIOError - call user connection error handler and exit
  */
-int _AuIOError (aud)
-    AuServer *aud;
+int _AuIOError (AuServer *aud)
 {
     aud->flags |= AuServerFlagsIOError;
     if (aud->funcs.ioerror_handler != NULL)
@@ -1569,31 +1499,27 @@ int _AuIOError (aud)
  * audiolib routine for scratch space.  It is reallocated from the same place
  * each time, unless the library needs a large scratch space.
  */
-char *_AuAllocScratch (aud, nbytes)
-	register AuServer *aud;
-	AuUint32 nbytes;
+char *_AuAllocScratch (register AuServer *aud, AuUint32 nbytes)
 {
 	if (nbytes > aud->scratch_length) {
-	    if (aud->scratch_buffer) Aufree (aud->scratch_buffer);
-	    if ((aud->scratch_buffer = Aumalloc((unsigned) nbytes)) != NULL)
-		aud->scratch_length = nbytes;
+	    if (aud->scratch_buffer) Aufree ((void *)aud->scratch_buffer);
+	    if ((aud->scratch_buffer = 
+                 (char *)Aumalloc((unsigned) nbytes)) != NULL)
+              aud->scratch_length = nbytes;
 	    else aud->scratch_length = 0;
 	}
-	return (aud->scratch_buffer);
+	return ((char *)aud->scratch_buffer);
 }
 
 
 void 
-AuFree (data)
-    AuPointer data;
+AuFree (AuPointer data)
 {
 	Aufree (data);
 }
 
 #ifdef _AUNEEDBCOPYFUNC
-void _Aubcopy(b1, b2, length)
-    register char *b1, *b2;
-    register length;
+void _Aubcopy(register char *b1, register char *b2, register int length)
 {
     if (b1 < b2) {
 	b2 += length;
@@ -1608,10 +1534,7 @@ void _Aubcopy(b1, b2, length)
 #endif
 
 #ifdef _AuDataRoutineIsProcedure
-void _AuData (aud, data, len)
-	AuServer *aud;
-	char *data;
-	AuInt32 len;
+void _AuData (AuServer *aud, char *data, AuInt32 len)
 {
 	if (aud->bufptr + (len) <= aud->bufmax) {
 		bcopy(data, aud->bufptr, (int)len);
@@ -1638,11 +1561,8 @@ void _AuData (aud, data, len)
  * "len" is the length in bytes of the data.
  */
 
-static do_AuData16(aud, data, len, packbuffer)
-    register AuServer *aud;
-    short *data;
-    unsigned len;
-    char *packbuffer;
+static do_AuData16(register AuServer *aud, short *data, unsigned int len, 
+                   char *packbuffer)
 {
     AuInt32 *lp,*lpack;
     AuInt32 i, nwords,bits;
@@ -1671,10 +1591,7 @@ static do_AuData16(aud, data, len, packbuffer)
         _AuData(aud, packbuffer, len);
 }
 
-_AuData16 (aud, data, len)
-    AuServer *aud;
-    short *data;
-    unsigned len;
+_AuData16 (AuServer *aud, short *data, unsigned int len)
 {
     char packbuffer[PACKBUFFERSIZE];
     unsigned nunits = PACKBUFFERSIZE >> 1;
@@ -1693,11 +1610,8 @@ _AuData16 (aud, data, len)
  * "len" is the length in bytes of the data.
  */
 
-static do_AuData32 (aud, data, len, packbuffer)
-    register AuServer *aud;
-    AuInt32 *data;
-    unsigned len;
-    char *packbuffer;
+static do_AuData32 (register AuServer *aud, AuInt32 *data, 
+                    unsigned int len, char *packbuffer)
 {
     AuInt32 *lp,*lpack;
     AuInt32 i,bits,nwords;
@@ -1724,10 +1638,7 @@ static do_AuData32 (aud, data, len, packbuffer)
         _AuData(aud, packbuffer, len);
 }
 
-_AuData32 (aud, data, len)
-    AuServer *aud;
-    AuInt32 *data;
-    unsigned len;
+_AuData32 (AuServer *aud, AuInt32 *data, unsigned int len)
 {
     char packbuffer[PACKBUFFERSIZE];
     unsigned nunits = PACKBUFFERSIZE >> 2;
@@ -1746,8 +1657,7 @@ _AuData32 (aud, data, len)
  * aud->qfree - free the queue of events, called by AuCloseServer
  */
 
-void _AuFreeQ (aud)
-    AuServer *aud;
+void _AuFreeQ (AuServer *aud)
 {
     register _AuQEvent *qelt = aud->qfree;
   
@@ -1777,9 +1687,7 @@ void _AuFreeQ (aud)
 /*
  * _AuGetHostname - similar to gethostname but allows special processing.
  */
-int _AuGetHostname (buf, maxlen)
-    char *buf;
-    int maxlen;
+int _AuGetHostname (char *buf, int maxlen)
 {
     int len;
 
@@ -1807,8 +1715,7 @@ int _AuGetHostname (buf, maxlen)
  * This is a macro if MSKCNT <= 4
  */
 int
-_AuANYSET(src)
-    AuInt32	*src;
+_AuANYSET(AuInt32 *src)
 {
     int i;
 
@@ -1827,38 +1734,32 @@ _AuANYSET(src)
  */
 #include <sys/socket.h>
 
-int _AuReadV (fd, iov, iovcnt)
-int fd;
-struct iovec *iov;
-int iovcnt;
+int _AuReadV (int fd, struct iovec *iov, int iovcnt)
 {
-	struct msghdr hdr;
-
-	hdr.msg_iov = iov;
-	hdr.msg_iovlen = iovcnt;
-	hdr.msg_accrights = 0;
-	hdr.msg_accrightslen = 0;
-	hdr.msg_name = 0;
-	hdr.msg_namelen = 0;
-
-	return (recvmsg (fd, &hdr, 0));
+  struct msghdr hdr;
+  
+  hdr.msg_iov = iov;
+  hdr.msg_iovlen = iovcnt;
+  hdr.msg_accrights = 0;
+  hdr.msg_accrightslen = 0;
+  hdr.msg_name = 0;
+  hdr.msg_namelen = 0;
+  
+  return (recvmsg (fd, &hdr, 0));
 }
 
-int _AuWriteV (fd, iov, iovcnt)
-int fd;
-struct iovec *iov;
-int iovcnt;
+int _AuWriteV (int fd, struct iovec *iov, int iovcnt)
 {
-	struct msghdr hdr;
-
-	hdr.msg_iov = iov;
-	hdr.msg_iovlen = iovcnt;
-	hdr.msg_accrights = 0;
-	hdr.msg_accrightslen = 0;
-	hdr.msg_name = 0;
-	hdr.msg_namelen = 0;
-
-	return (sendmsg (fd, &hdr, 0));
+  struct msghdr hdr;
+  
+  hdr.msg_iov = iov;
+  hdr.msg_iovlen = iovcnt;
+  hdr.msg_accrights = 0;
+  hdr.msg_accrightslen = 0;
+  hdr.msg_name = 0;
+  hdr.msg_namelen = 0;
+  
+  return (sendmsg (fd, &hdr, 0));
 }
 
 #endif /* CRAY */
@@ -1872,61 +1773,55 @@ int iovcnt;
 #include <sys/uio.h>
 #endif /* !WIN32 */
 
-int _AuReadV (fd, iov, iovcnt)
-int fd;
-struct iovec *iov;
-int iovcnt;
+int _AuReadV (int fd, struct iovec *iov, int iovcnt)
 {
-    int i, len, total;
-    char *base;
-
-    errno = 0;
-    for (i=0, total=0;  i<iovcnt;  i++, iov++) {
-	len = iov->iov_len;
-	base = iov->iov_base;
-	while (len > 0) {
-	    register int nbytes;
+  int i, len, total;
+  char *base;
+  
+  errno = 0;
+  for (i=0, total=0;  i<iovcnt;  i++, iov++) {
+    len = iov->iov_len;
+    base = iov->iov_base;
+    while (len > 0) {
+      register int nbytes;
 #ifndef WIN32
-	    nbytes = read(fd, base, len);
+      nbytes = read(fd, base, len);
 #else /* WIN32 */
-	    nbytes = recv(fd, base, len, 0);
+      nbytes = recv(fd, base, len, 0);
 #endif /* WIN32 */
-	    if (nbytes < 0 && total == 0)  return -1;
-	    if (nbytes <= 0)  return total;
-	    errno = 0;
-	    len   -= nbytes;
-	    total += nbytes;
-	    base  += nbytes;
-	}
+      if (nbytes < 0 && total == 0)  return -1;
+      if (nbytes <= 0)  return total;
+      errno = 0;
+      len   -= nbytes;
+      total += nbytes;
+      base  += nbytes;
     }
-    return total;
+  }
+  return total;
 }
 
 #ifdef WIN32
-int _AuWriteV (fd, iov, iovcnt)
-int fd;
-struct iovec *iov;
-int iovcnt;
+int _AuWriteV (int fd, struct iovec *iov, int iovcnt)
 {
-    int i, len, total;
-    char *base;
-
-    errno = 0;
-    for (i=0, total=0;  i<iovcnt;  i++, iov++) {
-	len = iov->iov_len;
-	base = iov->iov_base;
-	while (len > 0) {
-	    register int nbytes;
-	    nbytes = send(fd, base, len, 0);
-	    if (nbytes < 0 && total == 0)  return -1;
-	    if (nbytes <= 0)  return total;
-	    errno = 0;
-	    len   -= nbytes;
-	    total += nbytes;
-	    base  += nbytes;
-	}
+  int i, len, total;
+  char *base;
+  
+  errno = 0;
+  for (i=0, total=0;  i<iovcnt;  i++, iov++) {
+    len = iov->iov_len;
+    base = iov->iov_base;
+    while (len > 0) {
+      register int nbytes;
+      nbytes = send(fd, base, len, 0);
+      if (nbytes < 0 && total == 0)  return -1;
+      if (nbytes <= 0)  return total;
+      errno = 0;
+      len   -= nbytes;
+      total += nbytes;
+      base  += nbytes;
     }
-    return total;
+  }
+  return total;
 }
 #endif /* WIN32 */
 
@@ -1982,90 +1877,84 @@ static char workarea[MAX_WORKAREA];
 
 
 int
-_AuReadV (fd, v, n)
-    int		fd;
-    struct iovec v[];
-    int		n;
+_AuReadV (int fd, struct iovec v[], int n)
 {
-	int i, rc, len, size = 0;
-	char * buf = workarea;
-	char * p;
-
-	if (n <= 0 || n > 16)
-	{
-		errno = EINVAL;
-		return (-1);
-	}
-	for (i = 0; i < n; ++i)
-	{
-		if ((len = v[i].iov_len) < 0 || v[i].iov_base == NULL)
-		{
-			errno = EINVAL;
-			return (-1);
-		}
-		size += len;
-	}
-	if ((size > MAX_WORKAREA) && ((buf = malloc (size)) == NULL))
-	{
-		errno = EINVAL;
-		return (-1);
-	}
-	if((rc = (*_AusStream[_AusTypeOfStream[fd]].ReadFromStream)(fd, buf, size,
-							     BUFFERING))> 0)
-	{
-		for (i = 0, p = buf; i < n; ++i)
-		{
-			memcpy (v[i].iov_base, p, len = v[i].iov_len);
-			p += len;
-		}
-	}
-	if (size > MAX_WORKAREA)
-		free (buf);
-
-	return (rc);
+  int i, rc, len, size = 0;
+  char * buf = workarea;
+  char * p;
+  
+  if (n <= 0 || n > 16)
+    {
+      errno = EINVAL;
+      return (-1);
+    }
+  for (i = 0; i < n; ++i)
+    {
+      if ((len = v[i].iov_len) < 0 || v[i].iov_base == NULL)
+        {
+          errno = EINVAL;
+          return (-1);
+        }
+      size += len;
+    }
+  if ((size > MAX_WORKAREA) && ((buf = malloc (size)) == NULL))
+    {
+      errno = EINVAL;
+      return (-1);
+    }
+  if((rc = (*_AusStream[_AusTypeOfStream[fd]].ReadFromStream)(fd, buf, size,
+                                                              BUFFERING))> 0)
+    {
+      for (i = 0, p = buf; i < n; ++i)
+        {
+          memcpy (v[i].iov_base, p, len = v[i].iov_len);
+          p += len;
+        }
+    }
+  if (size > MAX_WORKAREA)
+    free (buf);
+  
+  return (rc);
 }
 
 int
-_AuWriteV (fd, v, n)
-    int fd;
-    struct iovec v[];
-    int n;
+_AuWriteV (int fd, struct iovec v[], int n)
 {
-	int i, rc, len, size = 0;
-	char * buf = workarea;
-	char * p;
-
-	if (n <= 0 || n > 16)
-	{
-		errno = EINVAL;
-		return (-1);
-	}
-	for (i = 0; i < n; ++i)
-	{
-		if ((len = v[i].iov_len) < 0 || v[i].iov_base == NULL)
-		{
-			errno = EINVAL;
-			return (-1);
-		}
-		size += len;
-	}
-
-	if ((size > MAX_WORKAREA) && ((buf = malloc (size)) == NULL))
-	{
-		errno = EINVAL;
-		return (-1);
-	}
-	for (i = 0, p = buf; i < n; ++i)
-	{
-		memcpy (p, v[i].iov_base, len = v[i].iov_len);
-		p += len;
-	}
-	rc = (*_AusStream[_AusTypeOfStream[fd]].WriteToStream)(fd, buf, size);
-
-	if (size > MAX_WORKAREA)
-		free (buf);
-
-	return (rc);
+  int i, rc, len, size = 0;
+  char * buf = workarea;
+  char * p;
+  
+  if (n <= 0 || n > 16)
+    {
+      errno = EINVAL;
+      return (-1);
+    }
+  for (i = 0; i < n; ++i)
+    {
+      if ((len = v[i].iov_len) < 0 || v[i].iov_base == NULL)
+        {
+          errno = EINVAL;
+          return (-1);
+        }
+      size += len;
+    }
+  
+  if ((size > MAX_WORKAREA) && ((buf = malloc (size)) == NULL))
+    {
+      errno = EINVAL;
+      return (-1);
+    }
+  for (i = 0, p = buf; i < n; ++i)
+    {
+      memcpy (p, v[i].iov_base, len = v[i].iov_len);
+      p += len;
+    }
+  rc = (*_AusStream[_AusTypeOfStream[fd]].WriteToStream)(fd, buf, size);
+  
+  if (size > MAX_WORKAREA)
+    free (buf);
+  
+  return (rc);
 }
 
 
@@ -2074,29 +1963,21 @@ _AuWriteV (fd, v, n)
 
 #ifndef HAS_FAKE_IOV
 int
-_AuReadV (fd, v, n)
-    int		fd;
-    struct iovec v[];
-    int		n;
+_AuReadV (int fd, struct iovec v[], int n)
 {
-	return(readv(fd, v, n));
+  return(readv(fd, v, n));
 }
 
 int
-_AuWriteV (fd, v, n)
-    int fd;
-    struct iovec v[];
-    int n;
+_AuWriteV (int fd, struct iovec v[], int n)
 {
-	return(writev(fd, v, n));
+  return(writev(fd, v, n));
 }
 #endif /* HAS_FAKE_IOV */
 
 AuSyncHandlerRec *
-AuRegisterSyncHandler(aud, callback, data)
-AuServer       *aud;
-AuSyncHandlerCallback callback;
-AuPointer       data;
+AuRegisterSyncHandler(AuServer *aud, AuSyncHandlerCallback callback, 
+                      AuPointer data)
 {
     AuSyncHandlerRec *handler;
 
@@ -2112,17 +1993,14 @@ AuPointer       data;
 }
 
 void
-AuUnregisterSyncHandler(aud, handler)
-AuServer       *aud;
-AuSyncHandlerRec *handler;
+AuUnregisterSyncHandler(AuServer *aud, AuSyncHandlerRec *handler)
 {
     _AuRemoveFromLinkedList(aud->synchandler, handler);
     Aufree(handler);
 }
 
 void
-_AuDoSyncHandle(aud)
-AuServer       *aud;
+_AuDoSyncHandle(AuServer *aud)
 {
     AuSyncHandlerRec *p = aud->synchandler,
                    *next;

@@ -39,9 +39,10 @@
 #define PAD2(_x)	(((_x) + 1) & ~1)
 
 static int
-readChunk(c, fp)
-RiffChunk      *c;
-FILE           *fp;
+readChunk(
+          RiffChunk      *c,
+          FILE           *fp
+          )
 {
     int             status;
     char            n;
@@ -54,8 +55,7 @@ FILE           *fp;
 }
 
 WaveInfo       *
-WaveOpenFileForReading(name)
-_WaveConst char *name;
+WaveOpenFileForReading(_WaveConst char *name)
 {
     RiffChunk       ck;
     RIFF_FOURCC     fourcc;
@@ -185,9 +185,10 @@ _WaveConst char *name;
 }
 
 WaveInfo       *
-WaveOpenFileForWriting(name, wi)
-_WaveConst char *name;
-WaveInfo       *wi;
+WaveOpenFileForWriting(
+                       _WaveConst char *name,
+                       WaveInfo       *wi
+                       )
 {
     int             n;
 
@@ -255,8 +256,7 @@ WaveInfo       *wi;
 }
 
 int
-WaveCloseFile(wi)
-WaveInfo       *wi;
+WaveCloseFile(WaveInfo *wi)
 {
     int             status = 0;
 
@@ -284,19 +284,21 @@ WaveInfo       *wi;
 }
 
 int
-WaveReadFile(p, n, wi)
-char           *p;
-int             n;
-WaveInfo       *wi;
+WaveReadFile(
+             char           *p,
+             int             n,
+             WaveInfo       *wi
+             )
 {
     return fread(p, 1, n, wi->fp);
 }
 
 int
-WaveWriteFile(p, n, wi)
-char           *p;
-int             n;
-WaveInfo       *wi;
+WaveWriteFile(
+              char           *p,
+              int             n,
+              WaveInfo       *wi
+              )
 {
     int             num;
 
@@ -306,32 +308,30 @@ WaveInfo       *wi;
 }
 
 int
-WaveRewindFile(wi)
-WaveInfo       *wi;
+WaveRewindFile(WaveInfo *wi)
 {
     return wi->writing ? -1 : fseek(wi->fp, wi->dataOffset + sizeof(long), 0);
 }
 
 int
-WaveSeekFile(n, wi)
-int              n;
-WaveInfo       *wi;
+WaveSeekFile(
+             int              n,
+             WaveInfo       *wi
+             )
 {
     return wi->writing ? -1 :
 	fseek(wi->fp, wi->dataOffset + sizeof(long) + n, 0);
 }
 
 int
-WaveTellFile(wi)
-WaveInfo       *wi;
+WaveTellFile(WaveInfo *wi)
 {
     return wi->writing ? -1 :
 	ftell(wi->fp) - wi->dataOffset - sizeof(long);
 }
 
 int
-WaveFlushFile(wi)
-WaveInfo       *wi;
+WaveFlushFile(WaveInfo *wi)
 {
     return fflush(wi->fp);
 }

@@ -67,7 +67,6 @@ static int xferConnectionSetup();
  * Connects to a server, creates a AuServer object and returns a pointer to
  * the newly created AuServer back to the caller.
  */
-#if NeedFunctionPrototypes
 AuServer *AuOpenServer (
 	register _AuConst char *server,
 	int num_authproto,
@@ -75,17 +74,6 @@ AuServer *AuOpenServer (
 	int num_authdata,
 	_AuConst char *authdata,
 	char **ret_svrmsg)
-#else
-AuServer *AuOpenServer (server, 
-			num_authproto, authproto,
-			num_authdata, authdata, ret_svrmsg)
-	register char *server;
-	int num_authproto;
-	char *authproto;
-	int num_authdata;
-	char *authdata;
-	char **ret_svrmsg;
-#endif
 {
 	register AuServer *aud;		/* New AuServer object being created */
 	register int i;
@@ -353,9 +341,10 @@ server is %d.%d!\r\n",
    after this returns. */
 
 static void
-_AuOCOutOfMemory (aud, setup)
-    AuServer *aud;
-    char *setup;
+_AuOCOutOfMemory (
+                  AuServer *aud,
+                  char *setup
+                  )
 {
     _AuDisconnectServer (aud->fd);
     _AuFreeServerStructure (aud);
@@ -380,8 +369,7 @@ _AuOCOutOfMemory (aud, setup)
 }
 
 void
-_AuFreeServerStructure(aud)
-register AuServer  *aud;
+_AuFreeServerStructure(register AuServer *aud)
 {
     int                 i;
 
@@ -440,10 +428,11 @@ static int xferFail(AuServer *aud, auConnSetup *src)
 }
 
 static int
-xferConnectionSetup(src, aud, varData)
-auConnSetup        *src;
-AuServer           *aud;
-unsigned char *varData;
+xferConnectionSetup(
+                    auConnSetup        *src,
+                    AuServer           *aud,
+                    unsigned char *varData
+                    )
 {
     int i;
 

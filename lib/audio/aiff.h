@@ -32,14 +32,6 @@
  * some ANSIfication definitions.
  */
 
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif						/* NeedFunctionPrototypes */
-
 #ifndef _AiffConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _AiffConst const
@@ -103,71 +95,53 @@ _FUNCPROTOBEGIN
 
 extern AiffInfo *
 AiffOpenFileForReading(
-#if NeedFunctionPrototypes
 		       _AiffConst char *	/* file name */
-#endif
 );
 
 extern AiffInfo *
 AiffOpenFileForWriting(
-#if NeedFunctionPrototypes
 		       _AiffConst char *,	/* file name */
 		       AiffInfo *		/* info */
-#endif
 );
 
 extern int
 AiffCloseFile(
-#if NeedFunctionPrototypes
 	      AiffInfo *			/* info */
-#endif
 );
 
 extern int
 AiffReadFile(
-#if NeedFunctionPrototypes
 	     char *,				/* buffer */
 	     int,				/* num bytes */
 	     AiffInfo *				/* info */
-#endif
 );
 
 extern int
 AiffWriteFile(
-#if NeedFunctionPrototypes
 	      char *,				/* buffer */
 	      int,				/* num bytes */
 	      AiffInfo *			/* info */
-#endif
 );
 
 extern int
 AiffSeekFile(
-#if NeedFunctionPrototypes
 	      int,                              /* number of audio bytes */
 	      AiffInfo *			/* info */
-#endif
 );
 
 extern int
 AiffTellFile(
-#if NeedFunctionPrototypes
 	      AiffInfo *			/* info */
-#endif
 );
 
 extern int
 AiffFlushFile(
-#if NeedFunctionPrototypes
 	      AiffInfo *			/* info */
-#endif
 );
 
 extern int
 AiffRewindFile(
-#if NeedFunctionPrototypes
 	       AiffInfo *			/* info */
-#endif
 );
 
 _FUNCPROTOEND

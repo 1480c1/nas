@@ -22,59 +22,35 @@
 #include <X11/Xauth.h>
 #include <X11/Xos.h>
 
+#ifndef _Xconst
+# if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
+#  define _Xconst const
+# else
+#  define _Xconst
+# endif
+#endif /* _Xconst */
+
 static
-binaryEqual (a, b, len)
-register char	*a, *b;
-register int	len;
+binaryEqual (register _Xconst char *a, register _Xconst char *b, int len)
 {
-    while (len--)
-	if (*a++ != *b++)
-	    return 0;
-    return 1;
+  while (len--)
+    if (*a++ != *b++)
+      return 0;
+  return 1;
 }
 
-#if NeedFunctionPrototypes
-#ifndef _Xconst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
-#define _Xconst const
-#else
-#define _Xconst
-#endif
-#endif /* _Xconst */
+
 
 Xauth *
 XauGetBestAuthByAddr (
-#if NeedWidePrototypes
-    unsigned int	family,
-    unsigned int	address_length,
-#else
     unsigned short	family,
     unsigned short	address_length,
-#endif
     _Xconst char*	address,
-#if NeedWidePrototypes
-    unsigned int	number_length,
-#else
     unsigned short	number_length,
-#endif
     _Xconst char*	number,
     int			types_length,
     char**		types,
     _Xconst int*	type_lengths)
-#else
-Xauth *
-XauGetBestAuthByAddr (family, address_length, address,
-			  number_length, number,
-			  types_length, types, type_lengths)
-    unsigned short	family;
-    unsigned short	address_length;
-    char		*address;
-    unsigned short	number_length;
-    char		*number;
-    int			types_length;
-    char		**types;
-    int			*type_lengths;
-#endif
 {
     FILE    *auth_file;
     char    *auth_name;

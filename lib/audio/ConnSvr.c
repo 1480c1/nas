@@ -138,9 +138,7 @@ static struct conntype {
 
 static void GetAuthorization();
 
-static char *copystring (src, len)
-    register _AuConst char *src;
-    int len;
+static char *copystring (register _AuConst char *src, int len)
 {
     char *dst = Aumalloc (len + 1);
 
@@ -154,8 +152,7 @@ static char *copystring (src, len)
 
 #ifdef STARTSERVER
 static int
-_AuIsLocal(name)
-	char *name;
+_AuIsLocal(char *name)
 {
 	struct hostent *hp, hs, *thp;
 	char **ap, addr[4];
@@ -188,11 +185,11 @@ _AuIsLocal(name)
 }
 
 static int
-_AuIsAudioOK()
+_AuIsAudioOK(void)              /* JET - what is this doing here? */
 {
-	if (access("/dev/audio", R_OK|W_OK) < 0)
-		return(AuFalse);
-	return(AuTrue);
+  if (access("/dev/audio", R_OK|W_OK) < 0)
+    return(AuFalse);
+  return(AuTrue);
 }
 
 #include <signal.h>
@@ -204,17 +201,15 @@ static int _AuServerUp;
 
 /*ARGSUSED*/
 static void
-_AuServerWait(sig)
-	int sig;
+_AuServerWait(int sig)
 {
-	if (_AuServerUp == AuFalse)
-		_AuServerUp = AuTrue;
+  if (_AuServerUp == AuFalse)
+    _AuServerUp = AuTrue;
 }
 
 static int
-_AuStartServer(iserver, xname)
-	int iserver;
-	AuBool xname;
+_AuStartServer(int iserver, AuBool xname)
+
 {
 	pid_t pid;
 
@@ -299,15 +294,15 @@ _AuStartServer(iserver, xname)
  *     o  UNIX domain socket
  *     o  TCP to local host
  */
-int _AuConnectServer (server_name, fullnamep, svrnump, 
-		      auth_namep, auth_namelenp, auth_datap, auth_datalenp)
-    _AuConst char *server_name;
-    char **fullnamep;			/* RETURN */
-    int *svrnump;			/* RETURN */
-    char **auth_namep;			/* RETURN */
-    int *auth_namelenp;			/* RETURN */
-    char **auth_datap;			/* RETURN */
-    int *auth_datalenp;			/* RETURN */
+int _AuConnectServer (
+    _AuConst char *server_name,
+    char **fullnamep,			/* RETURN */
+    int *svrnump,			/* RETURN */
+    char **auth_namep,			/* RETURN */
+    int *auth_namelenp,			/* RETURN */
+    char **auth_datap,			/* RETURN */
+    int *auth_datalenp			/* RETURN */
+    )
 {
     int family;
     int saddrlen;
@@ -725,15 +720,15 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 
 #ifdef DNETCONN
 /* ARGSUSED */
-static int MakeDECnetConnection (phostname, iserverp, xname, retries,
-				 familyp, saddrlenp, saddrp)
-    char *phostname;
-    int *iserverp;			/* can be RETURN */
-    AuBool xname;
-    int retries;
-    int *familyp;			/* RETURN */
-    int *saddrlenp;			/* RETURN */
-    char **saddrp;			/* RETURN */
+static int MakeDECnetConnection (
+                                 char *phostname,
+                                 int *iserverp, /* can be RETURN */
+                                 AuBool xname,
+                                 int retries,
+                                 int *familyp, /* RETURN */
+                                 int *saddrlenp, /* RETURN */
+                                 char **saddrp /* RETURN */
+                                 )
 {
     int fd;
     char objname[20];
@@ -788,15 +783,15 @@ static int MakeDECnetConnection (phostname, iserverp, xname, retries,
 #include <sys/un.h>
 
 /*ARGSUSED*/
-static int MakeUNIXSocketConnection (phostname, iserverp, xname, retries,
-				     familyp, saddrlenp, saddrp)
-    char *phostname;
-    int *iserverp;			/* can be RETURN */
-    AuBool xname;
-    int retries;
-    int *familyp;			/* RETURN */
-    int *saddrlenp;			/* RETURN */
-    char **saddrp;			/* RETURN */
+static int MakeUNIXSocketConnection (
+    char *phostname,
+    int *iserverp,			/* can be RETURN */
+    AuBool xname,
+    int retries,
+    int *familyp,			/* RETURN */
+    int *saddrlenp,			/* RETURN */
+    char **saddrp			/* RETURN */
+    )
 {
     struct sockaddr_un unaddr;		/* UNIX socket data block */
     struct sockaddr *addr;		/* generic socket pointer */
@@ -867,15 +862,15 @@ static int MakeUNIXSocketConnection (phostname, iserverp, xname, retries,
 
 
 #ifdef TCPCONN
-static int MakeTCPConnection (phostname, iserverp, xname, retries,
-			      familyp, saddrlenp, saddrp)
-    char *phostname;
-    int *iserverp;			/* can be RETURN */
-    AuBool xname;
-    int retries;
-    int *familyp;			/* RETURN */
-    int *saddrlenp;			/* RETURN */
-    char **saddrp;			/* RETURN */
+static int MakeTCPConnection (
+    char *phostname,
+    int *iserverp,			/* can be RETURN */
+    AuBool xname,
+    int retries,
+    int *familyp,			/* RETURN */
+    int *saddrlenp,			/* RETURN */
+    char **saddrp			/* RETURN */
+    )
 {
     char hostnamebuf[256];		/* tmp space */
 #ifndef _MINIX
@@ -1135,8 +1130,7 @@ static char Def_Local_Search[] = "SCO:USL:UNIX";
 static char Def_Local_Search[] = "USL:UNIX";
 #endif /* ATT */
 
-static int ParseLocalName(name)
-    char *name;
+static int ParseLocalName(char *name)
 {
     struct conntype *p;
 
@@ -1150,20 +1144,19 @@ static int ParseLocalName(name)
     return(TYPE_INVALID);
 }
 
-static void _dummy(temp)
-    int temp;
+static void _dummy(int temp)
 {
     return;
 }
 
-static int MakeLOCALConnection (phostname, iserverp, retries,
-				familyp, saddrlenp, saddrp)
-    char *phostname;
-    int *iserverp;			/* can be RETURN */
-    int retries;
-    int *familyp;			/* RETURN */
-    int *saddrlenp;			/* RETURN */
-    char **saddrp;			/* RETURN */
+static int MakeLOCALConnection (
+    char *phostname,
+    int *iserverp,			/* can be RETURN */
+    int retries,
+    int *familyp,			/* RETURN */
+    int *saddrlenp,			/* RETURN */
+    char **saddrp			/* RETURN */
+  )
 {
     int fds, fd, server, fl, ret;
     unsigned alarm_time;
@@ -1388,13 +1381,14 @@ char *getenv();
 void XAmReaderThread();
 
 static int
-MakeAmConnection(phostname, iserverp, retries, familyp, saddrlenp, saddrp)
-    char *phostname;
-    int *iserverp;			/* can be RETURN */
-    int retries;
-    int *familyp;			/* RETURN */
-    int *saddrlenp;			/* RETURN */
-    char **saddrp;			/* RETURN */
+MakeAmConnection(
+    char *phostname,
+    int *iserverp,			/* can be RETURN */
+    int retries,
+    int *familyp,			/* RETURN */
+    int *saddrlenp,			/* RETURN */
+    char **saddrp			/* RETURN */
+    )
 {
     capability xservercap;
     char xserverpath[256];
@@ -1570,10 +1564,7 @@ MakeAmConnection(phostname, iserverp, retries, familyp, saddrlenp, saddrp)
  * Disconnect from server.
  */
 
-int _AuDisconnectServer (server)
-
-    int server;
-
+int _AuDisconnectServer (int server)
 {
 #ifdef AMOEBA
     register XAmChanDesc *chandesc;
@@ -1601,10 +1592,12 @@ int _AuDisconnectServer (server)
 static int padlength[4] = {0, 3, 2, 1};	 /* make sure auth is multiple of 4 */
 
 AuBool
-_AuSendClientPrefix (aud, client, auth_proto, auth_string)
-     AuServer *aud;
-     auConnClientPrefix *client;	/* contains count for auth_* */
-     char *auth_proto, *auth_string;	/* NOT null-terminated */
+_AuSendClientPrefix (
+     AuServer *aud,
+     auConnClientPrefix *client,	/* contains count for auth_* */
+     char *auth_proto, 
+     char *auth_string	/* NOT null-terminated */
+     )
 {
     int auth_length = client->nbytesAuthProto;
     int auth_strlen = client->nbytesAuthString;
@@ -1735,11 +1728,12 @@ static int default_xauth_lengths[] = {
  * Create a credential that we can send to the X server.
  */
 static int
-auth_ezencode(servername, window, cred_out, len)
-        char           *servername;
-        int             window;
-	char	       *cred_out;
-        int            *len;
+auth_ezencode(
+        char           *servername,
+        int             window,
+	char	       *cred_out,
+        int            *len
+        )
 {
         AUTH           *a;
         XDR             xdr;
@@ -1765,50 +1759,39 @@ auth_ezencode(servername, window, cred_out, len)
 /* pre-X11R5 compatability */
 
 Xauth *XauGetBestAuthByAddr(
-#if NeedFunctionPrototypes
 #ifndef _Xconst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
-#define _Xconst const
-#else
-#define _Xconst
-#endif
+# if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
+#  define _Xconst const
+# else
+#  define _Xconst
+# endif
 #endif /* _Xconst */
 
-#if NeedWidePrototypes
-unsigned int	/* family */,
-unsigned int	/* address_length */,
-#else
 unsigned short	/* family */,
 unsigned short	/* address_length */,
-#endif
 _Xconst char*	/* address */,
-#if NeedWidePrototypes
-unsigned int	/* number_length */,
-#else
 unsigned short	/* number_length */,
-#endif
 _Xconst char*	/* number */,
 int		/* types_length */,
 char**		/* type_names */,
 _Xconst int*	/* type_lengths */
-#endif
 );
 
 #endif /* XlibSpecificationRelease < 5 */
 
 /* ARGSUSED */
 static void
-GetAuthorization(fd, family, saddr, saddrlen, iserver,
-		 auth_namep, auth_namelenp, auth_datap, auth_datalenp)
-    int fd;
-    int family;
-    int saddrlen;
-    int iserver;
-    char *saddr;
-    char **auth_namep;			/* RETURN */
-    int *auth_namelenp;			/* RETURN */
-    char **auth_datap;			/* RETURN */
-    int *auth_datalenp;			/* RETURN */
+GetAuthorization(
+    int fd,
+    int family,
+    int saddrlen,
+    int iserver,
+    char *saddr,
+    char **auth_namep,			/* RETURN */
+    int *auth_namelenp,			/* RETURN */
+    char **auth_datap,			/* RETURN */
+    int *auth_datalenp			/* RETURN */
+    )
 {
 #ifdef SECURE_RPC
     char rpc_cred[MAX_AUTH_BYTES];

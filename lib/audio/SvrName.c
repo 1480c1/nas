@@ -32,8 +32,7 @@ extern _AuConst char *getenv();
 #endif
 
 _AuConst char *
-AuServerName (name)
-    _AuConst char *name;
+AuServerName (_AuConst char *name)
 {
     if (name && name[0])
 	return name;

@@ -32,14 +32,6 @@
  * some ANSIfication definitions.
  */
 
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif						/* NeedFunctionPrototypes */
-
 #ifndef _VocConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _VocConst const
@@ -96,71 +88,53 @@ _FUNCPROTOBEGIN
 
 extern VocInfo *
 VocOpenFileForReading(
-#if NeedFunctionPrototypes
 		      _VocConst char *		/* file name */
-#endif
 );
 
 extern VocInfo *
 VocOpenFileForWriting(
-#if NeedFunctionPrototypes
 		      _VocConst char *,		/* file name */
 		      VocInfo *			/* info */
-#endif
 );
 
 extern int
 VocCloseFile(
-#if NeedFunctionPrototypes
 	     VocInfo *				/* info */
-#endif
 );
 
 extern int
 VocReadFile(
-#if NeedFunctionPrototypes
 	    char *,				/* buffer */
 	    int,				/* num bytes */
 	    VocInfo *				/* info */
-#endif
 );
 
 extern int
 VocWriteFile(
-#if NeedFunctionPrototypes
 	     char *,				/* buffer */
 	     int,				/* num bytes */
 	     VocInfo *				/* info */
-#endif
 );
 
 extern int
 VocSeekFile(
-#if NeedFunctionPrototypes
 	      int,                              /* number of audio bytes */
 	      VocInfo *				/* info */
-#endif
 );
 
 extern int
 VocTellFile(
-#if NeedFunctionPrototypes
 	      VocInfo *				/* info */
-#endif
 );
 
 extern int
 VocFlushFile(
-#if NeedFunctionPrototypes
 	      VocInfo *				/* info */
-#endif
 );
 
 extern int
 VocRewindFile(
-#if NeedFunctionPrototypes
 	      VocInfo *				/* info */
-#endif
 );
 
 _FUNCPROTOEND

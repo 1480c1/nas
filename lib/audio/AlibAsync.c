@@ -45,12 +45,8 @@ without express or implied warranty.
 
 /*ARGSUSED*/
 AuBool
-_AuAsyncErrorHandler(aud, rep, buf, len, data)
-    register AuServer *aud;
-    register auReply *rep;
-    char *buf;
-    int len;
-    AuPointer data;
+_AuAsyncErrorHandler(register AuServer *aud, register auReply *rep, 
+                     char *buf, int len, AuPointer data)
 {
     register _AuAsyncErrorState *state;
 
@@ -74,9 +70,7 @@ _AuAsyncErrorHandler(aud, rep, buf, len, data)
 }
 
 void
-_AuDoDeqAsyncHandler(aud, handler)
-    AuServer *aud;
-    register _AuAsyncHandler *handler;
+_AuDoDeqAsyncHandler(AuServer *aud, register _AuAsyncHandler *handler)
 {
     register _AuAsyncHandler **prev;
     register _AuAsyncHandler *async;
@@ -91,14 +85,9 @@ _AuDoDeqAsyncHandler(aud, handler)
 }
 
 char *
-_AuGetAsyncReply(aud, replbuf, rep, buf, len, extra, discard)
-    register AuServer *aud;
-    register char *replbuf;
-    register auReply *rep;
-    char *buf;
-    int len;
-    int extra;
-    AuBool discard;
+_AuGetAsyncReply(register AuServer *aud, register char *replbuf, 
+                 register auReply *rep, char *buf, int len, int extra, 
+                 AuBool discard)
 {
     if (extra == 0) {
 	if (discard && (rep->generic.length << 2) > len)

@@ -93,7 +93,6 @@ typedef char   *AuPointer;
 typedef void   *AuPointer;
 #endif
 
-#if NeedFunctionPrototypes
 /* struct pre-declarations */
 struct _AuErrorEvent;
 struct _AuServer;
@@ -101,7 +100,6 @@ struct _AuEventHandlerRec;
 struct _AuEventEnqHandlerRec;
 struct _AuSyncHandlerRec;
 union _AuEvent;
-#endif
 
 typedef struct _AuString
 {
@@ -121,26 +119,20 @@ AU_MACRO_SUFFIX
 
 typedef
 AuBool(*AuErrorHandler) (
-#if NeedFunctionPrototypes
 			 struct _AuServer *,	/* server */
 			 struct _AuErrorEvent *	/* error_event */
-#endif
 );
 
 typedef
 AuBool(*AuIOErrorHandler) (
-#if NeedFunctionPrototypes
 			   struct _AuServer *	/* server */
-#endif
 );
 
 typedef
 AuBool(*AuEventHandlerCallback) (
-#if NeedFunctionPrototypes
 				 struct _AuServer *,	/* server */
 				 union _AuEvent *,	/* event */
 				 struct _AuEventHandlerRec *	/* who invoked */
-#endif
 );
 
 #define AuEventHandlerTypeMask		(1L << 0)
@@ -162,11 +154,9 @@ typedef struct _AuEventHandlerRec
 
 typedef void
 (*AuSyncHandlerCallback) (
-#if NeedFunctionPrototypes
 			  struct _AuServer *,		/* server */
 			  struct _AuSyncHandlerRec *,	/* who called me */
 			  AuPointer			/* private data */
-#endif
 			  );
 
 typedef struct _AuSyncHandlerRec
@@ -184,12 +174,10 @@ typedef struct _AuSyncHandlerRec
 typedef void
 (*AuEventEnqHandlerCallback)
 (
-#if NeedFunctionPrototypes
     struct _AuServer *,			/* server */
     struct _AuEventEnqHandlerRec *,	/* who called me */
     union _AuEvent *,			/* event */
     AuPointer				/* private data */
-#endif
 );
 
 typedef struct _AuEventEnqHandlerRec
@@ -1027,9 +1015,7 @@ _AUFUNCPROTOBEGIN
  */
 extern _AuConst char * AUCDECL
 AuServerName(
-#if NeedFunctionPrototypes
 	     _AuConst char *			/* servername */
-#endif
 );
 
 /*
@@ -1038,14 +1024,12 @@ AuServerName(
  */
 extern AuServer * AUCDECL
 AuOpenServer(
-#if NeedFunctionPrototypes
 	     _AuConst char *,			/* servername */
 	     int,				/* num_authproto */
 	     _AuConst char *,			/* authproto */
 	     int,				/* num_authdata */
 	     _AuConst char *,			/* authdata */
 	     char **				/* server_message */
-#endif
 );
 
 
@@ -1055,9 +1039,7 @@ AuOpenServer(
  */
 extern void AUCDECL
 AuCloseServer(
-#if NeedFunctionPrototypes
 	      AuServer *			/* server */
-#endif
 );
 
 
@@ -1068,10 +1050,8 @@ AuCloseServer(
  */
 extern          AuErrorHandler AUCDECL
 AuSetErrorHandler(
-#if NeedFunctionPrototypes
 		  AuServer *,			/* server */
 		  AuErrorHandler		/* handler */
-#endif
 );
 
 
@@ -1082,10 +1062,8 @@ AuSetErrorHandler(
  */
 extern          AuIOErrorHandler AUCDECL
 AuSetIOErrorHandler(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    AuIOErrorHandler		/* handler */
-#endif
 );
 
 
@@ -1094,9 +1072,7 @@ AuSetIOErrorHandler(
  */
 extern void AUCDECL
 AuFlush(
-#if NeedFunctionPrototypes
 	AuServer *				/* server */
-#endif
 );
 
 
@@ -1105,10 +1081,8 @@ AuFlush(
  */
 extern void AUCDECL
 AuSync(
-#if NeedFunctionPrototypes
        AuServer *,				/* server */
        AuBool					/* discard_queued_events */
-#endif
 );
 
 
@@ -1118,10 +1092,8 @@ AuSync(
  */
 extern          AuBool AUCDECL
 AuSynchronize(
-#if NeedFunctionPrototypes
 	      AuServer *,			/* server */
 	      AuBool				/* enablesync */
-#endif
 );
 
 
@@ -1131,12 +1103,10 @@ AuSynchronize(
  */
 extern void AUCDECL
 AuGetErrorText(
-#if NeedFunctionPrototypes
 	       AuServer *,			/* server */
 	       int,				/* code */
 	       char *,				/* buffer_return */
 	       int				/* length */
-#endif
 );
 
 
@@ -1146,14 +1116,12 @@ AuGetErrorText(
  */
 extern void AUCDECL
 AuGetErrorDatabaseText(
-#if NeedFunctionPrototypes
 		       AuServer *,		/* server */
 		       _AuConst char *,		/* name */
 		       _AuConst char *,		/* message */
 		       _AuConst char *,		/* default_string */
 		       char *,			/* buffer_return */
 		       int			/* length */
-#endif
 );
 
 
@@ -1164,11 +1132,9 @@ AuGetErrorDatabaseText(
  */
 extern void AUCDECL
 AuSetCloseDownMode(
-#if NeedFunctionPrototypes
 		   AuServer *,			/* server */
 		   int,				/* mode */
 		   AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1178,10 +1144,8 @@ AuSetCloseDownMode(
  */
 extern int AUCDECL
 AuGetCloseDownMode(
-#if NeedFunctionPrototypes
 		   AuServer *,			/* server */
 		   AuStatus *			/* RETURN_status */
-#endif
 );
 
 /*
@@ -1189,10 +1153,8 @@ AuGetCloseDownMode(
  */
 extern AuTime AUCDECL
 AuGetServerTime(
-#if NeedFunctionPrototypes
 		   AuServer *,			/* server */
 		   AuStatus *			/* RETURN_status */
-#endif
 );
 
 /*
@@ -1201,11 +1163,9 @@ AuGetServerTime(
  */
 extern void AUCDECL
 AuKillClient(
-#if NeedFunctionPrototypes
 	     AuServer *,			/* server */
 	     AuID,				/* resource */
 	     AuStatus *				/* RETURN_status */
-#endif
 );
 
 
@@ -1217,13 +1177,11 @@ AuKillClient(
  */
 extern void AUCDECL
 AuSetDeviceAttributes(
-#if NeedFunctionPrototypes
 		      AuServer *,		/* server */
 		      AuDeviceID,		/* resource */
 		      AuMask,			/* value_mask */
 		      AuDeviceAttributes *,	/* attr */
 		      AuStatus *		/* RETURN_status */
-#endif
 );
 
 
@@ -1233,11 +1191,9 @@ AuSetDeviceAttributes(
  */
 extern AuDeviceAttributes * AUCDECL
 AuGetDeviceAttributes(
-#if NeedFunctionPrototypes
 		      AuServer *,		/* server */
 		      AuDeviceID,		/* resource */
 		      AuStatus *		/* RETURN_status */
-#endif
 );
 
 
@@ -1246,13 +1202,11 @@ AuGetDeviceAttributes(
  */
 extern AuDeviceAttributes * AUCDECL
 AuListDevices(
-#if NeedFunctionPrototypes
 	      AuServer *,			/* server */
 	      AuMask,				/* value_mask */
 	      AuDeviceAttributes *,		/* attr */
 	      int *,				/* RETURN_ndevices */
 	      AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1262,11 +1216,9 @@ AuListDevices(
  */
 extern void AUCDECL
 AuFreeDeviceAttributes(
-#if NeedFunctionPrototypes
 		       AuServer *,		/* server */
 		       int,			/* num_attr */
 		       AuDeviceAttributes *	/* attr */
-#endif
 );
 
 
@@ -1276,11 +1228,9 @@ AuFreeDeviceAttributes(
  */
 extern AuBucketAttributes * AUCDECL
 AuGetBucketAttributes(
-#if NeedFunctionPrototypes
 		      AuServer *,		/* server */
 		      AuBucketID,		/* resource */
 		      AuStatus *		/* RETURN_status */
-#endif
 );
 
 
@@ -1290,13 +1240,11 @@ AuGetBucketAttributes(
  */
 extern AuBucketAttributes * AUCDECL
 AuListBuckets(
-#if NeedFunctionPrototypes
 	      AuServer *,			/* server */
 	      AuMask,				/* value_mask */
 	      AuBucketAttributes *,		/* attr */
 	      int *,				/* RETURN_nbuckets */
 	      AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1306,11 +1254,9 @@ AuListBuckets(
  */
 extern void AUCDECL
 AuFreeBucketAttributes(
-#if NeedFunctionPrototypes
 		       AuServer *,		/* server */
 		       int,			/* num_attr */
 		       AuBucketAttributes *	/* attr */
-#endif
 );
 
 /*
@@ -1319,7 +1265,6 @@ AuFreeBucketAttributes(
  */
 extern          AuBucketID AUCDECL
 AuCreateBucket(
-#if NeedFunctionPrototypes
 	       AuServer *,			/* server */
 	       AuUint32,			/* format */
 	       AuUint32,			/* num tracks */
@@ -1328,7 +1273,6 @@ AuCreateBucket(
 	       AuUint32,			/* num_samples */
 	       AuString *,			/* description */
 	       AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1338,11 +1282,9 @@ AuCreateBucket(
  */
 extern void AUCDECL
 AuDestroyBucket(
-#if NeedFunctionPrototypes
 		AuServer *,			/* server */
 		AuBucketID,			/* bucket */
 		AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1353,10 +1295,8 @@ AuDestroyBucket(
  */
 extern          AuFlowID AUCDECL
 AuCreateFlow(
-#if NeedFunctionPrototypes
 	     AuServer *,			/* server */
 	     AuStatus *				/* RETURN_status */
-#endif
 );
 
 
@@ -1366,11 +1306,9 @@ AuCreateFlow(
  */
 extern void AUCDECL
 AuDestroyFlow(
-#if NeedFunctionPrototypes
 	      AuServer *,			/* server */
 	      AuFlowID,				/* flow */
 	      AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1380,12 +1318,10 @@ AuDestroyFlow(
  */
 extern          AuBool AUCDECL
 AuGetFlowAttributes(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    int,			/* num_attrs */
 		    AuFlowAttributes *,		/* attrs */
 		    AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1397,14 +1333,12 @@ AuGetFlowAttributes(
  */
 extern void AUCDECL
 AuSetElements(
-#if NeedFunctionPrototypes
 	      AuServer *,			/* server */
 	      AuFlowID,				/* flow id */
 	      AuBool,				/* clocked */
 	      int,				/* num_elements */
 	      AuElement *,			/* elements */
 	      AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1414,13 +1348,11 @@ AuSetElements(
  */
 extern AuElement * AUCDECL
 AuGetElements(
-#if NeedFunctionPrototypes
 	      AuServer *,			/* server */
 	      AuFlowID,				/* flow id */
 	      AuBool *,				/* RETURN_clocked */
 	      int *,				/* RETURN_num_elements */
 	      AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1430,11 +1362,9 @@ AuGetElements(
  */
 extern void AUCDECL
 AuFreeElements(
-#if NeedFunctionPrototypes
 	       AuServer *,			/* server */
 	       int,				/* num_elements */
 	       AuElement *			/* listofelements */
-#endif
 );
 
 
@@ -1444,12 +1374,10 @@ AuFreeElements(
  */
 extern AuElementState * AUCDECL
 AuGetElementStates(
-#if NeedFunctionPrototypes
 		   AuServer *,			/* server */
 		   int *,			/* INOUT_num_states */
 		   AuElementState *,		/* states */
 		   AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1459,11 +1387,9 @@ AuGetElementStates(
  */
 extern void AUCDECL
 AuFreeElementStates(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    int,			/* num_elements */
 		    AuElementState *		/* list of element states */
-#endif
 );
 
 
@@ -1473,12 +1399,10 @@ AuFreeElementStates(
  */
 extern void AUCDECL
 AuSetElementStates(
-#if NeedFunctionPrototypes
 		   AuServer *,			/* server */
 		   int,				/* num_states */
 		   AuElementState *,		/* states */
 		   AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1488,12 +1412,10 @@ AuSetElementStates(
  */
 extern void AUCDECL
 AuSetElementParameters(
-#if NeedFunctionPrototypes
 		       AuServer *,		/* server */
 		       int,			/* num_changes */
 		       AuElementParameters *,	/* changes */
 		       AuStatus *		/* RETURN_status */
-#endif
 );
 
 
@@ -1504,7 +1426,6 @@ AuSetElementParameters(
  */
 extern void AUCDECL
 AuWriteElement(
-#if NeedFunctionPrototypes
 	       AuServer *,			/* server */
 	       AuFlowID,			/* flow */
 	       int,				/* element */
@@ -1512,7 +1433,6 @@ AuWriteElement(
 	       AuPointer,			/* data */
 	       AuBool,				/* end of data flag */
 	       AuStatus *			/* RETURN_status */
-#endif
 );
 
 
@@ -1522,14 +1442,12 @@ AuWriteElement(
  */
 extern AuUint32 AUCDECL
 AuReadElement(
-#if NeedFunctionPrototypes
 	      AuServer *,			/* server */
 	      AuFlowID,				/* flow */
 	      int,				/* element */
 	      AuUint32,			/* num_bytes */
 	      AuPointer,			/* data */
 	      int *				/* RETURN_status */
-#endif
 );
 
 #define AuEventsQueued _AuEventsQueued
@@ -1540,10 +1458,8 @@ AuReadElement(
  */
 extern int AUCDECL
 AuEventsQueued(
-#if NeedFunctionPrototypes
 	       AuServer *,			/* server */
 	       int				/* AuEventsQueued_mode */
-#endif
 );
 
 
@@ -1554,20 +1470,16 @@ AuEventsQueued(
  */
 extern          AuBool AUCDECL
 AuScanEvents(
-#if NeedFunctionPrototypes
 	     AuServer *,			/* server */
 	     int,				/* AuEventsQueued_mode */
 	     AuBool,				/* dequeue_match */
 	     AuBool(*) (			/* clientpredicate */
-#if NeedNestedPrototypes
 			AuServer *,		/* server */
 			AuEvent *,		/* eventtocheck */
 			AuPointer		/* clientdata */
-#endif
 			),
 	     AuPointer,				/* clientdata */
 	     AuEvent *				/* RETURN_event */
-#endif
 );
 
 
@@ -1577,13 +1489,11 @@ AuScanEvents(
  */
 extern          AuBool AUCDECL
 AuScanForTypedEvent(
-#if NeedFunctionPrototypes
 		    AuServer *,			/* server */
 		    int,			/* AuEventsQueued_mode */
 		    AuBool,			/* dequeue */
 		    int,			/* eventtype */
 		    AuEvent *			/* RETURN_event */
-#endif
 );
 
 
@@ -1593,11 +1503,9 @@ AuScanForTypedEvent(
  */
 extern void AUCDECL
 AuNextEvent(
-#if NeedFunctionPrototypes
 	    AuServer *,				/* server */
 	    AuBool,				/* dequeue */
 	    AuEvent *				/* RETURN_event */
-#endif
 );
 
 
@@ -1611,11 +1519,9 @@ AuNextEvent(
  */
 extern          AuBool AUCDECL
 AuRequeueEvent(
-#if NeedFunctionPrototypes
 	       AuServer *,			/* server */
 	       AuEvent *,			/* event */
 	       int				/* skip */
-#endif
 );
 
 
@@ -1625,17 +1531,13 @@ AuRequeueEvent(
  */
 extern          AuID AUCDECL
 AuIDOfEvent(
-#if NeedFunctionPrototypes
 	    AuEvent *				/* RETURN_event */
-#endif
 );
 
 
 extern void  AUCDECL
 AuFree (
-#if NeedFunctionPrototypes
 		    AuPointer
-#endif
 );
 
 /*****************************************************************************

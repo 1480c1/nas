@@ -31,29 +31,23 @@
 #include	<audio/fileutil.h>
 #include	<malloc.h>
 
-#if NeedFunctionPrototypes
 unsigned short FileSwapS (unsigned short us)
-#else
-unsigned short 
-FileSwapS(us)
-    unsigned short us;
-#endif
 {
     return ((us >> 8) | (us << 8)) & 0xffff;
 }
 
 AuUint32
-FileSwapL(ul)
-    AuUint32 ul;
+FileSwapL(AuUint32 ul)
 {
     return (ul >> 24) | ((ul >> 8) & 0xff00) | ((ul << 8) & 0xff0000) |
 	(ul << 24);
 }
 
 unsigned short
-FileReadS(fp, swapit)
-    FILE       *fp;
-    int         swapit;
+FileReadS(
+          FILE       *fp,
+          int         swapit
+          )
 {
     unsigned short us;
 
@@ -64,9 +58,10 @@ FileReadS(fp, swapit)
 }
 
 AuUint32
-FileReadL(fp, swapit)
-    FILE       *fp;
-    int         swapit;
+FileReadL(
+          FILE       *fp,
+          int         swapit
+          )
 {
     AuUint32 ul;
 
@@ -77,14 +72,7 @@ FileReadL(fp, swapit)
 }
 
 int
-#if NeedFunctionPrototypes
 FileWriteS (unsigned short us, FILE *fp, int swapit)
-#else
-FileWriteS(us, fp, swapit)
-    unsigned short us;
-    FILE       *fp;
-    int         swapit;
-#endif
 {
     if (swapit)
 	us = FileSwapS(us);
@@ -92,10 +80,11 @@ FileWriteS(us, fp, swapit)
 }
 
 int
-FileWriteL(ul, fp, swapit)
-    AuUint32 ul;
-    FILE       *fp;
-    int         swapit;
+FileWriteL(
+           AuUint32 ul,
+           FILE       *fp,
+           int         swapit
+           )
 {
     if (swapit)
 	ul = FileSwapL(ul);
@@ -103,8 +92,7 @@ FileWriteL(ul, fp, swapit)
 }
 
 char       *
-FileCommentFromFilename(fname)
-    _FileConst char *fname;
+FileCommentFromFilename(_FileConst char *fname)
 {
     _FileConst char *f;
     char       *t;

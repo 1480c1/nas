@@ -43,9 +43,10 @@
 /* Synchronize with errors and events, optionally discarding pending events */
 
 void 
-AuSync(aud, discard)
-register AuServer *aud;
-AuBool          discard;
+AuSync(
+       register AuServer *aud,
+       AuBool          discard
+       )
 {
     auGetCloseDownModeReply rep;
     register auReq *req;

@@ -25,12 +25,13 @@
 #include "Alibint.h"
 
 AuElement      *
-AuGetElements(aud, flow, pclocked, pnum_elements, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-AuBool         *pclocked;
-int            *pnum_elements;
-AuStatus       *ret_status;
+AuGetElements(
+              AuServer       *aud,
+              AuFlowID        flow,
+              AuBool         *pclocked,
+              int            *pnum_elements,
+              AuStatus       *ret_status
+              )
 {
     register auResourceReq *req;
     auGetElementsReply rep;
@@ -262,10 +263,11 @@ AuStatus       *ret_status;
 }
 
 void
-AuFreeElements(aud, num_elements, elements)
-AuServer       *aud;
-int             num_elements;
-AuElement      *elements;
+AuFreeElements(
+               AuServer       *aud,
+               int             num_elements,
+               AuElement      *elements
+               )
 {
     int             i;
 

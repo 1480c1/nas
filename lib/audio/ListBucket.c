@@ -25,12 +25,13 @@
 #include "Alibint.h"
 
 AuBucketAttributes *
-AuListBuckets(aud, mask, attr, num_buckets, ret_status)
-AuServer       *aud;
-AuMask          mask;
-AuBucketAttributes *attr;
-int            *num_buckets;
-AuStatus       *ret_status;
+AuListBuckets(
+              AuServer       *aud,
+              AuMask          mask,
+              AuBucketAttributes *attr,
+              int            *num_buckets,
+              AuStatus       *ret_status
+              )
 {
     register auReq *req;
     auListBucketsReply rep;

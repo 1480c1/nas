@@ -43,8 +43,7 @@ without express or implied warranty.
 /* Flush all buffered output requests. */
 /* NOTE: NOT necessary when calling any of the audiolib routines. */
 
-void AuFlush (aud)
-    register AuServer *aud;
+void AuFlush (register AuServer *aud)
 {
     _AuLockServer();
     _AuFlush (aud);

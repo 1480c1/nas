@@ -45,8 +45,7 @@
 }
 
 VocInfo        *
-VocOpenFileForReading(name)
-_VocConst char *name;
+VocOpenFileForReading(_VocConst char *name)
 {
     VocInfo        *vi;
     int             c,
@@ -143,9 +142,10 @@ _VocConst char *name;
 }
 
 VocInfo        *
-VocOpenFileForWriting(name, vi)
-_VocConst char *name;
-VocInfo        *vi;
+VocOpenFileForWriting(
+                      _VocConst char *name,
+                      VocInfo        *vi
+                      )
 {
     int             n;
 
@@ -190,8 +190,7 @@ VocInfo        *vi;
 }
 
 int
-VocCloseFile(vi)
-VocInfo        *vi;
+VocCloseFile(VocInfo *vi)
 {
     int             status = 0;
 
@@ -216,19 +215,21 @@ VocInfo        *vi;
 }
 
 int
-VocReadFile(p, n, vi)
-char           *p;
-int             n;
-VocInfo        *vi;
+VocReadFile(
+            char           *p,
+            int             n,
+            VocInfo        *vi
+            )
 {
     return fread(p, 1, n, vi->fp);
 }
 
 int
-VocWriteFile(p, n, vi)
-char           *p;
-int             n;
-VocInfo        *vi;
+VocWriteFile(
+             char           *p,
+             int             n,
+             VocInfo        *vi
+             )
 {
     int             num;
 
@@ -238,30 +239,28 @@ VocInfo        *vi;
 }
 
 int
-VocRewindFile(vi)
-VocInfo        *vi;
+VocRewindFile(VocInfo *vi)
 {
     return vi->writing ? -1 : fseek(vi->fp, vi->dataOffset + 3, 0);
 }
 
 int
-VocSeekFile(n, vi)
-int              n;
-VocInfo        *vi;
+VocSeekFile(
+            int              n,
+            VocInfo        *vi
+            )
 {
     return vi->writing ? -1 : fseek(vi->fp, vi->dataOffset + 3 + n, 0);
 }
 
 int
-VocTellFile(vi)
-VocInfo        *vi;
+VocTellFile(VocInfo *vi)
 {
     return vi->writing ? -1 : ftell(vi->fp) - vi->dataOffset - 3;
 }
 
 int
-VocFlushFile(vi)
-VocInfo        *vi;
+VocFlushFile(VocInfo *vi)
 {
     return fflush(vi->fp);
 }

@@ -25,10 +25,11 @@
 #include "Alibint.h"
 
 void
-AuDestroyBucket(aud, bucket, ret_status)
-AuServer       *aud;
-AuBucketID      bucket;
-AuStatus       *ret_status;
+AuDestroyBucket(
+                AuServer       *aud,
+                AuBucketID      bucket,
+                AuStatus       *ret_status
+                )
 {
     register auResourceReq *req;
 

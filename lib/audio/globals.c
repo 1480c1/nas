@@ -42,13 +42,11 @@ without express or implied warranty.
 /*
  * descriptor block for streams connections
  */
-
+#include <stdio.h>
 #include "Astreams.h"
 
 char _AusTypeOfStream[100] = { 0 };
 
-extern int write();
-extern int close();
 #ifdef SVR4
 extern int _AusSetupSpStream();
 extern int _AusSetupNamedStream();

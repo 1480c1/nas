@@ -26,22 +26,24 @@
 
 /* ARGSUSED */
 static AuBool
-_AuTypedEventPredicate (aud, event, arg)
-    register AuServer   *aud;
-    register AuEvent    *event;
-    register AuPointer	arg;
+_AuTypedEventPredicate (
+                        register AuServer   *aud,
+                        register AuEvent    *event,
+                        register AuPointer	arg
+                        )
 {
     return (event->type == *(int *) arg);
 }
 
 
 
-AuBool AuScanForTypedEvent (aud, mode, dequeue, type, event)
-    register AuServer   *aud;
-    register int	mode;
-    register AuBool	dequeue;
-    register int	type;
-    register AuEvent    *event;
+AuBool AuScanForTypedEvent (
+                            register AuServer   *aud,
+                            register int	mode,
+                            register AuBool	dequeue,
+                            register int	type,
+                            register AuEvent    *event
+                            )
 {
     int tmp = type;
     return AuScanEvents (aud, mode, dequeue, _AuTypedEventPredicate,

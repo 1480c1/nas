@@ -35,9 +35,7 @@
 #define cmpID(_x, _y)	strncmp((char *) (_x), (char *) (_y), sizeof(SVX_ID))
 
 static int
-readChunk(c, fp)
-SvxChunk       *c;
-FILE           *fp;
+readChunk(SvxChunk *c, FILE *fp)
 {
     int             status;
     char            n;
@@ -50,8 +48,7 @@ FILE           *fp;
 }
 
 SvxInfo        *
-SvxOpenFileForReading(name)
-_SvxConst char *name;
+SvxOpenFileForReading(_SvxConst char *name)
 {
     SvxInfo        *si;
     SvxChunk        ck;
@@ -134,10 +131,8 @@ _SvxConst char *name;
     return si;
 }
 
-SvxInfo        *
-SvxOpenFileForWriting(name, si)
-_SvxConst char *name;
-SvxInfo        *si;
+SvxInfo *
+SvxOpenFileForWriting(_SvxConst char *name, SvxInfo *si)
 {
     int             n;
 
@@ -192,8 +187,7 @@ SvxInfo        *si;
 }
 
 int
-SvxCloseFile(si)
-SvxInfo        *si;
+SvxCloseFile(SvxInfo *si)
 {
     int             status = 0;
 
@@ -218,19 +212,13 @@ SvxInfo        *si;
 }
 
 int
-SvxReadFile(p, n, si)
-char           *p;
-int             n;
-SvxInfo        *si;
+SvxReadFile(char *p, int n, SvxInfo *si)
 {
     return fread(p, 1, n, si->fp);
 }
 
 int
-SvxWriteFile(p, n, si)
-char           *p;
-int             n;
-SvxInfo        *si;
+SvxWriteFile(char *p, int n, SvxInfo *si)
 {
     int             num;
 
@@ -240,32 +228,27 @@ SvxInfo        *si;
 }
 
 int
-SvxRewindFile(si)
-SvxInfo        *si;
+SvxRewindFile(SvxInfo *si)
 {
     return si->writing ? -1 : fseek(si->fp, si->dataOffset + sizeof(long), 0);
 }
 
 int
-SvxSeekFile(n, si)
-int              n;
-SvxInfo        *si;
+SvxSeekFile(int n, SvxInfo *si)
 {
     return si->writing ? -1 :
 	fseek(si->fp, si->dataOffset + sizeof(long) + n, 0);
 }
 
 int
-SvxTellFile(si)
-SvxInfo        *si;
+SvxTellFile(SvxInfo *si)
 {
     return si->writing ? -1 :
 	ftell(si->fp) - si->dataOffset - sizeof(long);
 }
 
 int
-SvxFlushFile(si)
-SvxInfo        *si;
+SvxFlushFile(SvxInfo *si)
 {
     return fflush(si->fp);
 }

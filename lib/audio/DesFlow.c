@@ -25,10 +25,11 @@
 #include "Alibint.h"
 
 void 
-AuDestroyFlow(aud, flow, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-AuStatus       *ret_status;
+AuDestroyFlow(
+              AuServer       *aud,
+              AuFlowID        flow,
+              AuStatus       *ret_status
+              )
 {
     register auResourceReq *req;
 

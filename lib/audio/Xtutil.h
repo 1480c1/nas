@@ -52,11 +52,9 @@ _AUFUNCPROTOBEGIN
  * Xt callback data and then calls AuHandleEvents.
  */
 extern void AuXtHandleAudioEvents (
-#if NeedFunctionPrototypes
 	XtPointer,	/* caller_arg */
 	int *,		/* ptr_to_source */
 	XtInputId *	/* opaque_inputid */
-#endif
 );
 
 
@@ -66,18 +64,14 @@ extern void AuXtHandleAudioEvents (
  * to be used from Xt programs without disturbing their main loop.
  */
 extern XtInputId AuXtAppAddAudioHandler (
-#if NeedFunctionPrototypes
 	XtAppContext,	/* app_context */
-AuServer *	/* server */
-#endif
+        AuServer *	/* server */
 );
 
 extern void
-AuXtppRemoveAudioHandler(
-#if NeedFunctionPrototypes
+AuXtAppRemoveAudioHandler(
        AuServer *,		/* server */
        XtInputId
-#endif
 );
 
 _AUFUNCPROTOEND

@@ -44,22 +44,6 @@
 #ifndef _AUFUNCPROTO_H_
 #define _AUFUNCPROTO_H_
 
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif /* NeedFunctionPrototypes */
-
-#ifndef NeedVarargsPrototypes
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&2)
-#define NeedVarargsPrototypes 1
-#else
-#define NeedVarargsPrototypes 0
-#endif
-#endif /* NeedVarargsPrototypes */
-
 #ifndef _AuConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _AuConst const
@@ -68,25 +52,6 @@
 #endif
 #endif /* _AuConst */
 
-#if NeedFunctionPrototypes
-
-#ifndef NeedNestedPrototypes
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&8)
-#define NeedNestedPrototypes 1
-#else
-#define NeedNestedPrototypes 0
-#endif
-#endif /* NeedNestedPrototypes */
-
-#ifndef NeedWidePrototypes
-#ifdef NARROWPROTO
-#define NeedWidePrototypes 0
-#else
-#define NeedWidePrototypes 1		/* default to make interropt. easier */
-#endif
-#endif /* NeedWidePrototypes */
-
-#endif /* NeedFunctionPrototypes */
 
 #ifndef _AUFUNCPROTOBEGIN
 #ifdef __cplusplus			/* for C++ V2.0 */

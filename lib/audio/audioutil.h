@@ -37,66 +37,52 @@ _AUFUNCPROTOBEGIN
 
 extern          AuFlowID AUCDECL
 AuGetScratchFlow(
-#if NeedFunctionPrototypes
 		 AuServer *,			/* server */
 		 AuStatus *			/* RETURN_status */
-#endif
 );
 
 extern void AUCDECL
 AuReleaseScratchFlow(
-#if NeedFunctionPrototypes
 		     AuServer *,		/* server */
 		     AuFlowID,			/* flow */
 		     AuStatus *			/* RETURN_status */
-#endif
 );
 
 extern          AuFlowID AUCDECL
 AuGetScratchFlowToBucket(
-#if NeedFunctionPrototypes
 			 AuServer *,		/* server */
 			 AuBucketID,		/* bucket */
 			 int *,			/* RETURN_import */
 			 AuStatus *		/* RETURN_status */
-#endif
 );
 
 extern          AuFlowID AUCDECL
 AuGetScratchFlowFromBucket(
-#if NeedFunctionPrototypes
 			   AuServer *,		/* server */
 			   AuBucketID,		/* bucket */
 			   int *,		/* RETURN_export */
 			   AuStatus *		/* RETURN_status */
-#endif
 );
 
 extern void AUCDECL
 AuStartFlow(
-#if NeedFunctionPrototypes
 	   AuServer *,				/* server */
 	   AuFlowID,				/* flow */
 	   AuStatus *				/* RETURN_status */
-#endif
 );
 
 extern void AUCDECL
 AuStopFlow(
-#if NeedFunctionPrototypes
 	   AuServer *,				/* server */
 	   AuFlowID,				/* flow */
 	   AuStatus *				/* RETURN_status */
-#endif
 );
 
 extern void AUCDECL
 AuPauseFlow(
-#if NeedFunctionPrototypes
 	   AuServer *,				/* server */
 	   AuFlowID,				/* flow */
 	   AuStatus *				/* RETURN_status */
-#endif
 );
 
 /*****************************************************************************
@@ -105,46 +91,36 @@ AuPauseFlow(
 
 extern void AUCDECL
 AuHandleEvents(
-#if NeedFunctionPrototypes
 	       AuServer *			/* server */
-#endif
 );
 
 extern          AuBool AUCDECL
 AuDispatchEvent(
-#if NeedFunctionPrototypes
 		AuServer *,			/* server */
 		AuEvent *
-#endif
 );
 
 extern AuEventHandlerRec * AUCDECL
 AuRegisterEventHandler(
-#if NeedFunctionPrototypes
 		       AuServer *,		/* server */
 		       AuMask,			/* value_mask */
 		       int,			/* type */
 		       AuID,			/* id */
 		       AuEventHandlerCallback,	/* callback */
 		       AuPointer		/* data */
-#endif
 );
 
 extern void AUCDECL
 AuUnregisterEventHandler(
-#if NeedFunctionPrototypes
 			 AuServer *,		/* server */
 			 AuEventHandlerRec *	/* handler */
-#endif
 );
 
 extern AuEventHandlerRec * AUCDECL
 AuLookupEventHandler(
-#if NeedFunctionPrototypes
 		     AuServer *,		/* server */
 		     AuEvent *,			/* event */
 		     AuEventHandlerRec *	/* startwith */
-#endif
 );
 
 /*****************************************************************************
@@ -153,44 +129,32 @@ AuLookupEventHandler(
 
 _AuConst char  * AUCDECL
 AuFormatToString(
-#if NeedFunctionPrototypes
 		 unsigned int			/* format */
-#endif
 );
 
 int AUCDECL
 AuStringToFormat(
-#if NeedFunctionPrototypes
 		 _AuConst char *		/* string */
-#endif
 );
 
 _AuConst char  * AUCDECL
 AuFormatToDefine(
-#if NeedFunctionPrototypes
 		 unsigned int			/* format */
-#endif
 );
 
 int AUCDECL
 AuDefineToFormat(
-#if NeedFunctionPrototypes
 		 _AuConst char *		/* define */
-#endif
 );
 
 _AuConst char  * AUCDECL
 AuWaveFormToString(
-#if NeedFunctionPrototypes
 		 unsigned int			/* waveform */
-#endif
 );
 
 int AUCDECL
 AuStringToWaveForm(
-#if NeedFunctionPrototypes
 		 _AuConst char *		/* string */
-#endif
 );
 
 /*****************************************************************************
@@ -199,20 +163,16 @@ AuStringToWaveForm(
 
 int AUCDECL
 AuConvertDataToShort(
-#if NeedFunctionPrototypes
 		     int,			/* data format */
 		     int,			/* num bytes */
 		     AuPointer			/* data */
-#endif
 );
 
 int AUCDECL
 AuConvertShortToData(
-#if NeedFunctionPrototypes
 		     int,			/* data format */
 		     int,			/* num bytes */
 		     AuPointer			/* data */
-#endif
 );
 
 /*****************************************************************************
@@ -221,26 +181,22 @@ AuConvertShortToData(
 
 AuEventHandlerRec * AUCDECL
 AuMonitorDevice(
-#if NeedFunctionPrototypes
 		AuServer *,			/* server */
 		int,				/* sample rate */
 		AuDeviceID,			/* input device */
 		AuDeviceID,			/* output device */
 		AuFixedPoint,			/* volume */
 		void (*) (			/* done_callback */
-#if NeedNestedPrototypes
 			  AuServer *,		/* server */
 			  AuEventHandlerRec *,	/* which */
 			  AuEvent *,		/* event */
 			  AuPointer		/* callback data */
-#endif
 			  ),
 		AuPointer,			/* callback data */
 		AuFlowID *,			/* RETURN_flow */
 		int *,				/* RETURN_volume_mult_element */
 		int *,				/* RETURN_monitor_element */
 		AuStatus *			/* RETURN_status */
-#endif
 );
 
 _AUFUNCPROTOEND

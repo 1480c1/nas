@@ -25,10 +25,11 @@
 #include "Alibint.h"
 
 AuDeviceAttributes *
-AuGetDeviceAttributes(aud, device, ret_status)
-AuServer       *aud;
-AuDeviceID      device;
-AuStatus       *ret_status;
+AuGetDeviceAttributes(
+                      AuServer       *aud,
+                      AuDeviceID      device,
+                      AuStatus       *ret_status
+                      )
 {
     register auResourceReq *req;
     auGetDeviceAttributesReply rep;
@@ -97,10 +98,11 @@ AuStatus       *ret_status;
 
 /* ARGSUSED */
 void
-AuFreeDeviceAttributes(aud, num, attr)
-AuServer       *aud;
-int             num;
-AuDeviceAttributes *attr;
+AuFreeDeviceAttributes(
+                       AuServer       *aud,
+                       int             num,
+                       AuDeviceAttributes *attr
+                       )
 {
     AuDeviceAttributes *p = attr;
 

@@ -25,10 +25,11 @@
 #include "Alibint.h"
 
 void
-AuSetCloseDownMode(aud, mode, ret_status)
-AuServer       *aud;
-int             mode;
-AuStatus       *ret_status;
+AuSetCloseDownMode(
+                   AuServer       *aud,
+                   int             mode,
+                   AuStatus       *ret_status
+                   )
 {
     register auSetCloseDownModeReq *req;
 

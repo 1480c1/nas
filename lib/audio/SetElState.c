@@ -25,11 +25,12 @@
 #include "Alibint.h"
 
 void
-AuSetElementStates(aud, num_states, states, ret_status)
-AuServer *aud;
-int num_states;
-AuElementState *states;
-AuStatus       *ret_status;
+AuSetElementStates(
+                   AuServer *aud,
+                   int num_states,
+                   AuElementState *states,
+                   AuStatus       *ret_status
+                   )
 {
     register auSetElementStatesReq *req;
     auElementState s;

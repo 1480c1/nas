@@ -89,9 +89,10 @@
     ((AuUint32)(((AuInt32)(f - 2147483648.0)) + 2147483647L + 1))
 
 static void
-ConvertToIeeeExtended(num, bytes)
-double          num;
-char           *bytes;
+ConvertToIeeeExtended(
+                      double          num,
+                      char           *bytes
+                      )
 {
     int             sign;
     int             expon;
@@ -167,8 +168,7 @@ char           *bytes;
  ****************************************************************/
 
 static double
-ConvertFromIeeeExtended(bytes)
-char           *bytes;
+ConvertFromIeeeExtended(char *bytes)
 {
     double          f;
     AuInt32            expon;
@@ -210,9 +210,10 @@ char           *bytes;
 }
 
 static int
-readChunk(c, fp)
-AiffChunk      *c;
-FILE           *fp;
+readChunk(
+          AiffChunk      *c,
+          FILE           *fp
+          )
 {
     int             status;
     char            n;
@@ -225,8 +226,7 @@ FILE           *fp;
 }
 
 AiffInfo       *
-AiffOpenFileForReading(name)
-_AiffConst char *name;
+AiffOpenFileForReading(_AiffConst char *name)
 {
     AiffInfo       *ai;
     AiffChunk       ck;
@@ -338,9 +338,11 @@ _AiffConst char *name;
 }
 
 AiffInfo       *
-AiffOpenFileForWriting(name, ai)
-_AiffConst char *name;
-AiffInfo       *ai;
+AiffOpenFileForWriting(
+                       _AiffConst char *name,
+                       AiffInfo       *ai
+
+                       )
 {
     int             n;
     char            rate[AIFF_SizeofExtended];
@@ -416,8 +418,7 @@ AiffInfo       *ai;
 }
 
 int
-AiffCloseFile(ai)
-AiffInfo       *ai;
+AiffCloseFile(AiffInfo *ai)
 {
     int             status = 0;
 
@@ -446,19 +447,21 @@ AiffInfo       *ai;
 }
 
 int
-AiffReadFile(p, n, ai)
-char           *p;
-int             n;
-AiffInfo       *ai;
+AiffReadFile(
+             char           *p,
+             int             n,
+             AiffInfo       *ai
+             )
 {
     return fread(p, 1, n, ai->fp);
 }
 
 int
-AiffWriteFile(p, n, ai)
-char           *p;
-int             n;
-AiffInfo       *ai;
+AiffWriteFile(
+              char           *p,
+              int             n,
+              AiffInfo       *ai
+              )
 {
     int             num;
 
@@ -468,33 +471,31 @@ AiffInfo       *ai;
 }
 
 int
-AiffRewindFile(ai)
-AiffInfo       *ai;
+AiffRewindFile(AiffInfo *ai)
 {
     return ai->writing ? -1 :
 	fseek(ai->fp, ai->dataOffset + sizeof(long) * 3, 0);
 }
 
 int
-AiffSeekFile(n, ai)
-int              n;
-AiffInfo       *ai;
+AiffSeekFile(
+             int              n,
+             AiffInfo       *ai
+             )
 {
     return ai->writing ? -1 :
 	fseek(ai->fp, ai->dataOffset + sizeof(long) * 3 + n, 0);
 }
 
 int
-AiffTellFile(ai)
-AiffInfo       *ai;
+AiffTellFile(AiffInfo *ai)
 {
     return ai->writing ? -1 :
 	ftell(ai->fp) - ai->dataOffset - sizeof(long) * 3;
 }
 
 int
-AiffFlushFile(ai)
-AiffInfo       *ai;
+AiffFlushFile(AiffInfo *ai)
 {
     return fflush(ai->fp);
 }

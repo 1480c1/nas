@@ -25,13 +25,14 @@
 #include "Alibint.h"
 
 AuUint32
-AuReadElement(aud, flow, element_num, num_bytes, data, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-int             element_num;
-AuUint32   num_bytes;
-AuPointer       data;
-AuStatus       *ret_status;
+AuReadElement(
+              AuServer       *aud,
+              AuFlowID        flow,
+              int             element_num,
+              AuUint32   num_bytes,
+              AuPointer       data,
+              AuStatus       *ret_status
+              )
 {
     register auReadElementReq *req;
     auReadElementReply rep;

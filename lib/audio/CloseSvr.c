@@ -50,8 +50,7 @@ without express or implied warranty.
  */
 
 void
-AuCloseServer (aud)
-	register AuServer *aud;
+AuCloseServer (register AuServer *aud)
 {
 	register _AuExtension *ext;
 

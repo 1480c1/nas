@@ -25,11 +25,12 @@
 #include "Alibint.h"
 
 AuElementState *
-AuGetElementStates(aud, num_states, states, ret_status)
-AuServer       *aud;
-int            *num_states;
-AuElementState *states;
-AuStatus       *ret_status;
+AuGetElementStates(
+                   AuServer       *aud,
+                   int            *num_states,
+                   AuElementState *states,
+                   AuStatus       *ret_status
+                   )
 {
     register auGetElementStatesReq *req;
     auGetElementStatesReply rep;
@@ -93,10 +94,11 @@ AuStatus       *ret_status;
 
 /* ARGSUSED */
 void
-AuFreeElementStates(aud, num, states)
-AuServer       *aud;
-int             num;
-AuElementState *states;
+AuFreeElementStates(
+                    AuServer       *aud,
+                    int             num,
+                    AuElementState *states
+                    )
 {
     Aufree(states);
 }

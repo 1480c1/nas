@@ -45,7 +45,7 @@ static int addentry();
 
 /* Routines for handling TLI streams */
 static int
-InitializeNetPath()
+InitializeNetPath(void)
 {
 	if(handlep == NULL && (handlep = setnetpath()) == NULL)
 	{
@@ -56,9 +56,10 @@ InitializeNetPath()
 
 }
 
-_AusSetupTliStream(display, dummy)
-    char *display;
-    void *dummy;
+_AusSetupTliStream(
+                   char *display,
+                   void *dummy
+                   )
 {
 	int	i, n;
 	int	fd, type;
@@ -169,9 +170,10 @@ _AusSetupTliStream(display, dummy)
 }
 
 int
-_AusCallTliServer(host, idisplay)
-    char *host;
-    int	idisplay;
+_AusCallTliServer(
+                  char *host,
+                  int	idisplay
+                  )
 {
 	int	fd, type;
 	int	nameserver ();
@@ -228,15 +230,15 @@ _AusCallTliServer(host, idisplay)
 }
 
 
-int _AuMakeStreamsConnection (name, iserverp, xname, retries,
-			     familyp, serveraddrlenp, serveraddrp)
-    char	*name;
-    int *iserverp;              /* can be RETURN */
-    AuBool xname;
-    int	retries;
-    int	*familyp;		/* return */
-    int	*serveraddrlenp;	/* return */
-    char **serveraddrp;		/* return */
+int _AuMakeStreamsConnection (
+                              char	*name,
+                              int *iserverp,              /* can be RETURN */
+                              AuBool xname,
+                              int	retries,
+                              int	*familyp,		/* return */
+                              int	*serveraddrlenp,	/* return */
+                              char **serveraddrp		/* return */
+                              )
 {
 	char	netype[128], sysname[128], nodname[128];
 	char	*procname = "Aulib/_AuMakeStreamsConnection";
@@ -293,12 +295,13 @@ int _AuMakeStreamsConnection (name, iserverp, xname, retries,
 
 
 static int
-SetupNetworkStream(host, dispno, action, typtr, handlep)
-    char *host;
-    int	dispno;
-    int	(*action)();
-    int	*typtr;
-    void *handlep;
+SetupNetworkStream(
+                   char *host,
+                   int	dispno,
+                   int	(*action)(int, int), /* JET - check this */
+                   int	*typtr,
+                   void *handlep
+                   )
 {
 	int	i;
 	char	service[MAX_AUTO_BUF_LEN];
@@ -415,9 +418,10 @@ fprintf(stderr, "Trying to get the binding address for service %s on %s\n",
 
 
 static int
-BindAndListen(clonedev, netbufp)
-    char	*clonedev;
-    struct   netbuf *netbufp;
+BindAndListen(
+              char	*clonedev,
+              struct   netbuf *netbufp
+              )
 {
 	int	fd;
 	struct  t_bind bindbuf;
@@ -448,9 +452,10 @@ BindAndListen(clonedev, netbufp)
 }
 
 static int
-BindAndConnect(clonedev, netbufp)
-    char	*clonedev;
-    struct   netbuf *netbufp;
+BindAndConnect(
+               char	*clonedev,
+               struct   netbuf *netbufp
+               )
 {
 	int	fd;
 	struct  t_call callbuf;
@@ -511,11 +516,13 @@ static int     flags = 0;
 static struct netconfig   *netconfigp = NULL; 
 
 static int
-CallTheNameServer(service, nettype, arg1, arg2, arg3)
-    int service;
-    struct netconfig   *nettype;
-    char    **arg1, **arg2;
-    int     *arg3;
+CallTheNameServer(
+                  int service,
+                  struct netconfig   *nettype,
+                  char    **arg1,
+                  char    **arg2,
+                  int     *arg3
+                  )
 {
 	int	n,m, len;
 	char	*ptr, *net;
@@ -560,9 +567,10 @@ static int	bufsize = 512;
 static char	*getnextentry();
 
 static struct nd_addrlist *
-GetHostServiceByName(host, dispno)
-    char *host;
-    int	dispno;
+GetHostServiceByName(
+                     char *host,
+                     int	dispno
+                     )
 {
     struct nd_hostserv  nd_hostserv;
     struct nd_addrlist *nd_addrlistp = NULL;
@@ -579,9 +587,12 @@ GetHostServiceByName(host, dispno)
 }
 
 static int
-ConvertName(pktptr, n, entry, len)
-    char **pktptr, *entry;
-    int	n, len;
+ConvertName(
+            char **pktptr, 
+            char *entry,
+            int	n,
+            int len
+            )
 {
     struct hostent *hp;
     unsigned long	address;
@@ -640,9 +651,10 @@ ConvertName(pktptr, n, entry, len)
 }
 
 static struct nd_hostservlist *
-GetHostServiceByAddr(addr, len)
-    char *addr;
-    int	len;
+GetHostServiceByAddr(
+                     char *addr,
+                     int	len
+                     )
 {
     struct nd_hostservlist *nd_hostservlist;
     struct netbuf	   netbuf;
@@ -658,9 +670,12 @@ GetHostServiceByAddr(addr, len)
 
 
 static int
-ConvertCallToName(pktptr, n, entry, len)
-    char **pktptr, *entry;
-    int	n, len;
+ConvertCallToName(
+                  char **pktptr, 
+                  char *entry,
+                  int	n, 
+                  int  len
+                  )
 {
     int	l, rl;
     char	*ptr;
@@ -696,9 +711,12 @@ ConvertCallToName(pktptr, n, entry, len)
 }
 
 static int
-ConvertAddress(pktptr, n, entry, len)
-    char **pktptr, *entry;
-    int	n, len;
+ConvertAddress(
+               char **pktptr, 
+               char *entry,
+               int	n,
+               int len
+               )
 {
     register i;
     char	*ptr;
@@ -779,8 +797,7 @@ ConvertAddress(pktptr, n, entry, len)
 }
 
 static char *
-getnextentry(plen)
-    int	*plen;
+getnextentry(int *plen)
 {
     char	*ptr;
     int	n = nextentry;
@@ -807,8 +824,7 @@ getnextentry(plen)
 }
 
 static char *
-makePacket(plen)
-    int *plen;
+makePacket(int *plen)
 {
     char *pktptr = NULL, *ptr;
     int	len;
@@ -842,9 +858,12 @@ makePacket(plen)
 }
 
 static int
-addentry(pktptr, n, entry, len)
-    char **pktptr, *entry;
-    int	n, len;
+addentry(
+         char **pktptr, 
+         char *entry,
+         int	n, 
+         int len;
+         )
 {
     
 #ifdef DEBUG
@@ -864,9 +883,10 @@ addentry(pktptr, n, entry, len)
 }
 
 static char *
-staticalloc(ptr, size)
-    char *ptr;
-    int	size;
+staticalloc(
+            char *ptr,
+            int	size
+            )
 {
     
 	if(ptr == NULL)
@@ -884,8 +904,7 @@ staticalloc(ptr, size)
 }
 
 static int
-OpenVirtualCircuit(lfd)
-    int     lfd;
+OpenVirtualCircuit(int lfd)
 {
 	char	*clonedev;
 	int	fd;

@@ -23,21 +23,15 @@
  */
 
 AuErrorHandler 
-#if NeedFunctionPrototypes
 AuSetErrorHandler(AuServer *aud, AuErrorHandler handler)
-#else
-AuSetErrorHandler(aud, handler)
-AuServer       *aud;
-register AuErrorHandler handler;
-#endif
 {
-    AuErrorHandler  oldhandler = aud->funcs.error_handler;
-
-    if (!oldhandler)
-	oldhandler = _AuDefaultError;
-
-    aud->funcs.error_handler = handler ? handler : _AuDefaultError;
-    return oldhandler;
+  AuErrorHandler  oldhandler = aud->funcs.error_handler;
+  
+  if (!oldhandler)
+    oldhandler = _AuDefaultError;
+  
+  aud->funcs.error_handler = handler ? handler : _AuDefaultError;
+  return oldhandler;
 }
 
 /*
@@ -48,13 +42,7 @@ register AuErrorHandler handler;
 
 extern int      _AuIOError();
 AuIOErrorHandler 
-#if NeedFunctionPrototypes
 AuSetIOErrorHandler(AuServer *aud, AuIOErrorHandler handler)
-#else
-AuSetIOErrorHandler(aud, handler)
-AuServer       *aud;
-register AuIOErrorHandler handler;
-#endif
 {
     AuIOErrorHandler oldhandler = aud->funcs.ioerror_handler;
 

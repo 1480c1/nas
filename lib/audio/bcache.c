@@ -40,8 +40,7 @@ typedef struct _ServerRec
 static ServerPtr servers;
 
 static AuBucketAttributes *
-copyBucketAttributes(attr)
-AuBucketAttributes *attr;
+copyBucketAttributes(AuBucketAttributes *attr)
 {
     AuBucketAttributes *a;
 
@@ -66,9 +65,10 @@ AuBucketAttributes *attr;
 }
 
 void
-_AuAddToBucketCache(aud, attr)
-AuServer       *aud;
-AuBucketAttributes *attr;
+_AuAddToBucketCache(
+                    AuServer       *aud,
+                    AuBucketAttributes *attr
+                    )
 {
     AttrPtr         e;
     ServerPtr       s = servers;
@@ -110,9 +110,10 @@ AuBucketAttributes *attr;
 }
 
 AuBucketAttributes *
-_AuLookupBucketInCache(aud, bucket)
-AuServer       *aud;
-AuBucketID      bucket;
+_AuLookupBucketInCache(
+                       AuServer       *aud,
+                       AuBucketID      bucket
+                       )
 {
     AttrPtr         e;
     ServerPtr       s = servers;
@@ -135,9 +136,10 @@ AuBucketID      bucket;
 }
 
 void
-_AuRemoveFromBucketCache(aud, bucket)
-AuServer       *aud;
-AuBucketID      bucket;
+_AuRemoveFromBucketCache(
+                         AuServer       *aud,
+                         AuBucketID      bucket
+                         )
 {
     AttrPtr         e,
                     p = NULL;
@@ -171,8 +173,7 @@ AuBucketID      bucket;
 
 /* remove all the entries for the server from the cache */
 void
-_AuFreeBucketCache(aud)
-AuServer       *aud;
+_AuFreeBucketCache(AuServer *aud)
 {
     AttrPtr         e,
                     next;

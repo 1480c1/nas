@@ -44,9 +44,10 @@ static int Read();
 
 /* Routines for handling TLI streams */
 
-_AusSetupTliStream(display, stype)
-    char *display;
-    char *stype;
+_AusSetupTliStream(
+                   char *display,
+                   char *stype
+                   )
 {
 	int	i, n;
 	int	fd, type;
@@ -157,10 +158,12 @@ _AusSetupTliStream(display, stype)
 	PRMSG("SetupTliStream () (success) fd = %d\n", fd,0);
 	return(fd);
 }
-_AusCallTliServer(host, idisplay, nettype)
-    char *host;
-    int	idisplay;
-    char *nettype;
+
+_AusCallTliServer(
+                  char *host,
+                  int	idisplay,
+                  char *nettype
+                  )
 {
 	int	fd, i, t;
 	PFV	savef;
@@ -472,10 +475,13 @@ outofloop:
 }
 
 static int
-OpenAndBind(name, port, maxcon, nettype, type)
-    char *name;
-    int	port, maxcon, type;
-    char *nettype;
+OpenAndBind(
+            char *name,
+            int	port, 
+            int maxcon, 
+            int type,
+            char *nettype
+            )
 {
 	char	bind_buf[MAX_AUTO_BUF_LEN];
 	int	i, fd;
@@ -545,8 +551,7 @@ OpenAndBind(name, port, maxcon, nettype, type)
 	return(fd);
 }
 
-static char *erazeComment(line)
-    char *line;
+static char *erazeComment(char *line)
 {
  	char	*ptr = line;
 
@@ -572,8 +577,7 @@ static char *erazeComment(line)
 
 #ifdef NEED_FAKE_XWIN
 static char *
-GetXWINHome(with)
-    char *with;
+GetXWINHome(char *with)
 {
 	static char buf[50];
 
@@ -583,15 +587,15 @@ GetXWINHome(with)
 }
 #endif /* NEED_FAKE_XWIN */
 
-int _AuMakeStreamsConnection (name, iserverp, xname, retries,
-			     familyp, serveraddrlenp, serveraddrp)
-    char	*name;
-    int	*iserverp;		/* can be RETURN */
-    AuBool xname;
-    int	retries;
-    int	*familyp;		/* return */
-    int	*serveraddrlenp;	/* return */
-    char **serveraddrp;		/* return */
+int _AuMakeStreamsConnection (
+                              char	*name,
+                              int	*iserverp,		/* can be RETURN */
+                              AuBool xname,
+                              int	retries,
+                              int	*familyp,		/* return */
+                              int	*serveraddrlenp,	/* return */
+                              char **serveraddrp,		/* return */
+                              )
 {
 	struct	utsname	 machine;
 	register	i;
@@ -713,9 +717,7 @@ int _AuMakeStreamsConnection (name, iserverp, xname, retries,
 
 
 #ifdef DEBUG
-dump(buf, len)
-    char *buf;
-    int	len;
+dump(char *buf, int len)
 {
  	int	i;
 	if(buf != NULL)
@@ -740,9 +742,13 @@ static SIGNAL_T OnAlarm(i)
 }
 
 static int
-CallTheNameServer(service, nettype, arg1, arg2, arg3)
-    char	*nettype, **arg1, **arg2;
-    int	service, *arg3;
+CallTheNameServer(
+                  char	*nettype, 
+                  char **arg1, 
+                  char **arg2,
+                  int	service, 
+                  int *arg3
+                  )
 {
 	int	m, n, ret;
 	char   *ptr, *p;
@@ -858,9 +864,7 @@ theend:
 
 
 static int
-Read(fd, buf, count)
-    int	fd, count;
-    char	*buf;
+Read(int fd, char *buf, int count)
 {
 	int	n;
 	while((n = read(fd, buf, count)) > 0)
@@ -876,8 +880,7 @@ Read(fd, buf, count)
 }
 
 static int
-OpenVirtualCircuit(lfd)
-    int	lfd;
+OpenVirtualCircuit(int lfd)
 {
 	return(OpenAndBind(NULL, -1, 0,
 		 	Network._net[_AusTypeOfStream[lfd]], _AusTypeOfStream[lfd]));

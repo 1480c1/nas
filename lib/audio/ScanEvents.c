@@ -45,19 +45,18 @@
  * 					the output buffer is flushed.
  */
 
-AuBool AuScanEvents (aud, mode, dequeue, predicate, arg, event)
-    register AuServer *aud;
-    int mode;
-    AuBool dequeue;
-    AuBool (*predicate)(
-#if NeedNestedPrototypes
-	AuServer *,			/* server */
-	AuEvent *,			/* event */
-	AuPointer			/* arg */
-#endif
-        );				/* function to call */
-    AuPointer arg;
-    register AuEvent *event;		/* AuEvent to be filled in. */
+AuBool AuScanEvents (
+                     register AuServer *aud,
+                     int mode,
+                     AuBool dequeue,
+                     AuBool (*predicate)(
+                                         AuServer *, /* server */
+                                         AuEvent *, /* event */
+                                         AuPointer /* arg */
+                                         ), /* function to call */
+                     AuPointer arg,
+                     register AuEvent *event		/* AuEvent to be filled in. */
+                     )
 {
     register _AuQEvent *prev, *qelt;
     int n;			/* time through count */

@@ -28,9 +28,10 @@
 #endif /* WIN32 */
 
 AuFlowID
-AuGetScratchFlow(aud, ret_status)
-AuServer       *aud;
-AuStatus       *ret_status;
+AuGetScratchFlow(
+                 AuServer       *aud,
+                 AuStatus       *ret_status
+                 )
 {
     AuFlowID        flow;
     int             i;
@@ -58,11 +59,12 @@ AuStatus       *ret_status;
 }
 
 AuFlowID
-AuGetScratchFlowToBucket(aud, bucket, import, ret_status)
-AuServer       *aud;
-AuBucketID      bucket;
-int            *import;
-AuStatus       *ret_status;
+AuGetScratchFlowToBucket(
+                         AuServer       *aud,
+                         AuBucketID      bucket,
+                         int            *import,
+                         AuStatus       *ret_status
+                         )
 {
     AuElement       elements[2];
     AuFlowID        flow;
@@ -92,11 +94,12 @@ AuStatus       *ret_status;
 }
 
 AuFlowID
-AuGetScratchFlowFromBucket(aud, bucket, export, ret_status)
-AuServer       *aud;
-AuBucketID      bucket;
-int            *export;
-AuStatus       *ret_status;
+AuGetScratchFlowFromBucket(
+                           AuServer       *aud,
+                           AuBucketID      bucket,
+                           int            *export,
+                           AuStatus       *ret_status
+                           )
 {
     AuElement       elements[2];
     AuFlowID        flow;
@@ -126,10 +129,11 @@ AuStatus       *ret_status;
 }
 
 void
-AuReleaseScratchFlow(aud, flow, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-AuStatus       *ret_status;
+AuReleaseScratchFlow(
+                     AuServer       *aud,
+                     AuFlowID        flow,
+                     AuStatus       *ret_status
+                     )
 {
     int             i;
 
@@ -145,10 +149,11 @@ AuStatus       *ret_status;
 }
 
 void
-AuStartFlow(aud, flow, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-AuStatus       *ret_status;
+AuStartFlow(
+            AuServer       *aud,
+            AuFlowID        flow,
+            AuStatus       *ret_status
+            )
 {
     AuElementState  states[1];
 
@@ -157,10 +162,11 @@ AuStatus       *ret_status;
 }
 
 void
-AuStopFlow(aud, flow, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-AuStatus       *ret_status;
+AuStopFlow(
+           AuServer       *aud,
+           AuFlowID        flow,
+           AuStatus       *ret_status
+           )
 {
     AuElementState  states[1];
 
@@ -169,10 +175,11 @@ AuStatus       *ret_status;
 }
 
 void
-AuPauseFlow(aud, flow, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-AuStatus       *ret_status;
+AuPauseFlow(
+            AuServer       *aud,
+            AuFlowID        flow,
+            AuStatus       *ret_status
+            )
 {
     AuElementState  states[1];
 
@@ -185,8 +192,8 @@ static struct
     int             format;
     char           *string,
                    *define;
-}               formats[] =
-{
+} formats[] =
+  {
     AuFormatULAW8, "8-bit uLAW", "AuFormatULAW8",
     AuFormatLinearUnsigned8, "8-bit unsigned linear", "AuFormatLinearUnsigned8",
     AuFormatLinearSigned8, "8-bit signed linear", "AuFormatLinearSigned8",
@@ -198,11 +205,10 @@ static struct
     "AuFormatLinearSigned16LSB",
     AuFormatLinearUnsigned16LSB, "16-bit unsigned linear (little endian)",
     "AuFormatLinearUnsigned16LSB",
-};
+  };
 
 _AuConst char  *
-AuFormatToString(format)
-unsigned int    format;
+AuFormatToString(unsigned int format)
 {
     int             i;
 
@@ -214,8 +220,7 @@ unsigned int    format;
 }
 
 int
-AuStringToFormat(s)
-_AuConst char  *s;
+AuStringToFormat(_AuConst char *s)
 {
     int             i;
 
@@ -227,8 +232,7 @@ _AuConst char  *s;
 }
 
 _AuConst char  *
-AuFormatToDefine(format)
-unsigned int    format;
+AuFormatToDefine(unsigned int format)
 {
     int             i;
 
@@ -240,8 +244,7 @@ unsigned int    format;
 }
 
 int
-AuDefineToFormat(s)
-_AuConst char  *s;
+AuDefineToFormat(_AuConst char *s)
 {
     int             i;
 
@@ -256,17 +259,16 @@ static struct
 {
     int             waveform;
     char           *string;
-}               waveforms[] =
-{
+} waveforms[] =
+  {
     AuWaveFormSquare, "Square",
     AuWaveFormSine, "Sine",
     AuWaveFormSaw, "Saw",
     AuWaveFormConstant, "Constant",
-};
+  };
 
 _AuConst char  *
-AuWaveFormToString(waveform)
-unsigned int    waveform;
+AuWaveFormToString(unsigned int waveform)
 {
     int             i;
 
@@ -278,8 +280,7 @@ unsigned int    waveform;
 }
 
 int
-AuStringToWaveForm(s)
-_AuConst char  *s;
+AuStringToWaveForm(_AuConst char *s)
 {
     int             i;
 

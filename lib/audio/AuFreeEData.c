@@ -25,17 +25,16 @@
 #include "Alibint.h"
 
 void
-_AuFreeExtData (extension)
-     AuExtData *extension;
+_AuFreeExtData (AuExtData *extension)
 {
-	AuExtData *temp;
-	while (extension) {
-		if (extension->free_private) 
-		    (*extension->free_private)(extension);
-		else Aufree ((char *)extension->private_data);
-		temp = extension->next;
-		Aufree ((char *)extension);
-		extension = temp;
-	}
-	return;
+  AuExtData *temp;
+  while (extension) {
+    if (extension->free_private) 
+      (*extension->free_private)(extension);
+    else Aufree ((char *)extension->private_data);
+    temp = extension->next;
+    Aufree ((char *)extension);
+    extension = temp;
+  }
+  return;
 }

@@ -25,12 +25,13 @@
 #include "Alibint.h"
 
 void
-AuSetDeviceAttributes(aud, device, mask, attr, ret_status)
-AuServer       *aud;
-AuDeviceID      device;
-AuMask		mask;
-AuDeviceAttributes *attr;
-AuStatus       *ret_status;
+AuSetDeviceAttributes(
+                      AuServer       *aud,
+                      AuDeviceID      device,
+                      AuMask		mask,
+                      AuDeviceAttributes *attr,
+                      AuStatus       *ret_status
+                      )
 {
     register auResourceReq *req;
     auDeviceAttributes a;

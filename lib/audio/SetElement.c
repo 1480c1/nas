@@ -25,9 +25,10 @@
 #include "Alibint.h"
 
 static void
-writeActions(aud, list)
-AuServer       *aud;
-AuElementActionList *list;
+writeActions(
+             AuServer       *aud,
+             AuElementActionList *list
+             )
 {
     int             i;
     AuElementAction *action;

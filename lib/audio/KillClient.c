@@ -41,10 +41,7 @@
 #include "Alibint.h"
 
 void 
-AuKillClient(aud, resource, ret_status)
-register AuServer *aud;
-AuID            resource;
-AuStatus       *ret_status;
+AuKillClient(AuServer *aud, AuID resource, AuStatus *ret_status)
 {
     register auResourceReq *req;
 

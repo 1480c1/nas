@@ -452,35 +452,27 @@ typedef struct _AuExten {	/* private to extension mechanism */
 	struct _AuExten *next;	/* next in list */
 	AuExtCodes codes;	/* public information, all extension told */
 	int (*close_server)(	/* routine to call when connection closed */
-#if NeedNestedPrototypes
 	    AuServer *,		/* server */
 	    AuExtCodes *	/* extensioncodes */
-#endif
 	);
 	AuBool (*error)(	/* who to call when an error occurs */
-#if NeedNestedPrototypes
 	    AuServer *,		/* server */
 	    auError *,		/* errorpacket */
 	    AuExtCodes *,	/* extensioncodes */
 	    AuBool *		/* returncode */
-#endif
 	);
         char *(*error_string)(  /* routine to supply error string */
-#if NeedNestedPrototypes
 	    AuServer *,		/* server */
 	    int,		/* errorcode */
 	    AuExtCodes *,	/* extensioncodes */
 	    char *,		/* buffer */
 	    int			/* bufsiz */
-#endif
 	);
 	char *name;		/* name of this extension */
 	void (*error_values)( /* routine to supply error values */
-#if NeedNestedPrototypes
 	    AuServer *,		/* server */
 	    AuErrorEvent *,	/* event */
 	    FILE *		/* where to print */
-#endif
 	);
 } _AuExtension;
 
@@ -514,118 +506,87 @@ _AUFUNCPROTOBEGIN
 /**********************/
 
 extern int _AuDefaultError(
-#if NeedFunctionPrototypes
     AuServer *,
     AuErrorEvent *
-#endif
 );
 
 extern void
 _AuDefaultIOError (
-#if NeedFunctionPrototypes
     AuServer *
-#endif
 );
 
 extern AuBool _AuWireToEvent(
-#if NeedFunctionPrototypes
     AuServer *,	/* server */
     AuEvent *,	/* pointer to where event should be reformatted */
     auEvent *	/* wire protocol event */
-#endif
 );
 
 extern AuBool _AuUnknownWireEvent(
-#if NeedFunctionPrototypes
     AuServer *,	/* server */
     AuEvent *,	/* pointer to where event should be reformatted */
     auEvent *	/* wire protocol event */
-#endif
 );
 
 extern AuStatus _AuUnknownNativeEvent(
-#if NeedFunctionPrototypes
     AuServer *,	/* server */
     AuEvent *,	/* pointer to where event should be reformatted */
     auEvent *	/* wire protocol event */
-#endif
 );
 
 extern AuID _AuAllocID (
-#if NeedFunctionPrototypes
     AuServer *		/* server */
-#endif
 );
 
 #ifdef _AuDataRoutineIsProcedure
 extern void _AuData(
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     char *,		/* data */
     AuInt32		/* len */
-#endif
 );
 #endif
 
 extern int _AuError (			/* prepare to upcall user handler */
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     auError *		/* reply */
-#endif
 );
 extern int _AuIOError (			/* prepare to upcall user handler */
-#if NeedFunctionPrototypes
     AuServer *		/* server */
-#endif
 );
 
 extern void _AuEatData (		/* swallow data from server */
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     AuUint32	/* nbytes */
-#endif
 );
 
 extern char *_AuAllocScratch (		/* fast memory allocator */
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     AuUint32	/* nbytes */
-#endif
 );
 
 extern AuUint32 _AuSetLastRequestRead(	/* update aud->last_request_read */
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     auGenericReply *	/* reply */
-#endif
 );
 
 extern int _AuGetHostname (		/* get name of this machine */
-#if NeedFunctionPrototypes
     char *,		/* buf */
     int			/* len */
-#endif
 );
 
 extern AuBool _AuAsyncErrorHandler (	/* internal error handler */
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     auReply *,		/* reply */
     char *,		/* buf */
     int,		/* len */
     AuPointer		/* data */
-#endif
 );
 
 extern void _AuDoDeqAsyncHandler (
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     _AuAsyncHandler *	/* handler */
-#endif
 );
 
 extern char *_AuGetAsyncReply (		/* get async reply */
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     char *,		/* replbuf */
     auReply *,		/* rep */
@@ -633,156 +594,118 @@ extern char *_AuGetAsyncReply (		/* get async reply */
     int,		/* len */
     int,		/* extra */
     AuBool		/* discard */
-#endif
 );
 
 extern AuBool _AuReply (
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     auReply *,		/* reply */
     int,		/* extra */
     AuBool,		/* discard */
     AuStatus *		/* ret_status */
-#endif
 );
 
 extern AuBool _AuForceRoundTrip (
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     int,		/* error_code */
     int,		/* major */
     int,		/* minor */
     AuStatus *		/* ret_status */
-#endif
 );
 
 #define _AuIfRoundTrip(aud,rsp) \
     (rsp ? _AuForceRoundTrip (aud, 0, 0, 0, (rsp)) : AuTrue)
 
 extern int _AuPrintDefaultError (
-#if NeedFunctionPrototypes
     AuServer *,		/* server */
     AuErrorEvent *,	/* event */
     FILE *		/* fp */
-#endif
 );
 
 extern void _AuFreeQ (
-#if NeedFunctionPrototypes
     AuServer *		/* server */
-#endif
 );
 
 extern void _AuDoSyncHandle (
-#if NeedFunctionPrototypes
     AuServer *		/* server */
-#endif
 );
 
 extern void
 _AuAddToBucketCache(
-#if NeedFunctionPrototypes
-			 AuServer *,		/* server */
-			 AuBucketAttributes *	/* bucket attributes */
-#endif
+                    AuServer *,		/* server */
+                    AuBucketAttributes *	/* bucket attributes */
 );
 
 extern AuBucketAttributes *
 _AuLookupBucketInCache(
-#if NeedFunctionPrototypes
 			 AuServer *,		/* server */
 			 AuBucketID		/* bucket */
-#endif
 );
 
 extern void
 _AuRemoveFromBucketCache(
-#if NeedFunctionPrototypes
 			 AuServer *,		/* server */
 			 AuBucketID		/* bucket */
-#endif
 );
 
 extern void
 _AuFreeBucketCache(
-#if NeedFunctionPrototypes
 			 AuServer *		/* server */
-#endif
 );
 
 extern void
 _AuRead(
-#if NeedFunctionPrototypes
         AuServer *,		/* server */
 	char *,			/* data */
 	AuInt32			/* size */
-#endif
 );
 
 void
 _AuReadPad(
-#if NeedFunctionPrototypes
         AuServer *,		/* server */
 	char *,			/* data */
 	AuInt32			/* size */
-#endif
 );
 
 extern void
 _AuSend(
-#if NeedFunctionPrototypes
         AuServer *,		/* server */
 	char *,			/* data */
 	AuInt32			/* size */
-#endif
 );
 
 extern void
 _AuFreeExtData(
-#if NeedFunctionPrototypes
     AuExtData *			/* extension */
-#endif
 );
 
 extern int
 _AuDisconnectServer(
-#if NeedFunctionPrototypes
     int				/* server */
-#endif
 );
 
 void
 _AuFreeServerStructure(
-#if NeedFunctionPrototypes
     AuServer  *			/* aud */
-#endif
 );
 
 void
 _AuFlush(
-#if NeedFunctionPrototypes
     AuServer  *			/* aud */
-#endif
 );
 
 int
 _AuEventsQueued(
-#if NeedFunctionPrototypes
     AuServer  *, 		/* aud */
     int				/* mode */
-#endif
 );
 
 void
 _AuReadEvents(
-#if NeedFunctionPrototypes
     AuServer  * 		/* aud */
-#endif
 );
 
 int
 _AuConnectServer(
-#if NeedFunctionPrototypes
     _AuConst char *, 		/* server_name */
     char **, 			/* fullnamep */
     int *, 			/* svrnump */
@@ -790,7 +713,6 @@ _AuConnectServer(
     int *, 			/* auth_namelenp */
     char **, 			/* auth_datap */
     int * 			/* auth_datalenp */
-#endif
 );
 
 /********************/
@@ -798,167 +720,117 @@ _AuConnectServer(
 /********************/
 
 extern int (*AuESetCloseServer(
-#if NeedFunctionPrototypes
     AuServer*		/* server */,
     int			/* extension */,
     int (*) (
-#if NeedNestedPrototypes
 	      AuServer*			/* server */,
               AuExtCodes*		/* codes */
-#endif
             )		/* proc */    
-#endif
 ))(
-#if NeedNestedPrototypes
     AuServer*, AuExtCodes*
-#endif
 );
 
 extern int (*AuESetError(
-#if NeedFunctionPrototypes
     AuServer*		/* server */,
     int			/* extension */,
     int (*) (
-#if NeedNestedPrototypes
 	      AuServer*			/* server */,
               auError*			/* err */,
               AuExtCodes*		/* codes */,
               int*			/* ret_code */
-#endif
             )		/* proc */    
-#endif
 ))(
-#if NeedNestedPrototypes
     AuServer*, auError*, AuExtCodes*, int*
-#endif
 );
 
 extern char* (*AuESetErrorString(
-#if NeedFunctionPrototypes
     AuServer*		/* server */,
     int			/* extension */,
     char* (*) (
-#if NeedNestedPrototypes
 	        AuServer*		/* server */,
                 int			/* code */,
                 AuExtCodes*		/* codes */,
                 char*			/* buffer */,
                 int			/* nbytes */
-#endif
               )		/* proc */	       
-#endif
 ))(
-#if NeedNestedPrototypes
     AuServer*, int, AuExtCodes*, char*, int
-#endif
 );
 
 extern void (*AuESetPrintErrorValues (
-#if NeedFunctionPrototypes
     AuServer*		/* server */,
     int			/* extension */,
     void (*)(
-#if NeedNestedPrototypes
 	      AuServer*			/* server */,
 	      AuErrorEvent*		/* ev */,
 	      void*			/* fp */
-#endif
 	     )		/* proc */
-#endif
 ))(
-#if NeedNestedPrototypes
     AuServer*, AuErrorEvent*, void*
-#endif
 );
 
 extern int (*AuESetWireToEvent(
-#if NeedFunctionPrototypes
     AuServer*		/* server */,
     int			/* event_number */,
     AuBool (*) (
-#if NeedNestedPrototypes
 	       AuServer*		/* server */,
                AuEvent*			/* re */,
                auEvent*			/* event */
-#endif
              )		/* proc */    
-#endif
 ))(
-#if NeedNestedPrototypes
     AuServer*, AuEvent*, auEvent*
-#endif
 );
 
 extern AuStatus (*AuESetEventToWire(
-#if NeedFunctionPrototypes
     AuServer*		/* server */,
     int			/* event_number */,
     int (*) (
-#if NeedNestedPrototypes
 	      AuServer*			/* server */,
               AuEvent*			/* re */,
               auEvent*			/* event */
-#endif
             )		/* proc */   
-#endif
 ))(
-#if NeedNestedPrototypes
     AuServer*, AuEvent*, auEvent*
-#endif
 );
 
 extern AuStatus (*AuESetWireToError(
-#if NeedFunctionPrototypes
     AuServer*		/* server */,
     int			/* error_number */,
     AuBool (*) (
-#if NeedNestedPrototypes
 	       AuServer*		/* server */,
 	       AuErrorEvent*		/* he */,
 	       auError*			/* we */
-#endif
             )		/* proc */   
-#endif
 ))(
-#if NeedNestedPrototypes
     AuServer*, AuErrorEvent*, auError*
-#endif
 );
 
 extern AuSyncHandlerRec *
 AuRegisterSyncHandler(
-#if NeedFunctionPrototypes
 		      AuServer *,		/* server */
 		      AuSyncHandlerCallback,	/* callback */
 		      AuPointer			/* data */
-#endif
 );
 
 extern void
 AuUnregisterSyncHandler(
-#if NeedFunctionPrototypes
 			AuServer *,		/* server */
 			AuSyncHandlerRec *	/* handler */
-#endif
 );
 
 extern AuEventEnqHandlerRec *
 AuRegisterEventEnqHandler
 (
-#if NeedFunctionPrototypes
 		      AuServer *,		/* server */
  		      int,			/* who */
 		      AuEventEnqHandlerCallback,/* callback */
 		      AuPointer			/* data */
-#endif
 );
 
 extern void
 AuUnregisterEventEnqHandler(
-#if NeedFunctionPrototypes
 			AuServer *,		/* server */
 			AuEventEnqHandlerRec *	/* handler */
-#endif
 );
 
 _AUFUNCPROTOEND

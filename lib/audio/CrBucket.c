@@ -25,16 +25,16 @@
 #include "Alibint.h"
 
 AuBucketID
-AuCreateBucket(aud, format, num_tracks, access, sample_rate, num_samples,
-	       description, ret_status)
-AuServer       *aud;
-AuUint32   format,
-                num_tracks,
-                access,
-                sample_rate,
-                num_samples;
-AuString       *description;
-AuStatus       *ret_status;
+AuCreateBucket(
+               AuServer *aud,
+               AuUint32 format,
+               AuUint32 num_tracks,
+               AuUint32 access,
+               AuUint32 sample_rate,
+               AuUint32 num_samples,
+               AuString *description,
+               AuStatus *ret_status
+               )
 {
     register auResourceReq *req;
     auBucketAttributes b;

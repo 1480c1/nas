@@ -36,8 +36,7 @@
 #include "Alibint.h"
 
 void
-AuHandleEvents(aud)
-AuServer       *aud;
+AuHandleEvents(AuServer *aud)
 {
     int             nevents;
     AuEvent         event;
@@ -70,9 +69,10 @@ AuServer       *aud;
 }
 
 AuBool
-AuDispatchEvent(aud, event)
-AuServer       *aud;
-AuEvent        *event;
+AuDispatchEvent(
+                AuServer       *aud,
+                AuEvent        *event
+                )
 {
     AuBool          result = AuFalse;
     AuEventHandlerRec *handler = NULL, *next;
@@ -92,10 +92,11 @@ AuEvent        *event;
 }
 
 AuEventHandlerRec *
-AuLookupEventHandler(aud, event, handler)
-register AuServer *aud;
-register AuEvent *event;
-register AuEventHandlerRec *handler;
+AuLookupEventHandler(
+                     register AuServer *aud,
+                     register AuEvent *event,
+                     register AuEventHandlerRec *handler
+                     )
 {
     /*
      * From the given start location (NULL indicates beginning), walk down
@@ -126,13 +127,14 @@ register AuEventHandlerRec *handler;
 }
 
 AuEventHandlerRec *
-AuRegisterEventHandler(aud, mask, type, id, callback, data)
-AuServer       *aud;
-AuMask          mask;
-int             type;
-AuID            id;
-AuEventHandlerCallback callback;
-AuPointer       data;
+AuRegisterEventHandler(
+                       AuServer       *aud,
+                       AuMask          mask,
+                       int             type,
+                       AuID            id,
+                       AuEventHandlerCallback callback,
+                       AuPointer       data
+                       )
 {
     AuEventHandlerRec *handler;
 
@@ -152,9 +154,10 @@ AuPointer       data;
 }
 
 void
-AuUnregisterEventHandler(aud, handler)
-AuServer       *aud;
-AuEventHandlerRec *handler;
+AuUnregisterEventHandler(
+                         AuServer       *aud,
+                         AuEventHandlerRec *handler
+                         )
 {
     _AuRemoveFromLinkedList(aud->eventhandlerq, handler);
     Aufree(handler);

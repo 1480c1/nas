@@ -311,26 +311,20 @@ _AUFUNCPROTOBEGIN
 #ifndef _AuANYSET
 extern int
 _AuANYSET(
-#if NeedFunctionPrototypes
     AuInt32 * 			/* src */
-#endif
 );
 #endif /* !_AuANYSET */
 
 int _AuReadV (
-#if NeedFunctionPrototypes
     int,  			/* fd */
     struct iovec *, 		/* iov */
     int 			/* iovcnt */
-#endif
 );
 
 int _AuWriteV (
-#if NeedFunctionPrototypes
     int,  			/* fd */
     struct iovec *, 		/* iov */
     int 			/* iovcnt */
-#endif
 );
 
 _AUFUNCPROTOEND

@@ -25,12 +25,13 @@
 #include "Alibint.h"
 
 AuDeviceAttributes *
-AuListDevices(aud, mask, attr, num_devices, ret_status)
-AuServer       *aud;
-AuMask          mask;
-AuDeviceAttributes *attr;
-int            *num_devices;
-AuStatus       *ret_status;
+AuListDevices(
+              AuServer       *aud,
+              AuMask          mask,
+              AuDeviceAttributes *attr,
+              int            *num_devices,
+              AuStatus       *ret_status
+              )
 {
     register auReq *req;
     auListDevicesReply rep;

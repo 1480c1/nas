@@ -31,18 +31,17 @@ typedef struct
     AuFlowID        flow;
     AuPointer       callback_data;
     void            (*callback) (
-#if NeedNestedPrototypes
 				 AuServer *, AuEventHandlerRec *,
 				 AuEvent *, AuPointer
-#endif
     );
 }               MonitorDeviceRec, *MonitorDevicePtr;
 
 static AuBool
-EventHandler(aud, ev, handler)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
+EventHandler(
+             AuServer       *aud,
+             AuEvent        *ev,
+             AuEventHandlerRec *handler
+             )
 {
     MonitorDevicePtr priv = (MonitorDevicePtr) handler->data;
 
@@ -79,25 +78,23 @@ int             AuMonitorRate = 10;
 /* format of the monitor data */
 int             AuMonitorFormat = AuFormatLinearSigned16MSB;
 
-AuEventHandlerRec *
-AuMonitorDevice(aud, rate, in_device, out_device, volume, callback,
-		callback_data, pflow, pmultelem, pmonelem, ret_status)
-AuServer       *aud;
-int             rate;
-AuDeviceID      in_device,
-                out_device;
-AuFixedPoint    volume;
-void            (*callback) (
-#if NeedFunctionPrototypes
-			                     AuServer *, AuEventHandlerRec *,
-			                     AuEvent *, AuPointer
-#endif
-);
-AuPointer       callback_data;
-AuFlowID       *pflow;
-int            *pmultelem,
-               *pmonelem;
-AuStatus       *ret_status;
+AuEventHandlerRec * AUCDECL
+AuMonitorDevice(
+                AuServer       *aud,
+                int             rate,
+                AuDeviceID      in_device,
+                AuDeviceID      out_device,
+                AuFixedPoint    volume,
+                void            (*callback) (
+                                             AuServer *, AuEventHandlerRec *,
+                                             AuEvent *, AuPointer
+                                             ),
+                AuPointer       callback_data,
+                AuFlowID       *pflow,
+                int            *pmultelem,
+                int            *pmonelem,
+                AuStatus       *ret_status
+                )
 {
     AuElement       elements[4];
     AuElementState  states[1];

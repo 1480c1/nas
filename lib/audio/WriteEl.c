@@ -25,14 +25,15 @@
 #include "Alibint.h"
 
 void
-_AuWriteElement(aud, flow, element_num, num_bytes, data, state, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-int             element_num,
-                state;
-AuUint32   num_bytes;
-AuPointer       data;
-AuStatus       *ret_status;
+_AuWriteElement(
+                AuServer       *aud,
+                AuFlowID        flow,
+                int             element_num,
+                int             state,
+                AuUint32   num_bytes,
+                AuPointer       data,
+                AuStatus       *ret_status
+                )
 {
     register auWriteElementReq *req;
 
@@ -57,14 +58,15 @@ AuStatus       *ret_status;
 }
 
 void
-AuWriteElement(aud, flow, element_num, num_bytes, data, end_of_data, ret_status)
-AuServer       *aud;
-AuFlowID        flow;
-int             element_num;
-AuUint32   num_bytes;
-AuPointer       data;
-AuBool          end_of_data;
-AuStatus       *ret_status;
+AuWriteElement(
+               AuServer       *aud,
+               AuFlowID        flow,
+               int             element_num,
+               AuUint32   num_bytes,
+               AuPointer       data,
+               AuBool          end_of_data,
+               AuStatus       *ret_status
+               )
 {
     AuUint32   maxBytes,
                     bytes,
@@ -87,8 +89,9 @@ AuStatus       *ret_status;
     {
 	bytes = num_bytes > maxBytes ? maxBytes : num_bytes;
 	num_bytes -= bytes;
-	_AuWriteElement(aud, flow, element_num, bytes, data,
-			num_bytes ? AuTransferStatePending : finalState,
+	_AuWriteElement(aud, flow, element_num, 
+                        num_bytes ? AuTransferStatePending : finalState,
+                        bytes, data,
 			ret_status);
 	data = (AuPointer) ((unsigned char *) data + bytes);
     } while (*pstatus == AuSuccess && num_bytes);

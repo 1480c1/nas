@@ -25,9 +25,10 @@
 #include "Alibint.h"
 
 AuTime
-AuGetServerTime(aud, ret_status)
-AuServer       *aud;
-AuStatus       *ret_status;
+AuGetServerTime(
+                AuServer       *aud,
+                AuStatus       *ret_status
+                )
 {
     register auReq *req;
     auGetServerTimeReply rep;

@@ -33,18 +33,6 @@
 #include <stdio.h>
 #include <audio/audio.h>	/* for AuInt32 and AuUint32 */
 
-/*
- * If we are being used outside the NCD-AUDIO sound library, then we'll need
- * some ANSIfication definitions.
- */
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif						/* NeedFunctionPrototypes */
-
 #ifndef _SndConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _SndConst const
@@ -131,71 +119,53 @@ _FUNCPROTOBEGIN
 
 extern SndInfo *
 SndOpenFileForReading(
-#if NeedFunctionPrototypes
 		      _SndConst char *		/* file name */
-#endif
 );
 
 extern SndInfo *
 SndOpenFileForWriting(
-#if NeedFunctionPrototypes
 		      _SndConst char *,		/* file name */
 		      SndInfo *			/* info */
-#endif
 );
 
 extern int
 SndCloseFile(
-#if NeedFunctionPrototypes
 	     SndInfo *				/* info */
-#endif
 );
 
 extern int
 SndReadFile(
-#if NeedFunctionPrototypes
 	    char *,				/* buffer */
 	    int,				/* num bytes */
 	    SndInfo *				/* info */
-#endif
 );
 
 extern int
 SndWriteFile(
-#if NeedFunctionPrototypes
 	     char *,				/* buffer */
 	     int,				/* num bytes */
 	     SndInfo *				/* info */
-#endif
 );
 
 extern int
 SndSeekFile(
-#if NeedFunctionPrototypes
 	      int,                              /* number of audio bytes */
 	      SndInfo *				/* info */
-#endif
 );
 
 extern int
 SndTellFile(
-#if NeedFunctionPrototypes
 	      SndInfo *				/* info */
-#endif
 );
 
 extern int
 SndFlushFile(
-#if NeedFunctionPrototypes
 	      SndInfo *				/* info */
-#endif
 );
 
 extern int
 SndRewindFile(
-#if NeedFunctionPrototypes
 	      SndInfo *				/* info */
-#endif
 );
 
 _FUNCPROTOEND

@@ -36,14 +36,6 @@
  * some ANSIfication definitions.
  */
 
-#ifndef NeedFunctionPrototypes
-#if defined(FUNCPROTO) || __STDC__ || defined(__cplusplus) || defined(c_plusplus)
-#define NeedFunctionPrototypes 1
-#else
-#define NeedFunctionPrototypes 0
-#endif
-#endif						/* NeedFunctionPrototypes */
-
 #ifndef _WaveConst
 #if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _WaveConst const
@@ -111,71 +103,53 @@ _FUNCPROTOBEGIN
 
 extern WaveInfo *
 WaveOpenFileForReading(
-#if NeedFunctionPrototypes
 		       _WaveConst char *	/* file name */
-#endif
 );
 
 extern WaveInfo *
 WaveOpenFileForWriting(
-#if NeedFunctionPrototypes
 		       _WaveConst char *,	/* file name */
 		       WaveInfo *		/* info */
-#endif
 );
 
 extern int
 WaveCloseFile(
-#if NeedFunctionPrototypes
 	      WaveInfo *			/* info */
-#endif
 );
 
 extern int
 WaveReadFile(
-#if NeedFunctionPrototypes
 	     char *,				/* buffer */
 	     int,				/* num bytes */
 	     WaveInfo *				/* info */
-#endif
 );
 
 extern int
 WaveWriteFile(
-#if NeedFunctionPrototypes
 	      char *,				/* buffer */
 	      int,				/* num bytes */
 	      WaveInfo *			/* info */
-#endif
 );
 
 extern int
 WaveSeekFile(
-#if NeedFunctionPrototypes
 	      int,                              /* number of audio bytes */
 	      WaveInfo *			/* info */
-#endif
 );
 
 extern int
 WaveTellFile(
-#if NeedFunctionPrototypes
 	      WaveInfo *			/* info */
-#endif
 );
 
 extern int
 WaveFlushFile(
-#if NeedFunctionPrototypes
 	      WaveInfo *			/* info */
-#endif
 );
 
 extern int
 WaveRewindFile(
-#if NeedFunctionPrototypes
 	       WaveInfo *			/* info */
-#endif
 );
 
 _FUNCPROTOEND

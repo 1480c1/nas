@@ -25,10 +25,11 @@
 #include "Alibint.h"
 
 AuBucketAttributes *
-AuGetBucketAttributes(aud, bucket, ret_status)
-AuServer       *aud;
-AuBucketID      bucket;
-AuStatus       *ret_status;
+AuGetBucketAttributes(
+                      AuServer       *aud,
+                      AuBucketID      bucket,
+                      AuStatus       *ret_status
+                      )
 {
     register auResourceReq *req;
     auGetBucketAttributesReply rep;
@@ -85,10 +86,11 @@ AuStatus       *ret_status;
 
 /* ARGSUSED */
 void
-AuFreeBucketAttributes(aud, num, attr)
-AuServer       *aud;
-int             num;
-AuBucketAttributes *attr;
+AuFreeBucketAttributes(
+                       AuServer       *aud,
+                       int             num,
+                       AuBucketAttributes *attr
+                       )
 {
     AuBucketAttributes *p = attr;
 

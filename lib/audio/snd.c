@@ -31,19 +31,21 @@
 #define Err() { SndCloseFile(si); return NULL; }
 
 int
-SndReadFile(p, n, si)
-char           *p;
-int             n;
-SndInfo        *si;
+SndReadFile(
+            char           *p,
+            int             n,
+            SndInfo        *si
+            )
 {
     return fread(p, 1, n, si->fp);
 }
 
 int
-SndWriteFile(p, n, si)
-char           *p;
-int             n;
-SndInfo        *si;
+SndWriteFile(
+             char           *p,
+             int             n,
+             SndInfo        *si
+             )
 {
     int             num;
 
@@ -53,8 +55,7 @@ SndInfo        *si;
 }
 
 int
-SndCloseFile(si)
-SndInfo        *si;
+SndCloseFile(SndInfo *si)
 {
     int             status = 0;
 
@@ -85,40 +86,37 @@ SndInfo        *si;
 }
 
 int
-SndRewindFile(si)
-SndInfo        *si;
+SndRewindFile(SndInfo *si)
 {
     return si->writing ? -1 :
 	(si->fp == stdin ? -1 : fseek(si->fp, si->h.dataOffset, 0));
 }
 
 int
-SndSeekFile(n, si)
-int              n;
-SndInfo        *si;
+SndSeekFile(
+            int              n,
+            SndInfo        *si
+            )
 {
     return si->writing ? -1 :
 	(si->fp == stdin ? -1 : fseek(si->fp, si->h.dataOffset + n, 0));
 }
 
 int
-SndTellFile(si)
-SndInfo        *si;
+SndTellFile(SndInfo *si)
 {
     return si->writing ? -1 :
 	(si->fp == stdin ? -1 : ftell(si->fp) - si->h.dataOffset);
 }
 
 int
-SndFlushFile(si)
-SndInfo        *si;
+SndFlushFile(SndInfo *si)
 {
     return fflush(si->fp);
 }
 
 SndInfo        *
-SndOpenFileForReading(name)
-_SndConst char *name;
+SndOpenFileForReading(_SndConst char *name)
 {
     SndInfo        *si;
     int             size;
@@ -183,9 +181,10 @@ _SndConst char *name;
 }
 
 SndInfo        *
-SndOpenFileForWriting(name, si)
-_SndConst char *name;
-SndInfo        *si;
+SndOpenFileForWriting(
+                      _SndConst char *name,
+                      SndInfo        *si
+                      )
 {
     int             commentLen;
     SndHeader       h;

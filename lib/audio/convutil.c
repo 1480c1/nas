@@ -78,10 +78,7 @@ static unsigned short ulawToLinearTable[] =
 };
 
 int
-AuConvertDataToShort(dataFormat, numBytes, data)
-int             dataFormat,
-                numBytes;
-AuPointer       data;
+AuConvertDataToShort(int dataFormat, int numBytes, AuPointer data)
 {
     char           *s;
     short          *d;
@@ -187,8 +184,7 @@ AuPointer       data;
 						 * 16 bit samples */
 
 static unsigned char
-linearToUlaw(sample)
-short           sample;
+linearToUlaw(short sample)
 {
     static int      exp_lut[256] =
     {
@@ -237,10 +233,11 @@ short           sample;
 }
 
 int
-AuConvertShortToData(dataFormat, numBytes, data)
-int             dataFormat,
-                numBytes;
-AuPointer          data;
+AuConvertShortToData(
+                     int             dataFormat,
+                     int             numBytes,
+                     AuPointer          data
+                     )
 {
     char           *d;
     short          *s;

@@ -25,9 +25,10 @@
 #include "Alibint.h"
 
 AuFlowID
-AuCreateFlow(aud, ret_status)
-AuServer       *aud;
-AuStatus       *ret_status;
+AuCreateFlow(
+             AuServer *aud,
+             AuStatus *ret_status
+             )
 {
     register auResourceReq *req;
     AuFlowID        flow = AuAllocID(aud);

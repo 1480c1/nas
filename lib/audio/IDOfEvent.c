@@ -24,8 +24,7 @@
 
 #include "Alibint.h"
 
-AuID AuIDOfEvent (event)
-    AuEvent *event;
+AuID AuIDOfEvent (AuEvent *event)
 {
     if (!event)
 	return AuNone;

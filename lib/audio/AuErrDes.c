@@ -91,11 +91,8 @@ typedef struct _dbNode
 
 typedef dbNodePtr XrmDatabase;
 
-static          dbNodePtr
-addNode(parent, sib, p)
-dbNodePtr       parent,
-                sib;
-char           *p;
+static dbNodePtr
+addNode(dbNodePtr parent, dbNodePtr sib, char *p)
 {
     dbNodePtr       n;
 
@@ -112,9 +109,8 @@ char           *p;
     return n;
 }
 
-static          XrmDatabase
-getFileDataBase(filename)
-char           *filename;
+static XrmDatabase
+getFileDataBase(char *filename)
 {
     FILE           *fp;
     char            line[BUFSIZ],
@@ -182,10 +178,7 @@ char           *filename;
 }
 
 static AuBool
-getResource(db, name, value_ret)
-XrmDatabase     db;
-char           *name;
-XrmValue       *value_ret;
+getResource(XrmDatabase db, char *name, XrmValue *value_ret)
 {
     char           *p;
     dbNodePtr       parent;
@@ -222,11 +215,8 @@ XrmValue       *value_ret;
 #endif						/* NO_XLIB */
 
 void
-AuGetErrorText(aud, code, buffer, nbytes)
-    register AuServer *aud;
-    register int code;
-    char *buffer;
-    int nbytes;
+AuGetErrorText(register AuServer *aud, register int code, 
+               char *buffer, int nbytes)
 {
     char buf[150];
     register _AuExtension *ext;
@@ -259,7 +249,6 @@ AuGetErrorText(aud, code, buffer, nbytes)
 }
 
 void
-#if NeedFunctionPrototypes
 /*ARGSUSED*/
 AuGetErrorDatabaseText(
     AuServer *aud,
@@ -268,15 +257,6 @@ AuGetErrorDatabaseText(
     _AuConst char *defaultp,
     char *buffer,
     int nbytes)
-#else
-/*ARGSUSED*/
-AuGetErrorDatabaseText(aud, name, type, defaultp, buffer, nbytes)
-    AuServer *aud;
-    register char *name, *type;
-    char *defaultp;
-    char *buffer;
-    int nbytes;
-#endif
 {
     static XrmDatabase db;
     static int initialized = False;
