@@ -75,7 +75,7 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <signal.h>
 
 typedef int AuBlock;
-#if defined(linux) 
+#if defined(linux)  || defined(__CYGWIN__)
 #define        AuBlockAudio()          0
 #define        AuUnBlockAudio(_x)
 #else /* defined(linux)  */

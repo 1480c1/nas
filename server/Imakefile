@@ -110,8 +110,13 @@ RCMANDIR = $(MANDIR)
     RCMANSUFFIX = 5x
 # endif
 
+# if defined(cygwinArchitecture)
+ALL1 = nasd.exe
+# else
 ALL1 = nasd
-#define BuildVoxServer
+# endif
+
+# define BuildVoxServer
 #endif
 
 ALL = $(ALL1)

@@ -635,7 +635,6 @@
 ./server/os/utils.c
 ./server/os/aulog.c
 ./server/os/aulog.h
-./server/os/fdset.h
 ./server/os
 ./server/Makefile
 ./server

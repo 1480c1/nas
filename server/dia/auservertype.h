@@ -14,7 +14,7 @@
 # define SGI_SERVER
 #endif						/* sgi */
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386)))
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386))) || defined(__CYGWIN__)
 # define VOXWARE_SERVER
 #endif                                          /* voxware */
 

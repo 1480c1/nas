@@ -877,7 +877,7 @@ intervalProc()
 #ifndef sco
 	signal(SIGALRM, SIG_IGN);
 
-#if defined(linux) 
+#if defined(linux) || defined(__CYGWIN__)
        /* this looks funny and stupid, but BSD not only provide
         * reliable signals but also block this signal while executing
         * this handler
@@ -902,7 +902,7 @@ intervalProc()
 #endif /* sco */
 		AuProcessData();
 #ifndef sco
-#if defined(linux)
+#if defined(linux) || defined(__CYGWIN__)
                 /* block the signal again */
                 {
                         sigset_t set;
@@ -1069,7 +1069,7 @@ int rate ;
 }
 
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
 static void monoToStereoLinearSigned16LSB(numSamples)
@@ -1084,7 +1084,7 @@ AuUint32 numSamples;
   }
 }
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
 static void monoToStereoLinearUnsigned8(numSamples)
@@ -1145,7 +1145,7 @@ static void writePhysicalOutputsMono()
   AuUnBlockAudio(l);
 }
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
 static void stereoToMonoLinearSigned16LSB(numSamples)
@@ -1160,7 +1160,7 @@ AuUint32 numSamples;
   }
 }
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYWIN__)
 inline
 #endif
 static void stereoToMonoLinearUnsigned8(numSamples)
