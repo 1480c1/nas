@@ -137,14 +137,14 @@ main(argc, argv)
     if (display == NULL)
       display = AuServerName();
 
-    /* We're running as a daemon, so close stdin, stdout and stderr
-       before we start the main loop */
+    if (NasConfig.DoDaemon)
+      {
+	osBecomeOrphan();
+	osBecomeDaemon();
 
-    close(0);
-    close(1);
-
-    if (!NasConfig.DoDebug)
-      close(2);			/* only close stderr if no debugging. */
+	/* we could store pid info here... */
+	/* osStorePid() */
+      }
 
     /* And cd to / so we don't hold anything up; core files will also
        go there. */

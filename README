@@ -27,6 +27,8 @@ network-transparent, client/server audio system, including:
 
 	- HPUX 10.10.X, 11.x
 
+	- Win32 under Cygwin
+
     o	an application programming interface library
     o	a variety of sample applications
 
@@ -35,7 +37,6 @@ This version was built on the following OS's prior to release:
 
         - Linux/glibc 2.1, 2.2.14 kernel (Mandrake 7)
         - Unixware 2.03 (X11R6.4 and gcc 2.95.2 compiler)
-        - HPUX 10.10 using X11R6.1 and gcc 2.95.2
 
 The client software can also be used with several models of NCD X
 terminals as well as NCD's PCXware (an X server for PCs running

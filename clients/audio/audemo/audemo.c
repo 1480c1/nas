@@ -84,7 +84,7 @@ popen(
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #include <X11/Xaw/Cardinals.h>
-#include <audio/Xtutil.h>
+/*#include <audio/Xtutil.h>*/
 
 /* widgets */
 #include <X11/Xaw/Command.h>

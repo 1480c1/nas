@@ -54,6 +54,13 @@ SOFTWARE.
  *
  *****************************************************************/
 
+#if defined(__CYGWIN__)
+#define ioctl           ioctlsocket
+#define FIOSNBIO        FIONBIO
+#include <fcntl.h>
+#include <sys/types.h>
+#endif
+
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include <audio/Aos.h>

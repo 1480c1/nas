@@ -49,6 +49,10 @@ without express or implied warranty.
 
 #include "release.h"
 
+#if defined(__CYGWIN__)
+#define FIONREAD        0x541B
+#endif
+
 #include <audio/Alibint.h>
 #include <audio/Aos.h>
 #include "Alibnet.h"
@@ -1354,16 +1358,9 @@ register auEvent *event;			/* wire protocol event */
 
 #ifndef USL_SHARELIB
 
-static char *_SysErrorMsg (n)
-    int n;
+static char *_SysErrorMsg (int n)
 {
-#if !defined(__FreeBSD__) && !defined(__linux__) && !defined(__NetBSD__)
-    extern char *sys_errlist[];
-#endif
-    extern int sys_nerr;
-    char *s = (char *)((n >= 0 && n < sys_nerr) ? sys_errlist[n] : "unknown error");
-
-    return (s ? s : "no such error");
+  return (strerror(n));
 }
 
 #endif 	/* USL sharedlibs in don't define for AUD3.2 */

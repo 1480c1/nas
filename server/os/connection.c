@@ -65,6 +65,22 @@ SOFTWARE.
 
 #include "nasconfig.h"
 
+#if defined(__CYGWIN__)
+#define S_IFSOCK        _IFSOCK
+#define S_IFMT          _IFMT
+
+#include <limits.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif 
+
+
+
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #ifndef _MINIX
@@ -349,9 +365,21 @@ open_tcp_socket ()
     insock.sin_port = htons ((unsigned short)(AudioListenPort + atoi (display)));
 
     if (NasConfig.LocalOnly)
+      {
+#if defined(__CYGWIN__)
+      insock.sin_addr.s_addr = INADDR_LOOPBACK;	/* is this right? */
+#else
       insock.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+#endif
+      }
     else
-      insock.sin_addr.s_addr = htonl(INADDR_ANY);
+      {
+#if defined(__CYGWIN__)
+	insock.sin_addr.s_addr = INADDR_ANY;
+#else
+	insock.sin_addr.s_addr = htonl(INADDR_ANY);
+#endif
+      }
     
     retry = 20;
     while (bind(request, (struct sockaddr *) &insock, sizeof (insock)))

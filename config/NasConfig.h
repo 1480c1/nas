@@ -34,4 +34,8 @@
 				   disable mutexes for thread saftey.
 				 */
 
+
+/* for ADMPATHin osinit.c */
+#define NAS_AUDIOMSGFILE  "/var/adm/X%smsgs"
+
 #endif /* _NASCONFIG_H_INCLUDED */

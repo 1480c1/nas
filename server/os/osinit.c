@@ -47,6 +47,8 @@ SOFTWARE.
 
 ******************************************************************/
 
+#include "NasConfig.h"
+
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include "os.h"
@@ -68,7 +70,7 @@ SOFTWARE.
 #endif
 
 #ifndef ADMPATH
-#define ADMPATH "/usr/adm/X%smsgs"
+#define ADMPATH NAS_AUDIOMSGFILE
 #endif
 
 extern char *display;
@@ -119,7 +121,9 @@ OsInit()
 	    setvbuf (stderr, buf, _IOLBF, BUFSIZ);
 	    }
 #else
+# if !defined(__CYGWIN__)
 	    setlinebuf(stderr);
+# endif
 #endif
 	}
 

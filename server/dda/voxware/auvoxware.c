@@ -133,6 +133,21 @@ PERFORMANCE OF THIS SOFTWARE.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
+#include <sys/types.h>
+#include <errno.h>
+#ifndef _POSIX_SOURCE
+# include <sys/ioctl.h>
+#endif
+
+#if defined(__CYGWIN__)
+# ifndef O_SYNC
+#  define O_SYNC          _FSYNC
+# endif
+extern int errno;
+#endif
+
+
 #include "nasconfig.h"
 #include "config.h"
 #include "aulog.h"
@@ -615,6 +630,13 @@ static AuBool
 openDevice(wait)
 AuBool wait;
 {
+  unsigned int extramode = 0;
+
+#if defined(__CYGWIN__)		/* we want the file to be created if necc under
+				   windows */
+  extramode = O_CREAT;
+#endif
+
   if (NasConfig.DoDebug)
     {
       osLogMsg("openDevice\n");
@@ -626,7 +648,9 @@ AuBool wait;
 
     if(sndStatOut.fd == -1)
     {
-       while ((sndStatOut.fd = open(sndStatOut.device, sndStatOut.howToOpen|O_SYNC, 0666)) == -1 && wait)
+       while ((sndStatOut.fd = open(sndStatOut.device, 
+				    sndStatOut.howToOpen|O_SYNC|extramode, 
+				    0666)) == -1 && wait)
        {
            osLogMsg("openDevice: waiting on output device\n");
            sleep(1);
@@ -647,7 +671,9 @@ AuBool wait;
 	osLogMsg("openDevice IN %s mode %d\n", sndStatIn.device, 
 		 sndStatIn.howToOpen);
 
-       while ((sndStatIn.fd = open(sndStatIn.device, sndStatIn.howToOpen, 0)) == -1 && wait)
+       while ((sndStatIn.fd = open(sndStatIn.device, 
+				   sndStatIn.howToOpen|extramode, 
+				   0666)) == -1 && wait)
        {
            osLogMsg("openDevice: waiting on input device\n");
            sleep(1);
@@ -665,7 +691,8 @@ AuBool wait;
     }
 
     if(mixerfd == -1)
-       while ((mixerfd = open(sndStatOut.mixer, O_RDONLY, 0)) == -1 && wait)
+       while ((mixerfd = open(sndStatOut.mixer, O_RDONLY|extramode, 
+			      0666)) == -1 && wait)
        {
            osLogMsg("openDevice: waiting on mixer device\n");
            sleep(1);
@@ -1376,8 +1403,13 @@ AuBool AuInitPhysicalDevices()
   extern AuUint32  auPhysicalOutputBuffersSize;
   extern void      AuProcessData();
   char            *nas_device_policy;
+  unsigned int    extramode = 0; /* for extra open modes (cygwin) */
 #if defined(AUDIO_GETINFO)
   audio_info_t     spkrinf;
+#endif
+
+#if defined(__CYGWIN__)
+  extramode = O_CREAT;
 #endif
 
   if (NasConfig.DoDebug)
@@ -1427,7 +1459,8 @@ AuBool AuInitPhysicalDevices()
 	  osLogMsg("openDevice OUT %s mode %d\n", 
 		   sndStatOut.device, sndStatOut.howToOpen);
 	
-	if ((fd = open(sndStatOut.device, sndStatOut.howToOpen|O_SYNC, 0)) == -1)
+	if ((fd = open(sndStatOut.device, 
+		       sndStatOut.howToOpen|O_SYNC|extramode, 0)) == -1)
 	  {
 	    UNIDENTMSG;
 	    return AuFalse;
@@ -1456,7 +1489,8 @@ AuBool AuInitPhysicalDevices()
 	osLogMsg("openDevice(1) IN %s mode %d\n", 
 		 sndStatIn.device, sndStatIn.howToOpen);
 
-      if ((fd = open(sndStatIn.device, sndStatIn.howToOpen, 0)) != -1)
+      if ((fd = open(sndStatIn.device, sndStatIn.howToOpen|extramode, 
+		     0)) != -1)
         sndStatIn.fd = fd;
       else
       {
@@ -1470,7 +1504,8 @@ AuBool AuInitPhysicalDevices()
       setupSoundcard(&sndStatIn);
 
     if (!sndStatOut.isPCSpeaker) {
-      if ((mixerfd = open(sndStatOut.mixer, O_RDONLY, 0)) == -1) {
+      if ((mixerfd = open(sndStatOut.mixer, O_RDONLY|extramode, 
+			  0666)) == -1) {
         UNIDENTMSG;
         return AuFalse;
       }

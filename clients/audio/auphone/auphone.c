@@ -41,7 +41,7 @@
 #include <audio/Afuncs.h> 		/* for bcopy et. al. */
 #include <audio/audiolib.h>
 #include <audio/soundlib.h>
-#include <audio/Xtutil.h>
+/*#include <audio/Xtutil.h>*/
 
 /* widgets */
 #include <X11/Xaw/AsciiText.h>

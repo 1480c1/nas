@@ -51,9 +51,6 @@
 #include <errno.h>
 #include <sys/stropts.h>
 
-extern int errno;
-extern char *sys_errlist[];
-
 /* stolen from <X11/Xproto.h> */
 typedef struct {
     CARD8 family;
@@ -323,23 +320,25 @@ char	*stype;
 		}
 	   }
 	   else	{
-		PRMSG("stat err=%d,-%s\n", errno, sys_errlist[errno]);
+		PRMSG("stat err=%d,-%s\n", errno, strerror(errno));
 		return(-1);
 	   }
 	}
 
-	if(pipe(fld) != 0)	{
-	    fprintf(stderr,"pipe failed, errno=%d:%s\n", errno, sys_errlist[errno]);
+	if(pipe(fld) != 0)	
+	  {
+	    fprintf(stderr,"pipe failed, errno=%d:%s\n", errno, 
+		    strerror(errno));
 	    return(-1);
-	}
+	  }
 
 	if((ret=ioctl(fld[0], I_PUSH,"connld")) != 0)	{
-	    fprintf(stderr,"ioctl error:%s\n", sys_errlist[errno]);
+	    fprintf(stderr,"ioctl error:%s\n", strerror(errno));
 	    return(-1);
 	}
 
 	if((fattach(fld[0], buf)) !=0)	{
-	    fprintf(stderr,"fattach failed:%s\n", sys_errlist[errno]);
+	    fprintf(stderr,"fattach failed:%s\n", strerror(errno));
 	    return(-1);
 	}
 
@@ -635,7 +634,7 @@ char *node;
 
 	fld = open(node, O_RDWR);
 	if(fld <0)	{
-	    fprintf(stderr,"OpenNamedServer failed:%s\n", sys_errlist[errno]);
+	    fprintf(stderr,"OpenNamedServer failed:%s\n", strerror(errno));
 	    return(-1);
 	}
 

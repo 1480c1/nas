@@ -1,0 +1,52 @@
+This document was made by nicolas@alineanet.com 7/7/2002
+-----------------------------------------------
+
+run xmkmf
+do a make World
+after :
+
+AudioLib : (lib/audio/)
+----------
+Add this at the linking to the makefile of lib/audio in case libaudio.dll:
+-L/usr/X11R6/lib -lXt -lXau -lm -lc -lX11 -lSM -lICE
+
+do make
+
+Include : (include/)
+---------
+Do this :
+ln -sf ../server/os/aulog.h aulog.h
+ln -sf ../server/dia/globals.h globals.h
+ln -sf ../server/dia/nasconfig.h nasconfig.h
+
+Os : (server/os)
+----
+Remove all .h in dependencies from the Makefile
+do make
+
+Dia : (server/dia)
+-----
+Remove all .h in dependencies from the Makefile execpt gram.h
+do make
+
+Voxware : (server/dda/voxware)
+---------
+Remove all .h in dependencies from the Makefile execpt gram.h
+do make
+
+Server : (server/)
+--------
+
+The makefile don't do anything ....
+So run 'sh cygcompile.sh'
+
+And you will get NAS for Windows ;o)
+
+Running :
+---------
+
+Before running nasd, make sure the /dev directory exists.
+
+
+nicolas@alineanet.com
+

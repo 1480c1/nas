@@ -272,6 +272,7 @@ void UseMsg()
     ErrorF("Usage: nasd [:<listen port offset>] [option]\n");
     ErrorF(" -aa                allow any client to connect\n");
     ErrorF(" -local             allow local clients only\n");
+    ErrorF(" -b                 detach and run in background\n");
     ErrorF(" -v                 enable verbose messages\n");
     ErrorF(" -d <num>           enable debug messages at level <num>\n");
 #ifndef AMOEBA
@@ -329,6 +330,10 @@ char	*argv[];
 	else if (strcmp(argv[i], "-v") == 0)
 	  {
 	    NasConfig.DoVerbose = TRUE;
+	  }
+	else if (strcmp(argv[i], "-b") == 0)
+	  {
+	    NasConfig.DoDaemon = TRUE;
 	  }
 	else if (strcmp(argv[i], "-d") == 0)
 	  {

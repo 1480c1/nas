@@ -51,6 +51,9 @@ is allowed to local and remote hosts.
 Enable verbose messages.  This option overrides the
 nasd.conf file setting.
 .TP 8
+.B \-b
+Fork a child to run in the background and exit (daemon mode).
+.TP 8
 .B \-d \fIn\fP
 Enable debugging output at level \fIn\fP, where \fIn\fP is a positive
 integer.  The higher the level, the more output you will get.  A value
