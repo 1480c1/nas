@@ -54,7 +54,7 @@
 #define FIOSNBIO	FIONBIO
 #endif /* WIN32 */
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/param.h>
 #endif /* __FreeBSD__ */
 #include <ctype.h>

@@ -44,6 +44,7 @@ World:
 	@echo ""
 	$(MAKE) $(MFLAGS) Makefiles
 	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) includes
 	$(MAKE) $(MFLAGS) depend
 	$(MAKE) $(MFLAGS) $(WORLDOPTS) all
 	@echo ""

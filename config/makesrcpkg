@@ -11,21 +11,19 @@
 
 # a little test...
 
-if [ ! -d lib -o ! -d server -o ! -f lib/audio/release.h ]
+if [ ! -d lib -o ! -d server -o ! -f RELEASE ]
 then	# assume we're not in the top level...
 	echo "You must be in the top level build directory to run this."
 	exit 1
 fi
 
-
-
-VERSION=`grep "Network Audio System Release"  lib/audio/release.h`
-VERSION=`echo $VERSION |tr -d '$;"' |cut -d' ' -f9`
+VERSION=`cat RELEASE |cut -d' ' -f5`
 
 NASVER="nas-$VERSION"
 
 ARCFILE="${NASVER}.src.tar"
 
+#exit 1
 
 rm -f ${ARCFILE}.gz
 rm -rf $NASVER

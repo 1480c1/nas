@@ -47,19 +47,24 @@ XCOMM $NCDId: @(#)Imakefile,v 1.17 1995/12/06 01:33:07 greg Exp $
             DIA = dia/libdia.a
            FONT = 
 #if SystemV4 && !defined(SGIArchitecture)
-#if defined(SYSV386) || defined(i386SVR4Architecture)
+# if defined(SYSV386) || defined(i386SVR4Architecture)
         SYSLIBS = -lc /usr/ucblib/libucb.a -L/usr/X386/lib
-#else
-# if defined(USLArchitecture)
-	SYSLIBS =
 # else
+#  if defined(USLArchitecture)
+	SYSLIBS =
+#  else
         SYSLIBS = /usr/ucblib/libucb.a
-# endif
+#  endif
 
-#endif
+# endif
 #else
         SYSLIBS =
 #endif
+
+#ifdef NetBSDArchitecture
+        SYSLIBS = -lossaudio
+#endif
+
            CBRT =
 
 XCOMM

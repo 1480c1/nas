@@ -1336,7 +1336,7 @@ register auEvent *event;			/* wire protocol event */
 static char *_SysErrorMsg (n)
     int n;
 {
-#if !defined(__FreeBSD__) && !defined(__linux__)
+#if !defined(__FreeBSD__) && !defined(__linux__) && !defined(__NetBSD__)
     extern char *sys_errlist[];
 #endif
     extern int sys_nerr;

@@ -11,5 +11,7 @@
  * stderr will be used 
  */
   
+#ifndef hpux
 #define DIA_USE_SYSLOG 
+#endif
 

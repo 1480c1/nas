@@ -163,10 +163,15 @@ static int debug_msg_indentation = 0;
 #include <assert.h>
 
 #ifdef __FreeBSD__
-#include <machine/soundcard.h>
-#include <machine/pcaudioio.h>
+# include <machine/soundcard.h>
+# include <machine/pcaudioio.h>
 #else
-#include <sys/soundcard.h>
+# ifdef __NetBSD__
+#  include <sys/ioctl.h>
+#  include <soundcard.h>
+# else
+#  include <sys/soundcard.h>
+# endif
 #endif
 
 #include <audio/audio.h>
@@ -641,7 +646,7 @@ AuBool wait;
     ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
     osLogMsg("openDevice() - dsp_speed;\n");
-    ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, sndStatOut.curSampleRate);
+    ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
 #endif /* sco */
 
     if (sndStatOut.fd != sndStatIn.fd)
@@ -650,7 +655,7 @@ AuBool wait;
        ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
        osLogMsg("openDevice() - dsp_speed;\n");
-       ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, sndStatIn.curSampleRate);
+       ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
 #endif /* sco */
     }
     osLogMsg("openDevice() - dsp_speed=%d;\n",sndStatIn.curSampleRate);
@@ -916,7 +921,7 @@ static void disableProcessFlow()
   ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
   osLogMsg("disableProcessFlow() - dsp_speed;\n");
-  ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, sndStatOut.curSampleRate);
+  ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
 #endif /* sco */
   osLogMsg("disableProcessFlow() - Out DSP done\n");
 
@@ -926,7 +931,7 @@ static void disableProcessFlow()
       ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
       osLogMsg("disableProcessFlow() - dsp_speed;\n");
-      ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, sndStatIn.curSampleRate);
+      ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
 #endif /* sco */
   }
   osLogMsg("disableProcessFlow() - In DSP done;\n");

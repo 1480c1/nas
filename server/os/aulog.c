@@ -41,7 +41,7 @@ void osLogMsg(char *fmt, ...)
 
   if (errfd != NULL)
     {
-      fprintf(errfd, "%s\n", buf);
+      fprintf(errfd, "%s", buf);
       fflush(errfd);
     }
 

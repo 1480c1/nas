@@ -47,6 +47,10 @@ SOFTWARE.
 
 ******************************************************************/
 
+/*
+ * $Id$
+ */
+
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include "misc.h"
@@ -56,6 +60,7 @@ SOFTWARE.
 #include "opaque.h"
 #include "servermd.h"
 #include "site.h"
+#include "globals.h"
 
 extern void     OsInit(), InitClient(), ResetWellKnownSockets(),
                 Dispatch(), FreeAllResources();
@@ -86,6 +91,10 @@ main(argc, argv)
 	FatalError("server restarted. Jumped through uninitialized pointer?\n");
     else
 	restart = 1;
+
+    /* Init the globals... */
+    diaInitGlobals();
+
     /* These are needed by some routines which are called from interrupt
      * handlers, thus have no direct calling path back to main and thus
      * can't be passed argc, argv as parameters */

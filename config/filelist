@@ -414,7 +414,10 @@
 ./server/dia/dixutils.c
 ./server/dia/events.c
 ./server/dia/globals.c
+./server/dia/globals.h
 ./server/dia/main.c
+./server/dia/nasconfig.c
+./server/dia/nasconfig.h
 ./server/dia/resource.c
 ./server/dia/swaprep.c
 ./server/dia/swapreq.c
