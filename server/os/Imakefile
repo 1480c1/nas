@@ -27,7 +27,8 @@
 FILES = WaitFor.c connection.c io.c osinit.c access.c genalloca.c mitauth.c \
 	utils.c auth.c hpsocket.c osdep.h
 
-#if (SystemV || SystemV4) && !HasSockets
+#if (SystemV || SystemV4) 
+/* JET && !HasSockets */
 #undef ConnectionFlags
 #define ConnectionFlags -DTCPCONN -DUNIXCONN
 #endif

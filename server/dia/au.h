@@ -33,7 +33,7 @@
 #include "../dda/sgi/ausgi.h"
 #endif						/* sgi */
 
-#if defined(__FreeBSD__) || defined(linux) || (defined(SVR4) && defined(SYSV386))
+#if defined(__FreeBSD__) || defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386)))
 #include "../dda/voxware/auvoxware.h"
 #endif
 
@@ -41,7 +41,7 @@
 #include "../dda/hpux/auhpux.h"
 #endif						/* hpux */
 
-typedef AuUint32 AuPointer;
+typedef void * AuPointer;
 
 #define auMaxTracks			32
 
@@ -82,6 +82,11 @@ void            auProtectedFree();
 #define PhysicalInputMono		(1L << 4)
 #define PhysicalInputStereo		(1L << 5)
 #define AllPhysicalInputs	      (((1L << 6) - 1) ^ AllPhysicalOutputs)
+
+#define PhysicalFeedbackMono           (1L << 6)
+#define PhysicalFeedbackStereo         (1L << 7)
+#define AllPhysicalFeedbacks         (((1L << 8) - 1) ^ AllPhysicalOutputs \
+                                                      ^ AllPhysicalInputs)
 
 
 #define AuValidState(s)							       \
@@ -404,6 +409,10 @@ enum _auCallbackTypes
     AuEventPostedCB,
     AuSetPhysicalOutputModeCB,
     AuGetPhysicalOutputModeCB,
+    AuSetPhysicalFeedbackGainCB,
+    AuGetPhysicalFeedbackGainCB,
+    AuGetPhysicalInputGainCB,
+    AuGetPhysicalInputModeCB,
 
     AuMaxCB
 };

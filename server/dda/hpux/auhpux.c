@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)auhpux.c,v 1.3 1996/04/24 17:18:13 greg Exp $
  */
 
@@ -90,6 +91,7 @@ static AuInt16  outputGain,
 
 static AuUint32 outputMode, inputMode;
 static AuBool    updateGains;
+static AuBool    processFlowEnabled;
 static AuFixedPoint currentOutputGain;
 
 extern AuInt32  auMinibufSamples;
@@ -776,9 +778,11 @@ int             sig;
 	updateGains = AuFalse;
     }
 
-    AuProcessData();
+    if (processFlowEnabled)
+       AuProcessData();
 
-    signal(SIGALRM, processAudioSignal);
+    if (processFlowEnabled)
+       signal(SIGALRM, processAudioSignal);
 }
 
 /*----------------------------------------------------------*/
@@ -790,6 +794,7 @@ enableProcessFlow()
     fprintf(stderr, "Enabling flow\n");
 #endif
     writeEmptyOutput();
+    processFlowEnabled = AuTrue;
     signal(SIGALRM, processAudioSignal);
 }
 
@@ -799,6 +804,7 @@ static void
 disableProcessFlow()
 {
     signal(SIGALRM, SIG_IGN);
+    processFlowEnabled = AuFalse;
 #ifndef NULL_AUDIO_DEVICE
     if (ioctl(devAudio,AUDIO_DRAIN, 0) == -1)perror("Audio_drain");
     errno = 0;
@@ -1037,7 +1043,20 @@ AuInitPhysicalDevices()
      * and input to mike jack
      */
 #ifndef NULL_AUDIO_DEVICE
+    /* JET - 040399 - attempt to force EXTERNAL (headphones) at init rather
+       than the internal speaker... this should be a configurable.*/
+
+#ifdef __DEBUG__
+    fprintf(stderr, "### Intializing to AUDIO_OUT_EXTERNAL\n");
+#endif
+
+    if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_EXTERNAL)==-1)
+      perror("set_output");
+
+    /* JET
     if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_INTERNAL)==-1)perror("set_output");
+    */
+
     errno = 0;
     if (ioctl(devAudio,AUDIO_GET_OUTPUT, &temp_int)==-1)perror("get_output");
     errno = 0;

@@ -36,7 +36,9 @@ OBJS = auvoxware.o lex.o gram.o
 
     INCLUDES = -I. -I../../include -I../../../include -I../../dia
 
-    EXTRA_DEFINES = -DCONFSEARCHPATH=\"$(USRLIBDIR)/\"
+    EXTRA_DEFINES = -DCONFSEARCHPATH=\"/etc/nas/\"
+
+    ETCDIR = /etc
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(voxware,$(OBJS))
@@ -45,7 +47,7 @@ LexFile(lex)
 
 YaccFile(gram,$(YFLAGS))
 
-InstallNonExecFile(AUVoxConfig.eg,$(USRLIBDIR))
+InstallNonExecFile(AUVoxConfig.eg,$(ETCDIR))
 InstallManPage(AUVoxConfig,$(MANDIR))
 InstallManPage(auvoxware,$(MANDIR))
 
