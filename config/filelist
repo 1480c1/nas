@@ -469,5 +469,8 @@
 ./server/os
 ./server/Makefile
 ./server
+./contrib
+./contrib/rc
+./contrib/rc/nasd
 ./Makefile
 .
