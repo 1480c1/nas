@@ -118,7 +118,7 @@ int auditTrailLevel = 1;
 static mutex print_lock
 #endif
 
-void ddxUseMsg();
+void ddxUseMsg(void);
 
 #if !defined(SVR4) && !defined(hpux) && !defined(linux) && !defined(AMOEBA) && !defined(_MINIX)
 extern char *sbrk();
@@ -270,7 +270,7 @@ AdjustWaitForDelay (waitTime, newdelay)
 
 void UseMsg()
 {
-    ErrorF("use: nasd [:<listen port offset>] [option]\n");
+    ErrorF("Usage: nasd [:<listen port offset>] [option]\n");
     ErrorF(" -aa		allow any host to connect\n");
 #ifndef AMOEBA
 #ifdef PART_NET
@@ -283,6 +283,7 @@ void UseMsg()
 #endif
     ErrorF(" -v                 enable verbose messages\n");
     ErrorF(" -d <num>           enable debug messages at level <num>\n");
+    ddaUseMsg();		/* print dda specific usage */
 }
 
 /*
@@ -341,8 +342,19 @@ char	*argv[];
 	  }
 	else 
 	  {
-	    UseMsg();
-	    exit(1);
+				/* see if the dda understands it.
+				   we pass (in addition to argc/argv
+				    an index to the current arg
+				    being processed.  If the arg is
+				    processed, i is set to the last arg
+				    processed (in the event of an option
+				    that takes an arguement */
+	    if (ddaProcessArg(&i, argc, argv))
+	      {			/* returns non-zero for an unidentified
+				   arg */
+		UseMsg();	/* this will call ddaUseMsg() */
+		exit(1);
+	      }
 	  }
      }
 }

@@ -27,6 +27,10 @@ GEXTERN NasConfig_t NasConfig;
 
 				/* defined in server's config.c file */
 void ddaSetConfig(int token, void *value);
+				/* dda specific arg handling */
+int ddaProcessArg(int *index, int argc, char *argv[]);
+				/* dda specific usage summary */
+void ddaUseMsg(void);
 
 				/* A special token for ddaSetConfig */
 #define CONF_SET_SECTION (-1)

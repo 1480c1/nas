@@ -60,3 +60,26 @@ void ddaSetConfig(int token, void *value)
   return;			/* that's it... */
 }
       
+int ddaProcessArg(int *index, int argc, char *argv[])
+{
+				/* If you have an option that takes an
+				   arguement, be sure to increment
+				   index after processing the arg,
+				   otherwise, leave it alone. 
+				   DO NOT MODIFY argv! */
+
+				/* nothing here yet... */
+
+				/* always return 1 to indicate failure */
+  return(1);
+}
+
+void ddaUseMsg(void)
+{
+				/* print usage summary for this server,
+				   called from UseMsg() in utils.c */
+  ErrorF("\nNo Server specific options supported.\n");
+
+  return;
+}
+
