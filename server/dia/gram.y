@@ -26,8 +26,9 @@ extern int yylineno;
 };
 
 %token <num> INPUTSECTION OUTPUTSECTION ENDSECTION WORDSIZE FRAGSIZE MAXFRAGS
-%token <num> MINFRAGS MAXRATE MINRATE NUMCHANS MIXER DEVICE NUMBER DEBUG VERBOSE
-%token <num> READWRITE FORCERATE AUTOOPEN
+%token <num> MINFRAGS MAXRATE MINRATE NUMCHANS MIXER DEVICE NUMBER 
+%token <num> CDEBUG VERBOSE
+%token <num> READWRITE FORCERATE AUTOOPEN GAIN
 %token <num> RELEASEDEVICE OUTDEVTYPE MIXERINIT
 %token <ptr> STRING 
 
@@ -46,7 +47,7 @@ globstmts	: /* Empty */
 
 globstmt	: VERBOSE
 			{ NasConfig.DoVerbose = TRUE; }
-		| DEBUG number
+		| CDEBUG number
 			{ NasConfig.DoDebug = $2 ; }
                 | RELEASEDEVICE string
                         {
@@ -138,6 +139,8 @@ stmt		: error
 			{ ddaSetConfig(MAXRATE, (void *)$2); }
 		| MINRATE number
 			{ ddaSetConfig(MINRATE, (void *)$2); }
+		| GAIN number
+			{ ddaSetConfig(GAIN, (void *)$2); }
 
 string		: STRING		{ ptr = (char *)malloc(strlen($1)+1);
 					  strcpy(ptr, $1);

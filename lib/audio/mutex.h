@@ -20,6 +20,8 @@ without express or implied warranty.
 */
 
 
+#include "NasConfig.h"		/* see if we should try to use mutexes */
+
 #ifndef _MUTEX_H_INCLUDED
 #define _MUTEX_H_INCLUDED
 
@@ -43,12 +45,23 @@ without express or implied warranty.
 #include <audio/Afuncs.h>
 #include <audio/Aosdefs.h>
 
-#ifdef XTHREADS
+/* NAS_USEMTSAFEAPI is defined in config/NasConfig.h.  If undefined
+   thread safety will be disabled */
+
+#if defined(XTHREADS) && defined(NAS_USEMTSAFEAPI)
 
 # include <X11/Xthreads.h>
 typedef xmutex_rec _AuMutex;
 # ifndef XMUTEX_INITIALIZER
-#  define XMUTEX_INITIALIZER 0;
+
+				/*  These systems don't seem to define
+				    XMUTEX_INITIALIZER, even though they
+				    should */
+#  if defined(SVR4) && (defined(USL) || defined(sun))
+#   define XMUTEX_INITIALIZER {0}
+#  else
+#   define XMUTEX_INITIALIZER 0
+#  endif
 # endif
 # define _AU_MUTEX_INITIALIZER    XMUTEX_INITIALIZER
 #else
@@ -65,8 +78,10 @@ extern _AuMutex _init_mutex;
 #endif
 
 
+/* NAS_USEMTSAFEAPI is defined in config/NasConfig.h.  If undefined
+   thread safety will be disabled */
 
-#if defined(XTHREADS) && defined(XUSE_MTSAFE_API)
+#if defined(XTHREADS) && defined(NAS_USEMTSAFEAPI)
 #define _AuLockServer()      { \
                                MDBG_START("LOCK   _serv_mutex"); \
                                xmutex_lock(&_serv_mutex); \

@@ -133,7 +133,7 @@ extern int SelectWaitTime;
 
 #ifdef DEBUG
 #ifndef SPECIAL_MALLOC
-#define MEMBUG
+/*#define MEMBUG - This breaks things with unknown CheckMemory call */
 #endif
 #endif
 

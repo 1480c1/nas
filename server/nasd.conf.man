@@ -1,5 +1,5 @@
-\" $NCDId: @(#)AUVoxConfig.man,v 1.1 1996/04/24 17:00:26 greg Exp $
-.TH NASD.CONF 5 "" ""
+.\" $Id$
+.TH NASD.CONF 5 "" "NAS"
 .SH NAME
 nasd.conf \- Configuration file for NAS servers.
 .SH DESCRIPTION
@@ -50,6 +50,9 @@ Specifies what device is used. An example is \fBdevice "/dev/dsp"\fR.
 .B mixer "mixername"
 Specifies what mixer device is used. An example is \fBmixer "/dev/mixer"\fR.
 .PP
+.B gain number
+Specifies the default volume (0-100). The default is 50.
+.PP
 .B maxrate number
 the maximum number of samples per second that we'll drive the
 card at.
@@ -87,7 +90,7 @@ Whether or not to open the device read/write.  The default is "yes".
 If set to "no", then for input devices, the device will be opened
 readonly, and for output devices, the the device will be opened writeonly.
 .SH "SEE ALSO"
-nas(1), auinfo(1), auplay(1), auctl(1)
+nas(1), nasd(1), auinfo(1), auplay(1), auctl(1)
 .SH BUGS
 .PP
 Absolutely none.

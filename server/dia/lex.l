@@ -14,12 +14,13 @@ string				\"([^"]|\\.)*\"
 number				[0-9]+
 %%
 
-[Dd][Ee][Bb][Uu][Gg]			{ return DEBUG; }
+[Dd][Ee][Bb][Uu][Gg]			{ return CDEBUG; }
 [Vv][Ee][Rr][Bb][Oo][Ss][Ee]		{ return VERBOSE; }
 [Rr][Ee][Ll][Ee][Aa][Ss][Ee][Dd][Ee][Vv][Ii][Cc][Ee]   { return RELEASEDEVICE;}
 [Ii][Nn][Pp][Uu][Tt][Ss][Ee][Cc][Tt][Ii][Oo][Nn] { return INPUTSECTION; }
 [Oo][Uu][Tt][Pp][Uu][Tt][Ss][Ee][Cc][Tt][Ii][Oo][Nn] { return OUTPUTSECTION; }
-[Ee][Nn][Dd]			{ return ENDSECTION; }
+[Ee][Nn][Dd]                            { return ENDSECTION; }
+[Gg][Aa][Ii][Nn]                        { return GAIN; }
 [Ww][Oo][Rr][Dd][Ss][Ii][Zz][Ee]	{ return WORDSIZE; }
 [Ff][Rr][Aa][Gg][Ss][Ii][Zz][Ee]	{ return FRAGSIZE; }
 [Mm][Ii][Nn][Ff][Rr][Aa][Gg][Ss]	{ return MINFRAGS; }

@@ -508,8 +508,14 @@ open_unix_socket ()
 
 #ifdef X_UNIX_DIR
 # ifndef S_ISVTX
-#  define S_ISVTX   01000 
+#  define S_ISVTX   0 		/* shouldn't use it if not available */
 # endif                                  
+
+    /* JET - 2/23/2002 this is problematic when nasd is run as a
+      normal user and root has run nasd beforehand - ie: you can't
+      remove the old socket, but security is improved.  ideally nasd should
+      just remove the socket on termination (SIGINT)
+    */
     if (!mkdir (X_UNIX_DIR, 0777))
       chmod (X_UNIX_DIR, 0777 | S_ISVTX);
 #endif

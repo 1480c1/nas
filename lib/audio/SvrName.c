@@ -25,7 +25,7 @@
 #include "Alibint.h"
 
 /* JET - a default server to try if all else fails */
-#define DEFAULT_AUSERVER "tcp/localhost:8000"
+#define DEFAULT_AUSERVER ":0"
 
 #ifdef AU_NOT_STDC_ENV
 extern _AuConst char *getenv();

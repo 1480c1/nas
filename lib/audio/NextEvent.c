@@ -55,8 +55,12 @@ AuNextEvent (aud, dequeue, event)
 	
 	_AuLockServer();
 	
-	if (aud->head == NULL)		/* block until event arrives */
-	    _AuReadEvents(aud);
+	if (aud->head == NULL) {		/* block until event arrives */
+	  _AuUnlockServer();
+	  _AuReadEvents(aud);	/* will use it's own lock to prevent
+				   deadlock situations */
+	  _AuLockServer();
+	}
 	qelt = aud->head;
 	*event = qelt->event;
 

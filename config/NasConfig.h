@@ -7,6 +7,9 @@
  * Jon Trulson 9/11/99
  */
 
+#ifndef _NASCONFIG_H_INCLUDED
+#define _NASCONFIG_H_INCLUDED
+
 /* define this if you want the logger to use syslog.  Otherwise
  * stderr will be used 
  */
@@ -25,3 +28,10 @@
 #define NASCONFSEARCHPATH "/etc/nas/"
 #endif
 
+#define NAS_USEMTSAFEAPI	/* if defined, try to use xthread mutexes
+				   if XTHREADS is also defined by your
+				   system.  #undef this if you want to
+				   disable mutexes for thread saftey.
+				 */
+
+#endif /* _NASCONFIG_H_INCLUDED */

@@ -218,6 +218,10 @@ _AuStartServer(iserver, xname)
 {
 	pid_t pid;
 
+#ifdef DEBUG	
+	fprintf(stderr, "_AuStartServer: starting, xname = %d, iserver = %d\n", xname, iserver);
+#endif
+
 	if ((pid = fork()) != 0) {
 		int status;
 		/* parent -- wait for child */
@@ -252,9 +256,14 @@ _AuStartServer(iserver, xname)
 
 	  if (xname == AuFalse)
 	    iserver -= AU_DEFAULT_TCP_PORT;
-
+	  
 	  sprintf(arg1,":%d",iserver);
 
+#ifdef DEBUG
+	fprintf(stderr, "_AuStartServer: getting ready to exec: "
+		"xname = %d, iserver = %d, arg1 = '%s'\n", 
+		xname, iserver, arg1);
+#endif
 	/* grandchild -- start server */
 	(void)signal(SIGUSR1, SIG_IGN);
 	/* start server.  Ideally the command should be set by some resource */
@@ -320,6 +329,13 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
     saddrlen = 0;			/* set so that we can clear later */
     saddr = NULL;
 
+
+#ifdef DEBUG
+    if (server_name)
+      fprintf(stderr, "_AuConnectServer: SERVERNAME = %s\n", server_name);
+    else
+      fprintf(stderr, "_AuConnectServer: SERVERNAME = NULL\n");
+#endif
     /*
      * Step 0, see if it is an audio server name or an X display name.
      */
@@ -355,7 +371,9 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
      * first colon.
      */
     /* SUPPRESS 530 */
-    for (lastp = p = server_name; *p && *p != ':'; p++) ;
+    for (lastp = p = server_name; *p && *p != ':'; p++) 
+      ;
+
     if (!*p) return -1;		/* must have a colon */
 
     if (p != lastp) {		/* no hostname given */
@@ -387,7 +405,9 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
      */
 
     /* SUPPRESS 530 */
-    for (lastp = ++p; *p && isascii(*p) && isdigit(*p); p++) ;
+    for (lastp = ++p; *p && isascii(*p) && isdigit(*p); p++) 
+      ;
+
     if ((p == lastp) ||			 /* required field */
 	((*p != '.') && (*p != '\0')) || /* invalid non-digit terminator */
 	!(psvrnum = copystring (lastp, p - lastp)))  /* no memory */
@@ -395,6 +415,9 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 
     saviserver = iserver = atoi (psvrnum);
 
+#ifdef DEBUG
+    fprintf(stderr, "_AuConnectServer: saviserver = %d\n", saviserver);
+#endif
 
     /*
      * At this point, we know the following information:
@@ -538,9 +561,14 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 		goto bad;
 #else /* STARTSERVER */
     {
-	/* if local connection, try to start up a server */
-	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer(iserver, xname))
+      /* if local connection, try to start up a server */
+
+      /* JET - 2/23/2002 - need to use saviserver for AuStartServer since
+	 connfunc() may have changed iserver */
+	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || 
+	    !_AuStartServer(saviserver, xname))
 	    goto bad;
+
 	/* try again */
 	iserver = saviserver;
     	if ((fd = (*connfunc) (phostname, &iserver, xname, /* again */
@@ -715,6 +743,10 @@ static int MakeDECnetConnection (phostname, iserverp, xname, retries,
 
     if (!phostname) phostname = "0";
 
+#ifdef DEBUG
+    fprintf(stderr, "MakeDECnetConnection: starting\n");
+#endif
+
     /*
      * build the target object name.
      */
@@ -789,6 +821,11 @@ static int MakeUNIXSocketConnection (phostname, iserverp, xname, retries,
     addrlen = strlen(unaddr.sun_path) + sizeof(unaddr.sun_family);
 #endif
   
+#ifdef DEBUG
+    fprintf(stderr, "MakeUNIXSocketConnection: starting, *iserverp = %d\n",
+	    *iserverp);
+#endif
+
     /*
      * Open the network connection.
      */
@@ -872,12 +909,20 @@ static int MakeTCPConnection (phostname, iserverp, xname, retries,
 
 #define INVALID_INETADDR ((AuUint32) -1)
 
+#ifdef DEBUG
+    fprintf(stderr, "MakeTCPConnection: starting\n");
+#endif
+
     if (!phostname) {
 	hostnamebuf[0] = '\0';
 	(void) _AuGetHostname (hostnamebuf, sizeof hostnamebuf);
 	phostname = hostnamebuf;
     }
 
+#ifdef DEBUG
+    fprintf(stderr, "MakeTCPConnection: phostname = '%s'\n",
+	    phostname);
+#endif
     /*
      * if numeric host name then try to parse it as such; do the number
      * first because some systems return garbage instead of INVALID_INETADDR
@@ -1132,6 +1177,11 @@ static int MakeLOCALConnection (phostname, iserverp, retries,
 #if !defined (SVR4) || defined(SVR4_ACP)
     struct strfdinsert buf;
     struct strbuf ctlbuf;
+#endif
+
+#ifdef DEBUG
+    fprintf(stderr, "MakeLOCALConnection: starting, LocalConnType = %d\n",
+	    LocalConnType);
 #endif
 
     /*

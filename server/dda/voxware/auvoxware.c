@@ -183,9 +183,6 @@ static void closeDevice(void);
 #define MIN_MINIBUF_SAMPLES	256
 #define MAX_MINIBUF_SAMPLES     1024     /* Must be a power of 2 */
 
-#define auDefaultInputGain	AuFixedPointFromSum(50, 0)
-#define auDefaultOutputGain	AuFixedPointFromSum(50, 0)
-
 #define	PhysicalOneTrackBufferSize \
     PAD4(auMinibufSamples * auNativeBytesPerSample * 1)
 #define	PhysicalTwoTrackBufferSize \
@@ -229,7 +226,8 @@ SndStat sndStatIn =
 	O_RDONLY,		/* howToOpen */
 	1,			/* autoOpen */
 	0,			/* forceRate */
-	0			/* isPCSpeaker */
+	0,			/* isPCSpeaker */
+	50			/* default gain */
 }, sndStatOut =
 {
 	-1,			/* fd */
@@ -246,8 +244,12 @@ SndStat sndStatIn =
 	O_RDWR,			/* howToOpen */
 	1,			/* autoOpen */
 	0,			/* forceRate */
-	0			/* isPCSpeaker */
+	0,			/* isPCSpeaker */
+	50			/* default gain */
 };
+
+#define auDefaultInputGain	AuFixedPointFromSum(sndStatIn.gain, 0)
+#define auDefaultOutputGain	AuFixedPointFromSum(sndStatOut.gain, 0)
 
 static AuUint8 *auOutputMono,
                *auOutputStereo,
@@ -1280,7 +1282,7 @@ SndStat* sndStatPtr;
       IDENTMSG;
     }
 
-  if (NasConfig.DoVerbose)
+  if (NasConfig.DoDebug)
     if (sndStatPtr == &sndStatOut)
     {
        osLogMsg("++ Setting up Output device\n");
@@ -1292,7 +1294,7 @@ SndStat* sndStatPtr;
 
 	
   if (sndStatPtr->isPCSpeaker) {
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("+++ Device is a PC speaker\n");
     sndStatPtr->curSampleRate = sndStatPtr->maxSampleRate
       = sndStatPtr->minSampleRate = 8000;
@@ -1300,36 +1302,36 @@ SndStat* sndStatPtr;
     sndStatPtr->wordSize = 8;
   }
   else {
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("+++ requesting wordsize of %d, ", sndStatPtr->wordSize);
     if (ioctl(sndStatPtr->fd, SNDCTL_DSP_SAMPLESIZE, &sndStatPtr->wordSize)
         || sndStatPtr->wordSize != 16) {
       sndStatPtr->wordSize = 8;
       ioctl(sndStatPtr->fd, SNDCTL_DSP_SAMPLESIZE, &sndStatPtr->wordSize);
     }
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("got %d\n", sndStatPtr->wordSize);
   
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("+++ requesting %d channel(s), ", sndStatPtr->isStereo + 1);
     if (ioctl(sndStatPtr->fd, SNDCTL_DSP_STEREO, &sndStatPtr->isStereo) == -1
         || !sndStatPtr->isStereo) {
       sndStatPtr->isStereo = 0;
       ioctl(sndStatPtr->fd, SNDCTL_DSP_STEREO, &sndStatPtr->isStereo);
     }
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("got %d channel(s)\n", sndStatPtr->isStereo + 1);
 
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("+++ Requesting minimum sample rate of %d, ", sndStatPtr->minSampleRate);
     ioctl(sndStatPtr->fd, SNDCTL_DSP_SPEED, &sndStatPtr->minSampleRate);
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("got %d\n", sndStatPtr->minSampleRate);
   
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("+++ Requesting maximum sample rate of %d, ", sndStatPtr->maxSampleRate);
     ioctl(sndStatPtr->fd, SNDCTL_DSP_SPEED, &sndStatPtr->maxSampleRate);
-    if (NasConfig.DoVerbose)
+    if (NasConfig.DoDebug)
       osLogMsg("got %d\n", sndStatPtr->maxSampleRate);
 
     sndStatPtr->curSampleRate = sndStatPtr->maxSampleRate;

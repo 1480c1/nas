@@ -144,7 +144,7 @@ main(argc, argv)
     close(1);
 
     if (!NasConfig.DoDebug)
-      close(2);			/* only close stderr if no debugging */
+      close(2);			/* only close stderr if no debugging. */
 
     /* And cd to / so we don't hold anything up; core files will also
        go there. */

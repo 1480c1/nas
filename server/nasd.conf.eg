@@ -31,6 +31,7 @@ inputsection
 
 	device		"/dev/dsp1"		# the SB emulation on my PAS16
 	mixer		"/dev/mixer1"		# mixer device
+        gain            50                      # default input gain (0-100)
 	maxrate		11025
 	minrate		4000			# Kind of redundant
 	maxfrags	3			# We want really low latency
@@ -39,7 +40,7 @@ inputsection
 	wordsize	8			# It only handles 8 bits anyway
 	numchans	1			# Glorious living mono
 	forcerate	"no"			# forces input rate to current
-        autoOpen        "yes"			# whether to open the dev
+	autoOpen        "yes"			# whether to open the dev
 						# at init
 	readwrite	"no"			# open read only if "no"
 end
@@ -48,6 +49,7 @@ end
 outputsection
 	device		"/dev/dsp"		# the full 16 bit interface!
 	mixer		"/dev/mixer"		# mixer device
+        gain            50                      # default output gain (0-100)
 	maxrate		33000			# is flakey on my OPTi mb at 44
 	minrate		5000			# Redundant again
 	maxfrags	3			# Low latency (for doom!)
@@ -56,7 +58,7 @@ outputsection
 	wordsize	16			# Yes!
 	numchans	2			# HiFi Stereo!
 	forcerate	"no"			# forces output rate to current
-        autoOpen        "yes"			# whether to open the dev
+	autoOpen        "yes"			# whether to open the dev
 						# at init
 	readwrite	"yes"			# open write only if "no"
 end

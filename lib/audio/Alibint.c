@@ -155,6 +155,10 @@ static void _AuEventEnqueued(
  * the object they have created.
  */
 
+
+/* this is a mutex for _AuReadEvents() */
+static _AuMutex _rev_mutex = _AU_MUTEX_INITIALIZER;
+
 static int padlength[4] = {0, 3, 2, 1};
     /* lookup table for adding padding bytes to data that is read from
     	or written to the Au socket.  */
@@ -452,57 +456,63 @@ void
 _AuReadEvents(aud)
 	register AuServer *aud;
 {
-	_AuAlignedBuffer buf;
-	int pend;
-	register int len;
-	register auReply *rep;
-	AuBool not_yet_flushed = AuTrue;
+  _AuAlignedBuffer buf;
+  int pend;
+  register int len;
+  register auReply *rep;
+  AuBool not_yet_flushed = AuTrue;
+  
+  /* lock read access to the server */
+  _AuLockMutex(_rev_mutex);
 
-	do {
-	    /* find out how much data can be read */
-	    if (BytesReadable(aud->fd, (char *) &pend) < 0)
-	    	_AuIOError(aud);
-	    len = pend;
+  do {
+    /* find out how much data can be read */
+    if (BytesReadable(aud->fd, (char *) &pend) < 0)
+      _AuIOError(aud);
+    len = pend;
+    
+    /* must read at least one auEvent; if none is pending, then
+       we'll just flush and block waiting for it */
+    if (len < SIZEOF(auEvent)) {
+      len = SIZEOF(auEvent);
+      /* don't flush until we block the first time */
+      if (not_yet_flushed) {
+	int qlen = aud->qlen;
+	_AuFlush (aud);
+	if (qlen != aud->qlen) return;
+	not_yet_flushed = AuFalse;
+      }
+    }
+    
+    /* but we won't read more than the max buffer size */
+    if (len > BUFSIZE)
+      len = BUFSIZE;
+    
+    /* round down to an integral number of AuReps */
+    len = (len / SIZEOF(auEvent)) * SIZEOF(auEvent);
+    
+    _AuRead (aud, buf.buf, (AuInt32) len);
+    
+    STARTITERATE(rep,auReply,buf.buf,len > 0) {
+      if (rep->generic.type == Au_Reply) {
+	pend = len;
+	RESETITERPTR(rep,auReply,
+		     _AuAsyncReply (aud, rep,
+				    ITERPTR(rep), &pend, AuTrue));
+	len = pend;
+      } else {
+	if (rep->generic.type == Au_Error)
+	  _AuError (aud, (auError *) rep);
+	else   /* must be an event packet */
+	  _AuEnq (aud, (auEvent *)rep, AuEventEnqueuedByUnknown);
+	INCITERPTR(rep,auReply);
+	len -= SIZEOF(auReply);
+      }
+    } ENDITERATE
+  } while (aud->head == NULL);
 
-	    /* must read at least one auEvent; if none is pending, then
-	       we'll just flush and block waiting for it */
-	    if (len < SIZEOF(auEvent)) {
-	    	len = SIZEOF(auEvent);
-		/* don't flush until we block the first time */
-		if (not_yet_flushed) {
-		    int qlen = aud->qlen;
-		    _AuFlush (aud);
-		    if (qlen != aud->qlen) return;
-		    not_yet_flushed = AuFalse;
-		}
-	    }
-		
-	    /* but we won't read more than the max buffer size */
-	    if (len > BUFSIZE)
-	    	len = BUFSIZE;
+  _AuUnlockMutex(_rev_mutex);
 
-	    /* round down to an integral number of AuReps */
-	    len = (len / SIZEOF(auEvent)) * SIZEOF(auEvent);
-
-	    _AuRead (aud, buf.buf, (AuInt32) len);
-
-	    STARTITERATE(rep,auReply,buf.buf,len > 0) {
-		if (rep->generic.type == Au_Reply) {
-		    pend = len;
-		    RESETITERPTR(rep,auReply,
-				 _AuAsyncReply (aud, rep,
-					       ITERPTR(rep), &pend, AuTrue));
-		    len = pend;
-		} else {
-		    if (rep->generic.type == Au_Error)
-			_AuError (aud, (auError *) rep);
-		    else   /* must be an event packet */
-			_AuEnq (aud, (auEvent *)rep, AuEventEnqueuedByUnknown);
-		    INCITERPTR(rep,auReply);
-		    len -= SIZEOF(auReply);
-		}
-	    } ENDITERATE
-	} while (aud->head == NULL);
 }
 
 /* 
