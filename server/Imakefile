@@ -222,7 +222,7 @@ clean::
 
 InstallManPage(nasd,$(MANDIR))
 #ifdef InstallGenManPage
-InstallGenManPage(nasd.conf,$(RCMANDIR), $(RCMANSUFFIX))
+InstallGenManPage(nasd.conf,$(RCMANDIR),$(RCMANSUFFIX))
 #else
 InstallManPage(nasd.conf,$(RCMANDIR))
 #endif

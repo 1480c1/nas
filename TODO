@@ -1,13 +1,15 @@
 $Id$
 $NCDId: @(#)TODO,v 1.3 1994/04/07 21:18:56 greg Exp $
 
+- be able to handle larger sample rates like 96Khz.  The protocol limits
+  the sample rate to an unsigned int, which will require a protocol
+  change to fix.
+
 - add an esd clone that uses NAS
 
 - auplay
 	- playing other formats than .au from stdin (cmdline opt?)
 	- local Playfrom file to support interrupts, etc.
-
-- make libaudio threadsafe.
 
 - Automatic track matching: server automatically inserts a bundler to
   do the right thing.

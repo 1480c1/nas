@@ -1,6 +1,81 @@
 $Id$
 $NCDId: @(#)HISTORY,v 1.27 1996/09/05 18:46:47 greg Exp $
 
+Version 1.5 12/26/2001
+
+	## 12/1/2001
+
+	- Corrected manpage html generation issue with the nasd.conf
+	  manpage via patch from Erik Inge Bolso
+
+
+	## 1.4.2d  11/25/2001
+
+	- implemented locking in libaudio via Xthread mutexes.  
+
+	  This is kind of a big change, but the result should be a
+	  threadsafe libaudio.  I used Xthreads, because then
+	  theoretically I shouldn't have to care about the system's
+	  actual thread implementation. Right?? I've tested so far on
+	  Linux (uses pthread_*) and Unixware 2.03 (uses thr_*).  So
+	  far so good.
+
+	- bumped up the libaudio rev to 2.2
+
+	## 1.4.2c  11/4/2001
+
+	- turned off streams support on SVR4 systems for libaudio.
+	  UNIX and TCPCONN work just fine.  The nasd server hasn't
+	  used streams support since the 1.3 timeframe anyway.  This
+	  will work around local connection issues on UnixWare and
+	  probably Intel Solaris as well.  
+
+	- added patches from Steve McIntyre to work around an XFree86
+	  issue, and prevent the HPUX server from being built on HPPA
+	  systems running Linux.
+
+	- add change to AuServerName() in libaudio to default to
+	  'tcp/localhost:8000' if neither AUDIOSERVER or DISPLAY are
+	  set as per a suggestion by Erik Inge Bolso.
+
+	## 1.4.2b  10/6/2001
+
+	- Added patches from Peter Berg Larsen to the Sun server that
+	  adds support for $AUDIODEV on Sun Ray platforms.
+
+	- Added patches from Peter Berg Larsen that corrects some
+	  issues dealing with dead clients, and improper server resets
+	  when persistent flows are still active.  Also, some
+	  uninitialized variables are now properly initialized.
+
+	## 1.4.2a  4/21/2001
+
+	- patch from Steve McIntyre to resolve man page issues, and
+	  add a libm dependancy to libaudio for linux platforms.
+
+	- patches from Philippe Jouguet
+
+		new options in nasd.conf for the voxware server:
+		- add 'mixer' device option to secify the mixer.
+		- add 'forcerate' option to force the sample rate
+		  to the current rate at all times
+		- add 'autoOpen' option to specify whether the audio
+		  devices are opened at init time.
+		- add 'readwrite' option to specify whether devices
+		  are opened read/write (default) or
+		  readonly/writeonly for the input and output devices,
+		  respectivly.
+
+
+	- added patch from Nick Ing-Simmons to pass the correct port
+	  offset when starting nasd within libaudio (if START_SERVER
+	  is defined at build time).
+
+	- always output verbose/debugging info to stderr if debugging
+          is enabled (even if you normally use syslog).  stderr is not
+          closed when debugging is turned on.
+
+
 Version 1.4.2 4/8/2001:
 
         ## 1.4.1b 3/9/2001
