@@ -1,0 +1,99 @@
+.\" $Id$
+.TH NASD.CONF 5 "" "NAS"
+.SH NAME
+nasd.conf \- Configuration file for NAS servers.
+.SH DESCRIPTION
+.I nasd.conf
+Is a file that can be used to configure the behaiviour of the NAS
+server, including what devices it will attempt to use, the minimum & maximum
+frequencies used, if the device should be used in 8bit or 16bit mode, what
+fragment size and number of fragments should be used (useful for tuning the
+server's latency) and if the server should be verbose when starting or
+output debugging information.  Not all options are supported for all
+servers, see the /etc/nas/nasd.conf.eg file for information on what
+options are supported for which servers.
+.SH "THE CONFIG FILE SYNTAX"
+There are up to three section in the config file. The first section
+deals with global options, some of which just turn on verbose messages
+when parsing the config file, and setting debug messages on. The
+remaining two sections will, if present, adjust various parameters of
+the input and output devices, for those server that undersand them.
+.PP
+.B verbose
+Sets a flag telling the server to report what it's trying to do with each
+setting in the config file.
+.PP
+.B debug <number>
+Sets the debug flag, which will provide a trace of the server's activities
+on stderr.  Set <num> to 0 to disable debug messages, 99 for *alot* of
+debug messages.
+.PP
+.B mixerinit "YES"|"NO"
+Set to "YES" to "NO".  Defines whether the server will init the mixer
+device on startup. (voxware)
+.PP
+.B OutDevType "EXT"|"INT"
+For HPUX servers, define to "EXT" to use the external output device
+(headphone/speakers) or "INT" for the internal output device (internal
+speaker).  Defaults to external.
+.PP
+.B inputsection
+Marks the beginning of the input section, which allows various parameters
+of the input device to be set up.
+.PP
+.B end
+Marks the end of the input section or output section.
+.PP
+.B device "devname"
+Specifies what device is used. An example is \fBdevice "/dev/dsp"\fR.
+.PP
+.B mixer "mixername"
+Specifies what mixer device is used. An example is \fBmixer "/dev/mixer"\fR.
+.PP
+.B gain number
+Specifies the default volume (0-100). The default is 50.
+.PP
+.B maxrate number
+the maximum number of samples per second that we'll drive the
+card at.
+.PP
+.B minrate number
+the minimum number of samples per second that the card will be driven
+at.
+.PP
+.B maxfrags number
+The maximum number of of kernel buffers that will be used for the device.
+the number is dynamically adjusted as the sampling frequency varies.
+.PP
+.B minfrags number
+The minimum number of kernel buffers that will be used.
+.PP
+.B fragsize number
+The size of each buffer - note that the size must be a power of 2.
+.PP
+.B wordsize number
+The number of bits per sample. Allowable values are 8 and 16.
+.PP
+.B numchans number
+Used to decide if the card is run in stereo or mono mode. Allowable
+values are 1 or 2.
+
+.PP
+.B forcerate "no"|"yes"
+Forces the output rate to the current rate. The default is "no".
+.PP
+.B autoOpen  "no"|"yes"
+Whether to open the device at init time (if ReleaseDevice = no).  The default is "yes".
+.PP
+.B readwrite "no"|"yes"
+Whether or not to open the device read/write.  The default is "yes".
+If set to "no", then for input devices, the device will be opened
+readonly, and for output devices, the the device will be opened writeonly.
+.SH "SEE ALSO"
+nas(1), nasd(1), auinfo(1), auplay(1), auctl(1)
+.SH BUGS
+.PP
+Absolutely none.
+.SH AUTHORS
+Stephen Hocking (sysseh@devetir.qld.gov.au), 
+Jon Trulson (jon@radscan.com)

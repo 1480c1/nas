@@ -35,13 +35,13 @@ AuStatus       *ret_status;
     if (ret_status)
 	*ret_status = AuSuccess;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetReq(SetCloseDownMode, req, aud);
 
     req->mode = mode;
 
     (void) _AuIfRoundTrip(aud, ret_status);
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 }

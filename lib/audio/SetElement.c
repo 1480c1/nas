@@ -121,7 +121,7 @@ AuStatus       *ret_status;
 		return;
 	}
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetReq(SetElements, req, aud);
 
     req->flow = flow;
@@ -281,6 +281,6 @@ AuStatus       *ret_status;
     }
 
     (void) _AuIfRoundTrip(aud, ret_status);
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 }

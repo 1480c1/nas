@@ -47,8 +47,14 @@ SOFTWARE.
 
 ******************************************************************/
 
+/*
+ * $Id$
+ */
+
+#include <stdio.h>
 #include <audio/audio.h>
 #include <audio/Aproto.h>
+#include "NasConfig.h"
 #include "misc.h"
 #include "os.h"
 #include "resource.h"
@@ -56,6 +62,8 @@ SOFTWARE.
 #include "opaque.h"
 #include "servermd.h"
 #include "site.h"
+#include "globals.h"
+#include "nasconfig.h"
 
 extern void     OsInit(), InitClient(), ResetWellKnownSockets(),
                 Dispatch(), FreeAllResources();
@@ -63,15 +71,36 @@ extern int      AuInitSetupReply();
 extern void 	AuInitProcVectors();
 extern Bool     InitClientResources();
 
-extern char *display;
+static char *AuServerName(void);
+
+extern char     *display;
 
 static int restart = 0;
+FILE    *yyin;			/* for the config parser */
 
 void
 NotImplemented()
 {
     FatalError("Not implemented");
 }
+
+/*
+ *  Find the config file
+ */
+
+static FILE     *openConfigFile (char *path)
+{
+  static char   buf[1024];
+  FILE *config;
+
+  strcat (buf, path);
+  strcat (buf, "nasd.conf");
+  if ((config = fopen (buf, "r")) != NULL)
+    return config;
+  else
+    return NULL;
+}
+
 
 int
 main(argc, argv)
@@ -86,13 +115,40 @@ main(argc, argv)
 	FatalError("server restarted. Jumped through uninitialized pointer?\n");
     else
 	restart = 1;
+
+    /* Init the globals... */
+    diaInitGlobals();
+
+				/* Now parse the config file */
+    if ((yyin = openConfigFile (NASCONFSEARCHPATH)) != NULL)
+      yyparse();
+
     /* These are needed by some routines which are called from interrupt
      * handlers, thus have no direct calling path back to main and thus
      * can't be passed argc, argv as parameters */
     argcGlobal = argc;
     argvGlobal = argv;
-    display = "0";
+
+    display = NULL;
     ProcessCommandLine(argc, argv);
+
+				/* if display wasn't spec'd on the command
+				   line, find a suitable default */
+    if (display == NULL)
+      display = AuServerName();
+
+    /* We're running as a daemon, so close stdin, stdout and stderr
+       before we start the main loop */
+
+    close(0);
+    close(1);
+
+    if (!NasConfig.DoDebug)
+      close(2);			/* only close stderr if no debugging. */
+
+    /* And cd to / so we don't hold anything up; core files will also
+       go there. */
+    chdir("/");
 
     while(1)
     {
@@ -134,4 +190,45 @@ main(argc, argv)
 	}
     }
     exit(0);
+}
+
+
+/* JET - get the server port to listen on here... uses AUDIOSERVER, then
+ *  DISPLAY if set.
+ */
+
+static char *AuServerName (void)
+{
+  char *name = NULL;
+  char *ch, *ch1;
+
+    name = (char *) getenv ("AUDIOSERVER");
+    if (name)
+      {
+	if ((ch = strchr(name, ':')) != NULL)
+	  {
+	    ch++;
+	    if ((ch1 = strchr(ch, '.')) != NULL)
+	      *ch1 = '\0';
+	    return(ch);
+	  }
+	else
+	  return name;
+      }
+
+    name = (char *) getenv ("DISPLAY");
+    if (name)
+      {
+	if ((ch = strchr(name, ':')) != NULL)
+	  {
+	    ch++;
+	    if ((ch1 = strchr(ch, '.')) != NULL)
+	      *ch1 = '\0';
+	    return(ch);
+	  }
+	else
+	  return name;
+      }
+
+    return "0";
 }

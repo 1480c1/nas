@@ -20,28 +20,28 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  * $NCDId: @(#)au.h,v 1.22 1995/11/29 00:50:13 greg Exp $
+ * $Id$
  */
 
 #ifndef _AU_H_
 #define _AU_H_
 
-#ifdef sun
-#include "../dda/sun/ausun.h"
-#endif						/* sun */
+/* This will define the appropriate *_SERVER */
+#include "auservertype.h"
 
-#ifdef sgi
-#include "../dda/sgi/ausgi.h"
-#endif						/* sgi */
+/* JET - last one wins... */
 
-#if defined(__FreeBSD__) || defined(linux) || (defined(SVR4) && defined(SYSV386))
-#include "../dda/voxware/auvoxware.h"
+#if defined(HPUX_SERVER)	/* hpux */
+# include "../dda/hpux/auhpux.h"
+#elif defined(SUN_SERVER)	/* sun */
+# include "../dda/sun/ausun.h"
+#elif defined(SGI_SERVER)	/* SGI */
+# include "../dda/sgi/ausgi.h"
+#elif defined(VOXWARE_SERVER)	/* voxware */
+# include "../dda/voxware/auvoxware.h"
 #endif
 
-#ifdef hpux
-#include "../dda/hpux/auhpux.h"
-#endif						/* hpux */
-
-typedef AuUint32 AuPointer;
+typedef void * AuPointer;
 
 #define auMaxTracks			32
 
@@ -82,6 +82,11 @@ void            auProtectedFree();
 #define PhysicalInputMono		(1L << 4)
 #define PhysicalInputStereo		(1L << 5)
 #define AllPhysicalInputs	      (((1L << 6) - 1) ^ AllPhysicalOutputs)
+
+#define PhysicalFeedbackMono           (1L << 6)
+#define PhysicalFeedbackStereo         (1L << 7)
+#define AllPhysicalFeedbacks         (((1L << 8) - 1) ^ AllPhysicalOutputs \
+                                                      ^ AllPhysicalInputs)
 
 
 #define AuValidState(s)							       \
@@ -350,6 +355,9 @@ AuFixedPoint    AuFixedPointMultiply();
 									      \
     if (!((d) = (ComponentPtr) aualloc(PAD4(sizeof(ComponentRec)) + (extra))))\
 	return AuBadAlloc;						      \
+                                                                              \
+    /* pebl: specific initalize minibufSamples to zero (needed!) */           \
+    bzero((d),PAD4(sizeof(ComponentRec)) + (extra));                          \
 }
 
 #define AU_ADD_DEVICE(d)						      \
@@ -404,6 +412,10 @@ enum _auCallbackTypes
     AuEventPostedCB,
     AuSetPhysicalOutputModeCB,
     AuGetPhysicalOutputModeCB,
+    AuSetPhysicalFeedbackGainCB,
+    AuGetPhysicalFeedbackGainCB,
+    AuGetPhysicalInputGainCB,
+    AuGetPhysicalInputModeCB,
 
     AuMaxCB
 };

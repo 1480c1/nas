@@ -54,21 +54,26 @@
 #define FIOSNBIO	FIONBIO
 #endif /* WIN32 */
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/param.h>
 #endif /* __FreeBSD__ */
 #include <ctype.h>
+#include <X11/Xauth.h>			/* to get at the .Xauthority */
 #include <audio/Alibint.h>
 #include <audio/Aos.h>
 #include "Alibnet.h"
-#include <X11/Xauth.h>			/* to get at the .Xauthority */
 #include <stdio.h>
 #ifdef DNETCONN
 #include <netdnet/dn.h>
 #include <netdnet/dnetdb.h>
 #endif
 #ifdef SVR4
-#include <sys/stropts.h>
+# if defined(USL)
+#  include <sys/socket.h>
+#  include <netdb.h>
+#  include <netinet/in.h>
+# endif
+# include <sys/stropts.h>
 #endif
 
 #ifdef STREAMSCONN
@@ -207,9 +212,15 @@ _AuServerWait(sig)
 }
 
 static int
-_AuStartServer()
+_AuStartServer(iserver, xname)
+	int iserver;
+	AuBool xname;
 {
 	pid_t pid;
+
+#ifdef DEBUG	
+	fprintf(stderr, "_AuStartServer: starting, xname = %d, iserver = %d\n", xname, iserver);
+#endif
 
 	if ((pid = fork()) != 0) {
 		int status;
@@ -236,16 +247,33 @@ _AuStartServer()
 		_exit(_AuServerUp == AuTrue? 0: 255);
 		/*NOTREACHED*/
 	}
+	else {
+	  char arg1[80];	/* hmmm. */
 
+        /* JET 1/20/2002 - need to handle cases where server number is
+           a port number and not a 'display' number...  If iserver is
+           => to the default AU port, convert to display number... */
+
+	  if (xname == AuFalse)
+	    iserver -= AU_DEFAULT_TCP_PORT;
+	  
+	  sprintf(arg1,":%d",iserver);
+
+#ifdef DEBUG
+	fprintf(stderr, "_AuStartServer: getting ready to exec: "
+		"xname = %d, iserver = %d, arg1 = '%s'\n", 
+		xname, iserver, arg1);
+#endif
 	/* grandchild -- start server */
 	(void)signal(SIGUSR1, SIG_IGN);
 	/* start server.  Ideally the command should be set by some resource */
-	(void)execlp("au", "au", "-timeout",  "600", (char *)NULL);
+	(void)execlp("nasd", "nasd", arg1, "-pn", "-timeout",  "600", (char *)NULL);
 	perror("exec");
 	_AuServerUp = -1;
-	kill(SIGUSR1, getppid());	/* wake up parent */
+       kill(getppid(), SIGUSR1);       /* wake up parent */
 	_exit(255);
 	/*NOTREACHED*/
+	}
 }
 #endif /* STARTSERVER */
 
@@ -301,18 +329,26 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
     saddrlen = 0;			/* set so that we can clear later */
     saddr = NULL;
 
+
+#ifdef DEBUG
+    if (server_name)
+      fprintf(stderr, "_AuConnectServer: SERVERNAME = %s\n", server_name);
+    else
+      fprintf(stderr, "_AuConnectServer: SERVERNAME = NULL\n");
+#endif
     /*
      * Step 0, see if it is an audio server name or an X display name.
      */
     for (p = server_name; *p; p++) {
-	if (*p == '/') {
+
+      if (*p == '/') {
 	    int len = (p - server_name);
 	    char tmptransport[41];
 	    register _AuConst char *src;
 	    register char *dst;
 
 	    if (len >= sizeof tmptransport)    /* too AuInt32 */
-		goto bad;
+	      goto bad;
 	    src = server_name;
 	    dst = tmptransport;
 	    while (src < p) {
@@ -321,11 +357,12 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 	    }
 	    *dst = '\0';
 	    if (strcmp (tmptransport, "tcp") == 0 ||
-		strcmp (tmptransport, "decnet") == 0) {
+		strcmp (tmptransport, "decnet") == 0) 
+	      {
 		xname = AuFalse;	/* got a real name! */
 		server_name = (p + 1);	  /* skip prefix */
 		break;
-	    }
+	      }
 	}
     }
 
@@ -334,7 +371,9 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
      * first colon.
      */
     /* SUPPRESS 530 */
-    for (lastp = p = server_name; *p && *p != ':'; p++) ;
+    for (lastp = p = server_name; *p && *p != ':'; p++) 
+      ;
+
     if (!*p) return -1;		/* must have a colon */
 
     if (p != lastp) {		/* no hostname given */
@@ -366,13 +405,19 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
      */
 
     /* SUPPRESS 530 */
-    for (lastp = ++p; *p && isascii(*p) && isdigit(*p); p++) ;
+    for (lastp = ++p; *p && isascii(*p) && isdigit(*p); p++) 
+      ;
+
     if ((p == lastp) ||			 /* required field */
 	((*p != '.') && (*p != '\0')) || /* invalid non-digit terminator */
 	!(psvrnum = copystring (lastp, p - lastp)))  /* no memory */
       goto bad;
+
     saviserver = iserver = atoi (psvrnum);
 
+#ifdef DEBUG
+    fprintf(stderr, "_AuConnectServer: saviserver = %d\n", saviserver);
+#endif
 
     /*
      * At this point, we know the following information:
@@ -516,9 +561,14 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 		goto bad;
 #else /* STARTSERVER */
     {
-	/* if local connection, try to start up a server */
-	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer())
+      /* if local connection, try to start up a server */
+
+      /* JET - 2/23/2002 - need to use saviserver for AuStartServer since
+	 connfunc() may have changed iserver */
+	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || 
+	    !_AuStartServer(saviserver, xname))
 	    goto bad;
+
 	/* try again */
 	iserver = saviserver;
     	if ((fd = (*connfunc) (phostname, &iserver, xname, /* again */
@@ -693,6 +743,10 @@ static int MakeDECnetConnection (phostname, iserverp, xname, retries,
 
     if (!phostname) phostname = "0";
 
+#ifdef DEBUG
+    fprintf(stderr, "MakeDECnetConnection: starting\n");
+#endif
+
     /*
      * build the target object name.
      */
@@ -767,6 +821,11 @@ static int MakeUNIXSocketConnection (phostname, iserverp, xname, retries,
     addrlen = strlen(unaddr.sun_path) + sizeof(unaddr.sun_family);
 #endif
   
+#ifdef DEBUG
+    fprintf(stderr, "MakeUNIXSocketConnection: starting, *iserverp = %d\n",
+	    *iserverp);
+#endif
+
     /*
      * Open the network connection.
      */
@@ -850,12 +909,20 @@ static int MakeTCPConnection (phostname, iserverp, xname, retries,
 
 #define INVALID_INETADDR ((AuUint32) -1)
 
+#ifdef DEBUG
+    fprintf(stderr, "MakeTCPConnection: starting\n");
+#endif
+
     if (!phostname) {
 	hostnamebuf[0] = '\0';
 	(void) _AuGetHostname (hostnamebuf, sizeof hostnamebuf);
 	phostname = hostnamebuf;
     }
 
+#ifdef DEBUG
+    fprintf(stderr, "MakeTCPConnection: phostname = '%s'\n",
+	    phostname);
+#endif
     /*
      * if numeric host name then try to parse it as such; do the number
      * first because some systems return garbage instead of INVALID_INETADDR
@@ -1112,6 +1179,11 @@ static int MakeLOCALConnection (phostname, iserverp, retries,
     struct strbuf ctlbuf;
 #endif
 
+#ifdef DEBUG
+    fprintf(stderr, "MakeLOCALConnection: starting, LocalConnType = %d\n",
+	    LocalConnType);
+#endif
+
     /*
      * Get list of local connection modes to try.
      */
@@ -1338,7 +1410,7 @@ MakeAmConnection(phostname, iserverp, retries, familyp, saddrlenp, saddrp)
     /* allocate channel descriptor */
     chandesc = XAmAllocChanDesc();
     if (chandesc == (XAmChanDesc *)NULL) {
-	fprintf(stderr, "audiolib: Out of channel capabilities\n");
+	fprintf(stderr, "audiolib: Out of channel memory\n");
 	return -1;
     }
 

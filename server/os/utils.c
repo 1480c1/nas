@@ -50,6 +50,7 @@ SOFTWARE.
 #include <audio/audio.h>
 #include <audio/Aos.h>
 #include <stdio.h>
+#include "nasconfig.h"
 #include "misc.h"
 #include "opaque.h"
 #include <signal.h>
@@ -117,7 +118,7 @@ int auditTrailLevel = 1;
 static mutex print_lock
 #endif
 
-void ddxUseMsg();
+void ddxUseMsg(void);
 
 #if !defined(SVR4) && !defined(hpux) && !defined(linux) && !defined(AMOEBA) && !defined(_MINIX)
 extern char *sbrk();
@@ -132,7 +133,7 @@ extern int SelectWaitTime;
 
 #ifdef DEBUG
 #ifndef SPECIAL_MALLOC
-#define MEMBUG
+/*#define MEMBUG - This breaks things with unknown CheckMemory call */
 #endif
 #endif
 
@@ -269,7 +270,7 @@ AdjustWaitForDelay (waitTime, newdelay)
 
 void UseMsg()
 {
-    ErrorF("use: Au [:<listen port offset>] [option]\n");
+    ErrorF("Usage: nasd [:<listen port offset>] [option]\n");
     ErrorF(" -aa		allow any host to connect\n");
 #ifndef AMOEBA
 #ifdef PART_NET
@@ -280,6 +281,9 @@ void UseMsg()
     ErrorF(" -nopn		partial networking disabled [default]\n");
 #endif
 #endif
+    ErrorF(" -v                 enable verbose messages\n");
+    ErrorF(" -d <num>           enable debug messages at level <num>\n");
+    ddaUseMsg();		/* print dda specific usage */
 }
 
 /*
@@ -322,10 +326,36 @@ char	*argv[];
 	else if (strcmp(argv[i], "-nopn") == 0)
 	    PartialNetwork = FALSE;
 #endif
-	else {
-	    UseMsg();
-	    exit(1);
-	}
+	else if (strcmp(argv[i], "-v") == 0)
+	  {
+	    NasConfig.DoVerbose = TRUE;
+	  }
+	else if (strcmp(argv[i], "-d") == 0)
+	  {
+	    i++;
+	    if (i < argc)
+	      NasConfig.DoDebug = atoi(argv[i]);
+	    else {
+	      UseMsg();
+	      exit(1);
+	    }
+	  }
+	else 
+	  {
+				/* see if the dda understands it.
+				   we pass (in addition to argc/argv
+				    an index to the current arg
+				    being processed.  If the arg is
+				    processed, i is set to the last arg
+				    processed (in the event of an option
+				    that takes an arguement */
+	    if (ddaProcessArg(&i, argc, argv))
+	      {			/* returns non-zero for an unidentified
+				   arg */
+		UseMsg();	/* this will call ddaUseMsg() */
+		exit(1);
+	      }
+	  }
      }
 }
 

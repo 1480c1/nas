@@ -50,7 +50,7 @@ AuBool          discard;
     auGetCloseDownModeReply rep;
     register auReq *req;
 
-    _AuLockServer(aud);
+    _AuLockServer();
 
     _AuGetEmptyReq(GetCloseDownMode, req, aud);
     (void) _AuReply(aud, (auReply *) & rep, 0, auTrue, (AuStatus *) NULL);
@@ -63,5 +63,5 @@ AuBool          discard;
 	aud->qlen = 0;
     }
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
 }

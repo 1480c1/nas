@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)Alibint.c,v 1.28 1995/12/28 19:42:47 greg Exp $
  */
 
@@ -153,6 +154,10 @@ static void _AuEventEnqueued(
  * return anything.  Whenever possible routines that create objects return
  * the object they have created.
  */
+
+
+/* this is a mutex for _AuReadEvents() */
+static _AuMutex _rev_mutex = _AU_MUTEX_INITIALIZER;
 
 static int padlength[4] = {0, 3, 2, 1};
     /* lookup table for adding padding bytes to data that is read from
@@ -451,57 +456,63 @@ void
 _AuReadEvents(aud)
 	register AuServer *aud;
 {
-	_AuAlignedBuffer buf;
-	int pend;
-	register int len;
-	register auReply *rep;
-	AuBool not_yet_flushed = AuTrue;
+  _AuAlignedBuffer buf;
+  int pend;
+  register int len;
+  register auReply *rep;
+  AuBool not_yet_flushed = AuTrue;
+  
+  /* lock read access to the server */
+  _AuLockMutex(_rev_mutex);
 
-	do {
-	    /* find out how much data can be read */
-	    if (BytesReadable(aud->fd, (char *) &pend) < 0)
-	    	_AuIOError(aud);
-	    len = pend;
+  do {
+    /* find out how much data can be read */
+    if (BytesReadable(aud->fd, (char *) &pend) < 0)
+      _AuIOError(aud);
+    len = pend;
+    
+    /* must read at least one auEvent; if none is pending, then
+       we'll just flush and block waiting for it */
+    if (len < SIZEOF(auEvent)) {
+      len = SIZEOF(auEvent);
+      /* don't flush until we block the first time */
+      if (not_yet_flushed) {
+	int qlen = aud->qlen;
+	_AuFlush (aud);
+	if (qlen != aud->qlen) return;
+	not_yet_flushed = AuFalse;
+      }
+    }
+    
+    /* but we won't read more than the max buffer size */
+    if (len > BUFSIZE)
+      len = BUFSIZE;
+    
+    /* round down to an integral number of AuReps */
+    len = (len / SIZEOF(auEvent)) * SIZEOF(auEvent);
+    
+    _AuRead (aud, buf.buf, (AuInt32) len);
+    
+    STARTITERATE(rep,auReply,buf.buf,len > 0) {
+      if (rep->generic.type == Au_Reply) {
+	pend = len;
+	RESETITERPTR(rep,auReply,
+		     _AuAsyncReply (aud, rep,
+				    ITERPTR(rep), &pend, AuTrue));
+	len = pend;
+      } else {
+	if (rep->generic.type == Au_Error)
+	  _AuError (aud, (auError *) rep);
+	else   /* must be an event packet */
+	  _AuEnq (aud, (auEvent *)rep, AuEventEnqueuedByUnknown);
+	INCITERPTR(rep,auReply);
+	len -= SIZEOF(auReply);
+      }
+    } ENDITERATE
+  } while (aud->head == NULL);
 
-	    /* must read at least one auEvent; if none is pending, then
-	       we'll just flush and block waiting for it */
-	    if (len < SIZEOF(auEvent)) {
-	    	len = SIZEOF(auEvent);
-		/* don't flush until we block the first time */
-		if (not_yet_flushed) {
-		    int qlen = aud->qlen;
-		    _AuFlush (aud);
-		    if (qlen != aud->qlen) return;
-		    not_yet_flushed = AuFalse;
-		}
-	    }
-		
-	    /* but we won't read more than the max buffer size */
-	    if (len > BUFSIZE)
-	    	len = BUFSIZE;
+  _AuUnlockMutex(_rev_mutex);
 
-	    /* round down to an integral number of AuReps */
-	    len = (len / SIZEOF(auEvent)) * SIZEOF(auEvent);
-
-	    _AuRead (aud, buf.buf, (AuInt32) len);
-
-	    STARTITERATE(rep,auReply,buf.buf,len > 0) {
-		if (rep->generic.type == Au_Reply) {
-		    pend = len;
-		    RESETITERPTR(rep,auReply,
-				 _AuAsyncReply (aud, rep,
-					       ITERPTR(rep), &pend, AuTrue));
-		    len = pend;
-		} else {
-		    if (rep->generic.type == Au_Error)
-			_AuError (aud, (auError *) rep);
-		    else   /* must be an event packet */
-			_AuEnq (aud, (auEvent *)rep, AuEventEnqueuedByUnknown);
-		    INCITERPTR(rep,auReply);
-		    len -= SIZEOF(auReply);
-		}
-	    } ENDITERATE
-	} while (aud->head == NULL);
 }
 
 /* 
@@ -518,34 +529,37 @@ _AuRead (aud, data, size)
 
 	if ((aud->flags & AuServerFlagsIOError) || size == 0) return;
 	errno = 0;
+
 	while ((bytes_read = ReadFromServer(aud->fd, data, (int)size))
-		!= size) {
-
-	    	if (bytes_read > 0) {
-		    size -= bytes_read;
-		    data += bytes_read;
-		    }
-		else if (ETEST(errno)) {
-		    _AuWaitForReadable(aud);
-		    errno = 0;
-		}
+	       != size) 
+	  {
+     
+	    if (bytes_read > 0) {
+	      size -= bytes_read;
+	      data += bytes_read;
+	    }
+	    else if (ETEST(errno)) {
+	      _AuWaitForReadable(aud);
+	      errno = 0;
+	    }
 #ifdef SUNSYSV
-		else if (errno == 0) {
-		    _AuWaitForReadable(aud);
-		}
+	    else if (errno == 0) {
+	      _AuWaitForReadable(aud);
+	    }
 #endif
-		else if (bytes_read == 0) {
-		    /* Read failed because of end of file! */
-		    errno = EPIPE;
-		    _AuIOError(aud);
-		    }
+	    else if (bytes_read == 0) {
+	      /* Read failed because of end of file! */
+	      errno = EPIPE;
+	      _AuIOError(aud);
+	    }
+	    
+	    else  /* bytes_read is less than 0; presumably -1 */ {
+	      /* If it's a system call interrupt, it's not an error. */
+	      if (errno != EINTR)
+		_AuIOError(aud);
+	    }
 
-		else  /* bytes_read is less than 0; presumably -1 */ {
-		    /* If it's a system call interrupt, it's not an error. */
-		    if (errno != EINTR)
-		    	_AuIOError(aud);
-		    }
-	    	 }
+	  }
 }
 
 #ifdef WORD64
@@ -682,6 +696,7 @@ _AuReadPad (aud, data, size)
     	register AuInt32 bytes_read;
 	struct iovec iov[2];
 	char pad[3];
+	char *p;
 
 	if ((aud->flags & AuServerFlagsIOError) || size == 0) return;
 	iov[0].iov_len = (int)size;
@@ -696,39 +711,57 @@ _AuReadPad (aud, data, size)
 	iov[1].iov_base = pad;
 	size += iov[1].iov_len;
 	errno = 0;
-	while ((bytes_read = ReadvFromServer (aud->fd, iov, 2)) != size) {
+				/* JET - we'll use a little indirect ptr */
+				/* arithmetic to get around the */
+				/* fact that iov_base is often a void * */
 
-	    if (bytes_read > 0) {
+	while ((bytes_read = ReadvFromServer (aud->fd, iov, 2)) != size) 
+	  {
+	    
+	    if (bytes_read > 0) 
+	      {
 		size -= bytes_read;
-	    	if ((iov[0].iov_len -= bytes_read) < 0) {
+	    	if ((iov[0].iov_len -= bytes_read) < 0) 
+		  {
 		    iov[1].iov_len += iov[0].iov_len;
-		    iov[1].iov_base -= iov[0].iov_len;
+
+		    p = (char *)iov[1].iov_base;
+		    p -= iov[0].iov_len;
+		    iov[1].iov_base = p;
+
 		    iov[0].iov_len = 0;
-		    }
+		  }
 	    	else
-	    	    iov[0].iov_base += bytes_read;
-	    	}
-	    else if (ETEST(errno)) {
+		  {
+		    p = (char *)iov[0].iov_base;
+		    p += bytes_read;
+		    iov[0].iov_base = p;
+		  }
+	      }
+	    else if (ETEST(errno)) 
+	      {
 		_AuWaitForReadable(aud);
 		errno = 0;
-	    }
+	      }
 #ifdef SUNSYSV
-	    else if (errno == 0) {
+	    else if (errno == 0) 
+	      {
 		_AuWaitForReadable(aud);
-	    }
+	      }
 #endif
-	    else if (bytes_read == 0) {
+	    else if (bytes_read == 0) 
+	      {
 		/* Read failed because of end of file! */
 		errno = EPIPE;
 		_AuIOError(aud);
-		}
-	    
-	    else  /* bytes_read is less than 0; presumably -1 */ {
+	      }
+	    else  /* bytes_read is less than 0; presumably -1 */ 
+	      {
 		/* If it's a system call interrupt, it's not an error. */
 		if (errno != EINTR)
-		    _AuIOError(aud);
-		}
-	    }
+		  _AuIOError(aud);
+	      }
+	  }
 }
 
 /*
@@ -1324,11 +1357,11 @@ register auEvent *event;			/* wire protocol event */
 static char *_SysErrorMsg (n)
     int n;
 {
-#if !defined(__FreeBSD__) && !defined(__linux__)
+#if !defined(__FreeBSD__) && !defined(__linux__) && !defined(__NetBSD__)
     extern char *sys_errlist[];
 #endif
     extern int sys_nerr;
-    char *s = ((n >= 0 && n < sys_nerr) ? sys_errlist[n] : "unknown error");
+    char *s = (char *)((n >= 0 && n < sys_nerr) ? sys_errlist[n] : "unknown error");
 
     return (s ? s : "no such error");
 }
@@ -1901,7 +1934,8 @@ int iovcnt;
 
 #endif /* SYSV && SYSV386 && !STREAMSCONN */
 
-#ifdef STREAMSCONN
+#if defined(STREAMSCONN) 
+
 #define HAS_FAKE_IOV
 /*
  * Copyright 1988, 1989 AT&T, Inc.
@@ -1941,8 +1975,7 @@ int iovcnt;
 	END USER STAMP AREA
 */
 
-
-extern char _AusTypeofStream[];
+extern char _AusTypeOfStream[];
 extern Austream _AusStream[];
 
 #define MAX_WORKAREA 4096

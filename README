@@ -4,8 +4,6 @@
     *                                                                     *
     *			 An Audio Protocol For Networks                   *
     *                                                                     *
-    *                      Release 1.2 - June 3, 1994			  *
-    *                                                                     *
     ***********************************************************************
 
 				       or
@@ -20,16 +18,24 @@ network-transparent, client/server audio system, including:
 
 	- Sun Sparc 1 AM79C30A Digital Subscriber Controller and
 	      Sparc 10 Dual Basic Rate ISDN Interface
-	  (SunOS 4.1.[23], Solaris 2.x)
+	- SunOS 4.1.[23], Solaris 2.x, sparc and intel)
 
 	- SGI Indigo (IRIX 5.x)
 
-	- VOXware (FreeBSD, Linux, SVR4.[02])
+	- VOXware (FreeBSD, Linux, NetBSD, OpenBSD, SVR4.[02],
+          Unixware 2.x/7.x)
 
-	- HPUX
+	- HPUX 10.10.X, 11.x
 
     o	an application programming interface library
     o	a variety of sample applications
+
+
+This version was built on the following OS's prior to release:
+
+        - Linux/glibc 2.1, 2.2.14 kernel (Mandrake 7)
+        - Unixware 2.03 (X11R6.4 and gcc 2.95.2 compiler)
+        - HPUX 10.10 using X11R6.1 and gcc 2.95.2
 
 The client software can also be used with several models of NCD X
 terminals as well as NCD's PCXware (an X server for PCs running
@@ -60,6 +66,7 @@ Here is a quick guide to where things are in this distribution (relative to
 the directory nas/):
 
 	README			this file
+	FAQ                     some common questions
 	HISTORY			log of changes
 	BUGS			known landmines
 	BUILDNOTES		notes on building under various OSs, X releases
@@ -96,14 +103,13 @@ To build the software:
     1.	Make sure you have imake.
 	(See the BUILDNOTES file if you want to try building with X11R4).
 
-    2.	Look at config/NetAudio.tmpl and add a BINDIR definition if you want.
-	By default, the programs are put into /usr/bin/X11.
+    2.	Do "xmkmf" to create the initial Makefile.
 
-    3.	Do "xmkmf" to create the initial Makefile.
+        For Unixware 7, use:
 
-    4.	Do "make World" (note the uppercase World) to build the distribution.
-	(Attention Linux Users: instead of "make World" you should do
-	 make WORLDOPTS="-k CDEBUGFLAGS='-O2 -D__USE_BSD_SIGNAL'" World)
+        "imake -DUseInstalled -I/usr/lib/X11/config"
+
+    3.	Do "make World" (note the uppercase World) to build the distribution.
 
 	If you'd like to enable the option of having the audio library
 	automatically start up an NAS server on the local host when
@@ -112,11 +118,11 @@ To build the software:
 
 	make WORLDOPTS='-k CDEBUGFLAGS="$(CDEBUGFLAGS) -DSTARTSERVER"' World
 
-    5.	If everything built successfully, you can install it using
+    4.	If everything built successfully, you can install it using
 	"make install"; to temporarily stage it under some directory, use
 	"make install DESTDIR=/usr/tmp/nas" or some such.
 
-    6.	To install the manual pages, use "make install.man" or 
+    5.	To install the manual pages, use "make install.man" or 
 	"make install.man DESTDIR=/usr/tmp/nas" as above.
 
 A complete installation should include the following files:
@@ -166,27 +172,25 @@ A complete installation should include the following files:
 
 	/usr/man/man3/*.3			API man pages
 
-	/usr/lib/libaudio.a			API library
+	/usr/lib/libaudio.[a|so]		API library
 	/usr/lib/X11/AuErrorDB			Error database
 
-	/usr/bin/X11/ausun			Sun server or 
-	/usr/bin/X11/ausgi			SGI server or 
-	/usr/bin/X11/auvoxware			VOXware server
-	/usr/bin/X11/auhpux			Hpux server
-	/usr/bin/X11/au				symlink to one of the above
+	/usr/bin/X11/nasd			NAS server for your
+						hardware (voxware,
+						sun, hpux and sgi)
 
 				 *  *  *  *  *
 
 III.  Using the Network Audio System
 
 Now that you have things built, you can use the Network Audio System
-as follows:
+as follows (assuming ksh):
 
-	%  ausun -aa &		# -aa allows any host access
-	%  setenv AUDIOSERVER `hostname`:0
-	%  auinfo
-	%  audemo examples/sounds
-	%  ...
+	$  nasd -aa &		# -aa allows any host access
+	$  export AUDIOSERVER="`hostname`:0"
+	$  auinfo
+	$  audemo examples/sounds
+	$  ...
 
 If you are using it over the network, the shorthand syntax for specifying an
 audio server is hostname:0.  Access control is still a bit primitive....
@@ -231,13 +235,11 @@ rec.games.misc contains a detailed list of machines, bulletin boards, etc.
 
 VII.  For More Information
 
-We've set up a mailing list for folks who are working with the Network
+There is mailing list for folks who are working with the Network
 Audio System:
 
     nas@radscan.com		General discussion of the Network
-				Audio System; anyone who who will
-				actively participate is welcome to
-				join.
+				Audio System 
 
     majordomo@radscan.com	Where to send requests to get on or off the
 				mailing list.  The body of the mail should
@@ -246,13 +248,23 @@ Audio System:
 					subscribe nas <your_email_address>
 
 
-    The archives for this list are maintained by Grant Taylor, and
-    can be found at:
+    The archives for this list can be found at:
 
-        http://www.picante.com/~gtaylor/archives/nas/ or
-        http://gatekeeper.picante.com/~gtaylor/archives/nas/
+        http://radscan.com/nas/nas-ml/
 
+    A web page dedicated to NAS can be found at 
 
+	http://radscan.com/nas.html
+
+	This site will contain up to date information on
+	NAS, and probably the most recent version (including
+	point release and development versions).
+
+        http://radscan.com/nas/nas-links.hmtl 
+
+	This page provides a small list of some utilities and software
+        that incorporates or uses NAS. 
+	
 
 The Network Audio System has benefited greatly from the testing and
 contributions of many people on the mailing list.  We'd like to thank
@@ -268,8 +280,12 @@ you can't beat the price!  :-)
 				Jim Fulton, Greg Renda, Dave Lemke
 				Network Computing Devices, Inc.
 
+				Jon Trulson
+				Me, at home.
 
---------------------------------------------------------------------------------
+				All the fine people on the NAS mailing list.
+
+-----------------------------------------------------------------------------
 
 		 Copyright 1995 Network Computing Devices, Inc.
 

@@ -63,7 +63,7 @@ typedef unsigned long RESTYPE;
 
 RESTYPE CreateNewResourceType();
 RESTYPE CreateNewResourceClass();
-unsigned long FakeClientID();
+AuID FakeClientID();
 Bool AddResource();
 void FreeResource();
 void FreeClientResources();

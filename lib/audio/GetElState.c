@@ -39,7 +39,7 @@ AuStatus       *ret_status;
     if (ret_status)
 	*ret_status = AuSuccess;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetReq(GetElementStates, req, aud);
 
     req->numStates = *num_states;
@@ -67,7 +67,7 @@ AuStatus       *ret_status;
 	if (!(states = st = (AuElementState *)
 	      Aumalloc(sizeof(AuElementState) * rep.numStates)))
 	{
-	    _AuUnlockServer(aud);
+	    _AuUnlockServer();
 	    _AuSyncHandle(aud);
 	    return NULL;
 	}
@@ -85,7 +85,7 @@ AuStatus       *ret_status;
 	}
     }
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 
     return states;

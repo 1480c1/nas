@@ -5,6 +5,8 @@
 * $NCDId: @(#)config.h,v 1.1 1996/04/24 17:00:31 greg Exp $
 */
 
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
 
 typedef struct
 {
@@ -18,5 +20,13 @@ typedef struct
   int minFrags;
   int maxFrags;
   char	*device;
+  char	*mixer;
+  int	howToOpen ;
+  int	autoOpen ;
+  int	forceRate ;
   int isPCSpeaker;
+  int gain;			/* default gain */
 } SndStat;
+
+
+#endif /* CONFIG_H_INCLUDED */

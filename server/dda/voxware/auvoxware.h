@@ -1,3 +1,4 @@
+/* $Id$ */
 /*
    SCCS: @(#) auvoxware.h 11.2 95/03/22 
 */
@@ -74,10 +75,10 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <signal.h>
 
 typedef int AuBlock;
-#if (defined(linux) && defined(__USE_BSD_SIGNAL))
+#if defined(linux) 
 #define        AuBlockAudio()          0
-#define AuUnBlockAudio(_x)
-#else /* (defined(linux) && defined(__USE_BSD_SIGNAL)) */
+#define        AuUnBlockAudio(_x)
+#else /* defined(linux)  */
 #ifndef sco
 #if defined(SVR4) || defined(SYSV)
 #define	AuUnBlockAudio(_x)						      \
@@ -94,7 +95,7 @@ do									      \
 #define	AuBlockAudio()		sigblock(sigmask(SIGALRM))
 #endif
 #endif /* sco */
-#endif /* (defined(linux) && defined(__USE_BSD_SIGNAL)) */
+#endif /* defined(linux) */
 
 #define AuProtectedMalloc(_s)	xalloc(_s)
 #define AuProtectedFree(_p)	free(_p)
