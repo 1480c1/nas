@@ -27,19 +27,21 @@
  * $NCDId: @(#)Graph.c,v 1.11 1995/12/06 01:11:03 greg Exp $
  */
 
-#ifndef WIN32
-# ifdef __NetBSD__
-#  include <limits.h>
+#include "config.h"
+
+#if defined(HAVE_LIMITS_H)
+# include <limits.h>
 #  define MAXSHORT SHRT_MAX
 #  define MINSHORT SHRT_MIN
-# else
-#  include <values.h>
-# endif
-#else /* WIN32 */
-# define MAXSHORT 0x7fff
-#endif /* WIN32 */
+#elif defined(HAVE_VALUES_H)
+# include <values.h>
+#endif
 
-#ifndef MINSHORT
+#if !defined(MAXSHORT)
+# define MAXSHORT 0x7fff
+#endif 
+
+#if !defined(MINSHORT)
 # define MINSHORT -MAXSHORT
 #endif
 

@@ -133,6 +133,15 @@
 ./config/makesrcpkg
 ./config/mungeman
 ./config/Imakefile
+./config/configure.ac
+./config/configure
+./config/aclocal.m4
+./config/install-sh
+./config/config.sub
+./config/config.guess
+./config/ltmain.sh
+./config/config.h.in
+./config/
 ./config
 ./doc/man/lib/Makefile
 ./doc/man/lib/AuAnyEvt.man

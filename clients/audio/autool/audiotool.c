@@ -27,8 +27,18 @@
  * auplay -- a simple clone of Sun's audiotool
  */
 
+#include "config.h"
+
 #include	<stdio.h>
-#include	<malloc.h>
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
 #include	<audio/audiolib.h>
 #include	<audio/soundlib.h>
 

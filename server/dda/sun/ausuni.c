@@ -945,9 +945,14 @@ disableProcessFlow()
 
 	signalEnabled = AuFalse;
 	ioctl(devAudioCtl, I_SETSIG, 0);	/* disable signal */
+
+#if 0                           /* this seems to cause problems on some
+                                   sun kernels/sound drivers */
 	ioctl(devAudio, AUDIO_DRAIN, 0);	/* drain everything out */
+#endif
+
 	if (relinquish_device)
-		closeDevice();
+          closeDevice();
 }
 
 /* for CS4231 and dbri */

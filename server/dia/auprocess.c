@@ -1188,6 +1188,7 @@ AuBool          isInput;
 {
     AuUint32        elementRate;
     ComponentPtr    c = flowEl->component;
+    extern auConnSetup auSetup;
 
     if (!flowEl->setup)
     {
@@ -1223,6 +1224,14 @@ AuBool          isInput;
     }
     else
 	elementRate = c->sampleRate;
+
+    /* sanity - 6/20/2004, for bug report by Tobias Diedrich */
+    if (!elementRate)
+      {
+        osLogMsg("doSetup: elementRate == 0! Forcing to %d\n",
+                 auSetup.minSampleRate);
+        elementRate = auSetup.minSampleRate;
+      }
 
     if (flowEl->raw->type != AuElementTypeImportWaveForm)
 	flowEl->nextSample = isInput ? (elementRate << 16) / globalRate :
@@ -1270,23 +1279,20 @@ AuUint32        rate;
 	writeMonitor
     };
 
-    if (rate)
-    {
-	if (rate > auSetup.maxSampleRate)
-	    rate = auSetup.maxSampleRate;
-
-	if (rate < auSetup.minSampleRate)
-	    rate = auSetup.minSampleRate;
-
-	if (auCurrentSampleRate != rate)
-	    if (CallbackExists(AuSetSampleRateCB))
-	    {
-		auCurrentSampleRate = rate =
-		    (AuUint32) AuCallback(AuSetSampleRateCB, (rate));
-	    }
-	    else
-		auCurrentSampleRate = rate;
-    }
+    if (rate > auSetup.maxSampleRate)
+      rate = auSetup.maxSampleRate;
+    
+    if (rate < auSetup.minSampleRate)
+      rate = auSetup.minSampleRate;
+    
+    if (auCurrentSampleRate != rate)
+      if (CallbackExists(AuSetSampleRateCB))
+        {
+          auCurrentSampleRate = rate =
+            (AuUint32) AuCallback(AuSetSampleRateCB, (rate));
+        }
+      else
+        auCurrentSampleRate = rate;
 
     for (i = 0; i < fl->numOutputs; i++)
     {

@@ -1805,30 +1805,6 @@ auth_ezencode(
 }
 #endif
 
-#if XlibSpecificationRelease < 5
-/* pre-X11R5 compatability */
-
-Xauth *XauGetBestAuthByAddr(
-#ifndef _Xconst
-# if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
-#  define _Xconst const
-# else
-#  define _Xconst
-# endif
-#endif /* _Xconst */
-
-unsigned short	/* family */,
-unsigned short	/* address_length */,
-_Xconst char*	/* address */,
-unsigned short	/* number_length */,
-_Xconst char*	/* number */,
-int		/* types_length */,
-char**		/* type_names */,
-_Xconst int*	/* type_lengths */
-);
-
-#endif /* XlibSpecificationRelease < 5 */
-
 /* ARGSUSED */
 static void
 GetAuthorization(

@@ -27,12 +27,22 @@
 
 /* audial.c - touch tone dialer and recognizer */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <sys/types.h>
+
 #if !defined(ISC40) && !defined(WIN32)
 #include <sys/file.h>
 #endif /* !ISC40 */
-#include <malloc.h>
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
 
 #include <audio/Aos.h>			/* for string and other os stuff */
 #include <audio/Afuncs.h> 		/* for bcopy et. al. */

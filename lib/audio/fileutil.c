@@ -26,10 +26,21 @@
  * sound file reading util functions
  */
 
+#include "config.h"
+
 #include	<stdio.h>
 #include	<audio/Aos.h>
 #include	<audio/fileutil.h>
-#include	<malloc.h>
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
+
 
 unsigned short FileSwapS (unsigned short us)
 {

@@ -22,8 +22,19 @@
  * $NCDId: @(#)voc.c,v 1.15 1995/12/06 01:23:38 greg Exp $
  */
 
+#include "config.h"
+
 #include	<stdio.h>
-#include 	<malloc.h>
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
+
 #include	<audio/Aos.h>
 #include	<audio/voc.h>
 #include	<audio/fileutil.h>

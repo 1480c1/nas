@@ -28,8 +28,18 @@
 
 #define _SOUND_C_
 
+#include "config.h"
+
 #include	<stdio.h>
-#include 	<malloc.h>
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
 #include	<audio/Aos.h>
 #include	<audio/audio.h>
 #include	<audio/sound.h>

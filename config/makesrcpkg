@@ -46,6 +46,13 @@ find $NASVER -type f -exec chmod 644 {} \;
 find $NASVER -type d -exec chmod 755 {} \;
 chmod 755 config/makesrcpkg
 
+chmod 755 $NASVER/config/configure
+chmod 755 $NASVER/config/ltmain.sh
+chmod 755 $NASVER/config/config.guess
+chmod 755 $NASVER/config/config.sub
+chmod 755 $NASVER/config/install-sh
+
+
 tar cvf ${ARCFILE} $NASVER
 gzip -v $ARCFILE
 rm -rf $NASVER

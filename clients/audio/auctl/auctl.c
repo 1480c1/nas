@@ -23,7 +23,16 @@
  */
 
 #include <stdio.h>
-#include <malloc.h>
+#include "config.h"
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
 #include "auctl.h"
 
 char *ProgramName;

@@ -28,16 +28,24 @@
  */
 
 #include <stdio.h>
-#ifdef __STDC__
-#include <stdlib.h>
+
+#include "config.h"
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
 #endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
+
 #ifndef WIN32
 #include <unistd.h>
 #else /* WIN32 */
 #define access _access
 #define R_OK 4
 #endif /* WIN32 */
-#include <malloc.h>
 #include <limits.h>				/* for SHRT_MIN and SHRT_MAX */
 #ifndef SYSV
 #include <audio/Aos.h>				/* for string and other os

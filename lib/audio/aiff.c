@@ -22,8 +22,18 @@
  * $NCDId: @(#)aiff.c,v 1.10 1995/12/06 01:22:37 greg Exp $
  */
 
+#include "config.h"
+
 #include <stdio.h>
-#include <malloc.h>
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
+
 #include <audio/Aos.h>
 #include <math.h>
 #include <audio/aiff.h>

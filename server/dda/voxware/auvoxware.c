@@ -172,7 +172,11 @@ static int debug_msg_indentation = 0;
 #include <assert.h>
 
 #ifdef __FreeBSD__
-# include <machine/soundcard.h>
+# if __FreeBSD_version >= 500001 
+#  include <sys/soundcard.h> 
+# else
+#  include <machine/soundcard.h>
+# endif
 # include <machine/pcaudioio.h>
 #else
 # ifdef __NetBSD__

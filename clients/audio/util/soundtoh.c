@@ -26,8 +26,18 @@
  * $NCDId: @(#)soundtoh.c,v 1.2 1994/04/07 20:23:32 greg Exp $
  */
 
+#include "config.h"
+
 #include <stdio.h>
-#include <malloc.h>
+
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
 #include <audio/Aos.h>			/* for string and other os stuff */
 #include <audio/Afuncs.h> 		/* for bcopy et. al. */
 #include <audio/audiolib.h>

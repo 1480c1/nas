@@ -10,10 +10,19 @@
 
 INSTALLFLAGS = $(INSTINCFLAGS)
 
-HEADERS = NasConfig.h
+HEADERS = NasConfig.h config.h
+
+config.h: 
+	./configure
+
+includes:: config.h
 
 all::
 depend::
+
+
+clean::
+	rm -f config.h config.cache config.status
 
 BuildIncludes($(HEADERS),,)
 

@@ -26,14 +26,19 @@
  *
  * $NCDId: @(#)audemo.c,v 1.60 1995/12/06 01:08:33 greg Exp $
  */
+#include "config.h"
 
 #include <stdio.h>
-#ifdef __STDC__
-#include <stdlib.h>
-#endif
-#include <signal.h>
-#include <malloc.h>
 
+#if defined(HAVE_STDLIB_H)
+# include <stdlib.h> 
+#endif
+
+#if defined(HAVE_MALLOC_H)
+# include <malloc.h>
+#endif
+
+#include <signal.h>
 #if !defined(SYSV) || defined(WIN32)
 #include <audio/Aos.h>		/* for string and other os stuff */
 #endif
@@ -1855,7 +1860,11 @@ int             nfiles;
 
     for (i = 0; i < nfiles; i++)
     {
-	p = strrchr(fileNames[i], '/') + 1;
+      if (p = strrchr(fileNames[i], '/')) 
+        p++;
+      else
+        p = fileNames[i];
+      
 	fileList[i] = (char *) strdup(p);
 
 	if ((p = strrchr(fileList[i], '.')))
