@@ -16,10 +16,10 @@
 
 void diaInitGlobalConfig()
 {
-				/* init tham all the default values */
+				/* init all the default values */
   NasConfig.DoDebug = FALSE;
   NasConfig.DoVerbose = FALSE;
-  NasConfig.DoDeviceRelease = FALSE;
+  NasConfig.DoDeviceRelease = TRUE;
   NasConfig.DoDaemon = FALSE;
 
   				/* that be it */
