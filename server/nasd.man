@@ -13,9 +13,14 @@ used server on a given machine.
 .SH "STARTING THE SERVER"
 The server is usually started from /etc/rc or a user's startup script.
 .PP
-When the Network Audio System server starts up, it takes over /dev/audio.  Note
-that applications that attempt to access /dev/audio themselves will
-fail while it is running.
+When the Network Audio System server starts up, it takes over
+/dev/audio.  Note, that if ReleaseDevice is set to TRUE [default] in
+the nasd.conf file, nasd will relinquish control of the audio device
+whenever it has finished playing a sound.  This means you can use
+other non-NAS applications when nasd is running, as long as nasd isn't
+currently playing a song.  If ReleaseDevice is set to FALSE in the
+nasd.conf file, applications that attempt to access /dev/audio themselves will
+fail while nasd is running.
 .SH "NETWORK CONNECTIONS"
 The Network Audio System server supports connections made using the following reliable
 byte-streams:
@@ -29,11 +34,38 @@ port offset.
 The X server uses \fI/tmp/.sockets/audio\fBn\fR as the filename for 
 the socket, where \fIn\fP is the display number.
 .SH OPTIONS
-All of the Network Audio System servers accept the following command line options:
+All of the Network Audio System servers accept the following generic
+command line options.  Options specific to a particular server may
+also be available, and are not listed here.  Try 'nasd -?' for a list
+of those options, if available.
 .TP 8
 .B \-aa
-Allows clients on any host to connect.  By default, access is allowed
-only to clients on the local host.
+Allows any client to connect.  By default, access is allowed
+only to authenticated clients.
+.TP 8
+.B \-local
+Allows only clients on the local host to connect.  By default, access
+is allowed to local and remote hosts.
+.TP 8
+.B \-v
+Enable verbose messages.  This option overrides the
+nasd.conf file setting.
+.TP 8
+.B \-d \fIn\fP
+Enable debugging output at level \fIn\fP, where \fIn\fP is a positive
+integer.  The higher the level, the more output you will get.  A value
+of 0 [default] disables debugging output.  This option overrides the
+nasd.conf file setting.  When debugging is enabled, stderr is not
+closed by the nasd process, and all debugging messages are written
+there.
+.TP 8
+.B \-pn
+.TP 8
+.B \-nopn [default]
+Enables or disables Partial Networking.  Enabling Partial Networking
+allows the server to start, even if the server cannot establish all of
+its well-known sockets (connection points for clients), but
+establishes at least one.
 .SH SIGNALS
 The Network Audio System server attaches special meaning to the following signals:
 .TP 8
