@@ -38,7 +38,7 @@ AuStatus       *ret_status;
     if (ret_status)
 	*ret_status = AuSuccess;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetResReq(GetDeviceAttributes, device, req, aud);
 
     (void) _AuReply(aud, (auReply *) & rep, 0, auFalse, ret_status);
@@ -48,7 +48,7 @@ AuStatus       *ret_status;
     if (!(attr = (AuDeviceAttributes *)
 	  Aucalloc(1, sizeof(AuDeviceAttributes))))
     {
-	_AuUnlockServer(aud);
+	_AuUnlockServer();
 	_AuSyncHandle(aud);
 	return NULL;
     }
@@ -62,7 +62,7 @@ AuStatus       *ret_status;
 	      Aumalloc(AuDeviceDescription(attr)->len + 1)))
 	{
 	    AuFreeDeviceAttributes(aud, 1, attr);
-	    _AuUnlockServer(aud);
+	    _AuUnlockServer();
 	    _AuSyncHandle(aud);
 	    return NULL;
 	}
@@ -80,7 +80,7 @@ AuStatus       *ret_status;
 	      Aumalloc(AuDeviceNumChildren(attr) * sizeof(AuDeviceID))))
 	{
 	    AuFreeDeviceAttributes(aud, 1, attr);
-	    _AuUnlockServer(aud);
+	    _AuUnlockServer();
 	    _AuSyncHandle(aud);
 	    return NULL;
 	}
@@ -89,7 +89,7 @@ AuStatus       *ret_status;
 		   AuDeviceNumChildren(attr) * sizeof(AuDeviceID));
     }
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 
     return attr;

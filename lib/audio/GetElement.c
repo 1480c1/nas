@@ -37,7 +37,7 @@ AuStatus       *ret_status;
     AuElement      *elements;
     int             i;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetResReq(GetElements, flow, req, aud);
 
     (void) _AuReply(aud, (auReply *) & rep, 0, auFalse, ret_status);
@@ -48,7 +48,7 @@ AuStatus       *ret_status;
     if (!(elements =
 	  (AuElement *) Aucalloc(rep.num_elements, sizeof(AuElement))))
     {
-	_AuUnlockServer(aud);
+	_AuUnlockServer();
 	_AuSyncHandle(aud);
 	return NULL;
     }
@@ -196,7 +196,7 @@ AuStatus       *ret_status;
 					       sizeof(AuElementAction))))
 	    {
 		AuFreeElements(aud, rep.num_elements, elements);
-		_AuUnlockServer(aud);
+		_AuUnlockServer();
 		_AuSyncHandle(aud);
 		return NULL;
 	    }
@@ -225,7 +225,7 @@ AuStatus       *ret_status;
 		  Aumalloc(el->bundle.num_inputs * sizeof(AuInputTrack))))
 	    {
 		AuFreeElements(aud, rep.num_elements, elements);
-		_AuUnlockServer(aud);
+		_AuUnlockServer();
 		_AuSyncHandle(aud);
 		return NULL;
 	    }
@@ -246,7 +246,7 @@ AuStatus       *ret_status;
 	    if (!(el->sum.inputs = (unsigned short *) Aumalloc(n)))
 	    {
 		AuFreeElements(aud, rep.num_elements, elements);
-		_AuUnlockServer(aud);
+		_AuUnlockServer();
 		_AuSyncHandle(aud);
 		return NULL;
 	    }
@@ -255,7 +255,7 @@ AuStatus       *ret_status;
 	}
     }
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 
     return elements;

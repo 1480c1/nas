@@ -42,7 +42,7 @@ AuStatus *ret_status;
     for (i = 0; i < num_changes; i++)
 	total_parameters += parms[i].num_parameters;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetReq(SetElementParameters, req, aud);
 
     req->numParameters = num_changes;
@@ -63,6 +63,6 @@ AuStatus *ret_status;
     }
 
     (void) _AuIfRoundTrip(aud, ret_status);
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 }

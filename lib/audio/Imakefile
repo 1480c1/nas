@@ -25,6 +25,8 @@
 
 #include "../../config/NetAudio.tmpl"
 
+#include <Threads.tmpl>
+
 #if ProjectX < 5
 /* Pre-X11R5 compatability */
 #ifndef NormalLibX
@@ -79,7 +81,8 @@ XCOMM JET - see if we should avoid streams
 
 HEADERS = Alibint.h Alibnet.h Xtutil.h audiolib.h audioutil.h snd.h wave.h    \
           voc.h aiff.h sound.h soundlib.h fileutil.h 8svx.h Astreams.h \
-	  audio.h Afuncproto.h Afuncs.h Amd.h Amd.h Aos.h Aosdefs.h Aproto.h
+	  audio.h Afuncproto.h Afuncs.h Amd.h Amd.h Aos.h Aosdefs.h Aproto.h \
+	  mutex.h
 
    SRCS = AlibAsync.c Alibint.c AuErrDes.c AuFreeEData.c CloseSvr.c ConnSvr.c \
           CrFlow.c DesFlow.c Flush.c HandleEv.c IDOfEvent.c KillClient.c      \
@@ -90,7 +93,7 @@ HEADERS = Alibint.h Alibnet.h Xtutil.h audiolib.h audioutil.h snd.h wave.h    \
           ListDevice.c GetSvrTime.c SetClsDwnMd.c GetClsDwnMd.c		      \
 	  convutil.c fileutil.c monitor.c bcache.c			      \
 	  globals.c Astreams.c ErrHndlr.c $(COMPAT_SRCS)		      \
-          snd.c wave.c voc.c aiff.c 8svx.c sound.c soundlib.c
+          snd.c wave.c voc.c aiff.c 8svx.c sound.c soundlib.c mutex.c
 
    OBJS = AlibAsync.o Alibint.o AuErrDes.o AuFreeEData.o CloseSvr.o ConnSvr.o \
           CrFlow.o DesFlow.o Flush.o HandleEv.o IDOfEvent.o KillClient.o      \
@@ -101,7 +104,7 @@ HEADERS = Alibint.h Alibnet.h Xtutil.h audiolib.h audioutil.h snd.h wave.h    \
           ListDevice.o GetSvrTime.o SetClsDwnMd.o GetClsDwnMd.o		      \
 	  convutil.o fileutil.o monitor.o bcache.o			      \
 	  globals.o Astreams.o ErrHndlr.o $(COMPAT_OBJS)		      \
-          snd.o wave.o voc.o aiff.o 8svx.o sound.o soundlib.o
+          snd.o wave.o voc.o aiff.o 8svx.o sound.o soundlib.o mutex.o
 
 #if ProjectX >= 5
 LibraryObjectRule()

@@ -36,7 +36,7 @@ AuStatus       *ret_status;
 {
     register auWriteElementReq *req;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetReq(WriteElement, req, aud);
 
 #undef xfer
@@ -52,7 +52,7 @@ AuStatus       *ret_status;
     _AuData(aud, data, num_bytes);
 
     (void) _AuIfRoundTrip(aud, ret_status);
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 }
 

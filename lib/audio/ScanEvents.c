@@ -65,7 +65,7 @@ AuBool AuScanEvents (aud, mode, dequeue, predicate, arg, event)
     if (mode > AuEventsQueuedAfterFlush)
 	return AuFalse;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     prev = NULL;
     for (n = AuEventsQueuedAlready; n <= mode; n++) {
 	switch (n) {
@@ -94,11 +94,11 @@ AuBool AuScanEvents (aud, mode, dequeue, predicate, arg, event)
 		    aud->qfree = qelt;
 		    aud->qlen--;
 		}
-		_AuUnlockServer(aud);
+		_AuUnlockServer();
 		return AuTrue;
 	    }
 	}
     }
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     return AuFalse;
 }

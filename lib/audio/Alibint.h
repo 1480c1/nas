@@ -152,10 +152,8 @@ extern char *malloc(), *realloc(), *calloc();
  * The following definitions can be used for locking requests in multi-threaded
  * address spaces.
  */
-#define _AuLockServer(aud)
-#define _AuLockMutex(mutex)
-#define _AuUnlockMutex(mutex)
-#define _AuUnlockServer(aud)
+#include "mutex.h"
+
 #define Aufree(ptr) free((ptr))
 
 /*

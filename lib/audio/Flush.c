@@ -46,7 +46,7 @@ without express or implied warranty.
 void AuFlush (aud)
     register AuServer *aud;
 {
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuFlush (aud);
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
 }

@@ -1,4 +1,4 @@
-.\" $NCDId: @(#)AUVoxConfig.man,v 1.1 1996/04/24 17:00:26 greg Exp $
+\" $NCDId: @(#)AUVoxConfig.man,v 1.1 1996/04/24 17:00:26 greg Exp $
 .TH NASD.CONF 5 "" ""
 .SH NAME
 nasd.conf \- Configuration file for NAS servers.
@@ -48,7 +48,7 @@ Marks the end of the input section or output section.
 Specifies what device is used. An example is \fBdevice "/dev/dsp"\fR.
 .PP
 .B mixer "mixername"
-Specifies what mixer device is used. An example is \fBdevice "/dev/mixer"\fR.
+Specifies what mixer device is used. An example is \fBmixer "/dev/mixer"\fR.
 .PP
 .B maxrate number
 the maximum number of samples per second that we'll drive the

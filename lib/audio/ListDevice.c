@@ -51,7 +51,7 @@ AuStatus       *ret_status;
     if (ret_status)
 	*ret_status = AuSuccess;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetEmptyReq(ListDevices, req, aud);
 
     stringLen = (AuDeviceValueMask(attr) & AuCompCommonDescriptionMask) ?
@@ -83,7 +83,7 @@ AuStatus       *ret_status;
 	if (!(list = l = (AuDeviceAttributes *)
 	      Aucalloc(1, rep.num_devices * sizeof(AuDeviceAttributes))))
 	{
-	    _AuUnlockServer(aud);
+	    _AuUnlockServer();
 	    _AuSyncHandle(aud);
 	    return NULL;
 	}
@@ -101,7 +101,7 @@ AuStatus       *ret_status;
 		      Aumalloc(AuDeviceDescription(l)->len + 1)))
 		{
 		    AuFreeDeviceAttributes(aud, *num_devices, list);
-		    _AuUnlockServer(aud);
+		    _AuUnlockServer();
 		    _AuSyncHandle(aud);
 		    return NULL;
 		}
@@ -119,7 +119,7 @@ AuStatus       *ret_status;
 		      Aumalloc(AuDeviceNumChildren(l) * sizeof(AuDeviceID))))
 		{
 		    AuFreeDeviceAttributes(aud, *num_devices, list);
-		    _AuUnlockServer(aud);
+		    _AuUnlockServer();
 		    _AuSyncHandle(aud);
 		    return NULL;
 		}
@@ -132,7 +132,7 @@ AuStatus       *ret_status;
 	}
     }
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 
     return list;

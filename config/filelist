@@ -368,6 +368,8 @@
 ./lib/audio/voc.h
 ./lib/audio/wave.c
 ./lib/audio/wave.h
+./lib/audio/mutex.h
+./lib/audio/mutex.c
 ./lib/audio/unshared
 ./lib/audio
 ./lib/Imakefile
