@@ -77,7 +77,7 @@ void ddaSetConfig(int token, void *value)
 	}
 	else
 	  confStat->fragSize = num;
-	if (NasConfig.DoVerbose)
+	if (NasConfig.DoDebug)
 	  osLogMsg("Fragsize set to %d\n", confStat->fragSize);
       }
       break;
@@ -93,7 +93,7 @@ void ddaSetConfig(int token, void *value)
       else
 	confStat->minFrags = num;
 
-      if (NasConfig.DoVerbose)
+      if (NasConfig.DoDebug)
 	osLogMsg("+++ Minfrags set to %d\n", confStat->minFrags);
       break;
 
@@ -108,7 +108,7 @@ void ddaSetConfig(int token, void *value)
       else
 	confStat->maxFrags = num;
 
-      if (NasConfig.DoVerbose)
+      if (NasConfig.DoDebug)
 	osLogMsg("+++ Maxfrags set to %d\n", confStat->maxFrags);
       break;
 
