@@ -207,7 +207,7 @@ static int      stereodevs = 0;	/* Channels supporting stereo */
 
 static char    *labels[SOUND_MIXER_NRDEVICES] = SOUND_DEVICE_LABELS;
 
-int VOXMixerInit = TRUE;
+int VOXMixerInit = TRUE;	/* overridden by nasd.conf */
 
 /* end of VOXware driver mixer control variables */
 
@@ -215,30 +215,30 @@ SndStat *confStat;
 
 SndStat sndStatIn =
 {
-	-1,
-	16,
-	2,
-	0,
-	4000,
-	44100,
-	256,
-	3,
-	32,
-	"/dev/dsp1",
-	0
+	-1,			/* fd */
+	16,			/* wordSize */
+	1,			/* isStereo */
+	0,			/* curSampleRate */
+	4000,			/* minSampleRate */
+	44100,			/* maxSampleRate */
+	256,			/* fragSize */
+	3,			/* minFrags */
+	32,			/* maxFrags */
+	"/dev/dsp1",		/* device */
+	0			/* isPCSpeaker */
 }, sndStatOut =
 {
-	-1,
-	16,
-	2,
-	0,
-	4000,
-	44100,
-	256,
-	3,
-	32,
-	"/dev/dsp",
-	0
+	-1,			/* fd */
+	16,			/* wordSize */
+	1,			/* isStereo */
+	0,			/* curSampleRate */
+	4000,			/* minSampleRate */
+	44100,			/* maxSampleRate */
+	256,			/* fragSize */
+	3,			/* minFrags */
+	32,			/* maxFrags */
+	"/dev/dsp",		/* device */
+	0			/* isPCSpeaker */
 };
 
 static AuUint8 *auOutputMono,
