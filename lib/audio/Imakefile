@@ -58,6 +58,10 @@
    SYSV_DEFINES = -DAU_NOT_STDC_ENV -D_AuNEEDBCOPYFUNC -DNEED_FAKE_XWIN
 #endif
 
+#if defined(HasBSD44Sockets)
+	EXTRA_DEFINES = -DBSD44SOCKETS
+#endif
+
 XCOMM JET - see if we should avoid streams
 #if (SystemV || SystemV4) 
 /* JET - streams are just too problematic.  UNIX/TCP CONN will do fine */
@@ -139,8 +143,14 @@ install::
 InstallNonExec(AuErrorDB,$(LIBDIR))
 #endif
 
+#if defined(HPArchitecture)
+XAULIB = 
+#else
+XAULIB = -lXau
+#endif
+
 #if defined(LinuxArchitecture)
-REQUIREDLIBS = -L$(USRLIBDIR) -lXt -lXau -lm 
+REQUIREDLIBS = -L$(USRLIBDIR) -lXt $(XAULIB) -lm 
 #endif
 
 #if defined(cygwinArchitecture)
