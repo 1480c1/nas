@@ -28,7 +28,11 @@
 INSTALLFLAGS = $(INSTINCFLAGS)
 
 HEADERS = Afuncproto.h Afuncs.h Amd.h Aos.h Aosdefs.h Aproto.h audio.h
-  FILES = $(HEADERS)
+ALLHEADERS = $(HEADERS) Alibint.h Alibnet.h Xtutil.h audiolib.h \
+	audioutil.h snd.h wave.h  voc.h aiff.h sound.h soundlib.h \
+	fileutil.h 8svx.h Astreams.h audio.h
+
+  FILES = $(ALLHEADERS)
 
 all::
 depend::
@@ -37,8 +41,6 @@ depend::
 includes::
 	MakeDir($(BUILDINCDIR:/=\))
 #endif /* WIN32 */
-
-BuildIncludes($(HEADERS),audio,)
 
 #if ProjectX < 5		/* X11R4 doesn't make dir explicitly */
 #ifndef MakeDir
@@ -49,4 +51,7 @@ install::
 	MakeDir($(DESTDIR)$(INCDIR))
 #endif
 
-InstallMultiple($(HEADERS),$(INCDIR))
+InstallMultiple($(ALLHEADERS),$(INCDIR))
+
+clean::
+	rm -f $(ALLHEADERS)

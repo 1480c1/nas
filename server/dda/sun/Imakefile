@@ -24,8 +24,8 @@
 
 #include "../../../config/NetAudio.tmpl"
 
-SRCS = ausun.c audbri.c
-OBJS = ausun.o audbri.o
+SRCS = ausuni.c
+OBJS = ausuni.o
 
     INCLUDES = -I. -I../../include -I../../../include -I../../dia
 

@@ -248,7 +248,7 @@ _AuStartServer()
 	(void)execlp("au", "au", "-timeout",  "600", (char *)NULL);
 	perror("exec");
 	_AuServerUp = -1;
-	kill(SIGUSR1, getppid());	/* wake up parent */
+       kill(getppid(), SIGUSR1);       /* wake up parent */
 	_exit(255);
 	/*NOTREACHED*/
 }

@@ -44,7 +44,6 @@ World:
 	@echo ""
 	$(MAKE) $(MFLAGS) Makefiles
 	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) includes
 	$(MAKE) $(MFLAGS) depend
 	$(MAKE) $(MFLAGS) $(WORLDOPTS) all
 	@echo ""
@@ -54,9 +53,4 @@ World:
 	@echo ""
 	
 
-/* Watch out!!! Make sure you make includes after nuking usr.include */
 clean::
-	RmTree(usr.include)
-
-includes::
-	RmTree(usr.include)

@@ -163,10 +163,10 @@ EXTRA_LOAD_FLAGS=/link /nodefaultlib:libc /*/force:multiple /debug:full /debugty
 #else /* WIN32 */
      AUDIOLIBS = $(AULIB)
 #endif /* WIN32 */
-  BUILDINCROOT = $(TOP)/usr.include
+  BUILDINCROOT = $(TOP)/include
    BUILDINCDIR = $(BUILDINCROOT)
 EXTRA_INCLUDES = -I$(BUILDINCROOT)
-    INCLUDESRC = $(TOP)/usr.include
+    INCLUDESRC = $(TOP)/include
         INCDIR = $(INCROOT)/audio
     WIDGET_DIR = $(TOP)/clients/audio/widgets
     WIDGET_LIB = $(WIDGET_DIR)/Lib(widgets)

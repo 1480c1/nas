@@ -4,6 +4,21 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "config.h"
+#include <syslog.h>
+#include <stdlib.h>
+#include <string.h>
+
+#  define PRMSG(x, a, b) \
+  if (doDebug) { \
+    openlog("nas",LOG_PID,LOG_DAEMON); \
+    syslog(LOG_DEBUG, (x), (a), (b)); \
+    closelog(); \
+  }
+#  define IDENTMSG (debug_msg_indentation += 2)
+#  define UNIDENTMSG (debug_msg_indentation -= 2)
+
+static int doDebug = 0;
+static int debug_msg_indentation = 0;
 
 extern SndStat sndStatOut, sndStatIn, *confStat;
 
@@ -81,7 +96,7 @@ stmt		: error
 		| WORDSIZE number
 			{
 			   if ($2 != 8 && $2 != 16) {
-			     fprintf(stderr, "*** Wordsize not 8 or 16, setting to 8\n");
+			     PRMSG("*** Wordsize not 8 or 16, setting to 8\n",0 ,0);
 			     confStat->wordSize = 8;
 			   }
 			   else

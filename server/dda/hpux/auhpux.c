@@ -91,6 +91,7 @@ static AuInt16  outputGain,
 
 static AuUint32 outputMode, inputMode;
 static AuBool    updateGains;
+static AuBool    processFlowEnabled;
 static AuFixedPoint currentOutputGain;
 
 extern AuInt32  auMinibufSamples;
@@ -777,9 +778,11 @@ int             sig;
 	updateGains = AuFalse;
     }
 
-    AuProcessData();
+    if (processFlowEnabled)
+       AuProcessData();
 
-    signal(SIGALRM, processAudioSignal);
+    if (processFlowEnabled)
+       signal(SIGALRM, processAudioSignal);
 }
 
 /*----------------------------------------------------------*/
@@ -791,6 +794,7 @@ enableProcessFlow()
     fprintf(stderr, "Enabling flow\n");
 #endif
     writeEmptyOutput();
+    processFlowEnabled = AuTrue;
     signal(SIGALRM, processAudioSignal);
 }
 
@@ -800,6 +804,7 @@ static void
 disableProcessFlow()
 {
     signal(SIGALRM, SIG_IGN);
+    processFlowEnabled = AuFalse;
 #ifndef NULL_AUDIO_DEVICE
     if (ioctl(devAudio,AUDIO_DRAIN, 0) == -1)perror("Audio_drain");
     errno = 0;
@@ -1042,7 +1047,7 @@ AuInitPhysicalDevices()
        than the internal speaker... this should be a configurable.*/
 
 #ifdef __DEBUG__
-    fprintf(stderr, ### Intializing to AUDIO_OUT_EXTERNAL\n");
+    fprintf(stderr, "### Intializing to AUDIO_OUT_EXTERNAL\n");
 #endif
 
     if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_EXTERNAL)==-1)
