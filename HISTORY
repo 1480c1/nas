@@ -1,6 +1,62 @@
 $Id$
 $NCDId: @(#)HISTORY,v 1.27 1996/09/05 18:46:47 greg Exp $
 
+Version 1.4.2 4/8/2001:
+
+        ## 1.4.1b 3/9/2001
+
+	- added patch from Paul Fox allowing auctl to set gains based
+		in an increment
+
+	- added a patch to lib/audio/wave.c from Philippe Jouguet that
+          corrects an infinite loop that can occur when auplay is fed
+          a corrupted wave file.
+
+	- added patches to auplay from Paul Fox.  auplay will now stop
+          the flow when a signal is caught.  Also a new option '-l'
+          allows auplay to play filenames specified on stdin.
+
+	- set libaudio's SO revision to 2.1 from 1.4 to avoid
+	  confusion with older apps built when the older libaudio
+          was at 2.0 (debian).
+
+	## 1.4.1a 12/10/2000
+
+	- autool - fixed -volume option
+
+	- added cast from a patch by Sun Ireland for their OpenOffice
+		(StarOffice) project.
+
+	- fixed libaudio to start up 'nasd' instead of 'au' when 
+		START_SERVER is defined.
+
+	- applied Erik Inge Bolso's patch for properly opening 2
+          channels instead of 3 for stereo output devices.
+
+	- added HPUX 10.20.x patches from Klaus Dittrich
+
+	- fixed problem in lib/audio/Alibint.c regarding ambiguous
+          casts with void pointers in the buffer padding code, and to
+          make it more portable with other operating systems/compilers
+          (HPUX 10.20, UW7).
+
+	- lib/audio/soundlib.c - fixed cases where a client (like
+          auplay) would hang if the element Import size matched the
+          complete datasize of a flow.  An EOF would never be sent.
+          Thanks to Shigeharu Takeno for providing a reproducible test
+          case.
+
+	- added Unixware 7.1 patches from Robert Roselius.
+
+ 	- added patch to sun/ausuni.c from John Wehle correcting a
+          problem on some solaris machines that don't allow sbpro
+          devices to be open for both reading and writing.
+
+	- add patches from Steve McIntyre for creating sticky socket
+          directories, and to close stdin, stdout, and stderr.
+
+	
+
 Version 1.4.1 9/4/2000:
 
 	- this release is really only neccessary if you are using the
