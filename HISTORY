@@ -1,5 +1,11 @@
 $Id$
 
+Version 1.6b (devel) 1/1/2004
+
+        - corrected a libaudio cordump reported by Lex Spoon when
+          using a non-zero display number.  GetAuthorization() was a
+          bit confused about the order of it's arguements.
+
 Version 1.6a (devel) 12/23/2003
 
         - preparing a long overdue development release
