@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)auhpux.c,v 1.3 1996/04/24 17:18:13 greg Exp $
  */
 
@@ -60,11 +61,11 @@
 #include <audio/Aproto.h>
 #include <errno.h>
 
+#include "nasconfig.h"
 #include "dixstruct.h"				/* for RESTYPE */
 #include "os.h"					/* for xalloc/xfree and NULL */
 #include "au.h"
-
-extern int errno=0;
+#include "aulog.h"
 
 extern void     AuProcessData();
 
@@ -90,6 +91,7 @@ static AuInt16  outputGain,
 
 static AuUint32 outputMode, inputMode;
 static AuBool    updateGains;
+static AuBool    processFlowEnabled;
 static AuFixedPoint currentOutputGain;
 
 extern AuInt32  auMinibufSamples;
@@ -161,6 +163,12 @@ static struct
 #define NUM_BUILTIN_BUCKETS						       \
     (sizeof(builtinBuckets) / sizeof(builtinBuckets[0]))
 #endif						/* BUILTIN_BUCKETS */
+
+
+/*JET*/
+static void DumpDeviceStatus(struct audio_status *astat);
+
+
 
 /*----------------------------------------------------------*/
 
@@ -341,55 +349,96 @@ AuUint32       *auServerDeviceListSize,
 
 /*----------------------------------------------------------*/
 
-static void BlockUntilClear()
+static void BlockUntilClear(AuBool doreset)
 {
-	int			clear = 0;
-	struct audio_status	status_b;
+  int			clear = 0;
+  struct audio_status	status_b;
+  void (*oldhandler)(int);
 
-	/*
-	 * Ignore signal
-	 */
-	signal(SIGALRM, SIG_IGN);
-
-	/*
-	 * Reset Device
-	 */
-
+  /*
+   * Ignore signal
+   */
+  oldhandler = signal(SIGALRM, SIG_IGN);
+  
+  /*
+   * Reset Device
+   */
+  if (NasConfig.DoDebug > 5)
+    {
+      osLogMsg("BlockUntilClear(): dev stat before reset:\n");
+      DumpDeviceStatus((struct audio_status *)NULL);
+    }
+  
 #ifndef NULL_AUDIO_DEVICE
-	if (ioctl(devAudio,AUDIO_RESET,(RESET_RX_BUF | RESET_TX_BUF | RESET_RX_OVF | RESET_TX_UNF)) == -1 ) perror("Audio_Reset");
+  /*JET - TEST - drain*/
+  if (ioctl(devAudio, AUDIO_DRAIN, 0) == -1)
+    {
+      if (NasConfig.DoDebug)
+	osLogMsg("ERROR: AUDIO_DRAIN: %s\n",
+		 strerror(errno));
+    }
+  else
+    {
+      if (NasConfig.DoDebug)
+        osLogMsg("AUDIO_DRAIN done\n");
+    }
+
+  errno = 0;
+
+  if (doreset == AuTrue)
+    {
+      if (ioctl(devAudio,
+		AUDIO_RESET,(RESET_RX_BUF | RESET_TX_BUF | RESET_RX_OVF | 
+			     RESET_TX_UNF)) == -1 ) 
+	{
+	  osLogMsg("ERROR: AUDIO_RESET: %s\n", 
+		   strerror(errno));
+	}
+      else
+	{
+	  if (NasConfig.DoDebug > 5)
+	    osLogMsg("AUDIO_RESET Done.\n");
+	}
+      errno = 0;
+    }
+  
+  do {
+    if (ioctl(devAudio, AUDIO_GET_STATUS, &status_b) == -1)
+      {
+	osLogMsg("ERROR: AUDIO_GET_STATUS: %s\n", 
+		 strerror(errno));
 	errno = 0;
+	break; /* JET - avoid infinite loop */
+      }
+    else
+      {
+	
+	if (NasConfig.DoDebug > 5)
+	  DumpDeviceStatus(&status_b);
+	
+	/*JET - more TESTING with DRAIN instead of RESET */
+	/*	clear = (status_b.transmit_status == AUDIO_DONE);*/
 
-	do {
-                if (ioctl(devAudio, AUDIO_GET_STATUS, &status_b) == -1)
-		{
-			perror("AUDIO_GET_STATUS");
-			errno = 0;
-		}
-		else
-		{
-#ifdef __DEBUG__
-			fprintf(stderr, "RX Status = %d\n",
-					status_b.receive_status);
-			fprintf(stderr, "TX Status = %d\n",
-					status_b.transmit_status);
-			fprintf(stderr, "RX Buffer Count = %d\n",
-					status_b.receive_buffer_count);
-			fprintf(stderr, "TX Buffer Count = %d\n",
-					status_b.transmit_buffer_count);
-			fprintf(stderr, "RX Overflow = %d\n",
-					status_b.receive_overflow_count);
-			fprintf(stderr, "TX Underflow = %d\n",
-					status_b.transmit_underflow_count);
+	if (doreset == AuTrue)
+	  clear = (status_b.transmit_status == AUDIO_DONE);
+	else
+	  clear = (status_b.transmit_buffer_count == 0);
+
+	if (!clear)
+	  {
+	    if (NasConfig.DoDebug)
+	      osLogMsg("BlockUntilClear(): Sleeping for one second.\n");
+	    sleep(1);
+	  }
+      }
+  } while (!clear);
+  
 #endif
 
-			clear = (status_b.transmit_status == AUDIO_DONE);
-			if (!clear)
-			{
-				sleep(1);
-			}
-		}
-	} while (!clear);
-#endif
+				/* JET - reset sighandler  */
+
+	signal(SIGALRM, oldhandler);
+	return;
 }
 
 /*----------------------------------------------------------*/
@@ -398,46 +447,68 @@ static AuUint32
 setSampleRate(rate)
 AuUint32        rate;
 {
-	int			i;
-	AuUint32		target_rate;
-	struct itimerval	ntval, otval;
-	int			timer_us;
+  int			i;
+  AuUint32		target_rate;
+  struct itimerval	ntval, otval;
+  int			timer_us;
+  AuBool                set_smpl_failed;
+  void (*oldhandler)(int);
 
+				/* JET - BLOCK */
 
-	/* BlockUntilClear(); */
+  oldhandler = signal(SIGALRM, SIG_IGN);
 
-	for (i = 0; i < audio_describe.nrates; i++)
+  if (NasConfig.DoDebug)
+    osLogMsg("setSampleRate() calling BlockUntilClear\n");
+
+  BlockUntilClear(AuTrue);
+
+  for (i = 0; i < audio_describe.nrates; i++)
+    {
+      if (rate >= audio_describe.sample_rate[i])
 	{
-		if (rate >= audio_describe.sample_rate[i])
-		{
-			target_rate = audio_describe.sample_rate[i];
-		}
+	  target_rate = audio_describe.sample_rate[i];
 	}
+    }
+  
+  if (NasConfig.DoDebug)
+    osLogMsg("Setting rate to %d (should be %d)\n",
+	     target_rate, rate);
+  
+  set_smpl_failed = AuFalse;
 
-#ifdef __DEBUG__
-	fprintf(stderr,"Setting rate to %d (should be %d)\n",target_rate,rate);
-#endif
 #ifndef NULL_AUDIO_DEVICE
-	if (ioctl(devAudio,AUDIO_SET_SAMPLE_RATE, target_rate) == -1)
-           perror("Audio_set_sample_rate");
-	  errno = 0;
+  if (ioctl(devAudio,AUDIO_SET_SAMPLE_RATE, target_rate) == -1)
+  {
+    osLogMsg("ERROR: AUDIO_SET_SAMPLE_RATE: %s\n", 
+	     strerror(errno));
+    errno = 0;
+    set_smpl_failed = AuTrue;
+    if (NasConfig.DoDebug)
+      osLogMsg("setSampleRate(): leaving timer alone due to failure\n");
+  }
 #endif
 
-	/*
-	 * Reset timer
-	 */
-	timer_us = (auMinibufSamples * 500000) / target_rate;
-#ifdef __DEBUG__
-        fprintf(stderr, "Setting timer to %dus\n", timer_us);
-#endif
-	ntval.it_interval.tv_sec = 0;
-	ntval.it_interval.tv_usec = timer_us;
-	ntval.it_value.tv_sec = 0;
-	ntval.it_value.tv_usec = timer_us;
-	setitimer(ITIMER_REAL, &ntval, &otval);
+  if (set_smpl_failed == AuFalse)
+    {				/* JET - no point in changing the timer
+				   if the sample rate call failed... */
+      /*
+       * Reset timer
+       */
+      timer_us = (auMinibufSamples * 500000) / target_rate;
+      if (NasConfig.DoDebug)
+	osLogMsg("Setting timer to %dus\n", timer_us);
+      
+      ntval.it_interval.tv_sec = 0;
+      ntval.it_interval.tv_usec = timer_us;
+      ntval.it_value.tv_sec = 0;
+      ntval.it_value.tv_usec = timer_us;
+      setitimer(ITIMER_REAL, &ntval, &otval);
+    }
 
-
-	return(target_rate);
+  signal(SIGALRM, oldhandler);
+  
+  return(target_rate);
 }
 
 /*----------------------------------------------------------*/
@@ -445,9 +516,8 @@ AuUint32        rate;
 static void
 eventPosted()
 {
-#ifdef __DEBUG__
-	fprintf(stderr,"An event has been posted\n");
-#endif
+  if (NasConfig.DoDebug > 1)
+    osLogMsg("An event has been posted\n");
 }
 
 /*----------------------------------------------------------*/
@@ -457,15 +527,19 @@ serverReset()
 {
     signal(SIGALRM, SIG_IGN);
 
-#ifdef __DEBUG__
-    fprintf(stderr,"Server resetting\n");
-#endif
+if (NasConfig.DoDebug)
+    osLogMsg("Server resetting\n");
+
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_DRAIN, 0) == -1) perror("Audio_drain");	       /* drain everything out */
+    if (ioctl(devAudio,AUDIO_DRAIN, 0) == -1)       /* drain everything out */
+      osLogMsg("ERROR: AUDIO_DRAIN: %s\n", 
+	       strerror(errno));
+
     errno = 0;
 
     close(devAudio);
 #endif
+
     devAudio = -1;
 }
 
@@ -513,9 +587,8 @@ AuUint8  lineMode;
 {
   int ret;
 
-#ifdef __DEBUG__
-  fprintf(stderr,"Setting physical output mode......\n");
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("Setting physical output mode......\n");
 
   if ((outputMode == AUDIO_OUT_INTERNAL)&& (lineMode & AuDeviceOutputModeHeadphone))
   {
@@ -540,7 +613,9 @@ AuUint8  lineMode;
     
     updateGains = AuTrue; 
 
-    if (ioctl(devAudio,AUDIO_SET_OUTPUT, outputMode)==-1)perror("set_output");
+    if (ioctl(devAudio,AUDIO_SET_OUTPUT, outputMode)==-1)
+      osLogMsg("ERROR: AUDIO_SET_OUTPUT: %s\n", 
+	       strerror(errno));
     errno = 0;
 }
 
@@ -549,13 +624,15 @@ AuUint8  lineMode;
 static AuUint8
 getPhysicalOutputMode()
 {
-#ifdef __DEBUG__
-    printf("Getting physical output mode....\n");
-#endif
-    return outputMode == AUDIO_OUT_INTERNAL ? AuDeviceOutputModeSpeaker :
-	AuDeviceOutputModeHeadphone;
 
-    return AuDeviceOutputModeHeadphone;
+  if (NasConfig.DoDebug)
+    osLogMsg("Getting physical output mode....\n");
+
+  return outputMode == AUDIO_OUT_INTERNAL ? AuDeviceOutputModeSpeaker :
+    AuDeviceOutputModeHeadphone;
+  
+  /* JET - eh? */
+  /*return AuDeviceOutputModeHeadphone;*/
 
 }
 
@@ -575,14 +652,14 @@ AuUint8         lineMode;
 	inputGain = ((0x41999 * (g - 50)) >> 16) + 50;
 
     /*inputGain = g;*/
-#ifdef __DEBUG__
-    printf("Input gain : %d\n", g);
-#endif
+
+    if (NasConfig.DoDebug)
+      osLogMsg("Input gain : %d\n", g);
+
     updateGains = AuTrue;
 
-#ifdef __DEBUG__
-  fprintf(stderr,"Line mode = %d\n",lineMode);
-#endif
+    if (NasConfig.DoDebug)
+      osLogMsg("Line mode = %d\n",lineMode);
 
 #ifdef __AUDIO__II__
   if ((inputMode == AUDIO_IN_LINE)&& (lineMode & AuDeviceInputModeMicrophone))
@@ -595,18 +672,21 @@ AuUint8         lineMode;
     }
 #endif
 
-#ifdef __DEBUG__ 
-    fprintf(stderr,"Input mode = %d\n",inputMode);
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("Input mode = %d\n",inputMode);
 
-    if (ioctl(devAudio,AUDIO_SET_INPUT, inputMode) == -1) perror("Audio_set_input");
+    if (ioctl(devAudio,AUDIO_SET_INPUT, inputMode) == -1) 
+      osLogMsg("ERROR: AUDIO_SET_INPUT: %s\n", 
+	       strerror(errno));
     errno = 0;
 
-  if (ioctl(devAudio,AUDIO_GET_INPUT, &in) == -1) perror("Audio_get_input");  
+  if (ioctl(devAudio,AUDIO_GET_INPUT, &in) == -1) 
+    osLogMsg("ERROR: AUDIO_GET_INPUT: %s\n", 
+	     strerror(errno));
 
-#ifdef __DEBUG__
-    fprintf(stderr,"GET_INPUT : %d\n", in);
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("GET_INPUT : %d\n", in);
+
 }
 
 /*----------------------------------------------------------*/
@@ -615,9 +695,9 @@ static void
 writeEmptyOutput()
 {
 
-#ifdef __DEBUG__
-    fprintf(stderr, "Writing empty\n");
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("Writing empty\n");
+
 #ifndef NULL_AUDIO_DEVICE
     write(devAudio, emptyOutput, (auNativeBytesPerSample * auMinibufSamples));
 #endif
@@ -640,9 +720,9 @@ unsigned int    n;
 static void
 writePhysicalOutputsMono()
 {
-#ifdef __DEBUG__
-    fprintf(stderr, "Writing mono\n");
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("Writing mono\n");
+
     writeOutput(auOutputMono, *monoSamples);
 }
 
@@ -651,9 +731,9 @@ writePhysicalOutputsMono()
 static void
 writePhysicalOutputsStereo()
 {
-#ifdef __DEBUG__
-    fprintf(stderr, "Writing stereo\n");
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("Writing stereo\n");
+
     writeOutput(auOutputStereo, (2 * (*stereoSamples)));
 }
 
@@ -662,9 +742,9 @@ writePhysicalOutputsStereo()
 static void
 writePhysicalOutputsBoth()
 {
-#ifdef __DEBUG__
-    fprintf(stderr, "Writing both\n");
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("Writing both\n");
+
     writeOutput(auOutputStereo, (2 * (*stereoSamples)));
 }
 
@@ -673,9 +753,9 @@ writePhysicalOutputsBoth()
 static void
 readPhysicalInputs()
 {
-#ifdef __DEBUG__
-    fprintf(stderr, "Writing input\n");
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("Reading input\n");
+
     read(devAudio, auInputMono, (auNativeBytesPerSample * auMinibufSamples));
 }
 
@@ -686,58 +766,57 @@ setWritePhysicalOutputFunction(flow, funct)
 CompiledFlowPtr flow;
 void            (**funct) ();
 {
-    AuUint32        mask = flow->physicalDeviceMask;
-    int		    num_channels = 1;
+  AuUint32        mask = flow->physicalDeviceMask;
+  int		    num_channels = 1;
 
-#ifdef __DEBUG__
-    fprintf(stderr, "Playing......\n");
-#endif
+  if (NasConfig.DoDebug)
+    osLogMsg("setWritePhysicalOutputFunction(): Playing...\n");
+      
+  if ((mask & (PhysicalOutputMono | PhysicalOutputStereo)) ==
+      (PhysicalOutputMono | PhysicalOutputStereo))
+    {
+      *funct = writePhysicalOutputsBoth;
+      num_channels = 2;
+      if (NasConfig.DoDebug)
+	osLogMsg("Playing both......\n");
+    }
+  else if (mask & PhysicalOutputMono)
+    {
+      *funct = writePhysicalOutputsMono;
+      if (NasConfig.DoDebug)
+	osLogMsg("Playing mono......\n");
+    }
+  else if (mask & PhysicalOutputStereo)
+    {
+      *funct = writePhysicalOutputsStereo;
+      num_channels = 2;
+      if (NasConfig.DoDebug)
+	osLogMsg("Playing stereo......\n");
+    }
+  else
+    {
+      *funct = writeEmptyOutput;
+      if (NasConfig.DoDebug)
+	osLogMsg("Playing m/t......\n");
+    }
+  
+  if (NasConfig.DoDebug)
+    osLogMsg("setWritePhysicalOutputFunction() calling BlockUntilClear\n");
 
-    if ((mask & (PhysicalOutputMono | PhysicalOutputStereo)) ==
-	(PhysicalOutputMono | PhysicalOutputStereo))
-    {
-	*funct = writePhysicalOutputsBoth;
-        num_channels = 2;
-#ifdef __DEBUG__
- 	fprintf(stderr, "Playing both......\n");
-#endif
-    }
-    else if (mask & PhysicalOutputMono)
-    {
-	*funct = writePhysicalOutputsMono;
-#ifdef __DEBUG__
- 	fprintf(stderr, "Playing mono......\n");
-#endif
-    }
-    else if (mask & PhysicalOutputStereo)
-    {
-	*funct = writePhysicalOutputsStereo;
-        num_channels = 2;
-#ifdef __DEBUG__
-	 fprintf(stderr, "Playing stereo......\n");
-#endif
-    }
-    else
-    {
-	*funct = writeEmptyOutput;
-#ifdef __DEBUG__
- 	fprintf(stderr, "Playing m/t......\n");
-#endif
-    }
-
-     /* BlockUntilClear(); */
+				/* JET - BLOCK */
+  BlockUntilClear(AuTrue);
 
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio, AUDIO_SET_CHANNELS, num_channels) == -1)
+  if (ioctl(devAudio, AUDIO_SET_CHANNELS, num_channels) == -1)
     {
-	perror("AUDIO_SET_CHANNELS");
-         errno = 0;
+      osLogMsg("ERROR: AUDIO_SET_CHANNELS (num_channels = %d): %s\n", 
+	       num_channels, strerror(errno));
+      errno = 0;
     }
-    else
+  else
     {
-#ifdef __DEBUG__
-	fprintf(stderr, "Set channels to %d\n", num_channels);
-#endif
+      if (NasConfig.DoDebug)
+	osLogMsg("Set channels to %d\n", num_channels);
     }
 #endif
 }
@@ -748,18 +827,23 @@ void
 processAudioSignal(sig)
 int             sig;
 {
-    struct audio_gain	gains;
+  struct audio_gain	gains;
 
-    signal(SIGALRM, SIG_IGN);
-
-#ifdef __DEBUG__
-    printf("Processing audio signal....\n");
-#endif
+  signal(SIGALRM, SIG_IGN);
+  
+  if (NasConfig.DoDebug) 
+    {
+      osLogMsg("Processing audio signal....\n");
+      DumpDeviceStatus((struct audio_status *)NULL);
+    }
 
     if (updateGains)
     {
 #ifndef NULL_AUDIO_DEVICE
-	if (ioctl(devAudio,AUDIO_GET_GAINS, &gains)==-1)perror("get_gains");
+	if (ioctl(devAudio,AUDIO_GET_GAINS, &gains)==-1)
+	  osLogMsg("ERROR: AUDIO_GET_GAINS: %s\n", 
+	       strerror(errno));
+
          errno = 0;
 #endif
 	gains.cgain[0].receive_gain = inputGain;
@@ -770,15 +854,19 @@ int             sig;
 	gains.cgain[1].monitor_gain = AUDIO_OFF_GAIN;
 	gains.channel_mask = (AUDIO_CHANNEL_LEFT | AUDIO_CHANNEL_RIGHT);
 #ifndef NULL_AUDIO_DEVICE
-	if (ioctl(devAudio,AUDIO_SET_GAINS, &gains) == -1)perror("Audio_set_gains");
+	if (ioctl(devAudio,AUDIO_SET_GAINS, &gains) == -1)
+	  osLogMsg("ERROR: AUDIO_SET_GAINS: %s\n", 
+	       strerror(errno));
          errno = 0;
 #endif
 	updateGains = AuFalse;
     }
 
-    AuProcessData();
+    if (processFlowEnabled)
+       AuProcessData();
 
-    signal(SIGALRM, processAudioSignal);
+    if (processFlowEnabled)
+       signal(SIGALRM, processAudioSignal);
 }
 
 /*----------------------------------------------------------*/
@@ -786,11 +874,12 @@ int             sig;
 static void
 enableProcessFlow()
 {
-#ifdef __DEBUG__
-    fprintf(stderr, "Enabling flow\n");
-#endif
-    writeEmptyOutput();
-    signal(SIGALRM, processAudioSignal);
+  if (NasConfig.DoDebug)  
+    osLogMsg("Enabling flow\n");
+
+  writeEmptyOutput();
+  processFlowEnabled = AuTrue;
+  signal(SIGALRM, processAudioSignal);
 }
 
 /*----------------------------------------------------------*/
@@ -799,13 +888,15 @@ static void
 disableProcessFlow()
 {
     signal(SIGALRM, SIG_IGN);
+    processFlowEnabled = AuFalse;
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_DRAIN, 0) == -1)perror("Audio_drain");
+    if (ioctl(devAudio,AUDIO_DRAIN, 0) == -1)
+      osLogMsg("ERROR: AUDIO_DRAIN: %s\n", 
+	       strerror(errno));
     errno = 0;
 #endif
-#ifdef __DEBUG__
-    fprintf(stderr, "Disabling flow\n");
-#endif
+    if (NasConfig.DoDebug)  
+      osLogMsg("Disabling flow\n");
 }
 
 /*----------------------------------------------------------*/
@@ -827,10 +918,11 @@ AuInitPhysicalDevices()
     extern AuBool   AuInitPhysicalDevices_dbri();
     struct itimerval        ntval, otval;
     int                     timer_us;
-
-
-
     int	temp_int, input;
+
+				/* JET for debugging here REVIST! */
+       NasConfig.DoDebug = 10;
+
 
     if (V_STRING)
     {
@@ -843,15 +935,23 @@ AuInitPhysicalDevices()
     if (devAudio == -1)
     {
 #ifndef NULL_AUDIO_DEVICE
-	if ((devAudio = open("/dev/audio", O_RDWR)) == -1 ||
-	    (devAudioCtl = open("/dev/audioCtl", O_RDWR)) == -1)
+      if ((devAudioCtl = open("/dev/audioCtl", O_RDWR)) == -1)
         {
-            perror("/dev/audio");
-	   errno = 0;
-             close(devAudio);
-	    close(devAudioCtl);
-	    devAudio = devAudioCtl = -1;
-	    return AuFalse;
+	  osLogMsg("ERROR: opening /dev/audioCtl: %s\n", 
+		   strerror(errno));
+	  errno = 0;
+	  devAudio = devAudioCtl = -1;
+	  return AuFalse;
+        }
+
+      if ((devAudio = open("/dev/audio", O_RDWR)) == -1)
+        {
+	  osLogMsg("ERROR: opening /dev/audio: %s\n", 
+		   strerror(errno));
+	  errno = 0;
+	  close(devAudioCtl);
+	  devAudio = devAudioCtl = -1;
+	  return AuFalse;
         }
 #endif
 
@@ -860,16 +960,20 @@ AuInitPhysicalDevices()
 	 */
 	if (rtprio(0, 30) == -1)
 	{
-		perror("rtprio");
+	  osLogMsg("ERROR: rtprio(0, 30): %s\n", 
+		   strerror(errno));
+
 		errno = 0;
 	}
 	else
 	{
-		if (plock(PROCLOCK) == -1)
-		{
-			perror("plock");
-			errno = 0;
-		}
+	  if (plock(PROCLOCK) == -1)
+	    {
+	      osLogMsg("ERROR: plock(PROCLOCK): %s\n", 
+		       strerror(errno));
+
+	      errno = 0;
+	    }
 	}
     }
 
@@ -912,13 +1016,14 @@ AuInitPhysicalDevices()
 	PhysicalOneTrackBufferSize;
 
     signal(SIGALRM, SIG_IGN);
-#ifdef __DEBUG__
-    fprintf(stderr,"Init function called......\n");
-#endif
+    if (NasConfig.DoDebug)  
+      osLogMsg("AuInitPhysicalDevices(): setup to ignore signals\n");
+
     timer_us = (auMinibufSamples * 500000) / 8000;
-#ifdef __DEBUG__
-    fprintf(stderr,"Setting timer to %dus\n", timer_us);
-#endif
+
+    if (NasConfig.DoDebug)
+      osLogMsg("Setting timer to %dus\n", timer_us);
+
     ntval.it_interval.tv_sec = 0;
     ntval.it_interval.tv_usec = timer_us;
     ntval.it_value.tv_sec = 0;
@@ -942,13 +1047,32 @@ AuInitPhysicalDevices()
     AuRegisterCallback(AuSetSampleRateCB, setSampleRate);
     AuRegisterCallback(AuEventPostedCB, eventPosted);
 
+    /* JET - reset Device */
+    if (ioctl(devAudio,
+	      AUDIO_RESET,(RESET_RX_BUF | RESET_TX_BUF | RESET_RX_OVF | 
+			   RESET_TX_UNF)) == -1 ) 
+      {
+	osLogMsg("ERROR: AUDIO_RESET: %s\n", 
+		 strerror(errno));
+      }
+    else
+      {
+	if (NasConfig.DoDebug > 5)
+	  osLogMsg("AUDIO_RESET Done.\n");
+      }
+
     /*
      * Get Device Information
      */
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_DESCRIBE, &audio_describe)==-1)perror("Audio_describe");
+    if (ioctl(devAudio,AUDIO_DESCRIBE, &audio_describe)==-1)
+      osLogMsg("ERROR: AUDIO_DESCRIBE: %s\n", 
+	       strerror(errno));
     errno = 0;
-    if (ioctl(devAudio,AUDIO_RAW_GET_PARAMS, &raw_params)==-1)perror("raw_get_params");
+
+    if (ioctl(devAudio,AUDIO_RAW_GET_PARAMS, &raw_params)==-1)
+      osLogMsg("ERROR: AUDIO_RAW_GET_PARAMS: %s\n", 
+	       strerror(errno));
     errno = 0;
 #endif
 
@@ -958,48 +1082,71 @@ AuInitPhysicalDevices()
     switch (audio_describe.audio_id)
     {
     case AUDIO_ID_CS4215 :
-#ifdef __DEBUG__
-	fprintf(stderr, "	Control:	0x%x\n",
-		raw_params.audio_conf_union.cs4215_conf.control);
-	fprintf(stderr, "	DMA Status:	0x%x\n",
-		raw_params.audio_conf_union.cs4215_conf.control);
-	fprintf(stderr, "	Gain Control:	0x%x\n",
-		raw_params.audio_conf_union.cs4215_conf.gainctl);
-	fprintf(stderr, "	Over Range:	0x%x\n",
-		raw_params.audio_conf_union.cs4215_conf.over_range);
-	fprintf(stderr, "	PIO:		0x%x\n",
-		raw_params.audio_conf_union.cs4215_conf.pio);
-#endif
+
+      if (NasConfig.DoDebug)
+	{
+	  osLogMsg("AUDIO_ID_CS4215: \n");
+	  osLogMsg("audio_describe.flags & AD_F_NOBEEPER = %d\n",
+		   (audio_describe.flags & AD_F_NOBEEPER));
+
+	  osLogMsg("       Control:        0x%x\n",
+		   raw_params.audio_conf_union.cs4215_conf.control);
+	  osLogMsg("       DMA Status:     0x%x\n",
+		   raw_params.audio_conf_union.cs4215_conf.dmastatus);
+	  osLogMsg("       Gain Control:   0x%x\n",
+		   raw_params.audio_conf_union.cs4215_conf.gainctl);
+	  osLogMsg("       Over Range:     0x%x\n",
+		   raw_params.audio_conf_union.cs4215_conf.over_range);
+	  osLogMsg("       PIO:            0x%x\n",
+		   raw_params.audio_conf_union.cs4215_conf.pio);
+	}
+
 	break;
     case AUDIO_ID_PSB2160 :
-	break;
+      if (NasConfig.DoDebug)
+	osLogMsg("AUDIO_ID_PSB2160: \n");
+      break;
     }
 
     /*
      * Get buffer limits
      */
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_GET_LIMITS, &audio_limits)==-1) perror("get_limits");
+    if (ioctl(devAudio,AUDIO_GET_LIMITS, &audio_limits)==-1) 
+      osLogMsg("ERROR: AUDIO_GET_LIMITS: %s\n", 
+	       strerror(errno));
     errno = 0;
 
     /*
      * Set buffer sizes
      */
-    if (ioctl(devAudio,AUDIO_SET_RXBUFSIZE, (8192 * 2))==-1)perror("set_rxbufsize");
+    if (ioctl(devAudio,AUDIO_SET_RXBUFSIZE, (8192 * 2))==-1)
+      osLogMsg("ERROR: AUDIO_SET_RXBUFSIZE: %s\n", 
+	       strerror(errno));
     errno = 0;
-    if (ioctl(devAudio,AUDIO_GET_RXBUFSIZE, &temp_int)==-1)perror("get_rxbufsize");
+    if (ioctl(devAudio,AUDIO_GET_RXBUFSIZE, &temp_int)==-1)
+      osLogMsg("ERROR: AUDIO_GET_RXBUFSIZE: %s\n", 
+	       strerror(errno));
     errno = 0;
-#ifdef __DEBUG__
-    fprintf(stderr, "RX buffer size = %d\n", temp_int);
-#endif
-    if (ioctl(devAudio,AUDIO_SET_TXBUFSIZE, (8192 * 2))==-1)perror("set_txbufsize");
+
+    if (NasConfig.DoDebug)  
+      osLogMsg("RX buffer size = %d\n", temp_int);
+
+    if (ioctl(devAudio,AUDIO_SET_TXBUFSIZE, (8192 * 2))==-1)
+      osLogMsg("ERROR: AUDIO_SET_TXBUFSIZE: %s\n", 
+	       strerror(errno));
     errno = 0;
-    if (ioctl(devAudio,AUDIO_GET_TXBUFSIZE, &temp_int)==-1)perror("get_txbufsize");
+
+    if (ioctl(devAudio,AUDIO_GET_TXBUFSIZE, &temp_int)==-1)
+      osLogMsg("ERROR: AUDIO_GET_TXBUFSIZE: %s\n", 
+	       strerror(errno));
+
     errno = 0;
-#ifdef __DEBUG__
-    fprintf(stderr, "TX buffer size = %d\n", temp_int);
-#endif
-#endif
+
+    if (NasConfig.DoDebug)  
+      osLogMsg("TX buffer size = %d\n", temp_int);
+
+#endif /* NULL_AUDIO_DEVICE */
 
     /*
      * Set threshold
@@ -1007,68 +1154,110 @@ AuInitPhysicalDevices()
     select_thresholds.read_threshold = (MINIBUF_SIZE);
     select_thresholds.write_threshold = (MINIBUF_SIZE);
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_SET_SEL_THRESHOLD, &select_thresholds)==-1)perror("set_sel_threshold");
-    errno = 0;
-    if (ioctl(devAudio,AUDIO_GET_SEL_THRESHOLD, &select_thresholds)==-1)perror("get_sel_thresohold");
+    if (ioctl(devAudio,AUDIO_SET_SEL_THRESHOLD, &select_thresholds)==-1)
+      osLogMsg("ERROR: AUDIO_SET_SEL_THRESHOLD: %s\n", 
+	       strerror(errno));
     errno = 0;
 
-#ifdef __DEBUG__
-    fprintf(stderr,"Read threshold: %d\n", select_thresholds.read_threshold);
-    fprintf(stderr,"Write threshold: %d\n", select_thresholds.write_threshold);
-#endif
-#endif
+    if (ioctl(devAudio,AUDIO_GET_SEL_THRESHOLD, &select_thresholds)==-1)
+      osLogMsg("ERROR: AUDIO_GET_SEL_THRESHOLD: %s\n", 
+	       strerror(errno));
+    errno = 0;
+    
+    if (NasConfig.DoDebug)  
+      {
+	osLogMsg("Read threshold: %d\n", select_thresholds.read_threshold);
+	osLogMsg("Write threshold: %d\n", select_thresholds.write_threshold);
+      }
+#endif /* NULL_AUDIO_DEVICE */
 
     /*
      * Set to NAS format
      */
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_SET_DATA_FORMAT, AUDIO_FORMAT_LINEAR16BIT)==-1)perror("set_date_format");
+    if (ioctl(devAudio,AUDIO_SET_DATA_FORMAT, AUDIO_FORMAT_LINEAR16BIT)==-1)
+      osLogMsg("ERROR: AUDIO_SET_DATA_FORMAT: %s\n", 
+	       strerror(errno));
+
     errno = 0;
-    if (ioctl(devAudio,AUDIO_GET_DATA_FORMAT, &temp_int)==-1)perror("get_data_format");
+    if (ioctl(devAudio,AUDIO_GET_DATA_FORMAT, &temp_int)==-1)
+      osLogMsg("ERROR: AUDIO_GET_DATA_FORMAT: %s\n", 
+	       strerror(errno));
     errno = 0;
 #endif
-#ifdef __DEBUG__
-    fprintf(stderr, "Audio Format = %d (Lin 16 = %d)\n",
-		temp_int, AUDIO_FORMAT_LINEAR16BIT);
-#endif
+    if (NasConfig.DoDebug)  
+      osLogMsg("Audio Format = %d (Lin 16 = %d)\n",
+	       temp_int, AUDIO_FORMAT_LINEAR16BIT);
 
     /*
      * Send output to headphone jack
      * and input to mike jack
      */
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_INTERNAL)==-1)perror("set_output");
-    errno = 0;
-    if (ioctl(devAudio,AUDIO_GET_OUTPUT, &temp_int)==-1)perror("get_output");
-    errno = 0;
-    if (ioctl(devAudio,AUDIO_SET_INPUT, AUDIO_IN_MIKE)==-1)perror("set_input");
-    errno = 0;
-#ifdef __DEBUG__
-    fprintf(stderr, "Input Port   (Mike = %d) (Errorno : %d)\n", AUDIO_IN_MIKE, errno); 
-#endif
-    if (ioctl(devAudio,AUDIO_GET_INPUT, &input)==-1)perror("get_input");
-    errno = 0;
-#endif
-#ifdef __DEBUG__
-    fprintf(stderr, "Output Port = %d (Headphones = %d)\n", temp_int,
-		AUDIO_OUT_EXTERNAL); 
+    /* JET - 040399 - attempt to force EXTERNAL (headphones) at init rather
+       than the internal speaker... this should be a configurable.*/
+				/* JET - REVISIT - config'able */
 
-     fprintf(stderr, "Input Port = %d  (Mike = %d) (Errorno : %d)\n", input, AUDIO_IN_MIKE, errno); 
+    if (NasConfig.DoDebug)  
+      osLogMsg("### Intializing to AUDIO_OUT_EXTERNAL\n");
+
+    if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_EXTERNAL)==-1)
+      osLogMsg("ERROR: AUDIO_SET_OUTPUT: %s\n", 
+	       strerror(errno));
+    /* JET
+    if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_INTERNAL)==-1)
+      osLogMsg("ERROR: AUDIO_SET_OUTPUT: %s\n", 
+	       strerror(errno));
+    */
+
+    errno = 0;
+    if (ioctl(devAudio,AUDIO_GET_OUTPUT, &temp_int)==-1)
+      osLogMsg("ERROR: AUDIO_GET_OUTPUT: %s\n", 
+	       strerror(errno));
+    errno = 0;
+    if (ioctl(devAudio,AUDIO_SET_INPUT, AUDIO_IN_MIKE)==-1)
+      osLogMsg("ERROR: AUDIO_SET_INPUT: %s\n", 
+	       strerror(errno));
+    errno = 0;
+
+    if (NasConfig.DoDebug)  
+      osLogMsg("Input Port   (Mike = %d) (Errorno : %d)\n", AUDIO_IN_MIKE,
+	       errno);
+
+    if (ioctl(devAudio,AUDIO_GET_INPUT, &input)==-1)
+      osLogMsg("ERROR: AUDIO_GET_INPUT: %s\n", 
+	       strerror(errno));
+    errno = 0;
 #endif
+
+      if (NasConfig.DoDebug)
+	{
+	  osLogMsg("Output Port = %d (Headphones = %d)\n", temp_int,
+		   AUDIO_OUT_EXTERNAL);
+
+	  osLogMsg("Input Port = %d  (Mike = %d) (Errorno : %d)\n", input,
+		   AUDIO_IN_MIKE, errno);
+	}
+
     outputMode = temp_int;
 
     /*
      * Set number of tracks to 2
      */
 #ifndef NULL_AUDIO_DEVICE
-    if (ioctl(devAudio,AUDIO_SET_CHANNELS, 2)==-1)perror("set_channels");
+    if (ioctl(devAudio,AUDIO_SET_CHANNELS, 2)==-1)
+      osLogMsg("ERROR: AUDIO_SET_CHANNELS: %s\n", 
+	       strerror(errno));
+
     errno = 0;
-    if (ioctl(devAudio,AUDIO_GET_CHANNELS, &temp_int)==-1)perror("get_channels");
+    if (ioctl(devAudio,AUDIO_GET_CHANNELS, &temp_int)==-1)
+      osLogMsg("ERROR: AUDIO_GET_CHANNELS: %s\n", 
+	       strerror(errno));
     errno = 0;
 #endif
-#ifdef __DEBUG__
-    fprintf(stderr, "Number of channels = %d\n", temp_int);
-#endif
+
+    if (NasConfig.DoDebug)  
+      osLogMsg("Number of channels = %d\n", temp_int);
 
     currentOutputGain = outputGain < 50 ? AuFixedPointFromSum(outputGain, 0) :
 	(outputGain - 50) * 0x3e70 + 0x320000;
@@ -1078,4 +1267,50 @@ AuInitPhysicalDevices()
 		CreateNewResourceType(serverReset), 0);
 
     return AuTrue;
+}
+
+/* JET */
+static void DumpDeviceStatus(struct audio_status *astat)
+{
+  struct audio_status   status_b;
+  struct audio_status *statptr;
+  int rv;
+
+  rv = 0;
+  osLogMsg("### DumpDeviceStatus(0x%p)\n", astat);
+  
+  if (astat == (struct audio_status *)NULL)
+    {
+      statptr = &status_b;
+      if ((rv = ioctl(devAudio, AUDIO_GET_STATUS, statptr)) == -1)
+	{
+	  osLogMsg("ERROR: AUDIO_GET_STATUS: %s\n",
+		   strerror(errno));
+	  errno = 0;
+	}
+    }
+  else
+    {
+      statptr = astat;
+    }
+
+  if (rv != -1)
+    {
+      if (NasConfig.DoDebug > 5)
+	{
+	  osLogMsg("- RX Status = %d\n",
+		   statptr->receive_status);
+	  osLogMsg("- TX Status = %d\n",
+		   statptr->transmit_status);
+	  osLogMsg("- RX Buffer Count = %d\n",
+		   statptr->receive_buffer_count);
+	  osLogMsg("- TX Buffer Count = %d\n",
+		   statptr->transmit_buffer_count);
+	  osLogMsg("- RX Overflow = %d\n",
+		   statptr->receive_overflow_count);
+	  osLogMsg("- TX Underflow = %d\n",
+		   statptr->transmit_underflow_count);
+	}
+    }
+  return;
 }

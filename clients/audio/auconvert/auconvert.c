@@ -28,6 +28,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <audio/Aos.h>		/* for string and other os stuff */
 #include <audio/Afuncs.h>	/* for bcopy et. al. */

@@ -46,6 +46,7 @@ without express or implied warranty.
 #include <audio/Alibint.h>
 #include <audio/Aos.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #if !defined(lint) && !defined(SABER)
 static int lock;	/* get rid of ifdefs when locking implemented */
@@ -428,18 +429,18 @@ register AuServer  *aud;
 
 #define dst     aud->connsetup
 
-#define xferFail()							       \
-{									       \
-    _AuOCOutOfMemory(aud, (char *) src);				       \
-    _AuUnlockMutex(&lock);						       \
-    return (NULL);							       \
+static int xferFail(AuServer *aud, auConnSetup *src) 
+{
+  _AuOCOutOfMemory(aud, (char *) src);
+  _AuUnlockMutex(&lock);
+  return(0);
 }
 
 #define xferAlloc(_dst, _type, _size)					      \
 {									      \
     if (_size)								      \
 	if (!((_dst) = (_type *) Aumalloc((_size) * sizeof(_type))))	      \
-	    xferFail();							      \
+	    return(0);;							      \
 }
 
 static int
@@ -490,7 +491,7 @@ unsigned char *varData;
     /* transfer devices */
     if (!(dst.devices = (AuDeviceAttributes *)
 	  Aucalloc(1, sizeof(AuDeviceAttributes) * dst.num_devices)))
-	xferFail();
+	xferFail(aud, src);
 
     for (i = 0; i < dst.num_devices; i++)
     {
@@ -523,7 +524,7 @@ unsigned char *varData;
     if (dst.num_buckets)
 	if (!(dst.buckets = (AuBucketAttributes *)
 	      Aucalloc(1, sizeof(AuBucketAttributes) * dst.num_buckets)))
-	    xferFail();
+	    xferFail(aud, src);
 
     for (i = 0; i < dst.num_buckets; i++)
     {

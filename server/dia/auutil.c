@@ -33,7 +33,8 @@
 extern void     AuDequeueEvents(), AuSetupCompiledFlow(),
                 AuRequestElementNotifyEvent();
 extern AuBool   AuStartFlow();
-extern void	AuGetOutputGainAndMode();
+extern void    AuGetOutputGainAndMode(), AuGetFeedbackGain(),
+               AuGetInputGain(), AuGetInputMode();
 
 extern int      auMinibufSamples;
 extern ComponentPtr auBuckets,
@@ -70,7 +71,8 @@ ComponentPtr    c;
 	    RemoveFromLinkedList(auBuckets, c);
 	}
 	else if (c->kind == AuComponentKindPhysicalInput ||
-		 c->kind == AuComponentKindPhysicalOutput)
+                c->kind == AuComponentKindPhysicalOutput ||
+                c->kind == AuComponentKindPhysicalFeedback)
 	{
 	    RemoveFromLinkedList(auDevices, c);
 	}
@@ -1324,6 +1326,7 @@ ComponentPtr    c;
     {
 	case AuComponentKindPhysicalInput:
 	case AuComponentKindPhysicalOutput:
+       case AuComponentKindPhysicalFeedback:
 	    mask = (mask & AuCompDeviceMasks) >> 16;
 
 	    while (mask)
@@ -1463,6 +1466,7 @@ ComponentPtr    c;
     {
 	case AuComponentKindPhysicalInput:
 	case AuComponentKindPhysicalOutput:
+       case AuComponentKindPhysicalFeedback:
 	    mask = (mask & AuCompDeviceMasks) >> 16;
 
 	    while (mask)
@@ -1480,12 +1484,18 @@ ComponentPtr    c;
 			    COMPARE_DEVICE_MASK(location, location);
 			    break;
 			case AuCompDeviceGainMask:
-			    if (c->kind == AuComponentKindPhysicalOutput)
+                           if (c->kind == AuComponentKindPhysicalInput)
+                               AuGetInputGain(&c->gain);
+                           else if (c->kind == AuComponentKindPhysicalOutput)
 				AuGetOutputGainAndMode(&c->gain, &c->lineMode);
+                           else if (c->kind == AuComponentKindPhysicalFeedback)
+                               AuGetFeedbackGain(&c->gain);
 			    COMPARE_DEVICE(gain, gain);
 			    break;
 			case AuCompDeviceLineModeMask:
-			    if (c->kind == AuComponentKindPhysicalOutput)
+                           if (c->kind == AuComponentKindPhysicalInput)
+                               AuGetInputMode(&c->lineMode);
+                           else if (c->kind == AuComponentKindPhysicalOutput)
 				AuGetOutputGainAndMode(&c->gain, &c->lineMode);
 			    COMPARE_DEVICE(lineMode, line_mode);
 			    break;
