@@ -20,25 +20,24 @@ network-transparent, client/server audio system, including:
 
 	- Sun Sparc 1 AM79C30A Digital Subscriber Controller and
 	      Sparc 10 Dual Basic Rate ISDN Interface
-	  (SunOS 4.1.[23], Solaris 2.x, sparc and intel)
+	- SunOS 4.1.[23], Solaris 2.x, sparc and intel)
 
 	- SGI Indigo (IRIX 5.x)
 
-	- VOXware (FreeBSD, Linux, NetBSD, SVR4.[02])
+	- VOXware (FreeBSD, Linux, NetBSD, OpenBSD, SVR4.[02],
+          Unixware 2.x/7.x)
 
-	- HPUX
+	- HPUX 10.10.X, 11.x
 
     o	an application programming interface library
     o	a variety of sample applications
 
 
-This version was built on the following OS's:
+This version was built on the following OS's prior to release:
 
         - Linux/glibc 2.1, 2.2.14 kernel (Mandrake 7)
-        - Unixware (X11R5 and native compiler)
-        - Unixware (X11R6.4 and gcc 2.95.2 compiler)
+        - Unixware 2.03 (X11R6.4 and gcc 2.95.2 compiler)
         - HPUX 10.10 using X11R6.1 and gcc 2.95.2
-        - Sparc Solaris 2.6 using native compiler and X environment
 
 The client software can also be used with several models of NCD X
 terminals as well as NCD's PCXware (an X server for PCs running
@@ -107,6 +106,10 @@ To build the software:
 	(See the BUILDNOTES file if you want to try building with X11R4).
 
     2.	Do "xmkmf" to create the initial Makefile.
+
+        For Unixware 7, use:
+
+        "imake -DUseInstalled -I/usr/lib/X11/config"
 
     3.	Do "make World" (note the uppercase World) to build the distribution.
 
@@ -258,6 +261,12 @@ Audio System:
 	This site will contain up to date information on
 	NAS, and probably the most recent version (including
 	point release and development versions).
+
+        http://radscan.com/nas/nas-links.hmtl 
+
+	This page provides a small list of some utilities and software
+        that incorporates or uses NAS. 
+	
 
 The Network Audio System has benefited greatly from the testing and
 contributions of many people on the mailing list.  We'd like to thank
