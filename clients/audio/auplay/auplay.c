@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)auplay.c,v 1.19 1993/06/15 01:04:58 greg Exp $
  */
 
@@ -26,21 +27,94 @@
  * auplay -- a trivial program for playing audio files.
  */
 
+#include	<unistd.h>
+#include	<fcntl.h>
 #include	<stdio.h>
+#include	<signal.h>
 #include	<audio/audiolib.h>
 #include	<audio/soundlib.h>
 
-static AuServer *aud;
+#define FILENM_SIZE   256	/* max lenth of a filename on stdin */
+
+static AuServer *aud = 0;
 static int      volume = 100,
                 infoflag = 0,
                 playflag = 1;
 static char    *progname;
+static AuFlowID auflowid = 0;
+
+void
+sighandler(i)
+int i;
+{
+    char buf[BUFSIZ];
+
+    if (aud && auflowid)
+	AuStopFlow(aud, auflowid, 0);
+
+    /* consume anything remaining on stdin to prevent errors */
+    fcntl(0, F_SETFL, O_NONBLOCK);
+    while (read(0, buf, BUFSIZ) > 0);
+
+    exit(1);
+}
+
+/*
+ * Unfortunately, in order to get access to the AuFlowID of the flow
+ * being played, so that we can call AuStopFlow() on it when we're
+ * told to terminate (above), we need to have our own copy of
+ * AuSoundPlaySynchronousFromFile(), and a couple of support
+ * definitions.
+ */
+
+#define	VOL(volume)		((1 << 16) * (volume) / 100)
+
+static void
+sync_play_cb(aud, handler, ev, data)
+AuServer       *aud;
+AuEventHandlerRec *handler;
+AuEvent        *ev;
+AuPointer       data;
+{
+    int            *d = (int *) data;
+
+    *d = 1;
+}
+
+static AuBool
+localAuSoundPlaySynchronousFromFile(aud, fname, volume)
+AuServer       *aud;
+_AuConst char  *fname;
+int             volume;
+{
+    AuStatus        ret;
+    AuEvent         ev;
+    int             d = 0;
+
+    if (!AuSoundPlayFromFile(aud, fname, AuNone, VOL(volume),
+			     sync_play_cb, (AuPointer) &d, &auflowid,
+			     (int *) NULL, (int *) NULL, &ret))
+	return AuFalse;		/* XXX do something with ret? */
+
+    while (1)
+    {
+	AuNextEvent(aud, AuTrue, &ev);
+	AuDispatchEvent(aud, &ev);
+
+	if (d)
+	    break;
+    }
+
+    return AuTrue;
+}
+
+
 
 static void
 usage()
 {
     fprintf(stderr,
-       "Usage:  %s [-iI] [-audio servername] [-volume percent] files ...\n",
+       "Usage:  %s [-iIl] [-audio servername] [-volume percent] files ...\n",
 	    progname);
     exit(1);
 }
@@ -75,7 +149,7 @@ char           *fname;
 	}
     }
 
-    if (playflag && !AuSoundPlaySynchronousFromFile(aud, fname, volume))
+    if (playflag && !localAuSoundPlaySynchronousFromFile(aud, fname, volume))
 	fprintf(stderr, "Couldn't play file \"%s\"\n", fname);
 }
 
@@ -84,7 +158,8 @@ int             argc;
 char          **argv;
 {
     int             i,
-                    numfnames;
+                    numfnames,
+		    filelist = 0;
     char           *auservername = NULL;
     AuBool          did_file = AuFalse;
 
@@ -127,6 +202,10 @@ char          **argv;
 	    infoflag = 1;
 	    playflag = 0;
 	}
+	else if (!strncmp(argv[0], "-l", 2))
+	{
+	    filelist = 1;
+	}
 	else
 	    usage();
 	argv++;
@@ -135,25 +214,52 @@ char          **argv;
 
     if (playflag)
     {
-	aud = AuOpenServer(auservername, 0, NULL, 0, NULL, NULL);
-	if (!aud)
+
+      signal(SIGINT, sighandler);
+      signal(SIGTERM, sighandler);
+      signal(SIGHUP, sighandler);
+      
+      aud = AuOpenServer(auservername, 0, NULL, 0, NULL, NULL);
+      if (!aud)
 	{
-	    fprintf(stderr, "Can't connect to audio server\n");
-	    exit(-1);
+	  fprintf(stderr, "Can't connect to audio server\n");
+	  exit(-1);
 	}
     }
-
+    
     for (i = 0; i < numfnames; i++)
     {
 	do_file(argv[i]);
 	did_file = AuTrue;
     }
 
-    if (!did_file)		/* must want stdin */
-	do_file("-");
-
-    if (playflag)
-	AuCloseServer(aud);
-
+    if (filelist) 
+      {
+	while (1)
+	  {
+	    char filename[FILENM_SIZE];
+	    
+	    if (fgets(filename, FILENM_SIZE, stdin) == 0) 
+	      break;
+	    
+	    filename[strlen(filename)-1] = '\0';
+	    
+	    if (!strcmp(filename, "-"))
+	      {
+		fprintf(stderr, "Skipping filename \"-\" in file list");
+		continue;
+	      }
+	    do_file(filename);
+	  }
+      } 
+    else 
+      {
+	if (!did_file)		/* must want stdin */
+	  do_file("-");
+      }
+    
+    if (aud)
+      AuCloseServer(aud);
+    
     exit(0);
 }

@@ -54,21 +54,26 @@
 #define FIOSNBIO	FIONBIO
 #endif /* WIN32 */
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/param.h>
 #endif /* __FreeBSD__ */
 #include <ctype.h>
+#include <X11/Xauth.h>			/* to get at the .Xauthority */
 #include <audio/Alibint.h>
 #include <audio/Aos.h>
 #include "Alibnet.h"
-#include <X11/Xauth.h>			/* to get at the .Xauthority */
 #include <stdio.h>
 #ifdef DNETCONN
 #include <netdnet/dn.h>
 #include <netdnet/dnetdb.h>
 #endif
 #ifdef SVR4
-#include <sys/stropts.h>
+# if defined(USL)
+#  include <sys/socket.h>
+#  include <netdb.h>
+#  include <netinet/in.h>
+# endif
+# include <sys/stropts.h>
 #endif
 
 #ifdef STREAMSCONN
@@ -207,7 +212,8 @@ _AuServerWait(sig)
 }
 
 static int
-_AuStartServer()
+_AuStartServer(iserver)
+	int iserver;
 {
 	pid_t pid;
 
@@ -236,16 +242,20 @@ _AuStartServer()
 		_exit(_AuServerUp == AuTrue? 0: 255);
 		/*NOTREACHED*/
 	}
+	else {
+	  char arg1[80];	/* hmmm. */
 
+	  sprintf(arg1,":%d",iserver);
 	/* grandchild -- start server */
 	(void)signal(SIGUSR1, SIG_IGN);
 	/* start server.  Ideally the command should be set by some resource */
-	(void)execlp("au", "au", "-timeout",  "600", (char *)NULL);
+	(void)execlp("nasd", "nasd", arg1, "-pn", "-timeout",  "600", (char *)NULL);
 	perror("exec");
 	_AuServerUp = -1;
-	kill(SIGUSR1, getppid());	/* wake up parent */
+       kill(getppid(), SIGUSR1);       /* wake up parent */
 	_exit(255);
 	/*NOTREACHED*/
+	}
 }
 #endif /* STARTSERVER */
 
@@ -517,7 +527,7 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 #else /* STARTSERVER */
     {
 	/* if local connection, try to start up a server */
-	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer())
+	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer(iserver))
 	    goto bad;
 	/* try again */
 	iserver = saviserver;

@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)Imakefile,v 1.7 1994/08/09 19:22:59 greg Exp $
  */
 
@@ -27,9 +28,14 @@
 FILES = audial.c audial.man
   DIR = audial
 
-#if defined(HPArchitecture) || defined(UltrixArchitecture) || defined(SGIArchitecture) || defined(SystemV4) || defined(i386SVR3Architecture)
-     /*USLEEPDEFS = -DNEEDUSLEEP*/
+#if defined(USLArchitecture)
+
+# if OSMinorVersion < 2
+      USLEEPDEFS = -DNEEDUSLEEP
+# endif
+
 #endif
+
         DEFINES = $(USLEEPDEFS) 
 
 SimpleAudioProgram(audial)
