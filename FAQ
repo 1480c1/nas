@@ -47,9 +47,10 @@ TABLE OF CONTENTS
 	from:
 
 		http://radscan.com/nas.html
-		ftp.x.org:/contrib/audio/nas
-
-		As many other ftp archives I can stick it on.
+			- contains most recent version, including 
+			  point releases
+		ftp://ftp.x.org:/contrib/audio/nas
+			- contains most recent major release
 
     3.	What platforms does NAS run on?
 
@@ -58,11 +59,11 @@ TABLE OF CONTENTS
 
 	    o Sun Sparc 1 AM79C30A Digital Subscriber Controller and
 		  Sparc 10 Dual Basic Rate ISDN Interface
-	      (SunOS 4.1.[23], Solaris 2.x)
+	      (SunOS 4.1.[23], Solaris 2.x, sparc/intel)
 
 	    o SGI Indigo (IRIX 5.x)
 
-	    o VOXware (FreeBSD, NetBSDm Linux, SVR4.[02], Unixware)
+	    o VOXware (FreeBSD, NetBSD, Linux, SVR4.[02], Unixware)
 
 	    o HPUX 10.10+
 	 
@@ -78,9 +79,6 @@ TABLE OF CONTENTS
 	PCXware (an X server for PCs running Microsoft Windows) all
 	include an NAS server.
 
-	Ports of the NAS server to additional platforms are in the
-	works.
-
 	The NAS sample clients will compile and run on numerous
 	platforms.
 
@@ -89,14 +87,12 @@ TABLE OF CONTENTS
 
 >>	You bet.  nas@radscan.com is a mailing list for general discussion
 	of the Network Audio System.  Send a message to
-	nas@radscan.com with a line in the body containing 
+	majordomo@radscan.com with a line in the body containing 
 	'subscribe nas <your email address>.
 
-	The archives for this list are maintained by Grant Taylor, and
-	can be found at:
+	The archives for this list can be found at:
 
-		http://www.picante.com/~gtaylor/archives/nas/ or
-		http://gatekeeper.picante.com/~gtaylor/archives/nas/
+		http://radscan.com/nas/nas-ml/
 
     5.  I'm having problems getting the NAS clients to work with my
 	NCD X terminal.

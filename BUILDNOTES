@@ -4,21 +4,27 @@ $Id$
 
 BUILDING:
 
-	Look at config/NasConfig.h, and make sure everything is
-	okay for your site (it should be). 
+    1.	Make sure you have imake.
+	(See the BUILDNOTES file if you want to try building with X11R4).
 
-	Also look at config/NetAudio.def and make sure it's okay
-	for your site as well.  
+    2.	Do "xmkmf" to create the initial Makefile.
 
-	Then, to compile NAS, all you should need to do is:
+    3.	Do "make World" (note the uppercase World) to build the distribution.
 
-	xmkmf
-	make World
+	If you'd like to enable the option of having the audio library
+	automatically start up an NAS server on the local host when
+	necessary, use the following command to build the
+	distribution:
 
-	Then to install it:
+	make WORLDOPTS='-k CDEBUGFLAGS="$(CDEBUGFLAGS) -DSTARTSERVER"' World
 
-	make install
-	make install.man
+    4.	If everything built successfully, you can install it using
+	"make install"; to temporarily stage it under some directory, use
+	"make install DESTDIR=/usr/tmp/nas" or some such.
+
+    5.	To install the manual pages, use "make install.man" or 
+	"make install.man DESTDIR=/usr/tmp/nas" as above.
+
 
 ########################################################################
 [ Note: The following contains building information on 1.2p5 and
