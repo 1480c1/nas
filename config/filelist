@@ -127,8 +127,10 @@
 ./clients
 ./TODO
 ./config/NetAudio.tmpl
+./config/NasConfig.h
 ./config/makesrcpkg
 ./config/mungeman
+./config/Imakefile
 ./config
 ./doc/man/lib/Makefile
 ./doc/man/lib/AuAnyEvt.man
@@ -447,6 +449,8 @@
 ./server/os/osdep.h
 ./server/os/osinit.c
 ./server/os/utils.c
+./server/os/aulog.c
+./server/os/aulog.h
 ./server/os
 ./server/Makefile
 ./server

@@ -80,11 +80,17 @@ PART_NET =
 
 BOOTSTRAPCFLAGS = 
            SRCS = WaitFor.c access.c connection.c io.c \
-                  osinit.c utils.c auth.c mitauth.c $(XDMAUTHSRCS) \
- 		  $(RPCSRCS) OtherSources
+                  osinit.c utils.c auth.c mitauth.c aulog.c \
+		  $(XDMAUTHSRCS) $(RPCSRCS) OtherSources
            OBJS = WaitFor.o access.o connection.o io.o \
-                  osinit.o utils.o auth.o mitauth.o $(XDMAUTHOBJS) \
- 		  $(RPCOBJS) OtherObjects
+                  osinit.o utils.o auth.o mitauth.o aulog.o \
+		  $(XDMAUTHOBJS) $(RPCOBJS) OtherObjects
+
+HEADERS = aulog.h
+
+BuildIncludes($(HEADERS),,)
+
+
 #if SpecialMalloc
      OS_DEFINES = -DSPECIAL_MALLOC
 #else

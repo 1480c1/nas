@@ -27,7 +27,7 @@ XCOMM $NCDId: @(#)Imakefile,v 1.17 1995/12/06 01:33:07 greg Exp $
 #include "../config/NetAudio.tmpl"
 
 #define StdSubdirs dia os
-#define StdLibs $(DIA) $(OS)
+#define StdLibs $(DIA) 
 
       OTHEREXTS = 
       OTHERDEPDIRS =
@@ -50,7 +50,12 @@ XCOMM $NCDId: @(#)Imakefile,v 1.17 1995/12/06 01:33:07 greg Exp $
 #if defined(SYSV386) || defined(i386SVR4Architecture)
         SYSLIBS = -lc /usr/ucblib/libucb.a -L/usr/X386/lib
 #else
+# if defined(USLArchitecture)
+	SYSLIBS =
+# else
         SYSLIBS = /usr/ucblib/libucb.a
+# endif
+
 #endif
 #else
         SYSLIBS =
@@ -108,7 +113,7 @@ XCOMM
 XCOMM Sun server
 XCOMM
 SUNDIRS = StdSubdirs dda/sun
-SUNLIBS = StdLibs dda/sun/libsun.a
+SUNLIBS = StdLibs dda/sun/libsun.a  $(OS)
 SUNSYSLIBS = $(SYSLIBS)
 
 /* next 8 lines are for Solaris 2 OpenWindows imake config support */
@@ -133,7 +138,7 @@ XCOMM
 XCOMM SGI server
 XCOMM
 SGIDIRS = StdSubdirs dda/sgi
-SGILIBS = StdLibs dda/sgi/libsgi.a
+SGILIBS = StdLibs dda/sgi/libsgi.a $(OS)
 SGISYSLIBS = $(SYSLIBS) -laudio
 
 ServerTarget(ausgi,$(SGIDIRS),$(SGIOBJS),$(SGILIBS),$(SGISYSLIBS))
@@ -148,7 +153,7 @@ XCOMM
 XCOMM voxware server
 XCOMM
 VOXWAREDIRS = StdSubdirs dda/voxware
-VOXWARELIBS = StdLibs dda/voxware/libvoxware.a
+VOXWARELIBS = StdLibs dda/voxware/libvoxware.a $(OS)
 VOXWARESYSLIBS = $(SYSLIBS)
 
 ServerTarget(auvoxware,$(VOXWAREDIRS),$(VOXWAREOBJS),$(VOXWARELIBS),$(VOXWARESYSLIBS))
@@ -163,7 +168,7 @@ XCOMM
 XCOMM HP server
 XCOMM
 HPDIRS = StdSubdirs dda/hpux
-HPLIBS = StdLibs dda/hpux/libhpux.a
+HPLIBS = StdLibs dda/hpux/libhpux.a $(OS)
 HPSYSLIBS = $(SYSLIBS) -lc
 
 ServerTarget(auhpux,$(HPDIRS),$(HPOBJS),$(HPLIBS),$(HPSYSLIBS))

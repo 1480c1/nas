@@ -30,7 +30,7 @@ INSTALLFLAGS = $(INSTINCFLAGS)
 HEADERS = Afuncproto.h Afuncs.h Amd.h Aos.h Aosdefs.h Aproto.h audio.h
 ALLHEADERS = $(HEADERS) Alibint.h Alibnet.h Xtutil.h audiolib.h \
 	audioutil.h snd.h wave.h  voc.h aiff.h sound.h soundlib.h \
-	fileutil.h 8svx.h Astreams.h audio.h
+	fileutil.h 8svx.h Astreams.h audio.h 
 
   FILES = $(ALLHEADERS)
 

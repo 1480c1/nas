@@ -31,7 +31,7 @@ XCOMM $NCDId: @(#)Imakefile,v 1.4 1995/12/06 01:00:49 greg Exp $
 
    WORLDOPTS = -k
 
-SUBDIRS = include server lib clients doc
+SUBDIRS = include server lib clients doc config
 
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
@@ -51,6 +51,5 @@ World:
 	@echo ""
 	@echo "Build of Network Audio System complete"
 	@echo ""
-	
 
 clean::
