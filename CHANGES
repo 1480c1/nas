@@ -1,6 +1,15 @@
 
 
-1.3c 9/19/1999:
+1.3c 
+
+	10/24/99:
+
+	Added patches from Mark Davies for NetBSD.  
+	Added global NasConfig struct for configurables global to all 
+		servers.
+	More prep work for unified arg/config handling
+
+	9/19/1999:
 
 	1. In the voxware server, a call to disableProcessFlow() was added
 to the end of createServerComponents().  This call effectivly disables the
@@ -38,11 +47,15 @@ into TOPLEV/include during the includes phase of the build using the imake
 BuildIncludes() macros.  These were removed in the mondo patch - I've
 re-added them where appropriate.  Any reason these were removed?
 
-1.3b 9/4/1999:
+1.3b 
+
+	9/4/1999:
 
 	1. Addition of Steve McIntyre's Mondo patch.
 
-1.3a 8/1/1999:
+1.3a 
+
+	8/1/1999:
 
 	2. First test version incorporating many patches from around
 the planet, based on original 1.2p5 sources.
