@@ -36,7 +36,7 @@ OBJS = dispatch.o dixutils.o events.o globals.o main.o resource.o swapreq.o \
        audispatch.o auswap.o autables.o auevents.o auutil.o auconfig.o \
        auprocess.o
 
-    INCLUDES = -I. -I../include -I../../include
+    INCLUDES = -I. -I../include -I../../include -I../../lib/audio
      DEFINES = AllocateLocalDefines
 
 NormalLibraryObjectRule()

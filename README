@@ -4,7 +4,7 @@
     *                                                                     *
     *			 An Audio Protocol For Networks                   *
     *                                                                     *
-    *                      Release 1.2 - June 3, 1994			  *
+    *                      Release 1.3 - July 7, 1999			  *
     *                                                                     *
     ***********************************************************************
 
@@ -231,7 +231,7 @@ rec.games.misc contains a detailed list of machines, bulletin boards, etc.
 
 VII.  For More Information
 
-We've set up a mailing list for folks who are working with the Network
+There is mailing list for folks who are working with the Network
 Audio System:
 
     nas@radscan.com		General discussion of the Network
@@ -252,6 +252,12 @@ Audio System:
         http://www.picante.com/~gtaylor/archives/nas/ or
         http://gatekeeper.picante.com/~gtaylor/archives/nas/
 
+    A web page dedicated to NAS can be found at 
+
+	http://shell.rmi.net/~jon/nas.html
+
+	This site will (for now) contain up to date information on
+	NAS, and probably the most recent version.
 
 
 The Network Audio System has benefited greatly from the testing and
@@ -268,6 +274,8 @@ you can't beat the price!  :-)
 				Jim Fulton, Greg Renda, Dave Lemke
 				Network Computing Devices, Inc.
 
+				Jon Trulson <jon@radscan.com>
+				Me, at home.
 
 --------------------------------------------------------------------------------
 
