@@ -243,7 +243,7 @@ SndStat sndStatIn =
 #if defined(__CYGWIN__)
 	O_RDONLY,		/* howToOpen */
 #else
-	O_RDWD,			/* howToOpen */
+	O_RDWR,			/* howToOpen */
 #endif
 	1,			/* autoOpen */
 	0,			/* forceRate */
