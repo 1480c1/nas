@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)soundlib.c,v 1.42 1995/11/28 23:21:17 greg Exp $
  */
 
@@ -55,6 +56,11 @@ AuStatus       *ret_status;
     AuString        desc;
     AuBool          done = AuFalse;
 
+#ifdef DEBUG
+    fprintf(stderr, "AuSoundCreateBucketFromFile: starting.\n");
+#endif
+
+
     if (!(s = SoundOpenFileForReading(filename)))
 	return AuNone;
 
@@ -63,6 +69,7 @@ AuStatus       *ret_status;
 	SoundCloseFile(s);
 	return AuNone;
     }
+
 
     desc.type = AuStringLatin1;
     desc.len = strlen(SoundComment(s));
@@ -201,6 +208,10 @@ AuStatus       *ret_status;
     int             import;
     AuString        desc;
 
+#ifdef DEBUG
+    fprintf(stderr, "AuSoundCreateBucketFromData: starting\n");
+#endif
+
     if (SoundNumSamples(s) == SoundUnknownNumSamples)
 	return AuNone;
 
@@ -299,12 +310,31 @@ AuUint32   numBytes;
 {
     int             n = aumin(numBytes, priv->numBytes);
 
+#if DEBUG
+    fprintf(stderr, "sendData: n = %d numBytes = %d\n",
+	    n, numBytes);
+#endif
+
     if (n)
     {
 	AuWriteElement(aud, priv->flow, 0, n, priv->buf, n != numBytes, NULL);
 	priv->numBytes -= n;
 	priv->buf += n;
     }
+    else
+      {
+#if DEBUG
+	fprintf(stderr, "sendData: n = %d numBytes = %d, EOF WRITE\n",
+		n, numBytes);
+#endif
+	
+				/* JET - need to account for case where */
+				/* the amount of data is equal to the import */
+				/* size... ie: a read returns 0, and force */
+				/* an EOF */
+	AuWriteElement(aud, priv->flow, 0, 0, priv->buf, AuTrue, NULL);
+      }
+
 }
 
 static void
@@ -328,12 +358,32 @@ AuUint32   numBytes;
 {
     int             n;
 
+
     if ((n = SoundReadFile(priv->buf, aumin(numBytes, priv->numBytes),
 			   priv->s)) > 0)
     {
+#if DEBUG
+    fprintf(stderr, "sendFile: n = %d numBytes = %d\n",
+	    n, numBytes);
+#endif
+
 	AuWriteElement(aud, priv->flow, 0, n, priv->buf, n != numBytes, NULL);
 	priv->numBytes -= n;
     }
+    else
+      {
+#if DEBUG
+	fprintf(stderr, "sendFile: n = %d numBytes = %d, EOF WRITE\n",
+		n, numBytes);
+#endif
+
+				/* JET - need to account for case where */
+				/* the amount of data is equal to the import */
+				/* size... ie: a read returns 0, and force */
+				/* an EOF */
+	AuWriteElement(aud, priv->flow, 0, 0, priv->buf, AuTrue, NULL);
+      }
+
 }
 
 static void
@@ -676,6 +726,12 @@ AuStatus       *ret_status;
     priv->s = s;
     priv->freeSound = AuTrue;
     priv->numBytes = SoundNumBytes(s);
+
+#ifdef DEBUG
+    fprintf(stderr, "JET - AuSoundPlayFromFile: numBytes = %d\n"
+	    "          importSize = %d bufSize = %d SoundBytesPerSample = %d\n",
+	    priv->numBytes, importSize, bufSize, SoundBytesPerSample(s));
+#endif
 
     return AuSoundPlay(aud, device, volume, -1, priv,
                        ret_flow, ret_mult_elem, ret_mon_elem, ret_status);

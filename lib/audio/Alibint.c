@@ -686,6 +686,7 @@ _AuReadPad (aud, data, size)
     	register AuInt32 bytes_read;
 	struct iovec iov[2];
 	char pad[3];
+	char *p;
 
 	if ((aud->flags & AuServerFlagsIOError) || size == 0) return;
 	iov[0].iov_len = (int)size;
@@ -700,47 +701,57 @@ _AuReadPad (aud, data, size)
 	iov[1].iov_base = pad;
 	size += iov[1].iov_len;
 	errno = 0;
-	while ((bytes_read = ReadvFromServer (aud->fd, iov, 2)) != size) {
+				/* JET - we'll use a little indirect ptr */
+				/* arithmetic to get around the */
+				/* fact that iov_base is often a void * */
 
-	    if (bytes_read > 0) {
+	while ((bytes_read = ReadvFromServer (aud->fd, iov, 2)) != size) 
+	  {
+	    
+	    if (bytes_read > 0) 
+	      {
 		size -= bytes_read;
-	    	if ((iov[0].iov_len -= bytes_read) < 0) {
+	    	if ((iov[0].iov_len -= bytes_read) < 0) 
+		  {
 		    iov[1].iov_len += iov[0].iov_len;
-#if defined(hpux)
-		    (caddr_t)iov[1].iov_base -= iov[0].iov_len;
-#else
-		    iov[1].iov_base -= iov[0].iov_len;
-#endif
+
+		    p = (char *)iov[1].iov_base;
+		    p -= iov[0].iov_len;
+		    iov[1].iov_base = p;
+
 		    iov[0].iov_len = 0;
-		    }
+		  }
 	    	else
-#if defined(hpux)
-	    	    (caddr_t)iov[0].iov_base += bytes_read;
-#else
-	    	    iov[0].iov_base += bytes_read;
-#endif
-	    	}
-	    else if (ETEST(errno)) {
+		  {
+		    p = (char *)iov[0].iov_base;
+		    p += bytes_read;
+		    iov[0].iov_base = p;
+		  }
+	      }
+	    else if (ETEST(errno)) 
+	      {
 		_AuWaitForReadable(aud);
 		errno = 0;
-	    }
+	      }
 #ifdef SUNSYSV
-	    else if (errno == 0) {
+	    else if (errno == 0) 
+	      {
 		_AuWaitForReadable(aud);
-	    }
+	      }
 #endif
-	    else if (bytes_read == 0) {
+	    else if (bytes_read == 0) 
+	      {
 		/* Read failed because of end of file! */
 		errno = EPIPE;
 		_AuIOError(aud);
-		}
-	    
-	    else  /* bytes_read is less than 0; presumably -1 */ {
+	      }
+	    else  /* bytes_read is less than 0; presumably -1 */ 
+	      {
 		/* If it's a system call interrupt, it's not an error. */
 		if (errno != EINTR)
-		    _AuIOError(aud);
-		}
-	    }
+		  _AuIOError(aud);
+	      }
+	  }
 }
 
 /*

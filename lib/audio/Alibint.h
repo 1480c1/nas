@@ -131,10 +131,12 @@ typedef struct _AuSQEvent {
 #endif
 
 #ifndef AU_NOT_STDC_ENV
-#include <stdlib.h>
-#include <string.h>
+# include <stdlib.h>
+# include <string.h>
 #else
-extern char *malloc(), *realloc(), *calloc();
+# ifndef hpux
+   extern char *malloc(), *realloc(), *calloc();
+# endif
 void exit();
 #ifdef SYSV
 #include <string.h>
