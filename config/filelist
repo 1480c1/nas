@@ -524,7 +524,7 @@
 ./lib/audio/monitor.c
 ./lib/audio/Makefile
 ./lib/audio/nameserver.c
-./lib/audio/nas-def.cpp
+./lib/audio/audio-def.cpp
 ./lib/audio/snd.c
 ./lib/audio/snd.h
 ./lib/audio/sound.c
