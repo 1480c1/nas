@@ -77,8 +77,8 @@ typedef char   *XPointer;
 #include "pause.xbm"
 
 #define	APP_CLASS		"Auedit"
-#define LITTLE_ENDIAN 		(*(char *) &g->endian == 1)
-#define BIG_ENDIAN 		(!LITTLE_ENDIAN)
+#define NAS_LITTLE_ENDIAN 		(*(char *) &g->endian == 1)
+#define NAS_BIG_ENDIAN 		(!NAS_LITTLE_ENDIAN)
 #define SELECTION_HEADER_SIZE	4
 #define DEFAULT_FREQUENCY	8000
 #define ZOOM_SCALE		2
@@ -508,7 +508,7 @@ XtPointer       call_data;
 	XtVaSetValues(g->frequency, XtNstring, buf, NULL);
 
 	s = SoundCreate(SoundFileFormatNone,
-			LITTLE_ENDIAN ? AuFormatLinearSigned16LSB :
+			NAS_LITTLE_ENDIAN ? AuFormatLinearSigned16LSB :
 			AuFormatLinearSigned16MSB, g->numTracks,
 			freq, g->numSamples, NULL);
 
@@ -693,7 +693,7 @@ int             mode;
 		setTime(g, g->positionTime, start);
 
 		s = SoundCreate(SoundFileFormatNone,
-				LITTLE_ENDIAN ? AuFormatLinearSigned16LSB :
+				NAS_LITTLE_ENDIAN ? AuFormatLinearSigned16LSB :
 				AuFormatLinearSigned16MSB,
 			    g->numTracks, g->sampleRate, end - start, NULL);
 
@@ -2232,6 +2232,9 @@ int             start,
     int             n,
                     fileFormat,
                     dataFormat,
+#if defined(HAS_MKSTEMP)
+                    fd = -1,
+#endif
                     status;
 
     XtVaGetValues(g->fileFormatMenuButton, XtNlabel, &st, NULL);
@@ -2254,9 +2257,14 @@ int             start,
     }
 
     sprintf(tmpName, "%sXXXXXX", name);
-    tmpName = mktemp(tmpName);
 
+#if defined(HAS_MKSTEMP)
+    fd = mkstemp(tmpName);
+    if (-1 == fd || !SoundOpenFileForWriting(tmpName, s))
+#else
+    tmpName = mktemp(tmpName);
     if (!SoundOpenFileForWriting(tmpName, s))
+#endif
     {
 	free(tmpName);
 	SoundDestroy(s);
@@ -2274,8 +2282,12 @@ int             start,
 
     if (status || SoundCloseFile(s))
     {
-	free(tmpName);
-	ERRORf("Error writing output file");
+#if defined(HAS_MKSTEMP)
+      if (fd != -1)
+	close(fd);
+#endif
+      free(tmpName);
+      ERRORf("Error writing output file");
     }
 
     /* if the file exists then back it up */

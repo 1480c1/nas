@@ -52,9 +52,18 @@ int bcmp();
 #else
 #if (__STDC__ && !defined(AU_NOT_STDC_ENV) && !defined(sun) && !defined(macII)) || defined(SVR4) || defined(hpux) || defined(_IBMR2)
 #include <string.h>
+/* JET - lets make sure that they are not already defined first*/
+
+#ifndef bcopy
 #define bcopy(b1,b2,len) memmove(b2, b1, (size_t)(len))
+#endif
+#ifndef bzero
 #define bzero(b,len) memset(b, 0, (size_t)(len))
+#endif
+#ifndef bcmp
 #define bcmp(b1,b2,len) memcmp(b1, b2, (size_t)(len))
+#endif
+
 #else
 #ifdef sgi
 #include <bstring.h>

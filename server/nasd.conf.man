@@ -1,29 +1,41 @@
 .\" $NCDId: @(#)AUVoxConfig.man,v 1.1 1996/04/24 17:00:26 greg Exp $
-.TH AUVOXCONFIG 4 "" ""
+.TH NASD.CONF 4 "" ""
 .SH NAME
-AUVoxConfig \- Configuration file for NAS  servers running with the VOXware
-device drivers.
+nasd.conf \- Configuration file for NAS servers.
 .SH DESCRIPTION
-.I AUVoxConfig
-Is a file that can be used to configure the behaiviour of the auvoxware
+.I nasd.conf
+Is a file that can be used to configure the behaiviour of the NAS
 server, including what devices it will attempt to use, the minimum & maximum
 frequencies used, if the device should be used in 8bit or 16bit mode, what
 fragment size and number of fragments should be used (useful for tuning the
 server's latency) and if the server should be verbose when starting or
-output debugging information.
+output debugging information.  Not all options are supported for all
+servers, see the /etc/nas/nasd.conf.eg file for information on what
+options are supported for which servers.
 .SH "THE CONFIG FILE SYNTAX"
-There are upto three section in the config file. The first may have up to
-two keywords in it, which just turn on verbose messages when parsing the
-config file, and setting debug messages on. The remaining two sections will,
-if present, adjust various parameters of the input and output devices.
+There are up to three section in the config file. The first section
+deals with global options, some of which just turn on verbose messages
+when parsing the config file, and setting debug messages on. The
+remaining two sections will, if present, adjust various parameters of
+the input and output devices, for those server that undersand them.
 .PP
 .B verbose
 Sets a flag telling the server to report what it's trying to do with each
 setting in the config file.
 .PP
-.B debug
+.B debug <number>
 Sets the debug flag, which will provide a trace of the server's activities
-on stderr.
+on stderr.  Set <num> to 0 to disable debug messages, 99 for *alot* of
+debug messages.
+.PP
+.B mixerinit "YES"|"NO"
+Set to "YES" to "NO".  Defines whether the server will init the mixer
+device on startup. (voxware)
+.PP
+.B OutDevType "EXT"|"INT"
+For HPUX servers, define to "EXT" to use the external output device
+(headphone/speakers) or "INT" for the internal output device (internal
+speaker).  Defaults to external.
 .PP
 .B inputsection
 Marks the beginning of the input section, which allows various parameters
@@ -57,7 +69,7 @@ The size of each buffer - note that the size must be a power of 2.
 The number of bits per sample. Allowable values are 8 and 16.
 .PP
 .B numchans number
-Used toi decide if the card is run in stereo or mono mode. Allowable
+Used to decide if the card is run in stereo or mono mode. Allowable
 values are 1 or 2.
 .SH "SEE ALSO"
 nas(1), auinfo(1), auplay(1), auctl(1)
@@ -65,4 +77,5 @@ nas(1), auinfo(1), auplay(1), auctl(1)
 .PP
 Lots
 .SH AUTHORS
-Stephen Hocking (sysseh@devetir.qld.gov.au)
+Stephen Hocking (sysseh@devetir.qld.gov.au), 
+Jon Trulson (jon@radscan.com)
