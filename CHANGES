@@ -2,7 +2,7 @@ CHANGES file listing changes to nas during the various iterations.
 Jon Trulson 10/24/99
 
 1.3d
-	??/??/????
+	01/05/2000
 
 	corrected some build problems on Sparc Solaris 2.6 with native 
 		compiler/X11 env
@@ -29,6 +29,9 @@ Jon Trulson 10/24/99
 		server cmdline options '-v' (verbose) and '-d <num>'
 			(debug messages) added.  These override 
 			nasd.conf settings.
+		hooks added to all servers in config.c - ddaProcessArg() 
+			and ddaUseMsg() for integrated arg handling.
+
 
 	voxware server:
 		release device functionality now controlled by
@@ -37,7 +40,7 @@ Jon Trulson 10/24/99
 
 	sun server:
 		added integrated sun (ausuni) module (now built by 
-			default) into to distribution.  
+			default) into the distribution.  
 		release device functionality now controlled by
 			nasd.conf
 
