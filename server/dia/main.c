@@ -63,7 +63,7 @@ SOFTWARE.
 #include "servermd.h"
 #include "site.h"
 #include "globals.h"
-#include "nasconfig.h"
+#include "nasconf.h"
 
 extern void     OsInit(), InitClient(), ResetWellKnownSockets(),
                 Dispatch(), FreeAllResources();

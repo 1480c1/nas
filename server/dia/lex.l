@@ -4,7 +4,7 @@
 %{
 #include "auservertype.h"
 #include "gram.h"
-#include "nasconfig.h"
+#include "nasconf.h"
 
 int Lineno = 1; /* current line number of the scanner */
 

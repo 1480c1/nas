@@ -6,7 +6,7 @@
  * Jon Trulson 9/19/99
  */
 
-#include "nasconfig.h"
+#include "nasconf.h"
 
 #ifndef GLOBALS_H_INCLUDED
 #define GLOBALS_H_INCLUDED

@@ -9,7 +9,7 @@
 #include <ctype.h>
 
 #include "auservertype.h"
-#include "nasconfig.h"
+#include "nasconf.h"
 #include "aulog.h"
 #include "misc.h"
 

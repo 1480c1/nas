@@ -1,5 +1,5 @@
 /*
- * nasconfig.c - init/configure some things...
+ * nasconf.c - init/configure some things...
  *
  * $Id$
  *
@@ -10,7 +10,7 @@
 				/* the NasConfig structure is
 				   instantiated from within
 				   globals.c */
-#include "nasconfig.h"
+#include "nasconf.h"
 
 /* Initialize the global config items */
 

@@ -65,7 +65,7 @@ SOFTWARE.
 
 				/* instantiate global config options */
 #define NASCONFIG_INSTANTIATE
-#include "nasconfig.h"
+#include "nasconf.h"
 #undef NASCONFIG_INSTANTIATE
 
 				/* instantiate other globals */

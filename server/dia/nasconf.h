@@ -1,5 +1,5 @@
 /*
- * nasconfig.h
+ * nasconf.h
  *
  * $Id$
  *
