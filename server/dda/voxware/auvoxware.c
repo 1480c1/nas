@@ -523,10 +523,13 @@ AuInt32 rate;
   if (rate == 0) {		/* Disable timer case */
     ntval.it_value.tv_sec = ntval.it_value.tv_usec = 0;
     ntval.it_interval.tv_sec = ntval.it_interval.tv_usec = 0;
+    timer_ms = 0x7fff;
   } else {
     timer_ms = (auMinibufSamples * 500) / rate;
     ntval.it_interval.tv_sec = 0;
     ntval.it_interval.tv_usec = timer_ms * 1000;
+    ntval.it_value.tv_sec = 0;
+    ntval.it_value.tv_usec = timer_ms * 10 ;
   }
   foo = setitimer(ITIMER_REAL, &ntval, &otval);
 
@@ -672,8 +675,8 @@ AuBool wait;
 	  }
       }
 
-#warning "JET: HACK - FIXME"
-#if 0 && !defined(__CYGWIN__) 
+#warning "JET: FIXME - deal with full/half duplex properly"
+#if  !defined(__CYGWIN__) 
     if(sndStatIn.fd == -1 && !share_in_out)
     {
       if (NasConfig.DoDebug)
@@ -1001,7 +1004,7 @@ static void enableProcessFlow()
 	signal(SIGALRM, intervalProc);
 	if (NasConfig.DoDebug > 1)
 	  {
-	    osLogMsg("enableProcessFlow() - set SIGALRM handler to intervalProc");
+	    osLogMsg("enableProcessFlow() - set SIGALRM handler to intervalProc\n");
 	  }
 #else
 	setTimer(sndStatOut.curSampleRate);
@@ -1016,8 +1019,8 @@ static void disableProcessFlow()
 {
 
 #ifndef sco
-int rate ;
-	signal(SIGALRM, SIG_IGN);
+  int rate ;
+  signal(SIGALRM, SIG_IGN);
 #endif /* sco */
 
   if (NasConfig.DoDebug)
