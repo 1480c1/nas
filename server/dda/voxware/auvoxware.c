@@ -645,6 +645,7 @@ openDevice(wait)
 AuBool wait;
 {
   unsigned int extramode = 0;
+  int retries;
 
 #if defined(__CYGWIN__)		/* we want the file to be created if necc under
 				   windows */
@@ -679,7 +680,6 @@ AuBool wait;
 	  }
       }
 
-#warning "JET: FIXME - deal with full/half duplex properly"
 #if  !defined(__CYGWIN__) 
     if(sndStatIn.fd == -1 && !share_in_out)
     {
@@ -687,15 +687,25 @@ AuBool wait;
 	osLogMsg("openDevice IN %s mode %d\n", sndStatIn.device, 
 		 sndStatIn.howToOpen);
 
-       while ((sndStatIn.fd = open(sndStatIn.device, 
-				   sndStatIn.howToOpen|extramode, 
-				   0666)) == -1 && wait)
-       {
-           osLogMsg("openDevice: waiting on input device\n");
-           sleep(1);
-       }
-       if (sndStatOut.fd != sndStatIn.fd)
-           setupSoundcard(&sndStatIn);
+      retries = 0;
+      while ((sndStatIn.fd = open(sndStatIn.device, 
+                                  sndStatIn.howToOpen|extramode, 
+                                  0666)) == -1 && wait)
+        {
+          osLogMsg("openDevice: waiting on input device, retry %d\n",
+                   retries);
+          sleep(1);
+          retries++;
+
+          if (retries >= 5)
+            {
+              osLogMsg("openDevice: maximum retries exceeded, giving up\n");
+              sndStatIn.fd = -1;
+              break;
+            }
+        }
+      if (sndStatIn.fd != -1 && sndStatOut.fd != sndStatIn.fd)
+        setupSoundcard(&sndStatIn);
     }
     else
     {

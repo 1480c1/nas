@@ -64,6 +64,7 @@ SOFTWARE.
 #include "site.h"
 #include "globals.h"
 #include "nasconf.h"
+#include "release.h"
 
 extern void     OsInit(), InitClient(), ResetWellKnownSockets(),
                 Dispatch(), FreeAllResources();
@@ -137,6 +138,12 @@ main(argc, argv)
 				   line, find a suitable default */
     if (display == NULL)
       display = AuServerName();
+
+    if (NasConfig.DoVerbose)
+      {
+        printf("%s\n", release);
+        osLogMsg("%s\n", release);
+      }
 
     if (NasConfig.DoDaemon)
       {

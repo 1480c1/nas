@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl $Id$
 dnl
 
-AC_INIT([nas],[1.6c],[jon@radscan.com])
+AC_INIT([nas],[1.6],[jon@radscan.com])
 AC_CONFIG_HEADER(config.h)
 dnl AM_INIT_AUTOMAKE
 AC_PROG_LIBTOOL
@@ -24,7 +24,7 @@ AC_PROG_CC
 dnl Checks for libraries.
 dnl Replace `main' with a function in -lm:
 
-dnl AC_CHECK_LIB(m, main)
+AC_CHECK_LIB(m, main)
 
 dnl check for libcrypt
 olibs="$LIBS"

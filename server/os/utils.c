@@ -54,6 +54,7 @@ SOFTWARE.
 #include "nasconf.h"
 #include "misc.h"
 #include "opaque.h"
+#include "audio/release.h"
 #include <signal.h>
 #if !defined(SYSV) && !defined(AMOEBA) && !defined(_MINIX)
 #include <sys/resource.h>
@@ -272,6 +273,7 @@ void UseMsg(void)
     ErrorF(" -v                 enable verbose messages\n");
     ErrorF(" -d <num>           enable debug messages at level <num>\n");
     ErrorF(" -config <file>     use <file> as the nasd config file\n");
+    ErrorF(" -V                 print version and exit (ignores other opts)\n");
 #ifndef AMOEBA
 #ifdef PART_NET
     ErrorF(" -pn                partial networking enabled [default]\n");
@@ -366,6 +368,11 @@ ProcessCommandLine ( int argc, char *argv[] )
 	else if (strcmp(argv[i], "-b") == 0)
 	  {
 	    NasConfig.DoDaemon = TRUE;
+	  }
+	else if (strcmp(argv[i], "-V") == 0)
+	  {                     /* print version and exit */
+	    printf("%s\n", release);
+            exit(0);
 	  }
 	else if (strcmp(argv[i], "-d") == 0)
 	  {

@@ -1,10 +1,10 @@
-/* Imakefile
- *
- * $Id$
- *
- * Jon Trulson 9/11/1999
- *
- */
+XCOMM Imakefile
+XCOMM
+XCOMM $Id$
+XCOMM
+XCOMM Jon Trulson 9/11/1999
+XCOMM
+XCOMM
 
 #include "NetAudio.tmpl"
 
@@ -13,7 +13,7 @@ INSTALLFLAGS = $(INSTINCFLAGS)
 HEADERS = NasConfig.h config.h
 
 config.h: 
-	./configure
+	(unset CFLAGS; ./configure)
 
 includes:: config.h
 
