@@ -624,6 +624,7 @@
 ./server/os/access.c
 ./server/os/auth.c
 ./server/os/connection.c
+./server/os/daemon.c
 ./server/os/genalloca.c
 ./server/os/Makefile
 ./server/os/io.c
