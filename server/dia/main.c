@@ -129,7 +129,6 @@ main(argc, argv)
     display = "0";
     ProcessCommandLine(argc, argv);
 
-#if 0
 				/* JET - we don't actually become a
 				   daemon, so what's the point?
 				   REVISIT */
@@ -140,12 +139,10 @@ main(argc, argv)
     close(0);
     close(1);
     close(2);
-#endif
 
     /* And cd to / so we don't hold anything up; core files will also
        go there. */
     chdir("/");
-
 
     while(1)
     {
