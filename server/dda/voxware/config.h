@@ -20,6 +20,10 @@ typedef struct
   int minFrags;
   int maxFrags;
   char	*device;
+  char	*mixer;
+  int	howToOpen ;
+  int	autoOpen ;
+  int	forceRate ;
   int isPCSpeaker;
 } SndStat;
 

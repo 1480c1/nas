@@ -26,7 +26,8 @@ extern int yylineno;
 };
 
 %token <num> INPUTSECTION OUTPUTSECTION ENDSECTION WORDSIZE FRAGSIZE MAXFRAGS
-%token <num> MINFRAGS MAXRATE MINRATE NUMCHANS DEVICE NUMBER DEBUG VERBOSE 
+%token <num> MINFRAGS MAXRATE MINRATE NUMCHANS MIXER DEVICE NUMBER DEBUG VERBOSE
+%token <num> READWRITE FORCERATE AUTOOPEN
 %token <num> RELEASEDEVICE OUTDEVTYPE MIXERINIT
 %token <ptr> STRING 
 
@@ -93,6 +94,22 @@ stmts		: /* Empty */
 		;
 
 stmt		: error
+		| AUTOOPEN string
+			{
+			  ddaSetConfig(AUTOOPEN, (void *)parsebool($2));
+			}
+		| FORCERATE string
+			{
+			  ddaSetConfig(FORCERATE, (void *)parsebool($2));
+			}
+		| READWRITE string
+			{
+			  ddaSetConfig(READWRITE, (void *)parsebool($2));
+			}
+		| MIXER string
+			{
+			  ddaSetConfig(MIXER, (void *)$2);
+			}
 		| DEVICE string
 			{
 			  ddaSetConfig(DEVICE, (void *)$2);

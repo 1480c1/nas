@@ -12,6 +12,9 @@
 #include "aulog.h"
 #include "NasConfig.h"
 
+#include "dixstruct.h"
+#include "globals.h"
+
 #if defined(DIA_USE_SYSLOG)
 # include <syslog.h>
 #endif
@@ -31,9 +34,21 @@ void osLogMsg(char *fmt, ...)
 
 #if defined(DIA_USE_SYSLOG)
 
-  openlog("nas", LOG_PID, LOG_DAEMON); 
-  syslog(LOG_DEBUG, buf); 
-  closelog();
+  if (NasConfig.DoDebug)	/* debugging to stderr if on */
+    {
+      errfd = stderr;
+      if (errfd != NULL)
+	{
+	  fprintf(errfd, "%s", buf);
+	  fflush(errfd);
+	}
+    }
+  else
+    {
+      openlog("nas", LOG_PID, LOG_DAEMON); 
+      syslog(LOG_DEBUG, buf); 
+      closelog();
+    }
 
 #else  /* we just send to stdout */
 

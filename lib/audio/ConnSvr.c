@@ -212,7 +212,8 @@ _AuServerWait(sig)
 }
 
 static int
-_AuStartServer()
+_AuStartServer(iserver)
+	int iserver;
 {
 	pid_t pid;
 
@@ -241,16 +242,20 @@ _AuStartServer()
 		_exit(_AuServerUp == AuTrue? 0: 255);
 		/*NOTREACHED*/
 	}
+	else {
+	  char arg1[80];	/* hmmm. */
 
+	  sprintf(arg1,":%d",iserver);
 	/* grandchild -- start server */
 	(void)signal(SIGUSR1, SIG_IGN);
 	/* start server.  Ideally the command should be set by some resource */
-	(void)execlp("nasd", "nasd", "-timeout",  "600", (char *)NULL);
+	(void)execlp("nasd", "nasd", arg1, "-pn", "-timeout",  "600", (char *)NULL);
 	perror("exec");
 	_AuServerUp = -1;
        kill(getppid(), SIGUSR1);       /* wake up parent */
 	_exit(255);
 	/*NOTREACHED*/
+	}
 }
 #endif /* STARTSERVER */
 
@@ -522,7 +527,7 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 #else /* STARTSERVER */
     {
 	/* if local connection, try to start up a server */
-	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer())
+	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer(iserver))
 	    goto bad;
 	/* try again */
 	iserver = saviserver;

@@ -104,8 +104,10 @@ RCMANDIR = $(MANDIR)
 
 # if defined(LinuxArchitecture)
     RCMANDIR = $(FILEMANDIR)
+    RCMANSUFFIX = 5nas
 # else
     RCMANDIR = $(MANDIR)
+    RCMANSUFFIX = 5x
 # endif
 
 ALL1 = nasd
@@ -219,7 +221,11 @@ clean::
  ETCDIR = NasConfigSearchPath
 
 InstallManPage(nasd,$(MANDIR))
+#ifdef InstallGenManPage
+InstallGenManPage(nasd.conf,$(RCMANDIR), $(RCMANSUFFIX))
+#else
 InstallManPage(nasd.conf,$(RCMANDIR))
+#endif
 InstallNonExecFile(nasd.conf.eg,$(ETCDIR))
 
 #else /* CanBuildAuServer */

@@ -225,6 +225,10 @@ SndStat sndStatIn =
 	3,			/* minFrags */
 	32,			/* maxFrags */
 	"/dev/dsp1",		/* device */
+	"/dev/mixer1",		/* mixer */
+	O_RDWR,			/* howToOpen */
+	1,			/* autoOpen */
+	0,			/* forceRate */
 	0			/* isPCSpeaker */
 }, sndStatOut =
 {
@@ -238,6 +242,10 @@ SndStat sndStatIn =
 	3,			/* minFrags */
 	32,			/* maxFrags */
 	"/dev/dsp",		/* device */
+	"/dev/mixer",		/* mixer */
+	O_RDWR,			/* howToOpen */
+	1,			/* autoOpen */
+	0,			/* forceRate */
 	0			/* isPCSpeaker */
 };
 
@@ -569,6 +577,7 @@ AuUint32 rate;
 #endif
     ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
     ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &(sndStatOut.curSampleRate));
+    if (sndStatOut.forceRate) sndStatOut.curSampleRate = rate ;
   }
 
   if (sndStatIn.fd == sndStatOut.fd)
@@ -581,6 +590,7 @@ AuUint32 rate;
 #endif
     ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
     ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &(sndStatIn.curSampleRate));
+    if (sndStatIn.forceRate) sndStatIn.curSampleRate = rate ;
   }
 
 #if defined(AUDIO_DRAIN)
@@ -608,9 +618,13 @@ AuBool wait;
       osLogMsg("openDevice\n");
     }
 
+  if (NasConfig.DoDebug)
+    osLogMsg("openDevice OUT %s mode %d\n", 
+	     sndStatOut.device, sndStatOut.howToOpen);
+
     if(sndStatOut.fd == -1)
     {
-       while ((sndStatOut.fd = open(sndStatOut.device, O_RDWR|O_SYNC)) == -1 && wait)
+       while ((sndStatOut.fd = open(sndStatOut.device, sndStatOut.howToOpen|O_SYNC, 0666)) == -1 && wait)
        {
            osLogMsg("openDevice: waiting on output device\n");
            sleep(1);
@@ -627,7 +641,11 @@ AuBool wait;
 
     if(sndStatIn.fd == -1 && !share_in_out)
     {
-       while ((sndStatIn.fd = open(sndStatIn.device, O_RDONLY, 0)) == -1 && wait)
+      if (NasConfig.DoDebug)
+	osLogMsg("openDevice IN %s mode %d\n", sndStatIn.device, 
+		 sndStatIn.howToOpen);
+
+       while ((sndStatIn.fd = open(sndStatIn.device, sndStatIn.howToOpen, 0)) == -1 && wait)
        {
            osLogMsg("openDevice: waiting on input device\n");
            sleep(1);
@@ -645,7 +663,7 @@ AuBool wait;
     }
 
     if(mixerfd == -1)
-       while ((mixerfd = open("/dev/mixer", O_RDONLY, 0)) == -1 && wait)
+       while ((mixerfd = open(sndStatOut.mixer, O_RDONLY, 0)) == -1 && wait)
        {
            osLogMsg("openDevice: waiting on mixer device\n");
            sleep(1);
@@ -659,18 +677,26 @@ AuBool wait;
       }
 
     ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
-#ifndef sco
-    ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
-#endif /* sco */
 
-    if (sndStatOut.fd != sndStatIn.fd)
     {
-       ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
+      int rate ;
 #ifndef sco
-       ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
+      rate = sndStatOut.curSampleRate ;
+      ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
+      if (sndStatOut.forceRate) sndStatOut.curSampleRate = rate ;
 #endif /* sco */
-    }
 
+      if (sndStatOut.fd != sndStatIn.fd)
+	{
+	  ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
+#ifndef sco
+	  rate = sndStatOut.curSampleRate ;
+	  ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
+	  if (sndStatIn.forceRate) sndStatIn.curSampleRate = rate ;
+#endif /* sco */
+	}
+    }
+    
     setSampleRate(sndStatIn.curSampleRate);
 
     return AuTrue;
@@ -693,6 +719,10 @@ closeDevice()
 
     else
     {
+      if (NasConfig.DoDebug)
+	osLogMsg("closeDevice OUT %s mode %d\n", sndStatOut.device, 
+		 sndStatOut.howToOpen);
+
        while(close(sndStatOut.fd))
        {
            osLogMsg("closeDevice: waiting on output device\n");
@@ -715,6 +745,10 @@ closeDevice()
        }
        else
        {
+	 if (NasConfig.DoDebug)
+	   osLogMsg("closeDevice IN %s en %d\n", 
+		    sndStatOut.device, sndStatOut.howToOpen);
+
            while(close(sndStatIn.fd))
            {
                osLogMsg("closeDevice: waiting on input device\n");
@@ -943,6 +977,7 @@ static void disableProcessFlow()
 {
 
 #ifndef sco
+int rate ;
 	signal(SIGALRM, SIG_IGN);
 #endif /* sco */
 
@@ -958,14 +993,18 @@ static void disableProcessFlow()
 
   ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
-  ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
+    rate = sndStatOut.curSampleRate ;
+    ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
+	 if (sndStatOut.forceRate) sndStatOut.curSampleRate = rate ;
 #endif /* sco */
 
   if (sndStatOut.fd != sndStatIn.fd)
   {
       ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
+      rate = sndStatOut.curSampleRate ;
       ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
+	   if (sndStatIn.forceRate) sndStatIn.curSampleRate = rate ;
 #endif /* sco */
   }
 
@@ -1375,38 +1414,53 @@ AuBool AuInitPhysicalDevices()
    * create the input and output ports
    */
   if (!AL_initialized) {
-    int fd;
+    int fd ;
     AuInt32 i;
 
     AL_initialized = AuTrue;
 
-    if ((fd = open(sndStatOut.device, O_RDWR|O_SYNC, 0)) == -1) {
-        UNIDENTMSG;
-        return AuFalse;
-    }
+    if (sndStatOut.autoOpen) 
+      {
+	if (NasConfig.DoDebug)
+	  osLogMsg("openDevice OUT %s mode %d\n", 
+		   sndStatOut.device, sndStatOut.howToOpen);
+	
+	if ((fd = open(sndStatOut.device, sndStatOut.howToOpen|O_SYNC, 0)) == -1)
+	  {
+	    UNIDENTMSG;
+	    return AuFalse;
+	  }
+	sndStatOut.fd = fd;
 #if defined(AUDIO_GETINFO)
-    if (sndStatOut.isPCSpeaker) {
-      ioctl(fd, AUDIO_GETINFO, &spkrinf);
-      spkrinf.play.encoding = AUDIO_ENCODING_RAW;
-      ioctl(fd, AUDIO_SETINFO, &spkrinf);
-    }
+	if (sndStatOut.isPCSpeaker) {
+	  ioctl(fd, AUDIO_GETINFO, &spkrinf);
+        spkrinf.play.encoding = AUDIO_ENCODING_RAW;
+        ioctl(fd, AUDIO_SETINFO, &spkrinf);
+	}
 #endif
+      }
 
 #ifdef DEBUGDSPOUT
-    dspout = open("/tmp/dspout", O_RDWR | O_CREAT, 00666);
+    dspout = open("/tmp/dspout", O_WRONLY | O_CREAT, 00666);
 #endif
 #ifdef DEBUGDSPIN
-    dspin = open("/tmp/dspin", O_RDWR | O_CREAT, 00666);
+    dspin = open("/tmp/dspin", O_WRONLY | O_CREAT, 00666);
 #endif
 
-    sndStatOut.fd = fd;
 
-    if ((fd = open(sndStatIn.device, O_RDONLY, 0)) != -1)
-      sndStatIn.fd = fd;
-    else
-    {
-       sndStatIn.fd = sndStatOut.fd;
-       share_in_out = AuTrue;
+    if (sndStatIn.autoOpen) {
+
+      if (NasConfig.DoDebug)
+	osLogMsg("openDevice(1) IN %s mode %d\n", 
+		 sndStatIn.device, sndStatIn.howToOpen);
+
+      if ((fd = open(sndStatIn.device, sndStatIn.howToOpen, 0)) != -1)
+        sndStatIn.fd = fd;
+      else
+      {
+         sndStatIn.fd = sndStatOut.fd;
+         share_in_out = AuTrue;
+      }
     }
 
     setupSoundcard(&sndStatOut);
@@ -1414,7 +1468,7 @@ AuBool AuInitPhysicalDevices()
       setupSoundcard(&sndStatIn);
 
     if (!sndStatOut.isPCSpeaker) {
-      if ((mixerfd = open("/dev/mixer", O_RDONLY, 0)) == -1) {
+      if ((mixerfd = open(sndStatOut.mixer, O_RDONLY, 0)) == -1) {
         UNIDENTMSG;
         return AuFalse;
       }

@@ -1,5 +1,5 @@
 .\" $NCDId: @(#)AUVoxConfig.man,v 1.1 1996/04/24 17:00:26 greg Exp $
-.TH NASD.CONF 4 "" ""
+.TH NASD.CONF 5 "" ""
 .SH NAME
 nasd.conf \- Configuration file for NAS servers.
 .SH DESCRIPTION
@@ -47,6 +47,9 @@ Marks the end of the input section or output section.
 .B device "devname"
 Specifies what device is used. An example is \fBdevice "/dev/dsp"\fR.
 .PP
+.B mixer "mixername"
+Specifies what mixer device is used. An example is \fBdevice "/dev/mixer"\fR.
+.PP
 .B maxrate number
 the maximum number of samples per second that we'll drive the
 card at.
@@ -71,11 +74,23 @@ The number of bits per sample. Allowable values are 8 and 16.
 .B numchans number
 Used to decide if the card is run in stereo or mono mode. Allowable
 values are 1 or 2.
+
+.PP
+.B forcerate "no"|"yes"
+Forces the output rate to the current rate. The default is "no".
+.PP
+.B autoOpen  "no"|"yes"
+Whether to open the device at init time (if ReleaseDevice = no).  The default is "yes".
+.PP
+.B readwrite "no"|"yes"
+Whether or not to open the device read/write.  The default is "yes".
+If set to "no", then for input devices, the device will be opened
+readonly, and for output devices, the the device will be opened writeonly.
 .SH "SEE ALSO"
 nas(1), auinfo(1), auplay(1), auctl(1)
 .SH BUGS
 .PP
-Lots
+Absolutely none.
 .SH AUTHORS
 Stephen Hocking (sysseh@devetir.qld.gov.au), 
 Jon Trulson (jon@radscan.com)

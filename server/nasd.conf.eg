@@ -30,6 +30,7 @@ OutDevType	"EXT"
 inputsection
 
 	device		"/dev/dsp1"		# the SB emulation on my PAS16
+	mixer		"/dev/mixer1"		# mixer device
 	maxrate		11025
 	minrate		4000			# Kind of redundant
 	maxfrags	3			# We want really low latency
@@ -37,11 +38,16 @@ inputsection
 	fragsize	256			# Again, for low latency
 	wordsize	8			# It only handles 8 bits anyway
 	numchans	1			# Glorious living mono
+	forcerate	"no"			# forces input rate to current
+        autoOpen        "yes"			# whether to open the dev
+						# at init
+	readwrite	"yes"			# open read only if "no"
 end
 
 # These are used by voxware only for now.
 outputsection
 	device		"/dev/dsp"		# the full 16 bit interface!
+	mixer		"/dev/mixer"		# mixer device
 	maxrate		33000			# is flakey on my OPTi mb at 44
 	minrate		5000			# Redundant again
 	maxfrags	3			# Low latency (for doom!)
@@ -49,6 +55,10 @@ outputsection
 	fragsize	256			# Low latency again..
 	wordsize	16			# Yes!
 	numchans	2			# HiFi Stereo!
+	forcerate	"no"			# forces output rate to current
+        autoOpen        "yes"			# whether to open the dev
+						# at init
+	readwrite	"yes"			# open write only if "no"
 end
 
 #

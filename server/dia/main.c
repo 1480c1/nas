@@ -71,7 +71,9 @@ extern int      AuInitSetupReply();
 extern void 	AuInitProcVectors();
 extern Bool     InitClientResources();
 
-extern char *display;
+static char *AuServerName(void);
+
+extern char     *display;
 
 static int restart = 0;
 FILE    *yyin;			/* for the config parser */
@@ -126,19 +128,23 @@ main(argc, argv)
      * can't be passed argc, argv as parameters */
     argcGlobal = argc;
     argvGlobal = argv;
-    display = "0";
+
+    display = NULL;
     ProcessCommandLine(argc, argv);
 
-				/* JET - we don't actually become a
-				   daemon, so what's the point?
-				   REVISIT */
+				/* if display wasn't spec'd on the command
+				   line, find a suitable default */
+    if (display == NULL)
+      display = AuServerName();
 
     /* We're running as a daemon, so close stdin, stdout and stderr
        before we start the main loop */
 
     close(0);
     close(1);
-    close(2);
+
+    if (!NasConfig.DoDebug)
+      close(2);			/* only close stderr if no debugging */
 
     /* And cd to / so we don't hold anything up; core files will also
        go there. */
@@ -184,4 +190,45 @@ main(argc, argv)
 	}
     }
     exit(0);
+}
+
+
+/* JET - get the server port to listen on here... uses AUDIOSERVER, then
+ *  DISPLAY if set.
+ */
+
+static char *AuServerName (void)
+{
+  char *name = NULL;
+  char *ch, *ch1;
+
+    name = (char *) getenv ("AUDIOSERVER");
+    if (name)
+      {
+	if ((ch = strchr(name, ':')) != NULL)
+	  {
+	    ch++;
+	    if ((ch1 = strchr(ch, '.')) != NULL)
+	      *ch1 = '\0';
+	    return(ch);
+	  }
+	else
+	  return name;
+      }
+
+    name = (char *) getenv ("DISPLAY");
+    if (name)
+      {
+	if ((ch = strchr(name, ':')) != NULL)
+	  {
+	    ch++;
+	    if ((ch1 = strchr(ch, '.')) != NULL)
+	      *ch1 = '\0';
+	    return(ch);
+	  }
+	else
+	  return name;
+      }
+
+    return "0";
 }

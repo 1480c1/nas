@@ -28,8 +28,12 @@ number				[0-9]+
 [Mm][Aa][Xx][Rr][Aa][Tt][Ee]		{ return MAXRATE; }
 [Mm][Ii][Nn][Rr][Aa][Tt][Ee]		{ return MINRATE; }
 [Dd][Ee][Vv][Ii][Cc][Ee]		{ return DEVICE; }
+[Mm][Ii][Xx][Ee][Rr]			{ return MIXER; }
+[Rr][Ee][Aa][Dd][Ww][Rr][Ii][Tt][Ee]	{ return READWRITE; }
 [Mm][Ii][Xx][Ee][Rr][Ii][Nn][Ii][Tt]    { return MIXERINIT; }
 [Oo][Uu][Tt][Dd][Ee][Vv][Tt][Yy][Pp][Ee]  { return OUTDEVTYPE; }
+[Ff][Oo][Rr][Cc][Ee][Rr][Aa][Tt][Ee]	{ return FORCERATE; }
+[Aa][Uu][Tt][Oo][Oo][Pp][Ee][Nn]	{ return AUTOOPEN; }
 
 
 {string}			{ yylval.ptr = (char *)yytext; return STRING; }

@@ -4,6 +4,7 @@
  *
  */
 
+#include <fcntl.h>
 #include "nasconfig.h"
 #include "config.h"
 #include "aulog.h"
@@ -35,6 +36,32 @@ void ddaSetConfig(int token, void *value)
 	{                       /* we're in the output section */
           confStat = &sndStatOut;
         }
+      break;
+
+    case FORCERATE :
+      num = (int) value;
+		confStat->forceRate = num ;
+      break;
+
+    case AUTOOPEN :
+      num = (int) value;
+		confStat->autoOpen = num;
+      break;
+
+    case READWRITE :
+      num = (int) value;
+		if (confStat == &sndStatIn) {
+			confStat->howToOpen = (num ? O_RDWR : O_RDONLY);
+		}
+		else {
+			confStat->howToOpen = (num ? O_RDWR : O_WRONLY);
+		}
+      break;
+
+    case MIXER:
+      str = (char *) value;
+     
+      confStat->mixer = str;
       break;
 
     case DEVICE:
