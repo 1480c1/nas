@@ -76,6 +76,8 @@ ClientPtr       pClient;
 int             count;
 auEvent        *events;
 {
+    /* pebl: check whether client is still there */
+    if (pClient->clientGone == FALSE)
     WriteEventsToClient(pClient, count, events);
 }
 

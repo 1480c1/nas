@@ -355,6 +355,9 @@ AuFixedPoint    AuFixedPointMultiply();
 									      \
     if (!((d) = (ComponentPtr) aualloc(PAD4(sizeof(ComponentRec)) + (extra))))\
 	return AuBadAlloc;						      \
+                                                                              \
+    /* pebl: specific initalize minibufSamples to zero (needed!) */           \
+    bzero((d),PAD4(sizeof(ComponentRec)) + (extra));                          \
 }
 
 #define AU_ADD_DEVICE(d)						      \

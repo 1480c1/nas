@@ -259,18 +259,24 @@ CloseDownClient(client)
 {
     if (!client->clientGone)
     {
-	if (client->closeDownMode == AuCloseDownDestroy)
-	{
 	    client->clientGone = TRUE;  /* so events aren't sent to client */
 	    CloseDownConnection(client);
+
+	if (client->closeDownMode == AuCloseDownDestroy)
+	{
 	    FreeClientResources(client);
 	    if (ClientIsAsleep (client))
 		ClientSignal (client);
 	    if (client->index < nextFreeClientID)
 		nextFreeClientID = client->index;
 	    clients[client->index] = NullClient;
-	    if ((client->requestVector != InitialVector) &&
-		(--nClients == 0))
+
+	    /* Pebl: decrease first as the compiler might skip the second test
+	     * if first fails, then check if client was idle.  BUG: if a
+	     * persistent client is running flows all flows are killed if
+	     * there is no more clients, except if it was the only client.  */
+	    if ((--nClients == 0) &&
+		(client->requestVector != InitialVector))
 	    {
 		if (terminateAtReset)
 		    dispatchException |= DE_TERMINATE;
@@ -281,8 +287,6 @@ CloseDownClient(client)
 	}
 	else
 	{
-	    client->clientGone = TRUE;
-	    CloseDownConnection(client);
 	    --nClients;
 	}
     }
@@ -350,6 +354,8 @@ void InitClient(client, i, ospriv)
     client->swapped = FALSE;
     client->big_requests = FALSE;
     client->closeDownMode = AuCloseDownDestroy;
+    /* pebl: init unused field? */
+    bzero(client->screenPrivate,MAXSCREENS * sizeof(pointer));
 }
 
 /************************

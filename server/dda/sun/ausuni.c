@@ -71,7 +71,7 @@ from the copyright holder.
  * $NCDId$
  */
 
-#define _AUSUN_C_
+#define _AUSUN_C_ 1
 
 
 #include <stdio.h>				/* for sprintf */
@@ -117,6 +117,17 @@ static char name_CS4231[]  = "SUNW,CS4231";
 static char name_dbri[]    = "SUNW,dbri";
 static char name_unknown[] = "unknown audio device";
 static char *name_of_physical_device;	/* must point to one of the above */
+
+/* pebl: on some solaris (for example sun rays) have pseudo audio devices as
+   there are used for multiply users. The pseudo device is create by 'utadem'
+   in /tmp/SUNWut/dev/utaudio/<literal>. It seems that sun uses/encourage to
+   use the env AUDIODEV to point to the pseudo devide, so it should be checked
+   before trying the default devices. If there is a pseodu device the ctl is
+   /tmp/SUNWut/dev/utaudio/<literal>ctl. 
+   http://www.sun.com/desktop/products/software/sunforum/sunforumnotes.html*/
+
+static const char *const default_device = "/dev/audio";
+
 
 extern int errno;
 
@@ -466,9 +477,15 @@ openDevice(wait)
 AuBool wait;
 {
 	audio_info_t info;
+        const char *device = NULL;
+
+	/* pebl: Check whether a pseudo device is used, else try the normal ones */
+        if ((device = getenv("AUDIODEV")) == NULL)
+          device = default_device;
+
 
 	if (devAudio == -1)
-	  while ((devAudio = open("/dev/audio", devAudioMode)) == -1 && wait)
+	  while ((devAudio = open(device, devAudioMode)) == -1 && wait)
 	    {
 	      if (errno == EINVAL && devAudioMode == O_RDWR)
 		devAudioMode = O_WRONLY;
@@ -1353,21 +1370,42 @@ AuInitPhysicalDevices()
 
 	if (devAudio == -1) {
 		audio_device_t  type;
+		const char *device = NULL;
+		char *devicectl = NULL;
 
-		devAudio = open("/dev/audio", devAudioMode);
+		/* pebl: Check whether a pseudo device is used, else try the normal one */
+		if ((device = getenv("AUDIODEV")) == NULL)
+		  device = default_device;
+
+#ifdef DEBUGLOG
+		fprintf(stderr,"Trying device %s\n",device);
+		fflush(stderr);
+#endif
+
+		devAudio = open(device, devAudioMode);
 		if (devAudio == -1 && errno == EINVAL && 
 		    devAudioMode == O_RDWR)
 		  {
 		    devAudioMode = O_WRONLY;
-		    devAudio = open("/dev/audio", devAudioMode);
+		    devAudio = open(device, devAudioMode);
 		  }
  
+
+		/* pebl: We cannot just concat "ctl" on variable device, so
+                   make a copy and concat "ctl".  (free it again) */
+		if (!(devicectl = (char *) aualloc(strlen(device) +
+						   strlen("ctl"))))
+		  return AuFalse;
+		sprintf(devicectl,"%sctl",device);
+
 		open_for_business =
 			(devAudio != -1 &&
 #ifdef SEPARATE_CTLS
-			 (devAudioCtl2 = open("/dev/audioctl", O_RDWR)) != -1 &&
+			 (devAudioCtl2 = open(devicectl, O_RDWR)) != -1 &&
 #endif
-			 (devAudioCtl = open("/dev/audioctl", O_RDWR)) != -1);
+			 (devAudioCtl  = open(devicectl, O_RDWR)) != -1);
+
+		aufree(devicectl);
 
 		if (open_for_business) {
 #ifndef AUDIO_GETDEV
