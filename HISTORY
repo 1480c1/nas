@@ -2,6 +2,23 @@ $Id$
 
 10/06/2004 1.6g
 
+        - 1.7 release candidate
+
+        - corrected a possible race condition in auvoxware that could
+          cause the server to hang under certain conditions.  I do not
+          know why I haven't seen this problem before, but I could
+          recreate it easily by killing auplay while playing a long
+          tune.
+
+          If the system restarts syscalls after a signal handler has
+          run, a situation could arise where the previous timer was
+          never disabled.  This could cause a previous ioctl(DSP_SYNC)
+          called from setSampleRate() to be constantly interrupted and
+          restarted, causing an apparent hang.
+         
+          Now we just turn off the timer as the first thing in
+          setSampleRate() so DSP_SYNC can actually finish.
+
         - Patch from Tobias Diedrich that allows mixer init to
           fail in the voxware server. 
 
@@ -17,8 +34,8 @@ $Id$
           See http://radscan.com/nas/nas-ml/msg01121.html for more
           details.
 
-        - 1.7 release candidate
-
+        - redid the FAQ in an attempt to make it more useful.  I'll
+          try to keep it up to date.
 
 10/06/2004 1.6f
 

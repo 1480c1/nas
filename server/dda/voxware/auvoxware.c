@@ -592,6 +592,10 @@ AuUint32 rate;
   int numSamplesIn, numSamplesOut;
   AuBlock l;
 
+  setTimer(0);                  /* JET - turn off the timer here so the
+                                   following code has a chance to clean
+                                   things up. A race can result
+                                   otherwise.  */
   if (NasConfig.DoDebug)
     {
       osLogMsg("setSampleRate(rate = %d);\n", rate);
@@ -661,32 +665,33 @@ AuBool wait;
     osLogMsg("openDevice OUT %s mode %d\n", 
 	     sndStatOut.device, sndStatOut.howToOpen);
 
-    if(sndStatOut.fd == -1)
+  
+  if(sndStatOut.fd == -1)
     {
-       while ((sndStatOut.fd = open(sndStatOut.device, 
-				    sndStatOut.howToOpen|O_SYNC|extramode, 
-				    0666)) == -1 && wait)
-       {
-           osLogMsg("openDevice: waiting on output device\n");
-           sleep(1);
-       }
-       setupSoundcard(&sndStatOut);
+      while ((sndStatOut.fd = open(sndStatOut.device, 
+                                   sndStatOut.howToOpen|O_SYNC|extramode, 
+                                   0666)) == -1 && wait)
+        {
+          osLogMsg("openDevice: waiting on output device\n");
+          sleep(1);
+        }
+      setupSoundcard(&sndStatOut);
     }
-    else
-      {
-	if (NasConfig.DoDebug)
-	  {
-	    osLogMsg("openDevice: output device already open\n");
-	  }
-      }
-
+  else
+    {
+      if (NasConfig.DoDebug)
+        {
+          osLogMsg("openDevice: output device already open\n");
+        }
+    }
+  
 #if  !defined(__CYGWIN__) 
-    if(sndStatIn.fd == -1 && !share_in_out)
+  if(sndStatIn.fd == -1 && !share_in_out)
     {
       if (NasConfig.DoDebug)
 	osLogMsg("openDevice IN %s mode %d\n", sndStatIn.device, 
 		 sndStatIn.howToOpen);
-
+      
       retries = 0;
       while ((sndStatIn.fd = open(sndStatIn.device, 
                                   sndStatIn.howToOpen|extramode, 
@@ -696,7 +701,7 @@ AuBool wait;
                    retries);
           sleep(1);
           retries++;
-
+          
           if (retries >= 5)
             {
               osLogMsg("openDevice: maximum retries exceeded, giving up\n");
@@ -707,55 +712,55 @@ AuBool wait;
       if (sndStatIn.fd != -1 && sndStatOut.fd != sndStatIn.fd)
         setupSoundcard(&sndStatIn);
     }
-    else
+  else
     {
-       sndStatIn.fd=sndStatOut.fd;
-       if (NasConfig.DoDebug)
-	 {
-	   osLogMsg("openDevice: input device already open\n");
-	 }
+      sndStatIn.fd=sndStatOut.fd;
+      if (NasConfig.DoDebug)
+        {
+          osLogMsg("openDevice: input device already open\n");
+        }
     }
 #endif
-
-    if(mixerfd == -1)
-       while ((mixerfd = open(sndStatOut.mixer, O_RDONLY|extramode, 
-			      0666)) == -1 && wait)
-       {
-           osLogMsg("openDevice: waiting on mixer device\n");
-           sleep(1);
-       }
-    else
+  
+  if(mixerfd == -1)
+    while ((mixerfd = open(sndStatOut.mixer, O_RDONLY|extramode, 
+                           0666)) == -1 && wait)
       {
-	if (NasConfig.DoDebug)
-	  {
-	    osLogMsg("openDevice: mixer device already open\n");
-	  }
+        osLogMsg("openDevice: waiting on mixer device\n");
+        sleep(1);
       }
-
-    ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
-
+  else
     {
-      int rate ;
-#ifndef sco
-      rate = sndStatOut.curSampleRate ;
-      ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
-      if (sndStatOut.forceRate) sndStatOut.curSampleRate = rate ;
-#endif /* sco */
-
-      if (sndStatOut.fd != sndStatIn.fd)
-	{
-	  ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
-#ifndef sco
-	  rate = sndStatOut.curSampleRate ;
-	  ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
-	  if (sndStatIn.forceRate) sndStatIn.curSampleRate = rate ;
-#endif /* sco */
-	}
+      if (NasConfig.DoDebug)
+        {
+          osLogMsg("openDevice: mixer device already open\n");
+        }
     }
+  
+  ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
+  
+  {
+    int rate ;
+#ifndef sco
+    rate = sndStatOut.curSampleRate ;
+    ioctl(sndStatOut.fd, SNDCTL_DSP_SPEED, &sndStatOut.curSampleRate);
+    if (sndStatOut.forceRate) sndStatOut.curSampleRate = rate ;
+#endif /* sco */
     
-    setSampleRate(sndStatIn.curSampleRate);
-
-    return AuTrue;
+    if (sndStatOut.fd != sndStatIn.fd)
+      {
+        ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
+#ifndef sco
+        rate = sndStatOut.curSampleRate ;
+        ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &sndStatIn.curSampleRate);
+        if (sndStatIn.forceRate) sndStatIn.curSampleRate = rate ;
+#endif /* sco */
+      }
+  }
+  
+  setSampleRate(sndStatIn.curSampleRate);
+  
+  return AuTrue;
 }
 
 static void
