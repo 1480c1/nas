@@ -17,7 +17,8 @@
 
 /*
  * the location of the directory in which to find config files 
- *  by default if NASCONFSEARCHPATH isn't defined.
+ *  by default if NASCONFSEARCHPATH isn't defined 
+ *  (see config/NetAudio.def).
  */
 
 #ifndef NASCONFSEARCHPATH
