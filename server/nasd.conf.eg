@@ -6,7 +6,8 @@
 #
 
 
-# set this to 0 for no debugging
+# set this to 0 for no debugging, larger numbers equals more debugging
+#  info...
 Debug 0
 
 # be verbose, comment out if you don't want it
@@ -14,7 +15,7 @@ Verbose
 
 # set this to "yes" or "no" to indicate whether nasd should release the
 #  audio device when finished playing a sound.
-# Only the voxware and sun servers understand this for now.
+# Only the voxware, hpux, and sun servers understand this for now.
 ReleaseDevice "yes"
 
 # init the mixer on startup? (voxware)
