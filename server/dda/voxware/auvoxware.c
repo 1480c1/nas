@@ -131,9 +131,6 @@ PERFORMANCE OF THIS SOFTWARE.
  *   [chris]
  */
 
-/*JET - REVISIT */
-#define RELINQUISH
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "nasconfig.h"
@@ -179,6 +176,7 @@ static AuBool   scoAudioBlocked = AuFalse;
 
 static AuBool   processFlowEnabled;
 static void disableProcessFlow(void);
+static void closeDevice(void);
 
 #define	SERVER_CLIENT		0
 
@@ -459,15 +457,13 @@ AuUint32 *auServerDeviceListSize,
     setPhysicalOutputGain(auDefaultOutputGain);
     setPhysicalInputGainAndLineMode(auDefaultInputGain, 0);
 
-    /*JET - this was part of Steve McIntyre's mondo
-            patch I applied for 1.3b.  Unfortunately it causes
-	    the intervalProc sighandler to not get setup properly the first 
-	    time around... ie: The first connection after server startup will 
-	    always cause the server to go into an infinite loop until the
-	    client is killed.  Then everyhting starts working again.
+    /* JET - close the device if requested... only needs to happen
+       here during first time init as diasableProcessFlow will handle
+       it from here on out. */
 
-	    disableProcessFlow();
-     */
+    if (relinquish_device)
+      closeDevice();
+
   }
 
   UNIDENTMSG;
@@ -607,7 +603,6 @@ static AuBool
 openDevice(wait)
 AuBool wait;
 {
-#ifdef RELINQUISH
   if (NasConfig.DoDebug)
     {
       osLogMsg("openDevice\n");
@@ -679,13 +674,11 @@ AuBool wait;
     setSampleRate(sndStatIn.curSampleRate);
 
     return AuTrue;
-#endif /* RELINQUISH */
 }
 
 static void
 closeDevice()
 {
-#ifdef RELINQUISH
   if (NasConfig.DoDebug)
     {
       osLogMsg("closeDevice: out\n");
@@ -753,7 +746,6 @@ closeDevice()
     sndStatIn.fd=-1;
     sndStatOut.fd=-1;
     mixerfd=-1;
-#endif /* RELINQUISH */
 }
 
 

@@ -24,6 +24,7 @@
 
 XCOMM $NCDId: @(#)Imakefile,v 1.17 1995/12/06 01:33:07 greg Exp $
 
+#include "../config/NetAudio.def"
 #include "../config/NetAudio.tmpl"
 
 #define StdSubdirs dia os
@@ -181,10 +182,6 @@ InstallMultipleFlags($(ALL),$(BINDIR),$(INSTPGMFLAGS))
 SUBDIRS = $(HPDIRS)
 #endif
 
-
-install::
-	-(cd $(DESTDIR)$(BINDIR); $(RM) au; $(LN) $(ALL1) au)
-
 #define IHaveSubdirs
 #define PassCDebugFlags AuPassCDebugFlags
 
@@ -209,7 +206,7 @@ ForceSubdirs($(DEPDIRS) $(SUBDIRS))
 clean::
 	$(RM) $(ALL)
 
- ETCDIR = /etc/nas
+ ETCDIR = NasConfigSearchPath
 
 InstallManPage(nasd,$(MANDIR))
 InstallManPage(nasd.conf,$(MANDIR))

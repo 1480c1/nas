@@ -1,5 +1,5 @@
 /*
- * NetAudio.h - some configurable features, probably candidates for
+ * NasConfig.h - some configurable features, probably candidates for
  *              autoconf'ing
  *
  * $Id$
@@ -13,5 +13,14 @@
   
 #ifndef hpux
 #define DIA_USE_SYSLOG 
+#endif
+
+/*
+ * the location of the directory in which to find config files 
+ *  by default if NASCONFSEARCHPATH isn't defined.
+ */
+
+#ifndef NASCONFSEARCHPATH
+#define NASCONFSEARCHPATH "/etc/nas/"
 #endif
 

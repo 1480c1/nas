@@ -23,6 +23,7 @@
  * $NCDId: @(#)Imakefile,v 1.6 1994/08/09 19:23:37 greg Exp $
  */
 
+#include "../../config/NetAudio.def"
 #include "../../config/NetAudio.tmpl"
 
 YFLAGS = -d
@@ -38,9 +39,7 @@ OBJS = dispatch.o dixutils.o events.o globals.o main.o resource.o swapreq.o \
        auprocess.o  nasconfig.o lex.o gram.o
 
     INCLUDES = -I. -I../include -I../../include -I../../lib/audio
-    DEFINES = AllocateLocalDefines
-    NASCONFSEARCHPATH = /etc/nas/
-    EXTRA_DEFINES = -DNASCONFSEARCHPATH=\"$(NASCONFSEARCHPATH)\"
+    DEFINES = AllocateLocalDefines -DNASCONFSEARCHPATH=\"NasConfigSearchPath\"
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(dia,$(OBJS))

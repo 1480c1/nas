@@ -393,8 +393,6 @@
 ./server/dda/sun/ausun.h
 ./server/dda/sun
 ./server/dda/voxware/Makefile
-./server/dda/voxware/AUVoxConfig.eg
-./server/dda/voxware/AUVoxConfig.man
 ./server/dda/voxware/Imakefile
 ./server/dda/voxware/auvoxware.c
 ./server/dda/voxware/auvoxware.h
