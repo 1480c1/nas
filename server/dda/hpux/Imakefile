@@ -24,8 +24,8 @@
 
 #include "../../../config/NetAudio.tmpl"
 
-SRCS = auhpux.c
-OBJS = auhpux.o
+SRCS = auhpux.c config.c
+OBJS = auhpux.o config.o
 
     INCLUDES = -I. -I../../include -I../../../include -I../../dia
 

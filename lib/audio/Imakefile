@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)Imakefile,v 1.21 1996/09/04 23:06:02 greg Exp $
  */
 
@@ -44,8 +45,6 @@
 #define ProfileLibAudio ProfileLibX
 #endif
 
-#define DoNormalLib NormalLibAudio
-#define DoSharedLib SharedLibAudio
 #define DoDebugLib DebugLibAudio
 #define DoProfileLib ProfileLibAudio
 
@@ -69,10 +68,10 @@
 
         DEFINES = $(MALLOC_DEFINES) $(SYSV_DEFINES)
    CONN_DEFINES = ConnectionFlags
-   INSTALLFLAGS = $(INSTINCFLAGS)
 
 HEADERS = Alibint.h Alibnet.h Xtutil.h audiolib.h audioutil.h snd.h wave.h    \
-          voc.h aiff.h sound.h soundlib.h fileutil.h 8svx.h Astreams.h
+          voc.h aiff.h sound.h soundlib.h fileutil.h 8svx.h Astreams.h \
+	  audio.h Afuncproto.h Afuncs.h Amd.h Amd.h Aos.h Aosdefs.h Aproto.h
 
    SRCS = AlibAsync.c Alibint.c AuErrDes.c AuFreeEData.c CloseSvr.c ConnSvr.c \
           CrFlow.c DesFlow.c Flush.c HandleEv.c IDOfEvent.c KillClient.c      \
@@ -119,8 +118,7 @@ SpecialObjectRule(Astreams.o,/**/,$(CONN_DEFINES))
 SpecialObjectRule(globals.o,/**/,$(CONN_DEFINES))
 
 #endif
-
-BuildIncludes($(HEADERS),audio,)
+BuildIncludes($(HEADERS),audio,..)
 InstallMultiple($(HEADERS),$(INCDIR))
 #if ProjectX >= 5
 InstallNonExecFile(AuErrorDB,$(LIBDIR))

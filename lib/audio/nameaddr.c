@@ -1,3 +1,4 @@
+/* $Id$ */
 /* $NCDId: @(#)nameaddr.c,v 1.2 1994/05/02 17:42:06 greg Exp $ */
 /* $XConsortium: nameaddr.c,v 1.5 91/09/12 13:41:04 rws Exp $ */
 /*	nameaddr.c - included by Astreams.c			*/
@@ -735,7 +736,7 @@ ConvertAddress(pktptr, n, entry, len)
 	int	i;
 	
 	for(i=0; i< len; i++)
-	    if(entry[i] < ' ' || entry[i] > 0177)
+	    if((unsigned char)entry[i] < ' ' || (unsigned char)entry[i] > 0177)
 		break;
 	if(i < len)
 	{

@@ -505,10 +505,15 @@ open_unix_socket ()
     bzero ((char *) &unsock, sizeof (unsock));
     unsock.sun_family = AF_UNIX;
     oldUmask = umask (0);
+
 #ifdef X_UNIX_DIR
+# ifndef S_ISVTX
+#  define S_ISVTX   01000 
+# endif                                  
     if (!mkdir (X_UNIX_DIR, 0777))
-	chmod (X_UNIX_DIR, 0777);
+      chmod (X_UNIX_DIR, 0777 | S_ISVTX);
 #endif
+
     strcpy (unsock.sun_path, X_UNIX_PATH);
     strcat (unsock.sun_path, display);
 #ifdef BSD44SOCKETS

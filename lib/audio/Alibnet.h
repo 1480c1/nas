@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)Alibnet.h,v 1.8 1995/12/06 01:16:57 greg Exp $
  */
 
@@ -256,7 +257,7 @@ without express or implied warranty.
  *		int iov_len;
  *	};
  */
-#if defined(USG) && !defined(CRAY) && !defined(umips) && !defined(MOTOROLA) && !defined(uniosu) && !defined(_UIO_)
+#if defined(USG) && !defined(CRAY) && !defined(umips) && !defined(MOTOROLA) && !defined(uniosu) && !defined(_UIO_) && !defined(USL)
 struct iovec {
     caddr_t iov_base;
     int iov_len;
@@ -264,7 +265,7 @@ struct iovec {
 #endif /* USG */
 
 
-#ifdef STREAMSCONN
+#if defined(STREAMSCONN) 
 #include "Astreams.h"
 
 extern char _AusTypeOfStream[];
@@ -281,7 +282,7 @@ extern Austream _AusStream[];
 /*
  * bsd can read from sockets directly
  */
-#ifndef WIN32
+#if !defined(WIN32) 
 #define ReadFromServer(dpy, data, size) read((dpy), (data), (size))
 #define WriteToServer(dpy, bufind, size) write((dpy), (bufind), (size))
 #else /* WIN32 */
