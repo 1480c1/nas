@@ -33,7 +33,11 @@
 #define RmTree(dir)		$(RM) -r dir
 #define AuPassCDebugFlags	'CDEBUGFLAGS=$(CDEBUGFLAGS)'
 #define Obj(x)			x.o
-#define Exe(x)			x
+#if defined(cygwinArchitecture)
+# define Exe(x)			x.exe
+#else
+# define Exe(x)			x
+#endif
 #define LibPre()		lib
 #define Lib(x)			LibPre()x.a
 #else /* WIN32 */

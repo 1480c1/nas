@@ -69,6 +69,9 @@ Enables or disables Partial Networking.  Enabling Partial Networking
 allows the server to start, even if the server cannot establish all of
 its well-known sockets (connection points for clients), but
 establishes at least one.
+.TP 8
+.B \-config \fIfile\fP
+Use the config file \fIfile\fP, instead of the default (/etc/nasd/nasd.conf).
 .SH SIGNALS
 The Network Audio System server attaches special meaning to the following signals:
 .TP 8

@@ -161,7 +161,7 @@ GraphWidget     w;
 unsigned int    which;
 {
     XGCValues       gcv;
-#ifndef __alpha
+#if !defined(__alpha__) && !defined(__x86_64__) && !defined(__ia64__) && !defined(__LP64__)
     unsigned long   commonMask;
 #else /* __alpha */
     unsigned int  commonMask;

@@ -120,7 +120,7 @@ pragma off(char_default_unsigned);
 #define B16
 #endif
 
-#ifndef __alpha
+#if !defined(__alpha__) && !defined(__x86_64__) && !defined(__ia64__) && !defined(__LP64__)
 typedef long		INT32;
 typedef unsigned long	CARD32;
 typedef unsigned long	BITS32;

@@ -271,6 +271,7 @@ void UseMsg(void)
     ErrorF(" -b                 detach and run in background\n");
     ErrorF(" -v                 enable verbose messages\n");
     ErrorF(" -d <num>           enable debug messages at level <num>\n");
+    ErrorF(" -config <file>     use <file> as the nasd config file\n");
 #ifndef AMOEBA
 #ifdef PART_NET
     ErrorF(" -pn                partial networking enabled [default]\n");
@@ -282,6 +283,33 @@ void UseMsg(void)
 #endif
     ddaUseMsg();		/* print dda specific usage */
 }
+
+/* 
+ * This function parses the command line to check if a non-default
+ * config file has been specified. This needs to be separate from the
+ * normal command-line processing below because we _only_ want to grab
+ * the config file name. Other options need to be read from the config
+ * file and (potentially) overridden by command-line options later.
+ */
+char *
+FindConfigFile (int argc, char *argv[] )
+{
+  int i;
+
+  for (i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "-config") == 0) {
+      i++;
+      if (i < argc)
+        return argv[i];
+      else {
+        UseMsg();
+        exit(1);
+      }
+    }
+  }
+  return NULL; /* Not found */
+}
+
 
 /*
  * This function parses the command line. Handles device-independent fields
@@ -325,6 +353,16 @@ ProcessCommandLine ( int argc, char *argv[] )
 	  {
 	    NasConfig.DoVerbose = TRUE;
 	  }
+    else if (strcmp(argv[i], "-config") == 0)
+    {
+        i++;
+	    if (i < argc)
+	      i++;
+	    else {
+	      UseMsg();
+	      exit(1);
+        }
+    }
 	else if (strcmp(argv[i], "-b") == 0)
 	  {
 	    NasConfig.DoDaemon = TRUE;

@@ -366,19 +366,11 @@ open_tcp_socket ()
 
     if (NasConfig.LocalOnly)
       {
-#if defined(__CYGWIN__)
-      insock.sin_addr.s_addr = INADDR_LOOPBACK;	/* is this right? */
-#else
-      insock.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-#endif
+        insock.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
       }
     else
       {
-#if defined(__CYGWIN__)
-	insock.sin_addr.s_addr = INADDR_ANY;
-#else
 	insock.sin_addr.s_addr = htonl(INADDR_ANY);
-#endif
       }
     
     retry = 20;

@@ -153,6 +153,7 @@ void		ErrorF();
 void		Error();
 void		FatalError();
 void		ProcessCommandLine();
+char        *FindConfigFile ();
 void		FlushAllOutput();
 void		FlushIfCriticalOutputPending();
 #ifndef CAHILL_MALLOC

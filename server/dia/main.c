@@ -90,12 +90,9 @@ NotImplemented()
 
 static FILE     *openConfigFile (char *path)
 {
-  static char   buf[1024];
   FILE *config;
 
-  strcat (buf, path);
-  strcat (buf, "nasd.conf");
-  if ((config = fopen (buf, "r")) != NULL)
+  if ((config = fopen (path, "r")) != NULL)
     return config;
   else
     return NULL;
@@ -108,6 +105,7 @@ main(argc, argv)
     char	*argv[];
 {
     int		i;
+    char    *config_file;
 
     /* Notice if we're restart.  Probably this is because we jumped through
      * uninitialized pointer */
@@ -119,8 +117,11 @@ main(argc, argv)
     /* Init the globals... */
     diaInitGlobals();
 
-				/* Now parse the config file */
-    if ((yyin = openConfigFile (NASCONFSEARCHPATH)) != NULL)
+    if ((config_file = FindConfigFile(argc, argv)) == NULL)
+        config_file = NASCONFSEARCHPATH"/nasd.conf";
+
+    /* Now parse the config file */
+    if ((yyin = openConfigFile (config_file)) != NULL)
       yyparse();
 
     /* These are needed by some routines which are called from interrupt
