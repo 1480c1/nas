@@ -19,6 +19,7 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $Id$
  * $NCDId: @(#)audispatch.c,v 1.13 1996/05/07 20:12:46 greg Exp $
  */
 
@@ -40,11 +41,13 @@ extern void     Swap32Write(), AuSwapDeviceAttributesWrite(),
                 AuFreeFlowElements(), AuProcessClockedFlows(),
                 AuProcessStateChanges(), AuProcessUnclockedFlows(),
                 AuSetInputGainAndLineMode(), AuSetOutputGainAndMode(),
+                AuSetFeedbackGain(),
                 CloseDownRetainedResources(), WriteEventsToClient(),
                 WriteToClient();
 extern AuBool   AuChangeElementState(), AuInitDevice(), AuMatchAttributes();
 extern int      AuCompileFlow(), AuSetComponentAttributes();
-extern void	AuGetOutputGainAndMode();
+extern void    AuGetOutputGainAndMode(), AuGetFeedbackGain(),
+               AuGetInputGain(), AuGetInputMode();
 
 extern RESTYPE  auFlowType,
                 auComponentType;
@@ -166,8 +169,15 @@ ClientPtr       client;
     {
 	if (c->list)
 	{
-	    if (c->kind == AuComponentKindPhysicalOutput)
+           if (c->kind == AuComponentKindPhysicalInput)
+           {
+               AuGetInputGain(&c->gain);
+               AuGetInputMode(&c->lineMode);
+           }
+           else if (c->kind == AuComponentKindPhysicalOutput)
 		AuGetOutputGainAndMode(&c->gain, &c->lineMode);
+           else if (c->kind == AuComponentKindPhysicalFeedback)
+               AuGetFeedbackGain(&c->gain);
 
 	    xferDeviceAttributes(c, a);
 
@@ -214,8 +224,15 @@ ClientPtr       client;
 		  PAD4(c->numChildren * sizeof(AuDeviceID))) >> 2;
     WriteAuReplyToClient(client, sizeof(rep), &rep);
 
-    if (c->kind == AuComponentKindPhysicalOutput)
+    if (c->kind == AuComponentKindPhysicalInput)
+    {
+       AuGetInputGain(&c->gain);
+       AuGetInputMode(&c->lineMode);
+    }
+    else if (c->kind == AuComponentKindPhysicalOutput)
 	AuGetOutputGainAndMode(&c->gain, &c->lineMode);
+    else if (c->kind == AuComponentKindPhysicalFeedback)
+       AuGetFeedbackGain(&c->gain);
 
     xferDeviceAttributes(c, a);
 
@@ -271,6 +288,8 @@ ClientPtr       client;
 	AuSetInputGainAndLineMode(c->gain, c->lineMode);
     else if (c->kind == AuComponentKindPhysicalOutput)
 	AuSetOutputGainAndMode(c->gain, c->lineMode);
+    else if (c->kind == AuComponentKindPhysicalFeedback)
+       AuSetFeedbackGain(c->gain);
 
     return AuSuccess;
 }
@@ -1662,8 +1681,15 @@ ClientPtr       client;
 
 	d = auServerDevices[i];
 
-	if (d->kind == AuComponentKindPhysicalOutput)
+       if (d->kind == AuComponentKindPhysicalInput)
+       {
+           AuGetInputGain(&d->gain);
+           AuGetInputMode(&d->lineMode);
+       }
+       else if (d->kind == AuComponentKindPhysicalOutput)
 	    AuGetOutputGainAndMode(&d->gain, &d->lineMode);
+       else if (d->kind == AuComponentKindPhysicalFeedback)
+           AuGetFeedbackGain(&d->gain);
 
 	xferDeviceAttributes(d, da);
 
