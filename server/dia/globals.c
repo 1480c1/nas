@@ -49,24 +49,56 @@ SOFTWARE.
 
 /* $XConsortium: globals.c,v 1.51 92/03/13 15:40:57 rws Exp $ */
 
+/*
+ * $Id$
+ * Mostly rewritten from here on out... -Jon Trulson
+ */
+
 #include <audio/Amd.h>
 #include "misc.h"
 #include "site.h"
 #include "dixstruct.h"
 #include "os.h"
 
-ClientPtr *clients;
-ClientPtr  serverClient;
-int  currentMaxClients;   /* current size of clients array */
+				/* Instantiate all of the globals
+				   here only */
 
-unsigned long globalSerialNumber = 0;
-unsigned long serverGeneration = 0;
+				/* instantiate global config options */
+#define NASCONFIG_INSTANTIATE
+#include "nasconfig.h"
+#undef NASCONFIG_INSTANTIATE
 
-TimeStamp currentTime;
-TimeStamp lastDeviceEventTime;
+				/* instantiate other globals */
+#define GLOBALS_INSTANTIATE
+#include "globals.h"
+#undef GLOBALS_INSTANTIATE		/* clean up */
 
-char *display;
+/* Initialize the globals, called from main */
 
-long TimeOutValue = DEFAULT_TIMEOUT * MILLI_PER_SECOND;
-int	argcGlobal;
-char	**argvGlobal;
+void diaInitGlobals()
+{
+  clients = (ClientPtr *)0;
+  serverClient = (ClientPtr)NULL;
+  currentMaxClients = 0;
+
+  globalSerialNumber = 0;
+  serverGeneration = 0;
+
+  currentTime.months = 0;
+  currentTime.milliseconds = 0;
+  lastDeviceEventTime.months = 0;
+  lastDeviceEventTime.milliseconds = 0;
+
+
+  display = NULL;
+
+  TimeOutValue = DEFAULT_TIMEOUT * MILLI_PER_SECOND;
+
+  argcGlobal = 0;
+  argvGlobal = NULL;
+
+				/* init the global configs */
+  diaInitGlobalConfig();
+
+  return;			/* that's it */
+}

@@ -115,7 +115,7 @@ static String   defaultResources[] =
     "*deviceLabel.borderWidth:        0",
     "*gainSlider.label:               \\ Gain:  %3d%%",
     "*gainSlider.fromVert:            deviceLabel",
-    "*gainSlider.min:                 1",
+    "*gainSlider.min:                 0",
     "*gainSlider.max:                 100",
     "*gainSlider.resizable:           true",
     "*inputModeLabel.label:           \\ Input mode:",

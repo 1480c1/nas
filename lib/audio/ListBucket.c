@@ -52,7 +52,7 @@ AuStatus       *ret_status;
     if (ret_status)
 	*ret_status = AuSuccess;
 
-    _AuLockServer(aud);
+    _AuLockServer();
     _AuGetEmptyReq(ListBuckets, req, aud);
 
     stringLen = (AuBucketValueMask(attr) & AuCompCommonDescriptionMask) ?
@@ -78,7 +78,7 @@ AuStatus       *ret_status;
 	if (!(list = l = (AuBucketAttributes *)
 	      Aucalloc(1, sizeof(AuBucketAttributes) * rep.num_buckets)))
 	{
-	    _AuUnlockServer(aud);
+	    _AuUnlockServer();
 	    _AuSyncHandle(aud);
 	    return NULL;
 	}
@@ -95,7 +95,7 @@ AuStatus       *ret_status;
 		      Aumalloc(AuBucketDescription(l)->len + 1)))
 		{
 		    AuFreeBucketAttributes(aud, *num_buckets, list);
-		    _AuUnlockServer(aud);
+		    _AuUnlockServer();
 		    _AuSyncHandle(aud);
 		    return NULL;
 		}
@@ -111,7 +111,7 @@ AuStatus       *ret_status;
 	}
     }
 
-    _AuUnlockServer(aud);
+    _AuUnlockServer();
     _AuSyncHandle(aud);
 
     for (i = 0; i < *num_buckets; i++)

@@ -162,8 +162,9 @@ extern Austream _AusStream[];
 
 #define Au_TCP_PORT		8000
 
-#define NAMED_LISTENER "/dev/X/Nserver"
-#define LOCAL_LISTENER "/dev/X/server"
+/* JET - these need to agree with dia/connection.c */
+#define NAMED_LISTENER "/dev/Au/Nserver"
+#define LOCAL_LISTENER "/dev/Au/server"
 /* Enhanced Application Compatibility Support */
 /* End Enhanced Application Compatibility Support */
 

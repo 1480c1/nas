@@ -53,7 +53,7 @@ AuNextEvent (aud, dequeue, event)
 {
 	register _AuQEvent *qelt;
 	
-	_AuLockServer(aud);
+	_AuLockServer();
 	
 	if (aud->head == NULL)		/* block until event arrives */
 	    _AuReadEvents(aud);
@@ -68,7 +68,7 @@ AuNextEvent (aud, dequeue, event)
 	    aud->qfree = qelt;
 	    aud->qlen--;
 	}
-	_AuUnlockServer(aud);
+	_AuUnlockServer();
 	return;
 }
 

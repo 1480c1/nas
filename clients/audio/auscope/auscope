@@ -1,5 +1,6 @@
 #!/usr/bin/perl -- # -*-Perl-*-
 #
+# $Id$
 # $NCDId: @(#)auscope,v 1.21 1996/08/01 21:08:26 greg Exp $
 #
 # Copyright 1994 Network Computing Devices, Inc.

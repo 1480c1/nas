@@ -24,6 +24,10 @@
 
 #include "../../../config/NetAudio.tmpl"
 
+#if defined(LinuxArchitecture) || defined(FreeBSDArchitecture)
+ EXTRA_DEFINES = -DHAS_MKSTEMP
+#endif
+
 FILES = auconvert.c auconvert.man
   DIR = auconvert
 

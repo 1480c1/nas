@@ -46,10 +46,7 @@ without express or implied warranty.
 #include <audio/Alibint.h>
 #include <audio/Aos.h>
 #include <stdio.h>
-
-#if !defined(lint) && !defined(SABER)
-static int lock;	/* get rid of ifdefs when locking implemented */
-#endif
+#include <stdlib.h>
 
 AuErrorHandler  AuDefaultErrorHandler = (AuErrorHandler) NULL;
 AuIOErrorHandler AuDefaultIOErrorHandler = (AuIOErrorHandler) NULL;
@@ -133,13 +130,13 @@ AuServer *AuOpenServer (server,
  * Lock against other threads trying to access global data (like the error
  * handlers and server list).
  */
-	_AuLockMutex(&lock);
+	_AuLockMutex(_init_mutex);
 
 /*
  * Attempt to allocate a server structure. Return NULL if allocation fails.
  */
 	if ((aud = (AuServer *)Aucalloc(1, sizeof(AuServer))) == NULL) {
-		_AuUnlockMutex(&lock);
+		_AuUnlockMutex(_init_mutex);
 		return(NULL);
 	}
 
@@ -161,7 +158,7 @@ AuServer *AuOpenServer (server,
 					 &conn_auth_namelen, &conn_auth_data,
 					 &conn_auth_datalen)) < 0) {
 		Aufree ((char *) aud);
-		_AuUnlockMutex(&lock);
+		_AuUnlockMutex(_init_mutex);
 		return(NULL);
 	}
 
@@ -207,7 +204,7 @@ AuServer *AuOpenServer (server,
 	/* Set up the output buffers. */
 	if ((aud->bufptr = aud->buffer = Aumalloc(BUFSIZE)) == NULL) {
 	        _AuOCOutOfMemory (aud, setup);
-		_AuUnlockMutex(&lock);
+		_AuUnlockMutex(_init_mutex);
 		return(NULL);
 	}
 	aud->bufmax = aud->buffer + BUFSIZE;
@@ -238,7 +235,7 @@ AuServer *AuOpenServer (server,
 	{
 	    _AuDisconnectServer (aud->fd);
 	    Aufree ((char *)aud);
-	    _AuUnlockMutex(&lock);
+	    _AuUnlockMutex(_init_mutex);
 	    return(NULL);
 	}	    
 	/* see if we had changed the auth info and release it */
@@ -263,7 +260,7 @@ server is %d.%d!\r\n",
 	      (setup =  Aumalloc ((unsigned) setuplength))) == NULL) {
 		_AuDisconnectServer (aud->fd);
 		Aufree ((char *)aud);
-		_AuUnlockMutex(&lock);
+		_AuUnlockMutex(_init_mutex);
 		return(NULL);
 	}
 	_AuRead (aud, (char *)u.setup, setuplength);
@@ -290,7 +287,7 @@ server is %d.%d!\r\n",
 	    }
 
 	    _AuOCOutOfMemory(aud, setup);
-	    _AuUnlockMutex(&lock);
+	    _AuUnlockMutex(_init_mutex);
 	    return (NULL);
 	}
 
@@ -317,7 +314,7 @@ server is %d.%d!\r\n",
 	aud->vendor = (char *) Aumalloc((unsigned) (u.setup->nbytesVendor + 1));
 	if (aud->vendor == NULL) {
 	    _AuOCOutOfMemory(aud, setup);
-	    _AuUnlockMutex(&lock);
+	    _AuUnlockMutex(_init_mutex);
 	    return (NULL);
 	}
 
@@ -342,8 +339,8 @@ server is %d.%d!\r\n",
 /*
  * and done mucking with the server
  */
-	_AuUnlockServer(aud);		/* didn't exist, so didn't lock */
-	_AuUnlockMutex(&lock);
+	_AuUnlockServer();		/* didn't exist, so didn't lock */
+	_AuUnlockMutex(_init_mutex);
 
 /*
  * and return successfully
@@ -428,18 +425,18 @@ register AuServer  *aud;
 
 #define dst     aud->connsetup
 
-#define xferFail()							       \
-{									       \
-    _AuOCOutOfMemory(aud, (char *) src);				       \
-    _AuUnlockMutex(&lock);						       \
-    return (NULL);							       \
+static int xferFail(AuServer *aud, auConnSetup *src) 
+{
+  _AuOCOutOfMemory(aud, (char *) src);
+  _AuUnlockMutex(_init_mutex);
+  return(0);
 }
 
 #define xferAlloc(_dst, _type, _size)					      \
 {									      \
     if (_size)								      \
 	if (!((_dst) = (_type *) Aumalloc((_size) * sizeof(_type))))	      \
-	    xferFail();							      \
+	    return(0);;							      \
 }
 
 static int
@@ -490,7 +487,7 @@ unsigned char *varData;
     /* transfer devices */
     if (!(dst.devices = (AuDeviceAttributes *)
 	  Aucalloc(1, sizeof(AuDeviceAttributes) * dst.num_devices)))
-	xferFail();
+	xferFail(aud, src);
 
     for (i = 0; i < dst.num_devices; i++)
     {
@@ -523,7 +520,7 @@ unsigned char *varData;
     if (dst.num_buckets)
 	if (!(dst.buckets = (AuBucketAttributes *)
 	      Aucalloc(1, sizeof(AuBucketAttributes) * dst.num_buckets)))
-	    xferFail();
+	    xferFail(aud, src);
 
     for (i = 0; i < dst.num_buckets; i++)
     {
