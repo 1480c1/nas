@@ -28,17 +28,9 @@
 FILES = audial.c audial.man
   DIR = audial
 
-#if 0
-/* JET 5/8/99 - this seems to make the assuption that usleep will never need
-   to be implemented in nas... Old system will probably need it, SVR4 has a 
-   version implemented in the ucb library - I like to avoid this library if
-   possible... hmmm. */
-
-#if defined(HPArchitecture) || defined(UltrixArchitecture) || defined(SGIArchitecture) || defined(SystemV4) || defined(i386SVR3Architecture)
-     /*USLEEPDEFS = -DNEEDUSLEEP*/
+#if defined(USLArchitecture)
+      USLEEPDEFS = -DNEEDUSLEEP
 #endif
-
-#endif /* 0 - notused */
 
         DEFINES = $(USLEEPDEFS) 
 

@@ -136,12 +136,9 @@ PERFORMANCE OF THIS SOFTWARE.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "nasconfig.h"
 #include "config.h"
 #include "aulog.h"
-
-FILE	*yyin;
-
-static char *searchpath = CONFSEARCHPATH;
 
 #if defined(DEBUGDSPOUT) || defined(DEBUGDSPIN)
 int dspin, dspout;
@@ -150,8 +147,6 @@ int dspin, dspout;
 #  define IDENTMSG (debug_msg_indentation += 2)
 #  define UNIDENTMSG (debug_msg_indentation -= 2)
 
-static int doDebug = 0;
-int beVerbose = 0;
 static int debug_msg_indentation = 0;
 
 #include <errno.h>
@@ -214,9 +209,9 @@ static int      stereodevs = 0;	/* Channels supporting stereo */
 
 static char    *labels[SOUND_MIXER_NRDEVICES] = SOUND_DEVICE_LABELS;
 
-/* end of VOXware driver mixer control variables */
+int VOXMixerInit = TRUE;
 
-int  ParseError = 0;		/* Did we fail to parse conf. file? */
+/* end of VOXware driver mixer control variables */
 
 SndStat *confStat;
 
@@ -286,12 +281,12 @@ static void     setPhysicalInputGainAndLineMode();
 
 void setDebugOn ()
 {
-  doDebug = 1;
+  NasConfig.DoDebug = 1;
 }
 
 void setVerboseOn ()
 {
-  beVerbose = 1;
+  NasConfig.DoVerbose = 1;
 }
 
 #ifdef sco
@@ -753,7 +748,7 @@ static void serverReset()
   if (relinquish_device)
       closeDevice();
 
-  if (doDebug) {
+  if (NasConfig.DoDebug > 2) {
     osLogMsg(" done.\n");
   }
   UNIDENTMSG;
@@ -1202,7 +1197,7 @@ SndStat* sndStatPtr;
   osLogMsg("setupSoundcard(...);\n");
   IDENTMSG;
 
-  if (beVerbose)
+  if (NasConfig.DoVerbose)
     if (sndStatPtr == &sndStatOut)
     {
        osLogMsg("++ Setting up Output device\n");
@@ -1214,7 +1209,7 @@ SndStat* sndStatPtr;
 
 	
   if (sndStatPtr->isPCSpeaker) {
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("+++ Device is a PC speaker\n");
     sndStatPtr->curSampleRate = sndStatPtr->maxSampleRate
       = sndStatPtr->minSampleRate = 8000;
@@ -1222,36 +1217,36 @@ SndStat* sndStatPtr;
     sndStatPtr->wordSize = 8;
   }
   else {
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("+++ requesting wordsize of %d, ", sndStatPtr->wordSize);
     if (ioctl(sndStatPtr->fd, SNDCTL_DSP_SAMPLESIZE, &sndStatPtr->wordSize)
         || sndStatPtr->wordSize != 16) {
       sndStatPtr->wordSize = 8;
       ioctl(sndStatPtr->fd, SNDCTL_DSP_SAMPLESIZE, &sndStatPtr->wordSize);
     }
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("got %d\n", sndStatPtr->wordSize);
   
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("+++ requesting %d channel(s), ", sndStatPtr->isStereo + 1);
     if (ioctl(sndStatPtr->fd, SNDCTL_DSP_STEREO, &sndStatPtr->isStereo) == -1
         || !sndStatPtr->isStereo) {
       sndStatPtr->isStereo = 0;
       ioctl(sndStatPtr->fd, SNDCTL_DSP_STEREO, &sndStatPtr->isStereo);
     }
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("got %d channel(s)\n", sndStatPtr->isStereo + 1);
 
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("+++ Requesting minimum sample rate of %d, ", sndStatPtr->minSampleRate);
     ioctl(sndStatPtr->fd, SNDCTL_DSP_SPEED, &sndStatPtr->minSampleRate);
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("got %d\n", sndStatPtr->minSampleRate);
   
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("+++ Requesting maximum sample rate of %d, ", sndStatPtr->maxSampleRate);
     ioctl(sndStatPtr->fd, SNDCTL_DSP_SPEED, &sndStatPtr->maxSampleRate);
-    if (beVerbose)
+    if (NasConfig.DoVerbose)
       osLogMsg("got %d\n", sndStatPtr->maxSampleRate);
 
     sndStatPtr->curSampleRate = sndStatPtr->maxSampleRate;
@@ -1286,24 +1281,6 @@ scoInterrupts()
 }
 #endif /* sco */
 
-/*
-*  Find the config file 
-*/
-
-static FILE	*openConfigFile (char *path)
-{
-  static char	buf[1024];
-  FILE *config;
-
-  strcat (buf, path);
-  strcat (buf, "AUVoxConfig");
-  if ((config = fopen (buf, "r")) != NULL)
-    return config;
-  else
-    return NULL;
-}
-
-
 AuBool AuInitPhysicalDevices()
 {
   static AuBool    AL_initialized = AuFalse;
@@ -1314,7 +1291,6 @@ AuBool AuInitPhysicalDevices()
   extern AuUint32  auPhysicalOutputBuffersSize;
   extern void      AuProcessData();
   char            *nas_device_policy;
-  char            *nas_mixer_policy;
 #if defined(AUDIO_GETINFO)
   audio_info_t     spkrinf;
 #endif
@@ -1322,21 +1298,31 @@ AuBool AuInitPhysicalDevices()
   osLogMsg("AuInitPhysicalDevices();\n");
   IDENTMSG;
 
-  /* JET - REVISIT */
-  nas_device_policy=getenv("NAS_DEVICE_POLICY");
-  if (nas_device_policy && !strcmp(nas_device_policy, "relinquish"))
-  {
-      osLogMsg("Init: setup to relinquish audio device when not in use.\n");
+  if (NasConfig.DoDeviceRelease)
+    {  
       relinquish_device = AuTrue;
-  }
-  /* JET - REVISIT */
-  nas_mixer_policy=getenv("NAS_MIXER_POLICY");
-  if (nas_mixer_policy && !strcmp(nas_mixer_policy, "leave"))
-  {
-      osLogMsg("Init: Leaving the mixer device options alone at startup.\n");
-      printf("wibble!\n");
+      if (NasConfig.DoDebug)
+	osLogMsg("Init: will close device when finished with stream.\n");
+    }
+  else
+    {
+      relinquish_device = AuFalse;
+      if (NasConfig.DoDebug)
+	osLogMsg("Init: will open device exclusivly.\n");
+    }
+
+  if (VOXMixerInit)
+    {
+      leave_mixer = AuFalse;
+      if (NasConfig.DoDebug)
+	osLogMsg("Init: will initialize mixer device options.\n");
+    }
+  else
+    {
       leave_mixer = AuTrue;
-  }
+      if (NasConfig.DoDebug)
+	osLogMsg("Init: Leaving the mixer device options alone at startup.\n");
+    }
 
   /*
    * create the input and output ports
@@ -1346,9 +1332,6 @@ AuBool AuInitPhysicalDevices()
     AuInt32 i;
 
     AL_initialized = AuTrue;
-
-    if ((yyin = openConfigFile (CONFSEARCHPATH)) != NULL)
-        yyparse();
 
     if ((fd = open(sndStatOut.device, O_RDWR|O_SYNC, 0)) == -1) {
         UNIDENTMSG;

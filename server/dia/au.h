@@ -26,21 +26,8 @@
 #ifndef _AU_H_
 #define _AU_H_
 
-#ifdef sun
-# define SUN_SERVER
-#endif						/* sun */
-
-#ifdef sgi
-# define SGI_SERVER
-#endif						/* sgi */
-
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386)))
-# define VOXWARE_SERVER
-#endif                                          /* voxware */
-
-#ifdef hpux
-# define HPUX_SERVER
-#endif						/* hpux */
+/* This will define the appropriate *_SERVER */
+#include "auservertype.h"
 
 /* JET - last one wins... */
 

@@ -51,6 +51,7 @@ SOFTWARE.
  * $Id$
  */
 
+#include <stdio.h>
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include "misc.h"
@@ -61,6 +62,7 @@ SOFTWARE.
 #include "servermd.h"
 #include "site.h"
 #include "globals.h"
+#include "nasconfig.h"
 
 extern void     OsInit(), InitClient(), ResetWellKnownSockets(),
                 Dispatch(), FreeAllResources();
@@ -71,12 +73,31 @@ extern Bool     InitClientResources();
 extern char *display;
 
 static int restart = 0;
+FILE    *yyin;			/* for the config parser */
 
 void
 NotImplemented()
 {
     FatalError("Not implemented");
 }
+
+/*
+ *  Find the config file
+ */
+
+static FILE     *openConfigFile (char *path)
+{
+  static char   buf[1024];
+  FILE *config;
+
+  strcat (buf, path);
+  strcat (buf, "nasd.conf");
+  if ((config = fopen (buf, "r")) != NULL)
+    return config;
+  else
+    return NULL;
+}
+
 
 int
 main(argc, argv)
@@ -94,6 +115,10 @@ main(argc, argv)
 
     /* Init the globals... */
     diaInitGlobals();
+
+				/* Now parse the config file */
+    if ((yyin = openConfigFile (NASCONFSEARCHPATH)) != NULL)
+      yyparse();
 
     /* These are needed by some routines which are called from interrupt
      * handlers, thus have no direct calling path back to main and thus

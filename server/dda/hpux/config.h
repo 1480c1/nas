@@ -8,20 +8,6 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
-typedef struct
-{
-  int fd;
-  int wordSize;
-  int isStereo;
-  int curSampleRate;
-  int minSampleRate;
-  int maxSampleRate;
-  int fragSize;
-  int minFrags;
-  int maxFrags;
-  char	*device;
-  int isPCSpeaker;
-} SndStat;
-
+/* not much here for now */
 
 #endif /* CONFIG_H_INCLUDED */

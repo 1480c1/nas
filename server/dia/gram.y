@@ -1,4 +1,6 @@
+/* $Id$ */
 /* $NCDId: @(#)gram.y,v 1.1 1996/04/24 17:01:03 greg Exp $ */
+
 
 %{
 #include <stdio.h>
@@ -6,24 +8,15 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "config.h"
+#include "auservertype.h"
+#include "nasconfig.h"
 #include "aulog.h"
-
-#  define IDENTMSG (debug_msg_indentation += 2)
-#  define UNIDENTMSG (debug_msg_indentation -= 2)
-
-static int doDebug = 0;
-static int debug_msg_indentation = 0;
-
-extern SndStat sndStatOut, sndStatIn, *confStat;
+#include "misc.h"
 
 static char	*ptr;
-
+static int parsebool(char *str);
 extern int yylineno;
 
-extern int beVerbose;
-
-extern void setVerboseOn(), setDebugOn();
 %}
 
 %union
@@ -33,7 +26,8 @@ extern void setVerboseOn(), setDebugOn();
 };
 
 %token <num> INPUTSECTION OUTPUTSECTION ENDSECTION WORDSIZE FRAGSIZE MAXFRAGS
-%token <num> MINFRAGS MAXRATE MINRATE NUMCHANS DEVICE NUMBER DEBUG VERBOSE
+%token <num> MINFRAGS MAXRATE MINRATE NUMCHANS DEVICE NUMBER DEBUG VERBOSE 
+%token <num> RELEASEDEVICE OUTDEVTYPE MIXERINIT
 %token <ptr> STRING 
 
 %type <ptr> string
@@ -50,9 +44,22 @@ globstmts	: /* Empty */
 		;
 
 globstmt	: VERBOSE
-			{ setVerboseOn (); }
-		| DEBUG
-			{ setDebugOn () ; }
+			{ NasConfig.DoVerbose = TRUE; }
+		| DEBUG number
+			{ NasConfig.DoDebug = $2 ; }
+                | RELEASEDEVICE string
+                        {
+			  int j;
+
+			  j = parsebool($2);
+			  if (j == -1)
+			    {
+				/* error - default to no */
+			      NasConfig.DoDeviceRelease = FALSE;
+			    }
+			  else
+			    NasConfig.DoDeviceRelease = j; 
+			}
 		;
 
 sectconfigs	: /* Empty */
@@ -67,14 +74,14 @@ inputconfig	: inputword stmts ENDSECTION
 		;
 
 inputword	: INPUTSECTION
-			{ confStat = &sndStatIn; }
+			{ ddaSetConfig(CONF_SET_SECTION, (void *)INPUTSECTION); }
 		;
 
 outputconfig	: outputword stmts ENDSECTION
 		;
 
 outputword	: OUTPUTSECTION
-			{ confStat = &sndStatOut; }
+			{ ddaSetConfig(CONF_SET_SECTION, (void *)OUTPUTSECTION); }
 		;
 
 stmts		: /* Empty */
@@ -84,75 +91,36 @@ stmts		: /* Empty */
 stmt		: error
 		| DEVICE string
 			{
-			  confStat->device = $2;
-			  if (!strcmp ($2, "/dev/pcaudio") || !strcmp($2, "/dev/pcdsp"))
-			    confStat->isPCSpeaker = 1;
+			  ddaSetConfig(DEVICE, (void *)$2);
 			}
 		| WORDSIZE number
 			{
-			   if ($2 != 8 && $2 != 16) {
-			     osLogMsg("*** Wordsize (%d) not 8 or 16, setting to 8\n", $2);
-			     confStat->wordSize = 8;
-			   }
-			   else
-			     confStat->wordSize = $2;
+			  ddaSetConfig(WORDSIZE, (void *)$2);
 			}
 		| FRAGSIZE number
 			{ 
-			  int i, j, k;
-
-			  /* Determine if it is a power of two */
-			  k = 0;
-			  j = $2;
-			  for (i = 0; i < 32; i++) {
- 			    if (j & 0x1)
-			      k++;
-			    j >>= 1;
-			  }
-			  if (k != 1) {
-			    fprintf(stderr, "*** Fragment size should be a power of two - setting to 256\n");
-			    confStat->fragSize = 256;
-			  }
-			  else
-			    confStat->fragSize = $2;
-			  if (beVerbose)
-			    fprintf(stderr, "Fragsize set to %d\n", confStat->fragSize);
+			  ddaSetConfig(FRAGSIZE, (void *)$2);
 			}
 		| MINFRAGS number
 			{
-			  if ($2 < 2 || $2 > 32) {
-			    fprintf (stderr, "*** Minfrags out of range - setting to 2\n");
-			    confStat->minFrags = 2;
-			  }
-			  else
-			    confStat->minFrags = $2;
-			  if (beVerbose)
-			    fprintf(stderr, "+++ Minfrags set to %d\n", confStat->minFrags);
+			  ddaSetConfig(MINFRAGS, (void *)$2);
 			}
 		| MAXFRAGS number
 			{
-			  if ($2 < 2 || $2 > 32) {
-			    fprintf (stderr, "*** Maxfrags out of range - setting to 32\n");
-			    confStat->maxFrags = 32;
-			  }
-			  else
-			    confStat->maxFrags = $2;
-			  if (beVerbose)
-			    fprintf(stderr, "+++ Maxfrags set to %d\n", confStat->maxFrags);
+			  ddaSetConfig(MAXFRAGS, (void *)$2);
 			}
 		| NUMCHANS number
 			{
-			  if ($2 != 1 && $2 != 2) {
-			    fprintf(stderr, "*** Number of channels wrong, setting to 1\n");
-			    confStat->isStereo = 0;
-			  }
-			  else
-			    confStat->isStereo = $2 - 1;
+			  ddaSetConfig(NUMCHANS, (void *)$2);
 			}
 		| MAXRATE number
-			{confStat->maxSampleRate = $2; }
+			{ ddaSetConfig(MAXRATE, (void *)$2); }
 		| MINRATE number
-			{ confStat->minSampleRate = $2; }
+			{ ddaSetConfig(MINRATE, (void *)$2); }
+                | OUTDEVTYPE string
+                        { ddaSetConfig(OUTDEVTYPE, (void *)$2); }  
+                | MIXERINIT string
+                        { ddaSetConfig(MIXERINIT, (void *)parsebool($2)); }  
 
 string		: STRING		{ ptr = (char *)malloc(strlen($1)+1);
 					  strcpy(ptr, $1);
@@ -163,10 +131,7 @@ number		: NUMBER		{ $$ = $1; }
 		;
 
 %%
-yyerror(s) char *s;
-{
-    fprintf (stderr, "error in input file:  %s\n", s ? s : "");
-}
+
 RemoveDQuote(str)
 char *str;
 {
@@ -251,3 +216,40 @@ char *str;
     *o = '\0';
 }
 
+static int parsebool(char *str)
+{
+  char *s;
+
+  s = str;
+
+  if (s == NULL)
+    return(-1);
+
+  while(*s)
+    {
+      *s = (char)tolower(*s);
+      s++;
+    }
+
+  if (((char *)strstr("false", str) != NULL) ||
+      ((char *)strstr("no", str) != NULL)    ||
+      ((char *)strstr("0", str) != NULL)     ||
+      ((char *)strstr("off", str) != NULL))
+    {
+      return(FALSE);
+    }
+  else if (((char *)strstr("true", str) != NULL) ||
+           ((char *)strstr("yes", str) != NULL)  ||
+           ((char *)strstr("1", str) != NULL)    ||
+           ((char *)strstr("on", str) != NULL))
+    {
+      return(TRUE);
+    }
+  else
+    {
+      fprintf(stderr, "parsebool(): error parsing '%s', \n\t%s\n",
+              str,
+              "Value must be yes or no, true or false, or on or off.");
+      return(-1);
+    }
+}

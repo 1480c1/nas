@@ -20,12 +20,13 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  * $NCDId: @(#)Imakefile,v 1.4 1994/08/09 19:23:34 greg Exp $
+ * $Id$
  */
 
 #include "../../../config/NetAudio.tmpl"
 
-SRCS = ausuni.c
-OBJS = ausuni.o
+SRCS = ausuni.c config.c
+OBJS = ausuni.o config.o
 
     INCLUDES = -I. -I../../include -I../../../include -I../../dia
 

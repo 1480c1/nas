@@ -20,7 +20,6 @@ void diaInitGlobalConfig()
   NasConfig.DoDebug = FALSE;
   NasConfig.DoVerbose = FALSE;
   NasConfig.DoDeviceRelease = FALSE;
-  NasConfig.DoMixerInitDevOpts = TRUE;
   NasConfig.DoDaemon = FALSE;
 
   				/* that be it */

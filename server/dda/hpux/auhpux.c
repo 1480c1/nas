@@ -71,6 +71,7 @@ extern void     AuProcessData();
 
 static int      devAudio = -1,
                 devAudioCtl = -1;
+int OutputDevType = AUDIO_OUT_EXTERNAL;
 
 struct audio_describe		audio_describe;
 struct raw_audio_config		raw_params;
@@ -379,7 +380,7 @@ static void BlockUntilClear(AuBool doreset)
     }
   else
     {
-      if (NasConfig.DoDebug)
+      if (NasConfig.DoDebug > 5)
         osLogMsg("AUDIO_DRAIN done\n");
     }
 
@@ -516,7 +517,7 @@ AuUint32        rate;
 static void
 eventPosted()
 {
-  if (NasConfig.DoDebug > 1)
+  if (NasConfig.DoDebug > 2)
     osLogMsg("An event has been posted\n");
 }
 
@@ -631,9 +632,6 @@ getPhysicalOutputMode()
   return outputMode == AUDIO_OUT_INTERNAL ? AuDeviceOutputModeSpeaker :
     AuDeviceOutputModeHeadphone;
   
-  /* JET - eh? */
-  /*return AuDeviceOutputModeHeadphone;*/
-
 }
 
 /*----------------------------------------------------------*/
@@ -720,7 +718,7 @@ unsigned int    n;
 static void
 writePhysicalOutputsMono()
 {
-  if (NasConfig.DoDebug)
+  if (NasConfig.DoDebug > 10)
     osLogMsg("Writing mono\n");
 
     writeOutput(auOutputMono, *monoSamples);
@@ -731,7 +729,7 @@ writePhysicalOutputsMono()
 static void
 writePhysicalOutputsStereo()
 {
-  if (NasConfig.DoDebug)
+  if (NasConfig.DoDebug > 10)
     osLogMsg("Writing stereo\n");
 
     writeOutput(auOutputStereo, (2 * (*stereoSamples)));
@@ -769,7 +767,7 @@ void            (**funct) ();
   AuUint32        mask = flow->physicalDeviceMask;
   int		    num_channels = 1;
 
-  if (NasConfig.DoDebug)
+  if (NasConfig.DoDebug > 5)
     osLogMsg("setWritePhysicalOutputFunction(): Playing...\n");
       
   if ((mask & (PhysicalOutputMono | PhysicalOutputStereo)) ==
@@ -777,13 +775,13 @@ void            (**funct) ();
     {
       *funct = writePhysicalOutputsBoth;
       num_channels = 2;
-      if (NasConfig.DoDebug)
+      if (NasConfig.DoDebug > 5)
 	osLogMsg("Playing both......\n");
     }
   else if (mask & PhysicalOutputMono)
     {
       *funct = writePhysicalOutputsMono;
-      if (NasConfig.DoDebug)
+      if (NasConfig.DoDebug > 5)
 	osLogMsg("Playing mono......\n");
     }
   else if (mask & PhysicalOutputStereo)
@@ -796,11 +794,11 @@ void            (**funct) ();
   else
     {
       *funct = writeEmptyOutput;
-      if (NasConfig.DoDebug)
+      if (NasConfig.DoDebug > 5)
 	osLogMsg("Playing m/t......\n");
     }
   
-  if (NasConfig.DoDebug)
+  if (NasConfig.DoDebug > 5)
     osLogMsg("setWritePhysicalOutputFunction() calling BlockUntilClear\n");
 
 				/* JET - BLOCK */
@@ -831,10 +829,11 @@ int             sig;
 
   signal(SIGALRM, SIG_IGN);
   
-  if (NasConfig.DoDebug) 
+  if (NasConfig.DoDebug > 5) 
     {
       osLogMsg("Processing audio signal....\n");
-      DumpDeviceStatus((struct audio_status *)NULL);
+      if (NasConfig.DoDebug > 10)
+	DumpDeviceStatus((struct audio_status *)NULL);
     }
 
     if (updateGains)
@@ -919,9 +918,7 @@ AuInitPhysicalDevices()
     struct itimerval        ntval, otval;
     int                     timer_us;
     int	temp_int, input;
-
-				/* JET for debugging here REVIST! */
-       NasConfig.DoDebug = 10;
+    static AuBool FirstTime = AuTrue;
 
 
     if (V_STRING)
@@ -930,6 +927,34 @@ AuInitPhysicalDevices()
 	V_STRING = (char *) 0;
     }
 
+
+    if (FirstTime == AuTrue)
+      {				/* first run - init priority and proclock */
+
+	FirstTime = AuFalse;
+
+	/*
+	 * Set process to run in real time
+	 */
+	if (rtprio(0, 30) == -1)
+	  {
+	    osLogMsg("ERROR: rtprio(0, 30): %s\n", 
+		     strerror(errno));
+	    
+	    errno = 0;
+	  }
+	else
+	  {
+	    if (plock(PROCLOCK) == -1)
+	      {
+		osLogMsg("ERROR: plock(PROCLOCK): %s\n", 
+			 strerror(errno));
+		
+		errno = 0;
+	      }
+	  }
+      }
+	
 
 
     if (devAudio == -1)
@@ -954,27 +979,6 @@ AuInitPhysicalDevices()
 	  return AuFalse;
         }
 #endif
-
-	/*
-	 * Set process to run in real time
-	 */
-	if (rtprio(0, 30) == -1)
-	{
-	  osLogMsg("ERROR: rtprio(0, 30): %s\n", 
-		   strerror(errno));
-
-		errno = 0;
-	}
-	else
-	{
-	  if (plock(PROCLOCK) == -1)
-	    {
-	      osLogMsg("ERROR: plock(PROCLOCK): %s\n", 
-		       strerror(errno));
-
-	      errno = 0;
-	    }
-	}
     }
 
     if (!(V_STRING = (char *) aualloc(strlen(HPUX_VENDOR) + 1)))
@@ -1016,7 +1020,7 @@ AuInitPhysicalDevices()
 	PhysicalOneTrackBufferSize;
 
     signal(SIGALRM, SIG_IGN);
-    if (NasConfig.DoDebug)  
+    if (NasConfig.DoDebug > 2)  
       osLogMsg("AuInitPhysicalDevices(): setup to ignore signals\n");
 
     timer_us = (auMinibufSamples * 500000) / 8000;
@@ -1194,21 +1198,10 @@ AuInitPhysicalDevices()
      * and input to mike jack
      */
 #ifndef NULL_AUDIO_DEVICE
-    /* JET - 040399 - attempt to force EXTERNAL (headphones) at init rather
-       than the internal speaker... this should be a configurable.*/
-				/* JET - REVISIT - config'able */
 
-    if (NasConfig.DoDebug)  
-      osLogMsg("### Intializing to AUDIO_OUT_EXTERNAL\n");
-
-    if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_EXTERNAL)==-1)
+    if (ioctl(devAudio,AUDIO_SET_OUTPUT, OutputDevType)==-1)
       osLogMsg("ERROR: AUDIO_SET_OUTPUT: %s\n", 
 	       strerror(errno));
-    /* JET
-    if (ioctl(devAudio,AUDIO_SET_OUTPUT, AUDIO_OUT_INTERNAL)==-1)
-      osLogMsg("ERROR: AUDIO_SET_OUTPUT: %s\n", 
-	       strerror(errno));
-    */
 
     errno = 0;
     if (ioctl(devAudio,AUDIO_GET_OUTPUT, &temp_int)==-1)
@@ -1296,21 +1289,18 @@ static void DumpDeviceStatus(struct audio_status *astat)
 
   if (rv != -1)
     {
-      if (NasConfig.DoDebug > 5)
-	{
-	  osLogMsg("- RX Status = %d\n",
-		   statptr->receive_status);
-	  osLogMsg("- TX Status = %d\n",
-		   statptr->transmit_status);
-	  osLogMsg("- RX Buffer Count = %d\n",
-		   statptr->receive_buffer_count);
-	  osLogMsg("- TX Buffer Count = %d\n",
-		   statptr->transmit_buffer_count);
-	  osLogMsg("- RX Overflow = %d\n",
-		   statptr->receive_overflow_count);
-	  osLogMsg("- TX Underflow = %d\n",
-		   statptr->transmit_underflow_count);
-	}
+      osLogMsg("- RX Status = %d\n",
+	       statptr->receive_status);
+      osLogMsg("- TX Status = %d\n",
+	       statptr->transmit_status);
+      osLogMsg("- RX Buffer Count = %d\n",
+	       statptr->receive_buffer_count);
+      osLogMsg("- TX Buffer Count = %d\n",
+	       statptr->transmit_buffer_count);
+      osLogMsg("- RX Overflow = %d\n",
+	       statptr->receive_overflow_count);
+      osLogMsg("- TX Underflow = %d\n",
+	       statptr->transmit_underflow_count);
     }
   return;
 }

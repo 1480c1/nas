@@ -45,8 +45,6 @@
 #define ProfileLibAudio ProfileLibX
 #endif
 
-#define DoNormalLib NormalLibAudio
-#define DoSharedLib SharedLibAudio
 #define DoDebugLib DebugLibAudio
 #define DoProfileLib ProfileLibAudio
 

@@ -59,6 +59,7 @@ from the copyright holder.
 #include <stdlib.h>				/* for getenv */
 #include "dixstruct.h"				/* for RESTYPE */
 #include "os.h"					/* for xalloc/xfree and NULL */
+#include "nasconfig.h"
 #include <fcntl.h>
 #include <stropts.h>
 #include <string.h>				/* for strcmp */
@@ -1190,9 +1191,18 @@ AuInitPhysicalDevices()
       VENDOR_STRING = (char *) 0;
     }
 
-  nas_device_policy=getenv("NAS_DEVICE_POLICY");
-  if (nas_device_policy && !strcmp(nas_device_policy, "relinquish"))
-    relinquish_device = AuTrue;
+  if (NasConfig.DoDeviceRelease)
+    {
+      relinquish_device = AuTrue;
+      if (NasConfig.DoDebug)
+        osLogMsg("Init: will close device when finished with stream.\n");
+    }
+  else
+    {
+      relinquish_device = AuFalse;
+      if (NasConfig.DoDebug)
+        osLogMsg("Init: will open device exclusivly.\n");
+    }
 
   if (devAudio == -1)
     {
