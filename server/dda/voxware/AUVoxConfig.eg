@@ -1,0 +1,38 @@
+#
+#	A sample config file for the VOXware nas server
+#
+# $NCDId: @(#)AUVoxConfig.eg,v 1.1 1996/04/24 17:00:06 greg Exp $
+
+inputsection
+	device		"/dev/dsp1"		# the SB emulation on my PAS16
+	maxrate		11025
+	minrate		4000			# Kind of redundant
+	maxfrags	3			# We want really low latency
+	minfrags	2			# the default
+	fragsize	256			# Again, for low latency
+	wordsize	8			# It only handles 8 bits anyway
+	numchans	1			# Glorious living mono
+end
+
+outputsection
+	device		"/dev/dsp"		# the full 16 bit interface!
+	maxrate		33000			# is flakey on my OPTi mb at 44
+	minrate		5000			# Redundant again
+	maxfrags	3			# Low latency (for doom!)
+	minfrags	2			# redundant really.
+	fragsize	256			# Low latency again..
+	wordsize	16			# Yes!
+	numchans	2			# HiFi Stereo!
+end
+
+#
+#	An el cheapo full duplex setup could have the following output
+#	section with the above inputsection, assuming that all they had
+#	was an 8 bit SB and the PC speaker.
+#
+#outputsection
+#	device	"/dev/pcaudio"
+#	maxrate		8000
+#	minrate		8000
+#	wordsize	8
+#end
