@@ -769,7 +769,6 @@ int	do_buffering;
 	int	amount;
 	InputBuffer *ioptr = &_AusInputBuffer[fd];
 
-
 	if (do_buffering == NO_BUFFERING){
 		amount = read(fd, buf, count);
 
@@ -786,6 +785,17 @@ int	do_buffering;
 
                 return(amount);
            }
+
+	   /* JET - 5/8/99 - hmmm, this buffer may not be allocated yet,
+	      if it's not there, allocate it */
+	   if (ioptr->DataBuffer == NULL)
+	     if ((ioptr->DataBuffer = (char *) malloc(BUFFERSIZE)) == NULL)
+	       {
+		 errno = ENOMEM;
+		 perror("Client can't connect to remote server");
+		 return (-1);
+	       }
+
            ioptr->LastBytePtr = read(fd, ioptr->DataBuffer, BUFFERSIZE);
 	
 	   ioptr->FirstBytePtr = 0;

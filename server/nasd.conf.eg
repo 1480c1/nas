@@ -1,9 +1,34 @@
 #
-#	A sample config file for the VOXware nas server
+#	A sample config file for the NAS Audio Server
 #
+# $Id$
 # $NCDId: @(#)AUVoxConfig.eg,v 1.1 1996/04/24 17:00:06 greg Exp $
+#
+
+
+# set this to 0 for no debugging, a larger number equals more debugging
+#  info...
+Debug 0
+
+# be verbose, comment out if you don't want it
+Verbose
+
+# set this to "yes" or "no" to indicate whether nasd should release the
+#  audio device when finished playing a sound.
+# Only the voxware, hpux, and sun servers understand this for now.
+ReleaseDevice "yes"
+
+# init the mixer on startup? Voxware only.
+MixerInit	"yes"			
+
+# This is used on hpux.  Set to "INT" to use the internal speaker,
+#  set to "EXT" to use the external device (headphone/speakers).
+OutDevType	"EXT"
+
+# These are all used by voxware, nowhere else yet.
 
 inputsection
+
 	device		"/dev/dsp1"		# the SB emulation on my PAS16
 	maxrate		11025
 	minrate		4000			# Kind of redundant
@@ -14,6 +39,7 @@ inputsection
 	numchans	1			# Glorious living mono
 end
 
+# These are used by voxware only for now.
 outputsection
 	device		"/dev/dsp"		# the full 16 bit interface!
 	maxrate		33000			# is flakey on my OPTi mb at 44
@@ -28,7 +54,7 @@ end
 #
 #	An el cheapo full duplex setup could have the following output
 #	section with the above inputsection, assuming that all they had
-#	was an 8 bit SB and the PC speaker.
+#	was an 8 bit SB and the PC speaker with the voxware server.
 #
 #outputsection
 #	device	"/dev/pcaudio"

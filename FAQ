@@ -20,7 +20,10 @@ TABLE OF CONTENTS
 
     1.	What is the Network Audio System?
 
->>	The Network Audio System was developed by NCD for playing,
+>>	In a nutshell, NAS is the audio equivalent of an X display
+	server. 
+
+	The Network Audio System was developed by NCD for playing,
 	recording, and manipulating audio data over a network.
 	Like the X Window System, it uses the client/server model to
 	separate applications from the specific drivers that control
@@ -43,13 +46,11 @@ TABLE OF CONTENTS
 >>	The latest release of the Network Audio System can be obtained
 	from:
 
-*JET NO IDEA YET*
-		ftp.ncd.com:/pub/ncd/technology/src/nas
-		  ftp.x.org:/contrib/audio/nas
-
-	Release 1.2 of NAS is also included with the X11R6 contrib
-	distribution.
-
+		http://radscan.com/nas.html
+			- contains most recent version, including 
+			  point releases
+		ftp://ftp.x.org:/contrib/audio/nas
+			- contains most recent major release
 
     3.	What platforms does NAS run on?
 
@@ -58,20 +59,25 @@ TABLE OF CONTENTS
 
 	    o Sun Sparc 1 AM79C30A Digital Subscriber Controller and
 		  Sparc 10 Dual Basic Rate ISDN Interface
-	      (SunOS 4.1.[23], Solaris 2.x)
+	      (SunOS 4.1.[23], Solaris 2.x, sparc/intel)
 
 	    o SGI Indigo (IRIX 5.x)
 
-	    o VOXware (FreeBSD, Linux, SVR4.[02])
+	    o VOXware (FreeBSD, NetBSD, Linux, SVR4.[02], Unixware)
 
-	    o HPUX
-	      
+	    o HPUX 10.10+
+	 
+	Version 1.4 has been built on:
+
+        - Linux/glibc 2.1, 2.2.14 kernel (Mandrake 7)
+        - Unixware (X11R5 and native compiler)
+        - Unixware (X11R6.4 and gcc 2.95.2 compiler)
+        - HPUX 10.10 using X11R6.1 and gcc 2.95.2
+        - Sparc Solaris 2.6 using native compiler and X environment
+
 	Also, several models of NCD X terminals as well as NCD's
 	PCXware (an X server for PCs running Microsoft Windows) all
 	include an NAS server.
-
-	Ports of the NAS server to additional platforms are in the
-	works.
 
 	The NAS sample clients will compile and run on numerous
 	platforms.
@@ -80,14 +86,13 @@ TABLE OF CONTENTS
     4.	Is there a mailing list?
 
 >>	You bet.  nas@radscan.com is a mailing list for general discussion
-	of the Network Audio System.  Send a request to
-	nas-request@radscan.com to find out how to get added to the list.
+	of the Network Audio System.  Send a message to
+	majordomo@radscan.com with a line in the body containing 
+	'subscribe nas <your email address>.
 
-	The archives for this list are maintained by Grant Taylor, and
-	can be found at:
+	The archives for this list can be found at:
 
-		http://www.picante.com/~gtaylor/archives/nas/ or
-		http://gatekeeper.picante.com/~gtaylor/archives/nas/
+		http://radscan.com/nas/nas-ml/
 
     5.  I'm having problems getting the NAS clients to work with my
 	NCD X terminal.
@@ -102,8 +107,12 @@ TABLE OF CONTENTS
 	3.1 or greater.  Please contact support@ncd.com if you have
 	further questions about NAS on NCD products.
 
+
+[ If there are any other items that should be added here, let me know
+at nas-faq@radscan.com. -Jon ]
+
+
 ----------------------------------------------------------------------
 $Id$
-
 $NCDId: @(#)FAQ,v 1.6 1995/11/28 23:23:31 greg Exp $
 
