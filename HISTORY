@@ -1,22 +1,42 @@
 $Id$
 
-010/06/2004 1.6f
+10/06/2004 1.6g
 
-           - updated libtool due to a problem(s) reported by Steve
-             McIntyre. 
+        - Patch from Tobias Diedrich that allows mixer init to
+          fail in the voxware server. 
+
+          Quote:
+
+          With this patch "aoss nasd" works, without it would fail
+          (aoss is the alsa oss wrapper script, which simply preloads
+          libaoss.so, a wrapper library similar to libaudiooss).
+
+          Combining this with the alsa dmix feature should allow nas
+          to coexist with other daemons like artsd.
+
+          See http://radscan.com/nas/nas-ml/msg01121.html for more
+          details.
+
+        - 1.7 release candidate
+
+
+10/06/2004 1.6f
+
+        - updated libtool due to a problem(s) reported by Steve
+          McIntyre. 
 
 06/20/2004 1.6e
 
-           - clear CFLAGS before building config/config.h
+        - clear CFLAGS before building config/config.h
 
-           - emit the release string to the log and stdout when
-             verbose is enabled.
+        - emit the release string to the log and stdout when
+          verbose is enabled.
 
-           - if '-V' specified, emit release string and stdout and exit.
+        - if '-V' specified, emit release string and stdout and exit.
 
-           - add a limit of 5 retries on failure to open input device.
+        - add a limit of 5 retries on failure to open input device.
 
-           - barring major problems, this is a release candidate.
+        - barring major problems, this is a release candidate.
 
 06/20/2004 1.6d
 
