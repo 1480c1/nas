@@ -302,6 +302,7 @@ typedef AuInt32 		AuFixedPoint;
 #define AuComponentKindPhysicalOutput	2
 #define AuComponentKindBucket		3
 #define AuComponentKindRadio		4
+#define AuComponentKindPhysicalFeedback 5
 
 /*
  * Component Use.  These describe whether or not the device can be used 

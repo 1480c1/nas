@@ -62,7 +62,7 @@ SndInfo        *si;
     {
 	if (si->writing)
 	{
-	    if (LITTLE_ENDIAN)
+	    if (NAS_LITTLE_ENDIAN)
 	    {
 		char            n;
 
@@ -136,7 +136,7 @@ _SndConst char *name;
 	Err();
 
     /* do byte swapping if necessary */
-    if (LITTLE_ENDIAN)
+    if (NAS_LITTLE_ENDIAN)
     {
 	char            n;
 
@@ -201,7 +201,7 @@ SndInfo        *si;
     {
 	h = si->h;
 
-	if (LITTLE_ENDIAN)
+	if (NAS_LITTLE_ENDIAN)
 	{			/* header is big-endian */
 	    char            n;
 

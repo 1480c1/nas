@@ -54,7 +54,7 @@
 #define FIOSNBIO	FIONBIO
 #endif /* WIN32 */
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/param.h>
 #endif /* __FreeBSD__ */
 #include <ctype.h>
@@ -68,7 +68,12 @@
 #include <netdnet/dnetdb.h>
 #endif
 #ifdef SVR4
-#include <sys/stropts.h>
+# if defined(USL)
+#  include <sys/socket.h>
+#  include <netdb.h>
+#  include <netinet/in.h>
+# endif
+# include <sys/stropts.h>
 #endif
 
 #ifdef STREAMSCONN
@@ -243,7 +248,7 @@ _AuStartServer()
 	(void)execlp("au", "au", "-timeout",  "600", (char *)NULL);
 	perror("exec");
 	_AuServerUp = -1;
-	kill(SIGUSR1, getppid());	/* wake up parent */
+       kill(getppid(), SIGUSR1);       /* wake up parent */
 	_exit(255);
 	/*NOTREACHED*/
 }
