@@ -26,6 +26,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <audio/audiolib.h>
 
 char *ProgramName;
@@ -223,6 +224,7 @@ static NameTable _nt_compkinds[] = {
     MAKEENTRY (AuComponentKind,PhysicalOutput),
     MAKEENTRY (AuComponentKind,Bucket),
     MAKEENTRY (AuComponentKind,Radio),
+    MAKEENTRY (AuComponentKind,PhysicalFeedback),
 };
 
 

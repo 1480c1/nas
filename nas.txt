@@ -1,0 +1,95 @@
+    ***********************************************************************
+    *                                                                     *
+    *		         The Network Audio System (NAS)                   *
+    *                                                                     *
+    *			 An Audio Protocol For Networks                   *
+    *                                                                     *
+    *                      Release 1.4 - Feb 27, 2000			  *
+    *                                                                     *
+    ***********************************************************************
+
+				       or
+
+    			open ("/dev/audio")?  Just Say No!
+
+
+DISTRIBUTION
+
+	You should have recieved the following file:
+	(where x.y is the current revision)
+
+	nas-x.y.src.tar.gz	- gziped tar archive of the source
+                                  distribution.
+
+		Unzip/untar this in a nice, quiet, peaceful place.  I
+                use 'gzcat nas-x.y.src.tar.gz |tar -xvf -'.
+
+	See the files BUILDNOTES and README for build instructions and
+other useful information on NAS.  
+
+	Currently, it's been built on:
+
+        Linux/glibc 2.1, 2.2.14 kernel (Mandrake 7)
+        Unixware (X11R5 and native compiler)
+        Unixware (X11R6.4 and gcc 2.95.2 compiler)
+        HPUX 10.10 using X11R6.1 and gcc 2.95.2
+        Sparc Solaris 2.6 using native compiler and X environment
+         (Thanks to Martin Buchholz for providing me access to his machine)
+
+	An X11 build environment (xmkmf, imake, X11/ headers, etc) is
+required to compile NAS. 
+
+
+LOCATION
+	
+	NAS can be obtained (eventually) via ftp from
+sunsite.unc.edu, and perhaps ftp.x.org.  More up-to-date information,
+as well as the latest release (including development releases) can be
+found at http://radscan.com/nas.html 
+
+
+SYNOPSIS
+
+	Here's an extract from the README file:
+
+	This directory tree contains sources for the Network Audio
+System, a network-transparent, client/server audio system, including:
+
+    o   sample server implementations
+
+        - VOXware (FreeBSD, NetBSD, Linux, SVR4.[02])
+
+        - Sun Sparc 1 AM79C30A Digital Subscriber Controller and
+              Sparc 10 Dual Basic Rate ISDN Interface
+          (SunOS 4.1.[23], Solaris 2.x)
+
+        - SGI Indigo (IRIX 5.x) (Not tested since 1.2p5!)
+
+        - HPUX 10.10+ (may work on 9.x)
+
+    o   an application programming interface library
+    o   a variety of sample applications
+
+
+	Key features of the Network Audio System include:
+
+    o   Device-independent audio over the network
+    o   Lots of audio file and data formats
+    o   Can store sounds in server for rapid replay
+    o   Extensive mixing, separating, and manipulation of audio data
+    o   Simultaneous use of audio devices by multiple applications
+    o   Use by a growing number of ISVs
+    o   Small size
+    o   Free!  No obnoxious licensing terms
+
+	...
+
+	See the README file for more information.
+
+	See BUILDNOTES for instructions on building and installing NAS.
+
+
+Jon Trulson <jon@radscan.com> 3/12/2000
+
+
+$Id$

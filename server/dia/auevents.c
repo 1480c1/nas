@@ -24,9 +24,15 @@
 
 #include	"misc.h"
 #include	"dixstruct.h"
+
 #ifdef sgi
-#define		_BSD_SIGNALS
+# define		_BSD_SIGNALS
 #endif
+
+#ifdef __NetBSD__
+# include       <sys/types.h>
+#endif
+
 #include 	<sys/signal.h>
 #include	<audio/audio.h>
 #include	<audio/Aproto.h>

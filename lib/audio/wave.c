@@ -47,7 +47,7 @@ FILE           *fp;
     char            n;
 
     if ((status = fread(c, sizeof(RiffChunk), 1, fp)))
-	if (BIG_ENDIAN)
+	if (NAS_BIG_ENDIAN)
 	    swapl(&c->ckSize, n);
 
     return status;
@@ -79,7 +79,7 @@ _WaveConst char *name;
 
     fileSize = PAD2(ck.ckSize) - sizeof(RIFF_FOURCC);
 
-    while (fileSize >= sizeof(RiffChunk))
+    while (fileSize >= (AuInt32)sizeof(RiffChunk))
     {
 	if (!readChunk(&ck, wi->fp))
 	    Err();
@@ -130,18 +130,18 @@ _WaveConst char *name;
 	{
 	    AuInt32            dummy;
 
-	    wi->format = FileReadS(wi->fp, BIG_ENDIAN);
-	    wi->channels = FileReadS(wi->fp, BIG_ENDIAN);
-	    wi->sampleRate = FileReadL(wi->fp, BIG_ENDIAN);
+	    wi->format = FileReadS(wi->fp, NAS_BIG_ENDIAN);
+	    wi->channels = FileReadS(wi->fp, NAS_BIG_ENDIAN);
+	    wi->sampleRate = FileReadL(wi->fp, NAS_BIG_ENDIAN);
 
 	    /* we don't care about the next two fields */
-	    dummy = FileReadL(wi->fp, BIG_ENDIAN);
-	    dummy = FileReadS(wi->fp, BIG_ENDIAN);
+	    dummy = FileReadL(wi->fp, NAS_BIG_ENDIAN);
+	    dummy = FileReadS(wi->fp, NAS_BIG_ENDIAN);
 
 	    if (wi->format != RIFF_WAVE_FORMAT_PCM)
 		Err();
 
-	    wi->bitsPerSample = FileReadS(wi->fp, BIG_ENDIAN);
+	    wi->bitsPerSample = FileReadS(wi->fp, NAS_BIG_ENDIAN);
 
 	    /* skip any other format specific fields */
 	    fseek(wi->fp, PAD2(ck.ckSize - 16), 1);
@@ -199,7 +199,7 @@ WaveInfo       *wi;
 
     wi->sizeOffset = ftell(wi->fp);
 
-    if (!FileWriteL(0, wi->fp, BIG_ENDIAN) ||
+    if (!FileWriteL(0, wi->fp, NAS_BIG_ENDIAN) ||
 	!fwrite(RIFF_WaveID, sizeof(RIFF_FOURCC), 1, wi->fp))
 	Err();
 
@@ -213,10 +213,10 @@ WaveInfo       *wi;
 	size = sizeof(RiffChunk) + sizeof(RIFF_FOURCC) + PAD2(n);
 
 	if (!fwrite(RIFF_ListID, sizeof(RIFF_FOURCC), 1, wi->fp) ||
-	    !FileWriteL(size, wi->fp, BIG_ENDIAN) ||
+	    !FileWriteL(size, wi->fp, NAS_BIG_ENDIAN) ||
 	    !fwrite(RIFF_ListInfoID, sizeof(RIFF_FOURCC), 1, wi->fp) ||
 	    !fwrite(RIFF_InfoIcmtID, sizeof(RIFF_FOURCC), 1, wi->fp) ||
-	    !FileWriteL(n, wi->fp, BIG_ENDIAN) ||
+	    !FileWriteL(n, wi->fp, NAS_BIG_ENDIAN) ||
 	    !fwrite(wi->comment, n, 1, wi->fp))
 	    Err();
 
@@ -227,15 +227,15 @@ WaveInfo       *wi;
     }
 
     if (!fwrite(RIFF_WaveFmtID, sizeof(RIFF_FOURCC), 1, wi->fp) ||
-	!FileWriteL(RIFF_WaveFmtSize, wi->fp, BIG_ENDIAN) ||
-	!FileWriteS(RIFF_WAVE_FORMAT_PCM, wi->fp, BIG_ENDIAN) ||
-	!FileWriteS(wi->channels, wi->fp, BIG_ENDIAN) ||
-	!FileWriteL(wi->sampleRate, wi->fp, BIG_ENDIAN) ||
+	!FileWriteL(RIFF_WaveFmtSize, wi->fp, NAS_BIG_ENDIAN) ||
+	!FileWriteS(RIFF_WAVE_FORMAT_PCM, wi->fp, NAS_BIG_ENDIAN) ||
+	!FileWriteS(wi->channels, wi->fp, NAS_BIG_ENDIAN) ||
+	!FileWriteL(wi->sampleRate, wi->fp, NAS_BIG_ENDIAN) ||
 	!FileWriteL(wi->channels * wi->sampleRate * (wi->bitsPerSample >> 3),
-		    wi->fp, BIG_ENDIAN) ||
+		    wi->fp, NAS_BIG_ENDIAN) ||
 	!FileWriteS(wi->channels * (wi->bitsPerSample >> 3), wi->fp,
-		    BIG_ENDIAN) ||
-	!FileWriteS(wi->bitsPerSample, wi->fp, BIG_ENDIAN))
+		    NAS_BIG_ENDIAN) ||
+	!FileWriteS(wi->bitsPerSample, wi->fp, NAS_BIG_ENDIAN))
 	Err();
 
     wi->fileSize += sizeof(RiffChunk) + RIFF_WaveFmtSize;
@@ -245,7 +245,7 @@ WaveInfo       *wi;
 
     wi->dataOffset = ftell(wi->fp);
 
-    if (!FileWriteL(0, wi->fp, BIG_ENDIAN))
+    if (!FileWriteL(0, wi->fp, NAS_BIG_ENDIAN))
 	Err();
 
     wi->fileSize += sizeof(RiffChunk);
@@ -268,9 +268,9 @@ WaveInfo       *wi;
 		fputc(0, wi->fp);	/* pad the data */
 
 	    fseek(wi->fp, wi->sizeOffset, 0);
-	    FileWriteL(wi->fileSize + PAD2(wi->dataSize), wi->fp, BIG_ENDIAN);
+	    FileWriteL(wi->fileSize + PAD2(wi->dataSize), wi->fp, NAS_BIG_ENDIAN);
 	    fseek(wi->fp, wi->dataOffset, 0);
-	    FileWriteL(wi->dataSize, wi->fp, BIG_ENDIAN);
+	    FileWriteL(wi->dataSize, wi->fp, NAS_BIG_ENDIAN);
 	}
 
 	status = fclose(wi->fp);

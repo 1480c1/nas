@@ -4,11 +4,13 @@
 auplay \- play a sound file to a Network Audio System server
 .SH SYNOPSIS
 .B auplay
-[\-audio \fIservername\fP] [\-volume \fI0\-100\fP] [\-i] [\-I] \fIfiles...\fP
+[\-audio \fIservername\fP] [\-volume \fI0\-100\fP] [\-i] [\-I] [\-l] \fIfiles...\fP
 .SH DESCRIPTION
 The \fIauplay\fP program can be used to play audio data stored in 
 the .SND, .AU, or .WAV formats common on Sun workstations and PCs.
 It is typically used from shell scripts or command line procedures.
+If no filenames are given on the command line, audio data will be
+read fron stdin, unless the \fI-l\fP option is given.
 .SH OPTIONS
 The following options may be used with the \fIauplay\fP program:
 .TP 8
@@ -26,6 +28,11 @@ sound data should be printed along with playing the data.
 .B "\-I"
 This option indicates that the header information associated with the 
 sound data should be printed instead of playing the data.
+.TP 8
+.B "\-l"
+This option indicates that a list of filenames is to be read from
+stdin.  \fIauplay\fP will play these files after playing any files
+given explicitly as command line arguments.
 .SH "SEE ALSO"
 nas(1), auctl(1), audemo(1), autool(1)
 .SH COPYRIGHT
