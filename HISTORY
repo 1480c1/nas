@@ -1,5 +1,71 @@
 $Id$
 
+Version 1.6a (evel) 12/23/2003
+
+        - preparing a long overdue development release
+
+        - ANSI'ification of libaudio.  What a fun, tedeous job.  There
+          were a few errors in libaudio that were pointed out.  
+
+          There seemed to be some confusion with the order of
+          arguments to the AuSoundRecordToFile*() functions.  
+
+          The function declarations were made to match the prototype
+          definition and the man page.
+
+        - Modified Scott Presnell's patch to not enable BSD44SOCKETS
+          on Linux or SVR4 systems. There are some structure members
+          used that are not present on these (and perhaps other)
+          systems. 
+
+          If you run into compilarion problems with ConnSvr.c relating
+          to invalid structure members, look at the define of
+          BSD44SOCKETS in Imakefile and correct for your system as
+          needed.  Oh, send me the patch as well? :)
+
+        - auvoxware
+
+          - added some more useful debugging info.  If you get the old
+            'cannot create audio block connection info" try running
+            nasd with '-v -d 99' and see what the real error is.
+
+          - certain ioctl() requests are no longer fatal (like
+            SOUND_MIXER_WRITE_RECSRC and SOUND_MIXER_READ_RECSRC).
+            Recording may not work properly if these fail though.
+
+        9/14/2003 
+
+        - added patch from Marty Leisner cleaning up a couple of error
+          messages in server/os/connection.c
+
+        3/15/2003
+
+	- added a patch to the contrib section by Laurent Vivier - this
+          patch adds NAS support to the esound daemon on AIX systems.
+          Should be reasonably portable to other platforms as well.
+          
+          Rumor has it that the Ximian folks are adding this support
+          officially into esound.
+
+        3/15/03
+
+	- set timer in auvoxware.c to trigger when 50% of the samples
+          are predicted to be consumed... This hopefully will help
+          with underruns on some systems/OS's...  I'm not sure why
+          this is happening on those systems (it's not happened on any
+          of the systems I've used NAS on), so this should probably
+          be considered a harmless workaround.
+
+        3/4/03
+
+	- Patch from Scott Presnell to set BSD44SOCKETS properly for
+          libaudio. 
+
+        12/11/2002
+
+	- patch from Steve McIntyre correcting a typo in Xtutil.h
+
+
 Version 1.6 10/23/2002
 
 	- Release!
