@@ -582,8 +582,22 @@ open_unix_socket ()
     unlink (unsock.sun_path);
     if ((request = socket (AF_UNIX, SOCK_STREAM, 0)) < 0) 
     {
-	Error ("Creating Unix socket");
-	return -1;
+      char *buffer;
+      int i;                                                                  
+      
+      i = strlen(unsock.sun_path);                                            
+      buffer = (char *)malloc(i + 80);                                                
+      if (buffer)
+        {
+          sprintf(buffer, "Error creating unix socket: %s\n", 
+                  unsock.sun_path);
+          Error (buffer);
+          free(buffer);
+        }
+      else
+        Error ("Creating Unix socket");
+      
+       return -1;
     } 
 #ifdef BSD44SOCKETS
     if (bind(request, (struct sockaddr *)&unsock, SUN_LEN(&unsock)))
@@ -591,13 +605,27 @@ open_unix_socket ()
     if (bind(request, (struct sockaddr *)&unsock, strlen(unsock.sun_path)+2))
 #endif
     {
-	Error ("Binding Unix socket");
+      char *buffer;
+      int i;                                                                  
+      
+      i = strlen(unsock.sun_path);                                            
+      buffer = (char *)malloc(i + 80);                                                
+      if (buffer)
+        {
+          sprintf(buffer, "Error binding unix socket: %s\n", 
+                  unsock.sun_path);
+          Error (buffer);
+          free(buffer);
+        }
+      else
+        Error ("Creating Unix socket");
+      
 	close (request);
 	return -1;
     }
     if (listen (request, 5))
     {
-	Error ("Unix Listening");
+	Error ("Unix Listen");
 	close (request);
 	return -1;
     }

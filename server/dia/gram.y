@@ -141,12 +141,14 @@ stmt		: error
 			{ ddaSetConfig(MINRATE, (void *)$2); }
 		| GAIN number
 			{ ddaSetConfig(GAIN, (void *)$2); }
+                ;
 
 string		: STRING		{ ptr = (char *)malloc(strlen($1)+1);
 					  strcpy(ptr, $1);
 					  RemoveDQuote(ptr);
 					  $$ = ptr;
 					}
+                ;
 number		: NUMBER		{ $$ = $1; }
 		;
 

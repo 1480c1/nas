@@ -639,7 +639,10 @@
 ./server/Makefile
 ./server
 ./contrib
+./contrib/README
 ./contrib/rc
 ./contrib/rc/nasd
+./contrib/esound
+./contrib/esound/esound-0.2.29-aix_NAS.patch
 ./Makefile
 .

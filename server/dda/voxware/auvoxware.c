@@ -509,7 +509,7 @@ AuUint32 *auServerDeviceListSize,
 static AuInt32 setTimer(rate)
 AuInt32 rate;
 {
-  AuInt16          timer_ms;
+  AuInt32          timer_ms;
   AuInt32          foo;
   struct itimerval ntval, otval;
 
@@ -523,13 +523,10 @@ AuInt32 rate;
   if (rate == 0) {		/* Disable timer case */
     ntval.it_value.tv_sec = ntval.it_value.tv_usec = 0;
     ntval.it_interval.tv_sec = ntval.it_interval.tv_usec = 0;
-    timer_ms = 0x7fff;
   } else {
-    timer_ms = (auMinibufSamples * 700) / rate;
+    timer_ms = (auMinibufSamples * 500) / rate;
     ntval.it_interval.tv_sec = 0;
     ntval.it_interval.tv_usec = timer_ms * 1000;
-    ntval.it_value.tv_sec = 0;
-    ntval.it_value.tv_usec = timer_ms * 10 ;
   }
   foo = setitimer(ITIMER_REAL, &ntval, &otval);
 
@@ -675,7 +672,8 @@ AuBool wait;
 	  }
       }
 
-#if !defined(__CYGWIN__)
+#warning "JET: HACK - FIXME"
+#if 0 && !defined(__CYGWIN__) 
     if(sndStatIn.fd == -1 && !share_in_out)
     {
       if (NasConfig.DoDebug)
@@ -1324,11 +1322,13 @@ SndStat* sndStatPtr;
   if (NasConfig.DoDebug)
     if (sndStatPtr == &sndStatOut)
     {
-       osLogMsg("++ Setting up Output device\n");
+       osLogMsg("++ Setting up Output device (%s)\n",
+                sndStatPtr->device);
     }
     else
     {
-       osLogMsg("++ Setting up Input device\n");
+       osLogMsg("++ Setting up Input device (%s)\n",
+                sndStatPtr->device);
     }
 
 	
@@ -1475,6 +1475,9 @@ AuBool AuInitPhysicalDevices()
 		       sndStatOut.howToOpen|O_SYNC|extramode, 0)) == -1)
 	  {
 	    UNIDENTMSG;
+            osLogMsg("Output open(%s) failed: %s\n",
+                     sndStatOut.device,
+                     strerror(errno));
 	    return AuFalse;
 	  }
 	sndStatOut.fd = fd;
@@ -1508,7 +1511,10 @@ AuBool AuInitPhysicalDevices()
       {
          sndStatIn.fd = sndStatOut.fd;
          share_in_out = AuTrue;
-      }
+         osLogMsg("Input open(%s) failed: %s, using output device\n",
+                  sndStatIn.device,
+                  strerror(errno));
+     }
     }
 
     setupSoundcard(&sndStatOut);
@@ -1537,21 +1543,32 @@ AuBool AuInitPhysicalDevices()
            */
          if (!leave_mixer)
          {
-             int mask = SOUND_MASK_MIC | SOUND_MASK_LINE; /* enable these */
-             mask &= recmask;    /* if supported */
-             if (ioctl(mixerfd, SOUND_MIXER_WRITE_RECSRC, &mask) == -1) {
-               return AuFalse;
+           int mask = SOUND_MASK_MIC | SOUND_MASK_LINE; /* enable these */
+           mask &= recmask;    /* if supported */
+           if (ioctl(mixerfd, SOUND_MIXER_WRITE_RECSRC, &mask) == -1) 
+             {
+               osLogMsg("%s: ioctl(SOUND_MIXER_WRITE_RECSRC) failed: %s\n",
+                        sndStatOut.mixer,
+                        strerror(errno));
+               /*                return AuFalse; - no need to exit here..*/
              }
          }
         }
 
         if (ioctl(mixerfd, SOUND_MIXER_READ_RECSRC, &recsrc) == -1) {
 	  UNIDENTMSG;
-	  return AuFalse;
+          osLogMsg("%s: ioctl(SOUND_MIXER_READ_RECSRC) failed: %s\n",
+                   sndStatOut.mixer,
+                     strerror(errno));
+          recsrc = 0;
+          /* 	  return AuFalse; - let's not be too hasty */
         }
       
         if (ioctl(mixerfd, SOUND_MIXER_READ_STEREODEVS, &stereodevs) == -1) {
 	  UNIDENTMSG;
+          osLogMsg("%s: ioctl(SOUND_MIXER_READ_STEREODEVS) failed: %s\n",
+                   sndStatOut.mixer,
+                     strerror(errno));
 	  return AuFalse;
         }
       
@@ -1561,6 +1578,10 @@ AuBool AuInitPhysicalDevices()
 	  
 	    if (ioctl(mixerfd, MIXER_READ(i), &level[i]) == -1) {
 	      UNIDENTMSG;
+              osLogMsg("%s: ioctl(MIXER_READ(%d)) failed: %s\n",
+                       sndStatOut.mixer,
+                       i,
+                       strerror(errno));
 	      return AuFalse;
 	    }
 	  }
