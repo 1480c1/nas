@@ -226,9 +226,10 @@ install.man:: file.man							    @@\
 	@(rel=`cat $(TOP)/RELEASE | \				     	    @@\
 	  sed 's/Network Audio System Release //'`; \			    @@\
 	  sed -f $(TOP)/config/mungeman \				    @@\
-	      -e "s/_RELEASE_/$$rel/" < file.man > tmp.man)		    @@\
-	InstallManPageLong(tmp,destdir,dest)				    @@\
-	@$(RM) tmp.man
+	       -e "s/_RELEASE_/$$rel/" < file.man > wibble.man; mv -f file.man tmp.man ; mv -f wibble.man file.man)                                        @@\
+	InstallManPageLong(file,destdir,dest)                               @@\
+	mv -f tmp.man file.man
+
 
 #define SingleAudioProgram(program)					    @@\
 	InstallProgram(program,$(BINDIR))				    @@\

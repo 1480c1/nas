@@ -91,7 +91,7 @@ RCMANDIR = $(MANDIR)
 #define BuildSGIServer
 #endif
 
-#ifdef HPArchitecture
+#if defined(HPArchitecture) && !defined(LinuxArchitecture)
 #define CanBuildAuServer        YES
 ALL1 = nasd
 RCMANDIR = $(MANDIR)

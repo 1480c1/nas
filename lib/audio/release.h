@@ -1,1 +1,1 @@
-static char *release = "@(#)Network Audio System Release 1.4.2b";
+static char *release = "@(#)Network Audio System Release 1.4.2c";

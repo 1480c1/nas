@@ -48,11 +48,19 @@
 #define DoDebugLib DebugLibAudio
 #define DoProfileLib ProfileLibAudio
 
+
 /* must include <Library.tmpl> *after* the above 4 lines */
 #include <Library.tmpl>
 
 #if SystemV && !SystemV4 && !defined(XFree86Version) && !defined(AIXArchitecture)
    SYSV_DEFINES = -DAU_NOT_STDC_ENV -D_AuNEEDBCOPYFUNC -DNEED_FAKE_XWIN
+#endif
+
+XCOMM JET - see if we should avoid streams
+#if (SystemV || SystemV4) 
+/* JET - streams are just too problematic.  UNIX/TCP CONN will do fine */
+#undef ConnectionFlags
+#define ConnectionFlags -DTCPCONN -DUNIXCONN
 #endif
 
 #if Malloc0ReturnsNull
