@@ -1,6 +1,13 @@
 $Id$
 
-10/06/2004 1.6g
+11/14/2004 1.7 (stable)
+
+        - 1.7 release :)
+
+        - fixed config/Imakefile so 'configure' command would work
+          under cygwin.  Tested clients/server under cygwin.
+
+        10/06/2004 
 
         - 1.7 release candidate
 
@@ -43,7 +50,7 @@ $Id$
         - updated libtool due to a problem(s) reported by Steve
           McIntyre. 
 
-06/20/2004 1.6e
+        08/20/2004
 
         - clear CFLAGS before building config/config.h
 
@@ -56,7 +63,7 @@ $Id$
 
         - barring major problems, this is a release candidate.
 
-06/20/2004 1.6d
+        06/20/2004 
 
         - add autoconf/configure support for config/. Now, during the
           'includes' phase of the nas build, configure will try to
@@ -80,13 +87,13 @@ $Id$
           audemo. 
 
         - corrected problem with dia/auprocess.c that caused SIGFPE's
-          in nasd when a element with a samplerate of 0 was
+          in nasd when an element with a samplerate of 0 was
           processed. Thanks to Tobias Diedrich for a test case.
 
         - removed some pre-R5 cruft from lib/audio/ConnSvr.c that
           caused build problems on some solaris systems.
 
-02/14/2004 1.6c
+        02/14/2004 
 
         - Fixed up some Cygwin issues... All of the clients and the
           server seem to compile and work fine now.  I tested both
@@ -100,13 +107,13 @@ $Id$
 
         - Added 64bit fixes from Per Oyvind Karlsen
 
-12/31/2003 1.6b
+        12/31/2003 
 
         - corrected a coredump with the clients in 1.6a when using a
           non-zero display number. GetAuthorization() was a bit
           confused about the order of it's arguements...
 
-12/24/2003 1.6a
+        12/24/2003 
 
         - preparing a long overdue development release
 
@@ -220,7 +227,7 @@ Version 1.6 10/23/2002
 	- We really should release this one unless there are big
           problems. ;-)
 
-	## 1.5f	8/26/2002
+	8/26/2002
 
 	- time for another development update.  Should probably go
           final with a 1.5.1 version soon...

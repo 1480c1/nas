@@ -13,7 +13,7 @@ INSTALLFLAGS = $(INSTINCFLAGS)
 HEADERS = NasConfig.h config.h
 
 config.h: 
-	(unset CFLAGS; ./configure)
+	sh -c "unset CFLAGS; ./configure"
 
 includes:: config.h
 
