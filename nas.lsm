@@ -1,0 +1,14 @@
+Begin3
+Title:          Source package for the Network Audio System (NAS)
+Version:        1.4
+Entered-date:   2000-03-11
+Description:    network transparent, client/server audio
+Keywords:       NAS Network Audio X X11 voxware hpux sun sgi unixware linux freebsd netbsd
+Author:         (Original) Jim Fulton, Greg Renda, Dave Lemke at Network Computing Devices, Inc.
+Author:         (Maintainer) Jon Trulson
+Author:		The users on the mailing list
+Maintained-by:  Jon Trulson <jon@radscan.com>
+Primary-site:   http://radscan.com/nas.html
+Alternate-site: Not yet known, probably ftp.x.org
+Copying-policy: Artistic License (see the LICENSE file in the distribution)
+End
