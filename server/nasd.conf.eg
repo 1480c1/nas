@@ -6,7 +6,7 @@
 #
 
 
-# set this to 0 for no debugging, larger numbers equals more debugging
+# set this to 0 for no debugging, a larger number equals more debugging
 #  info...
 Debug 0
 
@@ -18,7 +18,7 @@ Verbose
 # Only the voxware, hpux, and sun servers understand this for now.
 ReleaseDevice "yes"
 
-# init the mixer on startup? (voxware)
+# init the mixer on startup? Voxware only.
 MixerInit	"yes"			
 
 # This is used on hpux.  Set to "INT" to use the internal speaker,

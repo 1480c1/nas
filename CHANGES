@@ -1,6 +1,63 @@
-
 CHANGES file listing changes to nas during the various iterations.
 Jon Trulson 10/24/99
+
+1.3d
+	??/??/????
+
+	corrected some build problems on Sparc Solaris 2.6 with native 
+		compiler/X11 env
+
+	corrected build problems on native Unixware compiler and X11R5
+		Note, to get this to work, you need 3 corrected
+		/usr/X/lib/config/ files from me...
+
+	integrated config handling in all servers, based on a 
+		lex/yacc parser from Stephen Hocking that was in the 
+		voxware server.
+
+		config file is /etc/nas/nasd.conf
+			an example config file (/etc/nas/nasd.conf.eg) 
+				is installed.
+		parser errors are a bit more informative ;-)
+		no more parser in voxware server... moved into dia/
+			for general purpose use.
+		each server now has a config.c and config.h file that 
+			provides the ddaSetConfig() functionality required
+			of each server by dia/.  In the SGI case, 
+			it's just a stub. ddaSetConfig() ignores options
+			it doesn't understand (required behavior).
+		server cmdline options '-v' (verbose) and '-d <num>'
+			(debug messages) added.  These override 
+			nasd.conf settings.
+
+	voxware server:
+		release device functionality now controlled by
+			nasd.conf
+		mixer init policy now controlled by nasd.conf
+
+	sun server:
+		added integrated sun (ausuni) module (now built by 
+			default) into to distribution.  
+		release device functionality now controlled by
+			nasd.conf
+
+	hpux server:
+		added device release (ReleaseDevice) capability to hpux
+			server.  All servers except for sgi now
+			support this functionality.
+		fixed sample rate change problem in hpux server
+		separated hardware init code for ReleaseDevice 
+			functionality
+		added new option in nasd.conf to select either the
+			EXT (external - headphones/speakers) or INT
+			(internal speaker) output device by default
+
+	renamed generated server binary from au* to nasd for all
+			servers
+			man pages updated (auserver.man and 
+				AUVoxConfig.man	respectively).
+	
+
 
 1.3c 
 

@@ -269,7 +269,7 @@ AdjustWaitForDelay (waitTime, newdelay)
 
 void UseMsg()
 {
-    ErrorF("use: Au [:<listen port offset>] [option]\n");
+    ErrorF("use: nasd [:<listen port offset>] [option]\n");
     ErrorF(" -aa		allow any host to connect\n");
 #ifndef AMOEBA
 #ifdef PART_NET
@@ -280,6 +280,8 @@ void UseMsg()
     ErrorF(" -nopn		partial networking disabled [default]\n");
 #endif
 #endif
+    ErrorF(" -v                 enable verbose messages\n");
+    ErrorF(" -d <num>           enable debug messages at level <num>\n");
 }
 
 /*
@@ -322,10 +324,25 @@ char	*argv[];
 	else if (strcmp(argv[i], "-nopn") == 0)
 	    PartialNetwork = FALSE;
 #endif
-	else {
+	else if (strcmp(argv[i], "-v") == 0)
+	  {
+	    NasConfig.DoVerbose = TRUE;
+	  }
+	else if (strcmp(argv[i], "-d") == 0)
+	  {
+	    i++;
+	    if (i < argc)
+	      NasConfig.DoDebug = atoi(argv[i]);
+	    else {
+	      UseMsg();
+	      exit(1);
+	    }
+	  }
+	else 
+	  {
 	    UseMsg();
 	    exit(1);
-	}
+	  }
      }
 }
 
