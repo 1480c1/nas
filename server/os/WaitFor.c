@@ -59,6 +59,7 @@ SOFTWARE.
 #define FIOSNBIO        FIONBIO
 #include <fcntl.h>
 #include <sys/types.h>
+#include "fdset.h"
 #endif
 
 #include <audio/audio.h>

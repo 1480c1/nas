@@ -240,7 +240,11 @@ SndStat sndStatIn =
 	32,			/* maxFrags */
 	"/dev/dsp1",		/* device */
 	"/dev/mixer1",		/* mixer */
+#if defined(__CYGWIN__)
 	O_RDONLY,		/* howToOpen */
+#else
+	O_RDWD,			/* howToOpen */
+#endif
 	1,			/* autoOpen */
 	0,			/* forceRate */
 	0,			/* isPCSpeaker */
@@ -258,7 +262,11 @@ SndStat sndStatIn =
 	32,			/* maxFrags */
 	"/dev/dsp",		/* device */
 	"/dev/mixer",		/* mixer */
+#if defined(__CYGWIN__)
+	O_WRONLY,		/* howToOpen */
+#else
 	O_RDWR,			/* howToOpen */
+#endif
 	1,			/* autoOpen */
 	0,			/* forceRate */
 	0,			/* isPCSpeaker */
@@ -667,6 +675,7 @@ AuBool wait;
 	  }
       }
 
+#if !defined(__CYGWIN__)
     if(sndStatIn.fd == -1 && !share_in_out)
     {
       if (NasConfig.DoDebug)
@@ -691,6 +700,7 @@ AuBool wait;
 	   osLogMsg("openDevice: input device already open\n");
 	 }
     }
+#endif
 
     if(mixerfd == -1)
        while ((mixerfd = open(sndStatOut.mixer, O_RDONLY|extramode, 

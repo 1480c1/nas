@@ -7,17 +7,17 @@ after :
 
 AudioLib : (lib/audio/)
 ----------
-Add this at the linking to the makefile of lib/audio in case libaudio.dll:
--L/usr/X11R6/lib -lXt -lXau -lm -lc -lX11 -lSM -lICE
+  Add this at the linking to the makefile of lib/audio in case libaudio.dll:
+  -L/usr/X11R6/lib -lXt -lXau -lm -lc -lX11 -lSM -lICE
+  
+  do make
+  
+  Include : (include/)
 
-do make
-
-Include : (include/)
 ---------
-Do this :
-ln -sf ../server/os/aulog.h aulog.h
-ln -sf ../server/dia/globals.h globals.h
-ln -sf ../server/dia/nasconfig.h nasconfig.h
+  Do this :
+  ln -sf ../server/os/aulog.h aulog.h
+  ln -sf ../server/dia/globals.h globals.h
 
 Os : (server/os)
 ----
