@@ -7,7 +7,11 @@ BUILDING:
     1.	Make sure you have imake.
 	(See the BUILDNOTES file if you want to try building with X11R4).
 
-    2.	Do "xmkmf" to create the initial Makefile.
+    2.	Do "xmkmf" to create the initial Makefile.  
+
+        For Unixware 7, use 
+
+	"imake -DUseInstalled -I/usr/lib/X11/config"
 
     3.	Do "make World" (note the uppercase World) to build the distribution.
 
@@ -24,6 +28,7 @@ BUILDING:
 
     5.	To install the manual pages, use "make install.man" or 
 	"make install.man DESTDIR=/usr/tmp/nas" as above.
+
 
 
 ########################################################################

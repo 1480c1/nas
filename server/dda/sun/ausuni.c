@@ -28,6 +28,22 @@ from the copyright holder.
 
  $Id$
 
+
+ HISTORY:
+
+ John Wehle 12/10/2000:
+        * ausuni.c: (errno.h): Include.  
+                    (devAudioMode): New static variable.  
+                    (openDevice): If open for O_RDWR fails
+	                          then retry open using O_WRONLY.
+                    (AuInitPhysicalDevices): Likewise.   
+                    (writeOutput): Check devAudioMode and
+	                           reopen device if necessary.
+                    (readPhysicalInputs): Likewise. 
+
+ 
+
+
 */
 
 /**
@@ -56,6 +72,7 @@ from the copyright holder.
  */
 
 #define _AUSUN_C_
+
 
 #include <stdio.h>				/* for sprintf */
 #include <stdlib.h>				/* for getenv */
@@ -141,6 +158,7 @@ static int      devAudio = -1,
 #ifdef SEPARATE_CTLS
                 devAudioCtl2 = -1,
 #endif
+	        devAudioMode = O_RDWR,
                 bufSize;
 static volatile AuBool signalEnabled = 0;
 #ifdef DELAYED_TRIGGER
@@ -447,8 +465,12 @@ AuBool wait;
 	audio_info_t info;
 
 	if (devAudio == -1)
-		while ((devAudio = open("/dev/audio", O_RDWR)) == -1 && wait)
-			sleep(5);
+	  while ((devAudio = open("/dev/audio", devAudioMode)) == -1 && wait)
+	    {
+	      if (errno == EINVAL && devAudioMode == O_RDWR)
+		devAudioMode = O_WRONLY;
+	      sleep(5);
+	    }
 
 	if (devAudio != -1) {
 		if (is_cs4231_or_dbri) {
@@ -925,6 +947,18 @@ unsigned int	n;
 	fflush(stderr);
 #endif
 
+   /*
+    * The sbpro can only be opened for reading or for writing, not both.
+    */
+ 
+	if (! (devAudioMode == O_RDWR || devAudioMode == O_WRONLY))
+	  {
+	    closeDevice ();
+	    devAudioMode = O_WRONLY;
+	    openDevice (1);
+	  }
+ 
+
 	write0(p, n << 2);
 
 #ifndef BSD_SIGNALS
@@ -1077,14 +1111,26 @@ static void
 readPhysicalInputs()
 {
 #ifdef DEBUGLOG
-	fprintf(stderr, "readPhysicalInputs()\n");
-	fflush(stderr);
+  fprintf(stderr, "readPhysicalInputs()\n");
+  fflush(stderr);
 #endif
 
-	read(devAudio, auInput, bufSize);
-
-	if (!is_cs4231_or_dbri)
-		AuULAW8ToNative(auInput, 1, auMinibufSamples);
+ 
+   /*
+    * The sbpro can only be opened for reading or for writing, not both.
+    */
+  
+  if (! (devAudioMode == O_RDWR || devAudioMode == O_RDONLY))
+    {
+      closeDevice ();
+      devAudioMode = O_RDONLY;
+      openDevice (1);
+    }
+  
+  read(devAudio, auInput, bufSize);
+  
+  if (!is_cs4231_or_dbri)
+    AuULAW8ToNative(auInput, 1, auMinibufSamples);
 }
 
 /* callback */
@@ -1305,8 +1351,16 @@ AuInitPhysicalDevices()
 	if (devAudio == -1) {
 		audio_device_t  type;
 
+		devAudio = open("/dev/audio", devAudioMode);
+		if (devAudio == -1 && errno == EINVAL && 
+		    devAudioMode == O_RDWR)
+		  {
+		    devAudioMode = O_WRONLY;
+		    devAudio = open("/dev/audio", devAudioMode);
+		  }
+ 
 		open_for_business =
-			((devAudio = open("/dev/audio", O_RDWR)) != -1 &&
+			(devAudio != -1 &&
 #ifdef SEPARATE_CTLS
 			 (devAudioCtl2 = open("/dev/audioctl", O_RDWR)) != -1 &&
 #endif

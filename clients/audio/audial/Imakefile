@@ -29,7 +29,11 @@ FILES = audial.c audial.man
   DIR = audial
 
 #if defined(USLArchitecture)
+
+# if OSMinorVersion < 2
       USLEEPDEFS = -DNEEDUSLEEP
+# endif
+
 #endif
 
         DEFINES = $(USLEEPDEFS) 

@@ -182,12 +182,27 @@ EXTRA_INCLUDES = -I$(BUILDINCROOT)
 #endif
 #endif
 
+/* For HPUX - 10.20 (Klaus Dittrich)*/
+#if defined(HPUXArchitecture) && OSMajorVersion >= 10 && !defined(HasGcc)
+/* JET - this seems pretty system specific... */
+CCOPTIONS= -Ae -Dhpux 
+CDEBUGFLAGS= +O2 +Onolimit +DAportable
+BINDIR = /usr/local/bin/ 
+USRLIBDIR=/usr/local/lib/nas
+XAPPLOADDIR = /usr/local/lib/X11/app-defaults
+STD_INCLUDES = -I/usr/local/include/X11R6 -I/usr/include/X11R6
+EXTRA_LDOPTIONS =  -L/usr/local/lib/X11R6 -L/usr/lib/X11R6
+INCROOT = /usr/local/include/nas
+IRULESRC=/opt/imake/config/
+#endif
+
 #if SystemV4 && !defined(SGIArchitecture) && !defined(SunArchitecture) && !defined(LabtamArchitecture)
-#  if defined(USLArchitecture)
-        SYSLIBS = -lresolv -lgen -lsocket -lc
-#  else
-        SYSLIBS = -lc /usr/ucblib/libucb.a 
-#  endif
+
+# if defined(USLArchitecture) 
+      SYSLIBS = -lresolv -lgen -lsocket
+# else 
+      SYSLIBS = -lc /usr/ucblib/libucb.a 
+# endif
 #endif
 
 /*
