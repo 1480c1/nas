@@ -58,8 +58,8 @@
 #endif
 #endif /* _FUNCPROTOBEGIN */
 
-#define LITTLE_ENDIAN 		(*(char *) &endian)
-#define BIG_ENDIAN 		(!LITTLE_ENDIAN)
+#define NAS_LITTLE_ENDIAN 		(*(char *) &endian)
+#define NAS_BIG_ENDIAN 		(!NAS_LITTLE_ENDIAN)
 static int      endian = 1;
 
 /* byte swap a AuInt32 */

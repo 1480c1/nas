@@ -43,7 +43,7 @@ FILE           *fp;
     char            n;
 
     if ((status = fread(c, sizeof(SvxChunk), 1, fp)))
-	if (LITTLE_ENDIAN)
+	if (NAS_LITTLE_ENDIAN)
 	    swapl(&c->ckSize, n);
 
     return status;
@@ -87,17 +87,17 @@ _SvxConst char *name;
 	{
 	    AuUint8         c;
 
-	    si->numSamples = FileReadL(si->fp, LITTLE_ENDIAN);
-	    FileReadL(si->fp, LITTLE_ENDIAN);
-	    FileReadL(si->fp, LITTLE_ENDIAN);
-	    si->sampleRate = FileReadS(si->fp, LITTLE_ENDIAN);
+	    si->numSamples = FileReadL(si->fp, NAS_LITTLE_ENDIAN);
+	    FileReadL(si->fp, NAS_LITTLE_ENDIAN);
+	    FileReadL(si->fp, NAS_LITTLE_ENDIAN);
+	    si->sampleRate = FileReadS(si->fp, NAS_LITTLE_ENDIAN);
 	    readByte(&c);
 	    readByte(&c);
 
 	    if (c)
 		Err();
 
-	    FileReadL(si->fp, LITTLE_ENDIAN);
+	    FileReadL(si->fp, NAS_LITTLE_ENDIAN);
 	}
 	/* sound data chunk */
 	else if (!cmpID(&ck.ckID, SVX_BodyID))
@@ -149,7 +149,7 @@ SvxInfo        *si;
 
     si->sizeOffset = ftell(si->fp);
 
-    if (!FileWriteL(0, si->fp, LITTLE_ENDIAN) ||
+    if (!FileWriteL(0, si->fp, NAS_LITTLE_ENDIAN) ||
 	!fwrite(SVX_8svxID, sizeof(SVX_ID), 1, si->fp))
 	Err();
 
@@ -158,7 +158,7 @@ SvxInfo        *si;
     if ((n = strlen(si->comment)))
     {
 	if (!fwrite(SVX_NameID, sizeof(SVX_ID), 1, si->fp) ||
-	    !FileWriteL(n, si->fp, LITTLE_ENDIAN) ||
+	    !FileWriteL(n, si->fp, NAS_LITTLE_ENDIAN) ||
 	    !fwrite(si->comment, n, 1, si->fp))
 	    Err();
 
@@ -166,13 +166,13 @@ SvxInfo        *si;
     }
 
     if (!fwrite(SVX_VhdrID, sizeof(SVX_ID), 1, si->fp) ||
-	!FileWriteL(SVX_SizeofVhdrChunk, si->fp, LITTLE_ENDIAN) ||
-	!FileWriteL(si->numSamples, si->fp, LITTLE_ENDIAN) ||
-	!FileWriteL(0, si->fp, LITTLE_ENDIAN) ||
-	!FileWriteL(0, si->fp, LITTLE_ENDIAN) ||
-	!FileWriteS(si->sampleRate, si->fp, LITTLE_ENDIAN) ||
-	!FileWriteS(0, si->fp, LITTLE_ENDIAN) ||
-	!FileWriteL(SVX_MaxVolume, si->fp, LITTLE_ENDIAN))
+	!FileWriteL(SVX_SizeofVhdrChunk, si->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteL(si->numSamples, si->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteL(0, si->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteL(0, si->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteS(si->sampleRate, si->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteS(0, si->fp, NAS_LITTLE_ENDIAN) ||
+	!FileWriteL(SVX_MaxVolume, si->fp, NAS_LITTLE_ENDIAN))
 	Err();
 
     si->fileSize += sizeof(SvxChunk) + SVX_SizeofVhdrChunk;
@@ -182,7 +182,7 @@ SvxInfo        *si;
 
     si->dataOffset = ftell(si->fp);
 
-    if (!FileWriteL(0, si->fp, LITTLE_ENDIAN))
+    if (!FileWriteL(0, si->fp, NAS_LITTLE_ENDIAN))
 	Err();
 
     si->fileSize += sizeof(SvxChunk);
@@ -202,9 +202,9 @@ SvxInfo        *si;
 	if (si->writing)
 	{
 	    fseek(si->fp, si->sizeOffset, 0);
-	    FileWriteL(si->fileSize + si->dataSize, si->fp, LITTLE_ENDIAN);
+	    FileWriteL(si->fileSize + si->dataSize, si->fp, NAS_LITTLE_ENDIAN);
 	    fseek(si->fp, si->dataOffset, 0);
-	    FileWriteL(si->dataSize, si->fp, LITTLE_ENDIAN);
+	    FileWriteL(si->dataSize, si->fp, NAS_LITTLE_ENDIAN);
 	}
 
 	status = fclose(si->fp);

@@ -26,10 +26,10 @@
 
 #ifndef WIN32
 #define Example(program) \
-    SingleProgramTarget(program, program.o, $(AUDIOLIBS) $(XLIB), $(SYS_LIBS))
+    SingleProgramTarget(program, program.o, $(AUDIOLIBS) $(XLIB), $(SYSLIBS))
 #else /* WIN32 */
 #define Example(program) \
-    SingleProgramTarget(program, program.o, $(AUDIOLIBS), $(SYS_LIBS))
+    SingleProgramTarget(program, program.o, $(AUDIOLIBS), $(SYSLIBS))
 #endif /* WIN32 */
 
 SRCS = playFile.c playSimul.c playFromBckt.c loopBucket.c bundle.c \

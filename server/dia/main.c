@@ -47,6 +47,11 @@ SOFTWARE.
 
 ******************************************************************/
 
+/*
+ * $Id$
+ */
+
+#include <stdio.h>
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include "misc.h"
@@ -56,6 +61,8 @@ SOFTWARE.
 #include "opaque.h"
 #include "servermd.h"
 #include "site.h"
+#include "globals.h"
+#include "nasconfig.h"
 
 extern void     OsInit(), InitClient(), ResetWellKnownSockets(),
                 Dispatch(), FreeAllResources();
@@ -66,12 +73,31 @@ extern Bool     InitClientResources();
 extern char *display;
 
 static int restart = 0;
+FILE    *yyin;			/* for the config parser */
 
 void
 NotImplemented()
 {
     FatalError("Not implemented");
 }
+
+/*
+ *  Find the config file
+ */
+
+static FILE     *openConfigFile (char *path)
+{
+  static char   buf[1024];
+  FILE *config;
+
+  strcat (buf, path);
+  strcat (buf, "nasd.conf");
+  if ((config = fopen (buf, "r")) != NULL)
+    return config;
+  else
+    return NULL;
+}
+
 
 int
 main(argc, argv)
@@ -86,6 +112,14 @@ main(argc, argv)
 	FatalError("server restarted. Jumped through uninitialized pointer?\n");
     else
 	restart = 1;
+
+    /* Init the globals... */
+    diaInitGlobals();
+
+				/* Now parse the config file */
+    if ((yyin = openConfigFile (NASCONFSEARCHPATH)) != NULL)
+      yyparse();
+
     /* These are needed by some routines which are called from interrupt
      * handlers, thus have no direct calling path back to main and thus
      * can't be passed argc, argv as parameters */
@@ -93,6 +127,24 @@ main(argc, argv)
     argvGlobal = argv;
     display = "0";
     ProcessCommandLine(argc, argv);
+
+#if 0
+				/* JET - we don't actually become a
+				   daemon, so what's the point?
+				   REVISIT */
+
+    /* We're running as a daemon, so close stdin, stdout and stderr
+       before we start the main loop */
+
+    close(0);
+    close(1);
+    close(2);
+#endif
+
+    /* And cd to / so we don't hold anything up; core files will also
+       go there. */
+    chdir("/");
+
 
     while(1)
     {

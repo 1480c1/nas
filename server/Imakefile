@@ -27,7 +27,7 @@ XCOMM $NCDId: @(#)Imakefile,v 1.17 1995/12/06 01:33:07 greg Exp $
 #include "../config/NetAudio.tmpl"
 
 #define StdSubdirs dia os
-#define StdLibs $(DIA) $(OS)
+#define StdLibs $(DIA) 
 
       OTHEREXTS = 
       OTHERDEPDIRS =
@@ -47,14 +47,22 @@ XCOMM $NCDId: @(#)Imakefile,v 1.17 1995/12/06 01:33:07 greg Exp $
             DIA = dia/libdia.a
            FONT = 
 #if SystemV4 && !defined(SGIArchitecture)
-#if defined(SYSV386) || defined(i386SVR4Architecture)
+# if defined(SYSV386) || defined(i386SVR4Architecture)
+#  if defined(USLArchitecture)
+        SYSLIBS = -lgen -lsocket -lc 
+#  else
         SYSLIBS = -lc /usr/ucblib/libucb.a -L/usr/X386/lib
-#else
-        SYSLIBS = /usr/ucblib/libucb.a
-#endif
+#  endif
+
+# endif
 #else
         SYSLIBS =
 #endif
+
+#ifdef NetBSDArchitecture
+        SYSLIBS = -lossaudio
+#endif
+
            CBRT =
 
 XCOMM
@@ -70,26 +78,26 @@ XCOMM
 
 #ifdef SunArchitecture
 #define CanBuildAuServer	YES
-ALL1 = ausun
+ALL1 = nasd
 #define BuildSunServer
 #endif
 
 #ifdef SGIArchitecture
 #define CanBuildAuServer	YES
-ALL1 = ausgi
+ALL1 = nasd
 #define BuildSGIServer
 #endif
 
 #ifdef HPArchitecture
 #define CanBuildAuServer        YES
-ALL1 = auhpux
+ALL1 = nasd
 #define BuildHPServer
 #endif
 
 
-#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture)
+#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture)
 #define CanBuildAuServer	YES
-ALL1 = auvoxware
+ALL1 = nasd
 #define BuildVoxServer
 #endif
 
@@ -108,7 +116,7 @@ XCOMM
 XCOMM Sun server
 XCOMM
 SUNDIRS = StdSubdirs dda/sun
-SUNLIBS = StdLibs dda/sun/libsun.a
+SUNLIBS = StdLibs dda/sun/libsun.a  $(OS)
 SUNSYSLIBS = $(SYSLIBS)
 
 /* next 8 lines are for Solaris 2 OpenWindows imake config support */
@@ -121,7 +129,7 @@ owversion:
 clean::
 	rm -f owversion
 
-ServerTarget(ausun,$(SUNDIRS),$(SUNOBJS),$(SUNLIBS),$(SUNSYSLIBS))
+ServerTarget(nasd,$(SUNDIRS),$(SUNOBJS),$(SUNLIBS),$(SUNSYSLIBS))
 
 InstallMultipleFlags($(ALL),$(BINDIR),$(INSTPGMFLAGS))
 
@@ -133,10 +141,10 @@ XCOMM
 XCOMM SGI server
 XCOMM
 SGIDIRS = StdSubdirs dda/sgi
-SGILIBS = StdLibs dda/sgi/libsgi.a
+SGILIBS = StdLibs dda/sgi/libsgi.a $(OS)
 SGISYSLIBS = $(SYSLIBS) -laudio
 
-ServerTarget(ausgi,$(SGIDIRS),$(SGIOBJS),$(SGILIBS),$(SGISYSLIBS))
+ServerTarget(nasd,$(SGIDIRS),$(SGIOBJS),$(SGILIBS),$(SGISYSLIBS))
 
 InstallMultipleFlags($(ALL),$(BINDIR),$(INSTPGMFLAGS))
 
@@ -148,10 +156,10 @@ XCOMM
 XCOMM voxware server
 XCOMM
 VOXWAREDIRS = StdSubdirs dda/voxware
-VOXWARELIBS = StdLibs dda/voxware/libvoxware.a
+VOXWARELIBS = StdLibs dda/voxware/libvoxware.a $(OS)
 VOXWARESYSLIBS = $(SYSLIBS)
 
-ServerTarget(auvoxware,$(VOXWAREDIRS),$(VOXWAREOBJS),$(VOXWARELIBS),$(VOXWARESYSLIBS))
+ServerTarget(nasd,$(VOXWAREDIRS),$(VOXWAREOBJS),$(VOXWARELIBS),$(VOXWARESYSLIBS))
 
 InstallMultipleFlags($(ALL),$(BINDIR),$(INSTPGMFLAGS))
 
@@ -163,10 +171,10 @@ XCOMM
 XCOMM HP server
 XCOMM
 HPDIRS = StdSubdirs dda/hpux
-HPLIBS = StdLibs dda/hpux/libhpux.a
+HPLIBS = StdLibs dda/hpux/libhpux.a $(OS)
 HPSYSLIBS = $(SYSLIBS) -lc
 
-ServerTarget(auhpux,$(HPDIRS),$(HPOBJS),$(HPLIBS),$(HPSYSLIBS))
+ServerTarget(nasd,$(HPDIRS),$(HPOBJS),$(HPLIBS),$(HPSYSLIBS))
 
 InstallMultipleFlags($(ALL),$(BINDIR),$(INSTPGMFLAGS))
 
@@ -201,8 +209,14 @@ ForceSubdirs($(DEPDIRS) $(SUBDIRS))
 clean::
 	$(RM) $(ALL)
 
-AuInstallManPage(auserver,$(MANDIR))
+ ETCDIR = /etc/nas
+
+InstallManPage(nasd,$(MANDIR))
+InstallManPage(nasd.conf,$(MANDIR))
+InstallNonExecFile(nasd.conf.eg,$(ETCDIR))
+
 #else /* CanBuildAuServer */
 
 depend::
 #endif /* CanBuildAuServer */
+

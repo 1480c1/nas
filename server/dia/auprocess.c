@@ -34,7 +34,8 @@ AuUint32        auPhysicalOutputBuffersSize;
 AuUint8        *auPhysicalOutputBuffers;
 
 extern AuBool   AuChangeElementState();
-extern void     AuRequestElementNotifyEvent(), AuRequestMonitorNotifyEvent();
+extern void     AuRequestElementNotifyEvent(), AuRequestMonitorNotifyEvent(),
+               AuProcessClockedFlows();
 
 static AuUint32 rc_1(), rc_2(), rc_4(), rc_n(), rcNull(),
                 rcm_1(), rcm_2(), rcm_n();
@@ -1080,8 +1081,7 @@ AuBool          clocked;
 	(*writePhysicalOutputs) (fl);
 
 	if (flowStateChanged)
-	    AuRequestElementNotifyEvent(AuElementNotifyKindSpecial, 0,
-					(FlowElementPtr) 0);
+           AuProcessClockedFlows();
     }
 }
 
@@ -1120,6 +1120,13 @@ AuUint8         mode;
 }
 
 void
+AuSetFeedbackGain(gain)
+AuFixedPoint    gain;
+{
+    AuCallbackIf(AuSetPhysicalFeedbackGainCB, (gain));
+}
+
+void
 AuGetOutputGainAndMode(gainp, modep)
 AuFixedPoint    *gainp;
 AuUint8         *modep;
@@ -1128,6 +1135,30 @@ AuUint8         *modep;
     *modep = CallbackExists(AuGetPhysicalOutputModeCB)
 	 ? AuCallback(AuGetPhysicalOutputModeCB, ())
 	 : AuDeviceOutputModeSpeaker;
+}
+
+void
+AuGetInputGain(gainp)
+AuFixedPoint    *gainp;
+{
+    if (CallbackExists(AuGetPhysicalInputGainCB))
+       *gainp = AuCallback(AuGetPhysicalInputGainCB, ());
+}
+
+void
+AuGetInputMode(modep)
+AuUint8    *modep;
+{
+    if (CallbackExists(AuGetPhysicalInputModeCB))
+       *modep = AuCallback(AuGetPhysicalInputModeCB, ());
+}
+
+void
+AuGetFeedbackGain(gainp)
+AuFixedPoint    *gainp;
+{
+    if (CallbackExists(AuGetPhysicalFeedbackGainCB))
+       *gainp = AuCallback(AuGetPhysicalFeedbackGainCB, ());
 }
 
 void
