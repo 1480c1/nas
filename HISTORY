@@ -1,5 +1,10 @@
 $Id$
 
+010/06/2004 1.6f
+
+           - updated libtool due to a problem(s) reported by Steve
+             McIntyre. 
+
 06/20/2004 1.6e
 
            - clear CFLAGS before building config/config.h
