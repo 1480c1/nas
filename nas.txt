@@ -35,6 +35,7 @@ other useful information on NAS.
         HPUX 10.10 using X11R6.1 and gcc 2.95.2
         Sparc Solaris 2.6 using native compiler and X environment
          (Thanks to Martin Buchholz for providing me access to his machine)
+	MS Windows systems using cygwin (www.cygwin.com).
 
 	An X11 build environment (xmkmf, imake, X11/ headers, etc) is
 required to compile NAS. 
@@ -57,7 +58,7 @@ System, a network-transparent, client/server audio system, including:
 
     o   sample server implementations
 
-        - VOXware (FreeBSD, NetBSD, Linux, SVR4.[02])
+        - VOXware (FreeBSD, NetBSD, Linux, SVR4.[02], MS Windows w/ cygwin)
 
         - Sun Sparc 1 AM79C30A Digital Subscriber Controller and
               Sparc 10 Dual Basic Rate ISDN Interface
