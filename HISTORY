@@ -40,8 +40,6 @@ $Id$
         - redid the FAQ in an attempt to make it more useful.  I'll
           try to keep it up to date.
 
-10/06/2004 1.6f
-
         - updated libtool due to a problem(s) reported by Steve
           McIntyre. 
 
