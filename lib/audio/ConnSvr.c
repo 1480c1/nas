@@ -212,8 +212,9 @@ _AuServerWait(sig)
 }
 
 static int
-_AuStartServer(iserver)
+_AuStartServer(iserver, xname)
 	int iserver;
+	AuBool xname;
 {
 	pid_t pid;
 
@@ -245,7 +246,15 @@ _AuStartServer(iserver)
 	else {
 	  char arg1[80];	/* hmmm. */
 
+        /* JET 1/20/2002 - need to handle cases where server number is
+           a port number and not a 'display' number...  If iserver is
+           => to the default AU port, convert to display number... */
+
+	  if (xname == AuFalse)
+	    iserver -= AU_DEFAULT_TCP_PORT;
+
 	  sprintf(arg1,":%d",iserver);
+
 	/* grandchild -- start server */
 	(void)signal(SIGUSR1, SIG_IGN);
 	/* start server.  Ideally the command should be set by some resource */
@@ -315,14 +324,15 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
      * Step 0, see if it is an audio server name or an X display name.
      */
     for (p = server_name; *p; p++) {
-	if (*p == '/') {
+
+      if (*p == '/') {
 	    int len = (p - server_name);
 	    char tmptransport[41];
 	    register _AuConst char *src;
 	    register char *dst;
 
 	    if (len >= sizeof tmptransport)    /* too AuInt32 */
-		goto bad;
+	      goto bad;
 	    src = server_name;
 	    dst = tmptransport;
 	    while (src < p) {
@@ -331,11 +341,12 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 	    }
 	    *dst = '\0';
 	    if (strcmp (tmptransport, "tcp") == 0 ||
-		strcmp (tmptransport, "decnet") == 0) {
+		strcmp (tmptransport, "decnet") == 0) 
+	      {
 		xname = AuFalse;	/* got a real name! */
 		server_name = (p + 1);	  /* skip prefix */
 		break;
-	    }
+	      }
 	}
     }
 
@@ -381,6 +392,7 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 	((*p != '.') && (*p != '\0')) || /* invalid non-digit terminator */
 	!(psvrnum = copystring (lastp, p - lastp)))  /* no memory */
       goto bad;
+
     saviserver = iserver = atoi (psvrnum);
 
 
@@ -527,7 +539,7 @@ int _AuConnectServer (server_name, fullnamep, svrnump,
 #else /* STARTSERVER */
     {
 	/* if local connection, try to start up a server */
-	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer(iserver))
+	if (!_AuIsLocal(phostname) || !_AuIsAudioOK() || !_AuStartServer(iserver, xname))
 	    goto bad;
 	/* try again */
 	iserver = saviserver;
@@ -1348,7 +1360,7 @@ MakeAmConnection(phostname, iserverp, retries, familyp, saddrlenp, saddrp)
     /* allocate channel descriptor */
     chandesc = XAmAllocChanDesc();
     if (chandesc == (XAmChanDesc *)NULL) {
-	fprintf(stderr, "audiolib: Out of channel capabilities\n");
+	fprintf(stderr, "audiolib: Out of channel memory\n");
 	return -1;
     }
 
