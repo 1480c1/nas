@@ -34,6 +34,98 @@
 #include	<audio/audio.h>
 #include	<audio/sound.h>
 
+/* JET  - 7/20/2002
+   Due to issues with cygwin's inability to import an array of structs
+   fro a DLL, we will put the declaration of SoundFileInfo[] here (from
+   sound.h) and provide a function that will return the appropriate
+   struct based on an index supplied.
+   Since apps shouldn't have been accessing this struct directly anyway,
+   there should be no effect on applications adhering to this rule.
+*/
+
+#ifndef hpux
+typedef void   *(*_pFunc) ();
+#define _VOIDP_ (_pFunc)
+#else						/* hpux */
+#define _VOIDP_
+#endif						/* hpux */
+
+#define _oo SoundDataFormatBit
+
+static int      sndToSound(), soundToSnd(),
+                vocToSound(), soundToVoc(),
+                waveToSound(), soundToWave(),
+                aiffToSound(), soundToAiff(),
+                svxToSound(), soundToSvx();
+
+
+/* This order must match the _SoundFileFormatsID enum defined in sound.h */
+static _SoundConst SoundInfo _SoundFileInfo[] =
+{
+    "Sun/NeXT", "snd", "snd au",
+    (_oo(AuFormatULAW8) | _oo(AuFormatLinearUnsigned8) |
+     _oo(AuFormatLinearSigned16MSB)),
+    _VOIDP_ SndOpenFileForReading, _VOIDP_ SndOpenFileForWriting,
+    SndReadFile, SndWriteFile, SndCloseFile, SndRewindFile,
+    SndSeekFile, SndTellFile, SndFlushFile, sndToSound, soundToSnd,
+
+    "Creative Labs VOC", "voc", "voc",
+    _oo(AuFormatLinearUnsigned8),
+    _VOIDP_ VocOpenFileForReading, _VOIDP_ VocOpenFileForWriting,
+    VocReadFile, VocWriteFile, VocCloseFile, VocRewindFile,
+    VocSeekFile, VocTellFile, VocFlushFile, vocToSound, soundToVoc,
+
+    "Microsoft WAVE", "wave", "wav",
+    (_oo(AuFormatLinearUnsigned8) | _oo(AuFormatLinearSigned16LSB)),
+    _VOIDP_ WaveOpenFileForReading, _VOIDP_ WaveOpenFileForWriting,
+    WaveReadFile, WaveWriteFile, WaveCloseFile, WaveRewindFile,
+    WaveSeekFile, WaveTellFile, WaveFlushFile, waveToSound, soundToWave,
+
+    "AIFF", "aiff", "aiff",
+    (_oo(AuFormatLinearSigned8) | _oo(AuFormatLinearSigned16MSB)),
+    _VOIDP_ AiffOpenFileForReading, _VOIDP_ AiffOpenFileForWriting,
+    AiffReadFile, AiffWriteFile, AiffCloseFile, AiffRewindFile,
+    AiffSeekFile, AiffTellFile, AiffFlushFile, aiffToSound, soundToAiff,
+
+    "Amiga IFF/8SVX", "8svx", "iff",
+    _oo(AuFormatLinearSigned8),
+    _VOIDP_ SvxOpenFileForReading, _VOIDP_ SvxOpenFileForWriting,
+    SvxReadFile, SvxWriteFile, SvxCloseFile, SvxRewindFile,
+    SvxSeekFile, SvxTellFile, SvxFlushFile, svxToSound, soundToSvx,
+};
+
+#undef _oo
+#undef _VOIDP_
+
+_SoundConst int SoundNumFileFormats =
+(sizeof(_SoundFileInfo) / sizeof(_SoundFileInfo[0]));
+
+char *SoundFileFormatString(Sound s)
+{
+  return(_SoundFileInfo[SoundFileFormat(s)].string);
+}
+
+int SoundValidDataFormat(int _f, int _d)
+{
+  return((_SoundFileInfo[_f].dataFormats & SoundDataFormatBit(_d) ? 1 : 0));
+}
+
+char *SoundFileFormatToString(int _i)
+{
+  return(_SoundFileInfo[_i].string);
+}
+
+char *SoundFileFormatToAbbrev(int _i)
+{
+  return(_SoundFileInfo[_i].abbrev);
+}
+
+char *SoundFileFormatToSuffixes(int _i)
+{
+  return(_SoundFileInfo[_i].suffixes);
+}
+
+
 static int
 SndToSoundFormat(fmt)
 int             fmt;
@@ -284,9 +376,9 @@ _SoundConst char *name;
     SoundComment(s) = NULL;
 
     for (i = 0; i < SoundNumFileFormats; i++)
-	if ((s->formatInfo = (SoundFileInfo[i].openFileForReading) (name)))
+	if ((s->formatInfo = (_SoundFileInfo[i].openFileForReading) (name)))
 	{
-	    if (!(SoundFileInfo[i].toSound) (s))
+	    if (!(_SoundFileInfo[i].toSound) (s))
 	    {
 		SoundCloseFile(s);
 		return NULL;
@@ -309,7 +401,7 @@ _SoundConst char *name;
 Sound           s;
 {
     if (SoundFileFormat(s) != SoundFileFormatNone &&
-	(SoundFileInfo[SoundFileFormat(s)].openFileForWriting) (name,
+	(_SoundFileInfo[SoundFileFormat(s)].openFileForWriting) (name,
 							     s->formatInfo))
     {
         SoundNumSamples(s) = 0;
@@ -325,7 +417,7 @@ char           *p;
 int             n;
 Sound           s;
 {
-    return (SoundFileInfo[SoundFileFormat(s)].readFile) (p, n, s->formatInfo);
+    return (_SoundFileInfo[SoundFileFormat(s)].readFile) (p, n, s->formatInfo);
 }
 
 int
@@ -336,7 +428,7 @@ Sound           s;
 {
     int             num;
 
-    num = (SoundFileInfo[SoundFileFormat(s)].writeFile) (p, n, s->formatInfo);
+    num = (_SoundFileInfo[SoundFileFormat(s)].writeFile) (p, n, s->formatInfo);
     if (SoundNumSamples(s) != SoundUnknownNumSamples)
         SoundNumSamples(s) += (num / SoundNumTracks(s) /
                                SoundBytesPerSample(s));
@@ -349,7 +441,7 @@ int
 SoundRewindFile(s)
 Sound           s;
 {
-    return (SoundFileInfo[SoundFileFormat(s)].rewindFile) (s->formatInfo);
+    return (_SoundFileInfo[SoundFileFormat(s)].rewindFile) (s->formatInfo);
 }
 
 int
@@ -357,21 +449,21 @@ SoundSeekFile(n, s)
 int             n;
 Sound           s;
 {
-    return (SoundFileInfo[SoundFileFormat(s)].seekFile) (n, s->formatInfo);
+    return (_SoundFileInfo[SoundFileFormat(s)].seekFile) (n, s->formatInfo);
 }
 
 int
 SoundTellFile(s)
 Sound           s;
 {
-    return (SoundFileInfo[SoundFileFormat(s)].tellFile) (s->formatInfo);
+    return (_SoundFileInfo[SoundFileFormat(s)].tellFile) (s->formatInfo);
 }
 
 int
 SoundFlushFile(s)
 Sound           s;
 {
-    return (SoundFileInfo[SoundFileFormat(s)].flushFile) (s->formatInfo);
+    return (_SoundFileInfo[SoundFileFormat(s)].flushFile) (s->formatInfo);
 }
 
 int
@@ -384,7 +476,7 @@ Sound           s;
 	return status;
 
     if (s->formatInfo)
-	status = (SoundFileInfo[SoundFileFormat(s)].closeFile) (s->formatInfo);
+	status = (_SoundFileInfo[SoundFileFormat(s)].closeFile) (s->formatInfo);
     else if (SoundComment(s))
 	free(SoundComment(s));
 
@@ -447,7 +539,7 @@ _SoundConst char *comment;
 
     if (SoundFileFormat(s) != SoundFileFormatNone)
 	if (!SoundValidateDataFormat(s) ||
-	    !(SoundFileInfo[SoundFileFormat(s)].fromSound) (s))
+	    !(_SoundFileInfo[SoundFileFormat(s)].fromSound) (s))
 	{
 	    free(SoundComment(s));
 	    free(s);
@@ -464,7 +556,7 @@ _SoundConst char *s;
     int             i;
 
     for (i = 0; i < SoundNumFileFormats; i++)
-	if (!strcasecmp(s, SoundFileInfo[i].string))
+	if (!strcasecmp(s, _SoundFileInfo[i].string))
 	    break;
 
     return i == SoundNumFileFormats ? -1 : i;
@@ -477,7 +569,7 @@ _SoundConst char *s;
     int             i;
 
     for (i = 0; i < SoundNumFileFormats; i++)
-	if (!strcasecmp(s, SoundFileInfo[i].abbrev))
+	if (!strcasecmp(s, _SoundFileInfo[i].abbrev))
 	    break;
 
     return i == SoundNumFileFormats ? -1 : i;

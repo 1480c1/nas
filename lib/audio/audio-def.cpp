@@ -13,7 +13,6 @@ EXPORTS
  AuSoundPortHighWaterMark_p = AuSoundPortHighWaterMark CONSTANT
  AuSoundPortLowWaterMark_p = AuSoundPortLowWaterMark CONSTANT
  AuSoundRestartHardwarePauses_p = AuSoundRestartHardwarePauses CONSTANT
- SoundFileInfo_p = SoundFileInfo CONSTANT
  SoundNumFileFormats_p = SoundNumFileFormats CONSTANT
 #else
  AuDefaultErrorHandler
@@ -25,7 +24,6 @@ EXPORTS
  AuSoundPortHighWaterMark
  AuSoundPortLowWaterMark
  AuSoundRestartHardwarePauses
- SoundFileInfo
  SoundNumFileFormats
 #endif
  AiffCloseFile
@@ -139,6 +137,10 @@ EXPORTS
  SoundCloseFile
  SoundCreate
  SoundFlushFile
+ SoundFileFormatString
+ SoundFileFormatToAbbrev
+ SoundFileFormatToString
+ SoundFileFormatToSuffixes 
  SoundOpenFileForReading
  SoundOpenFileForWriting
  SoundReadFile
@@ -146,6 +148,7 @@ EXPORTS
  SoundSeekFile
  SoundStringToFileFormat
  SoundTellFile
+ SoundValidDataFormat
  SoundWriteFile
  SvxCloseFile
  SvxFlushFile

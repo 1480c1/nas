@@ -79,8 +79,10 @@ typedef struct
     void           *formatInfo;
 }               SoundRec, *Sound;
 
+char *SoundFileFormatString(Sound s);
+int   SoundValidDataFormat(int _f, int _d);
+
 #define SoundFileFormat(_s)	((_s)->fileFormat)
-#define SoundFileFormatString(_s) (SoundFileInfo[SoundFileFormat(_s)].string)
 #define SoundDataFormat(_s) 	((_s)->dataFormat)
 #define SoundDataFormatString(_s) (AuFormatToString(SoundDataFormat(_s)))
 #define SoundNumTracks(_s)	((_s)->numTracks)
@@ -90,8 +92,6 @@ typedef struct
 #define SoundBytesPerSample(_s)	(AuSizeofFormat(SoundDataFormat(_s)))
 #define SoundNumBytes(_s)						      \
     (SoundNumSamples(_s) * SoundBytesPerSample(_s) * SoundNumTracks(_s))
-#define SoundValidDataFormat(_f, _d)					      \
-    (SoundFileInfo[_f].dataFormats & SoundDataFormatBit(_d) ? 1 : 0)
 #define SoundValidateDataFormat(_s)					      \
     SoundValidDataFormat(SoundFileFormat(_s), SoundDataFormat(_s))
 
@@ -199,13 +199,14 @@ SoundFlushFile(
 _FUNCPROTOEND
 
 #define SoundDataFormatBit(_i)		(1L << (_i))
-#define SoundFileFormatToString(_i)	(SoundFileInfo[_i].string)
-#define SoundFileFormatToAbbrev(_i)	(SoundFileInfo[_i].abbrev)
-#define SoundFileFormatToSuffixes(_i)	(SoundFileInfo[_i].suffixes)
+
+char *SoundFileFormatToString(int _i);
+char *SoundFileFormatToAbbrev(int _i);
+char *SoundFileFormatToSuffixes(int _i);
 
 /*
  * these must be in the same order as the formats are defined in
- * SoundFileInfo below
+ * _SoundFileInfo in sound.c
  */
 enum _SoundFileFormatsID
 {
@@ -244,69 +245,6 @@ typedef struct
                     (*fromSound) ();
 }               SoundInfo;
 
-#ifndef _SOUND_C_
-#if defined(WIN32) && !defined(__CYGWIN__)
-#define SoundFileInfo		(*SoundFileInfo_p)
-#define SoundNumFileFormats	(*SoundNumFileFormats_p)
-#endif /* WIN32 */
-extern _SoundConst SoundInfo SoundFileInfo[];
 extern _SoundConst int SoundNumFileFormats;
-#else						/* _SOUND_C_ */
-#define _oo SoundDataFormatBit
 
-static int      sndToSound(), soundToSnd(),
-                vocToSound(), soundToVoc(),
-                waveToSound(), soundToWave(),
-                aiffToSound(), soundToAiff(),
-                svxToSound(), soundToSvx();
-
-#ifndef hpux
-typedef void   *(*_pFunc) ();
-#define _VOIDP_ (_pFunc)
-#else						/* hpux */
-#define _VOIDP_
-#endif						/* hpux */
-
-/* WARNING - applications should not reference this array directly */
-_SoundConst SoundInfo SoundFileInfo[] =
-{
-    "Sun/NeXT", "snd", "snd au",
-    (_oo(AuFormatULAW8) | _oo(AuFormatLinearUnsigned8) |
-     _oo(AuFormatLinearSigned16MSB)),
-    _VOIDP_ SndOpenFileForReading, _VOIDP_ SndOpenFileForWriting,
-    SndReadFile, SndWriteFile, SndCloseFile, SndRewindFile,
-    SndSeekFile, SndTellFile, SndFlushFile, sndToSound, soundToSnd,
-
-    "Creative Labs VOC", "voc", "voc",
-    _oo(AuFormatLinearUnsigned8),
-    _VOIDP_ VocOpenFileForReading, _VOIDP_ VocOpenFileForWriting,
-    VocReadFile, VocWriteFile, VocCloseFile, VocRewindFile,
-    VocSeekFile, VocTellFile, VocFlushFile, vocToSound, soundToVoc,
-
-    "Microsoft WAVE", "wave", "wav",
-    (_oo(AuFormatLinearUnsigned8) | _oo(AuFormatLinearSigned16LSB)),
-    _VOIDP_ WaveOpenFileForReading, _VOIDP_ WaveOpenFileForWriting,
-    WaveReadFile, WaveWriteFile, WaveCloseFile, WaveRewindFile,
-    WaveSeekFile, WaveTellFile, WaveFlushFile, waveToSound, soundToWave,
-
-    "AIFF", "aiff", "aiff",
-    (_oo(AuFormatLinearSigned8) | _oo(AuFormatLinearSigned16MSB)),
-    _VOIDP_ AiffOpenFileForReading, _VOIDP_ AiffOpenFileForWriting,
-    AiffReadFile, AiffWriteFile, AiffCloseFile, AiffRewindFile,
-    AiffSeekFile, AiffTellFile, AiffFlushFile, aiffToSound, soundToAiff,
-
-    "Amiga IFF/8SVX", "8svx", "iff",
-    _oo(AuFormatLinearSigned8),
-    _VOIDP_ SvxOpenFileForReading, _VOIDP_ SvxOpenFileForWriting,
-    SvxReadFile, SvxWriteFile, SvxCloseFile, SvxRewindFile,
-    SvxSeekFile, SvxTellFile, SvxFlushFile, svxToSound, soundToSvx,
-};
-
-#undef _VOIDP_
-
-_SoundConst int SoundNumFileFormats =
-(sizeof(SoundFileInfo) / sizeof(SoundFileInfo[0]));
-
-#undef _oo
-#endif						/* _SOUND_C_ */
 #endif						/* _SOUND_H_ */

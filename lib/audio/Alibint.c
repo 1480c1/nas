@@ -50,7 +50,8 @@ without express or implied warranty.
 #include "release.h"
 
 #if defined(__CYGWIN__)
-#define FIONREAD        0x541B
+#include <asm/socket.h>
+#include <arpa/inet.h>
 #endif
 
 #include <audio/Alibint.h>

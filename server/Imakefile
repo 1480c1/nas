@@ -99,7 +99,7 @@ RCMANDIR = $(MANDIR)
 #endif
 
 
-#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture)
+#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture) || defined(cygwinArchitecture)
 # define CanBuildAuServer	YES
 
 # if defined(LinuxArchitecture)
