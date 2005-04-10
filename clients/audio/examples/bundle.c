@@ -17,6 +17,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <audio/audiolib.h>
 #include <audio/soundlib.h>
 

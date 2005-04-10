@@ -1402,7 +1402,7 @@ ClientAuthorized(client, proto_n, auth_proto, string_n, auth_string)
 	struct sockaddr_dn dn;
 #endif /* DNETCONN */
     } from;
-    int	fromlen = sizeof (from);
+    socklen_t	fromlen = sizeof (from);
     AuID	 auth_id;
 
     auth_id = CheckAuthorization (proto_n, auth_proto,
@@ -1480,7 +1480,7 @@ EstablishNewConnections(clientUnused, closure)
 	struct sockaddr_dn dn;
 #endif /* DNETCONN */
     } from;
-    int	fromlen;
+    socklen_t	fromlen;
 #endif /* TCP_NODELAY */
 
     readyconnections = (((long)closure) & WellKnownConnections);
@@ -1504,7 +1504,7 @@ EstablishNewConnections(clientUnused, closure)
 	readyconnections &= ~(1 << curconn);
 	if ((newconn = accept (curconn,
 			      (struct sockaddr *) NULL, 
-			      (int *)NULL)) < 0) 
+			      (socklen_t *)NULL)) < 0) 
 	    continue;
 	if (newconn > lastfdesc)
 	{

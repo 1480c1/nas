@@ -1,5 +1,17 @@
 $Id$
 
+4/10/2005 1.7a (devel)
+
+        - applied patch from Mark Davies correcting audio/Imakefile
+          to properly define BSD44SOCKETS on NetBSD systems.
+
+        - Applied patch from Steve McIntyre correcting CYWIN -> CYGWIN
+          typo in server/dda/voxware/auvoxware.c
+
+        - applied patch from Steve McIntyre Correcting some Gcc 4.0
+          and AMD64 issues.
+
+
 11/14/2004 1.7 (stable)
 
         - 1.7 release :)

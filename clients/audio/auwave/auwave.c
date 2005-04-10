@@ -28,6 +28,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #ifndef SYSV
 #include <audio/Aos.h> 		/* for string and other os stuff */
 #endif

@@ -51,6 +51,7 @@ SOFTWARE.
 #include <audio/audio.h>
 #include <audio/Aos.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "nasconf.h"
 #include "misc.h"
 #include "opaque.h"

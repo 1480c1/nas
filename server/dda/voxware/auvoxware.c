@@ -1180,7 +1180,7 @@ AuUint32 numSamples;
   }
 }
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYWIN__)
+#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
 static void stereoToMonoLinearUnsigned8(numSamples)

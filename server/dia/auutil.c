@@ -173,7 +173,7 @@ void
 AuCreateResourceTypes()
 {
     void            AuFreeComponent();
-    static void     freeFlow();
+    void     freeFlow();
 
     auComponentType = CreateNewResourceType(AuFreeComponent);
     auFlowType = CreateNewResourceType(freeFlow);

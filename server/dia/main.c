@@ -52,6 +52,7 @@ SOFTWARE.
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include "NasConfig.h"

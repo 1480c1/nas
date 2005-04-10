@@ -383,7 +383,7 @@ char          **argv;
 	    fatalError("Error writing output file");
     }
     else
-	rateConvert(in, out, numBytes, data);
+	rateConvert(in, out, numBytes, (char *)data);
 
     if (SoundCloseFile(out))
 	fatalError("Error closing output file");

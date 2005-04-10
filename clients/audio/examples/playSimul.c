@@ -9,6 +9,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <audio/audiolib.h>
 #include <audio/soundlib.h>
 
@@ -48,7 +49,7 @@ char          **argv;
 	    {
 		arg++;
 		argc--;
-		volume = atoi(arg);
+		volume = atoi(*arg);
 	    }
 	}
 	else if (AuSoundPlayFromFile(aud, *arg, AuNone,

@@ -583,7 +583,8 @@ static Bool
 AuthorizedClient(client)
     ClientPtr client;
 {
-    int    		alen, family;
+    int    		family;
+	socklen_t   alen;
 #ifndef AMOEBA
     struct sockaddr	from;
 #else

@@ -25,6 +25,7 @@
 #define _AUPROCESS_C_
 #define OUTPUT_RANGE_CHECK
 
+#include <string.h>
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include "au.h"

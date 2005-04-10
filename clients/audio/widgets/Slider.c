@@ -31,6 +31,7 @@
 #include <X11/StringDefs.h>
 #include <X11/Xaw/Label.h>
 #include <X11/Xaw/Scrollbar.h>
+#include <stdio.h>
 #include "SliderP.h"
 
 static XtResource resources[] = {
