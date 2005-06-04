@@ -60,7 +60,7 @@
 
 XCOMM JET - hmmm.
 #if (defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(BSDArchitecture)) && defined(HasBSD44Sockets)
-	EXTRA_DEFINES = -DBSD44SOCKETS
+ EXTRA_DEFINES = -DBSD44SOCKETS
 #endif
 
 XCOMM JET - see if we should avoid streams

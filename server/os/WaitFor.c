@@ -126,8 +126,6 @@ extern void CheckConnections();
 extern Bool EstablishNewConnections();
 extern void ResetOsBuffers();
 
-extern int errno;
-
 #ifdef apollo
 extern long apInputMask[];
 

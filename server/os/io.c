@@ -106,8 +106,6 @@ static ConnectionInputPtr AllocateInputBuffer();
 static ConnectionOutputPtr AllocateOutputBuffer();
 #endif /* AMOEBA */
 
-extern int errno;
-
 #define get_req_len(req,cli) ((cli)->swapped ? \
 			      lswaps((req)->length) : (req)->length)
 

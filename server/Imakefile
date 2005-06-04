@@ -80,35 +80,24 @@ XCOMM
 #ifdef SunArchitecture
 #define CanBuildAuServer	YES
 ALL1 = nasd
-RCMANDIR = $(MANDIR)
 #define BuildSunServer
 #endif
 
 #ifdef SGIArchitecture
 #define CanBuildAuServer	YES
 ALL1 = nasd
-RCMANDIR = $(MANDIR)
 #define BuildSGIServer
 #endif
 
 #if defined(HPArchitecture) && !defined(LinuxArchitecture)
 #define CanBuildAuServer        YES
 ALL1 = nasd
-RCMANDIR = $(MANDIR)
 #define BuildHPServer
 #endif
 
 
-#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture) || defined(cygwinArchitecture)
+#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture) || defined(cygwinArchitecture) || defined(__DragonFly__)
 # define CanBuildAuServer	YES
-
-# if defined(LinuxArchitecture)
-    RCMANDIR = $(FILEMANDIR)
-    RCMANSUFFIX = 5nas
-# else
-    RCMANDIR = $(MANDIR)
-    RCMANSUFFIX = 5x
-# endif
 
 # if defined(cygwinArchitecture)
 ALL1 = nasd.exe
@@ -227,9 +216,9 @@ clean::
 
 InstallManPage(nasd,$(MANDIR))
 #ifdef InstallGenManPage
-InstallGenManPage(nasd.conf,$(RCMANDIR),$(RCMANSUFFIX))
+InstallGenManPage(nasd.conf,$(FILEMANDIR),$(FILEMANSUFFIX))
 #else
-InstallManPage(nasd.conf,$(RCMANDIR))
+InstallManPage(nasd.conf,$(FILEMANDIR))
 #endif
 InstallNonExecFile(nasd.conf.eg,$(ETCDIR))
 

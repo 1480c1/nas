@@ -62,6 +62,7 @@ without express or implied warranty.
 #ifdef SYSV	/* fd_set */
 #include <sys/socket.h>
 #endif
+#include <sys/time.h>
 #endif /* !WIN32 */
 
 /* check for both EAGAIN and EWOULDBLOCK, because some supposedly POSIX
@@ -177,25 +178,26 @@ _AuWaitForWritable(AuServer *aud)
 {
 #if !defined(AMOEBA) && !defined(_MINIX)
 #ifndef WIN32
-    AuInt32 r_mask[MSKCNT];
-    AuInt32 w_mask[MSKCNT];
+    fd_set r_mask;
+    fd_set w_mask;
     int nfound;
 
-    CLEARBITS(r_mask);
-    CLEARBITS(w_mask);
+    FD_ZERO(&r_mask);
+    FD_ZERO(&w_mask);
 
     while (1) {
-	BITSET(r_mask, aud->fd);
-        BITSET(w_mask, aud->fd);
+	FD_SET(aud->fd, &r_mask);
+        FD_SET(aud->fd, &w_mask);
 
 	do {
-	    nfound = select (aud->fd + 1, (fd_set *)r_mask, (fd_set *)w_mask,
+	    nfound = select (aud->fd + 1, &r_mask, &w_mask,
 			     (fd_set *)NULL, (struct timeval *)NULL);
 	    if (nfound < 0 && errno != EINTR)
 		_AuIOError(aud);
 	} while (nfound <= 0);
 
-	if (_AuANYSET(r_mask)) {
+	/* if (_AuANYSET(r_mask)) { */
+	if (FD_ISSET(aud->fd,&r_mask)) {
 #else /* WIN32 */
     fd_set rset, wset;
     int nfound;
@@ -258,7 +260,8 @@ _AuWaitForWritable(AuServer *aud)
 	    } ENDITERATE
 	}
 #ifndef WIN32
-	if (_AuANYSET(w_mask))
+	/* if (_AuANYSET(w_mask))*/
+	if (FD_ISSET(aud->fd, &w_mask))
 	    return;
 #else /* WIN32 */
 	if (FD_ISSET(aud->fd, &wset))
@@ -278,13 +281,13 @@ _AuWaitForReadable(AuServer *aud)
 {
 #ifndef WIN32
 #if !defined(AMOEBA) && !defined(_MINIX)
-    AuUint32 r_mask[MSKCNT];
+    fd_set r_mask;
     int result;
 	
-    CLEARBITS(r_mask);
+    FD_ZERO(&r_mask);
     do {
-	BITSET(r_mask, aud->fd);
-	result = select(aud->fd + 1, (fd_set *)r_mask,
+	FD_SET(aud->fd, &r_mask);
+	result = select(aud->fd + 1, &r_mask,
 			(fd_set *)NULL, (fd_set *)NULL, (struct timeval *)NULL);
 	if (result == -1 && errno != EINTR) _AuIOError(aud);
     } while (result <= 0);
@@ -384,13 +387,13 @@ _AuEventsQueued (register AuServer *aud, int mode)
 	 */
 	if (!pend && !aud->qlen && ++aud->conn_checker >= AUCONN_CHECK_FREQ)
 	{
-	    AuUint32 r_mask[MSKCNT];
+	    fd_set r_mask;
 	    static struct timeval zero_time;
 
 	    aud->conn_checker = 0;
-	    CLEARBITS(r_mask);
-	    BITSET(r_mask, aud->fd);
-	    if ((pend = select(aud->fd + 1, (fd_set *)r_mask, 
+	    FD_ZERO(&r_mask);
+	    FD_SET(aud->fd, &r_mask);
+	    if ((pend = select(aud->fd + 1, &r_mask, 
 		(fd_set *)NULL, (fd_set *)NULL,
 			      &zero_time)) != 0)
 	    {

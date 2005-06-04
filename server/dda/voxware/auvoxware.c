@@ -171,7 +171,12 @@ static int debug_msg_indentation = 0;
 #include <sys/param.h>
 #include <assert.h>
 
-#ifdef __FreeBSD__
+#if defined(__DragonFly__)
+#  include <sys/soundcard.h>
+#  ifndef O_SYNC
+#     define O_SYNC O_FSYNC
+#  endif
+#elif defined(__FreeBSD__)
 # if __FreeBSD_version >= 500001 
 #  include <sys/soundcard.h> 
 # else
