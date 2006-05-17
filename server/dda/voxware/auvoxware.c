@@ -726,7 +726,6 @@ AuBool wait;
           osLogMsg("openDevice: input device already open\n");
         }
     }
-#endif
   
   if(mixerfd == -1)
     while ((mixerfd = open(sndStatOut.mixer, O_RDONLY|extramode, 
@@ -742,7 +741,8 @@ AuBool wait;
           osLogMsg("openDevice: mixer device already open\n");
         }
     }
-  
+#endif
+
   ioctl(sndStatOut.fd, SNDCTL_DSP_SYNC, NULL);
   
   {
@@ -963,8 +963,7 @@ setPhysicalOutputGain(gain)
     Letsplay = g;
     gusvolume = g | (g << 8);
     if (mixerfd != -1)
-        if(!leave_mixer)
-	i = ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume);
+      i = ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume);
 }
 
 static          AuFixedPoint

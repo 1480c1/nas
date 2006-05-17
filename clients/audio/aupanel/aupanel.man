@@ -22,6 +22,8 @@ selected by clicking on the \fISpeaker\fP, \fIHeadphone\fP, and
 these selections.
 .PP
 To query the current device attributes, click on the \fBQuery\fP button.
+.PP
+To mute (resp. unmute) the current device, click on the \fBMute\fP button.
 .SH ENVIRONMENT
 In addition to the standard toolkit environment variables, the
 following environment variables are used by \fIaupanel\fP:

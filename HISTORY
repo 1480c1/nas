@@ -1,6 +1,26 @@
 $Id$
 
-6/3/2005 1.7b (devel)
+Version 1.7c (devel) 05/16/2006
+
+         - time for another stable release.
+
+         - Correct problem in auvoxware, where if MixerInit is set to
+           false, remote volume (mixer) requests are ignored.
+           Reported by Paul Fox, with a fix determined by Steve
+           McIntyre and Erik Auerswald.
+
+         - Applied patch from Nicolas Escuder correcting a Cygwin
+           issue in auvoxware.c
+
+         - applied patch from Erik Auerswald adding a Mute button and
+           functionality to aupanel. 
+
+         - applied patch from Nicolas Franois  (via Steve McIntyre)
+           correcting some typos in the AuSetBucketAttributes and
+           AuSoundCreateFileFromBucket man pages.
+
+
+Version 1.7b (devel) 6/3/2005 
 
          - applied patch from 'Inma', correcting a connection hang in
            Solaris 9.  This reworks some of the very old and primitive
@@ -12,11 +32,11 @@ $Id$
          - Applied patch from Mark Davies and Joerg Sonnenberger
            correcting some BSD issues and adding DragonFly support.
 
-           Then nasd.conf man page is always installed in
+           The nasd.conf man page is always installed in
            $FILEMANDIR for all systems.
 
 
-4/10/2005 1.7a (devel)
+Version 1.7a (devel) 4/10/2005
 
         - applied patch from Mark Davies correcting audio/Imakefile
           to properly define BSD44SOCKETS on NetBSD systems.
@@ -28,7 +48,7 @@ $Id$
           and AMD64 issues.
 
 
-11/14/2004 1.7 (stable)
+Version 1.7 (stable) 11/14/2004 
 
         - 1.7 release :)
 

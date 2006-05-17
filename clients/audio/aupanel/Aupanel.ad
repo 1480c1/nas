@@ -5,8 +5,11 @@ Aupanel*font:			*courier-medium-r-normal*140*
 
 Aupanel*query.label:		Query
 
+Aupanel*mute.lanel:		Mute
+Aupanel*mute.fromHoriz:		devices
+
 Aupanel*devices.label:		Devices
-Aupanel*devices.fromHoriz:	query
+Aupanel*devices.fromHoriz:	mute
 
 Aupanel*quit.label:		Quit
 Aupanel*quit.fromHoriz:		devices

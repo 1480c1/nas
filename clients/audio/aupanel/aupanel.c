@@ -83,6 +83,7 @@ typedef struct
                     form,
                     quit,
                     query,
+                    mute,
                     menu,
                     menuButton,
                     device,
@@ -96,7 +97,8 @@ typedef struct
                     outputModeLine;
     AuServer       *aud;
     int             numDevices,
-                    deviceNum;
+                    deviceNum,
+                   *restoreValues;
     AuDeviceAttributes *da;
 }               GlobalDataRec, *GlobalDataPtr;
 
@@ -105,10 +107,12 @@ static String   defaultResources[] =
     "*input:                          true",
     "*font:                           *courier-medium-r-normal*140*",
     "*query.label:                    Query",
+    "*mute.label:                     Mute",
+    "*mute.fromHoriz:                 devices",
     "*devices.label:                  Devices",
     "*devices.fromHoriz:              query",
     "*quit.label:                     Quit",
-    "*quit.fromHoriz:                 devices",
+    "*quit.fromHoriz:                 mute",
     "*deviceLabel.label:              Stereo Channel Output",
     "*deviceLabel.fromVert:           query",
     "*deviceLabel.font:               *courier-bold-r-normal*140*",
@@ -231,6 +235,12 @@ GlobalDataPtr   g;
 	XtCallActionProc(g->outputModeLine, "reset", NULL, NULL, 0);
     }
 
+    if ((AuFixedPointRoundUp(AuDeviceGain(da)) == 0) &&
+        (g->restoreValues[g->deviceNum] > 0))
+        XtCallActionProc(g->mute, "set", NULL, NULL, 0);
+    else
+        XtCallActionProc(g->mute, "reset", NULL, NULL, 0);
+
 }
 
 static void
@@ -330,6 +340,36 @@ XtPointer       valuep;
     AuDeviceGain(da) = AuFixedPointFromSum(value, 0);
     AuSetDeviceAttributes(g->aud, AuDeviceIdentifier(da),
 			  AuCompDeviceGainMask, da, NULL);
+
+    if ((AuFixedPointRoundUp(AuDeviceGain(da)) != 0) &&
+        (g->restoreValues[g->deviceNum] > 0)) {
+        g->restoreValues[g->deviceNum] = 0;
+        XtCallActionProc(g->mute, "reset", NULL, NULL, 0);
+    }
+}
+
+static void
+muteCB(w, gp, call_data)
+Widget          w;
+XtPointer       gp;
+XtPointer       call_data;
+{
+    GlobalDataPtr g = (GlobalDataPtr) gp;
+    AuDeviceAttributes *da;
+    int current;
+
+    queryCB(w, gp, call_data);
+    da = &g->da[g->deviceNum];
+    current = AuFixedPointRoundUp(AuDeviceGain(da));
+
+    if(current > 0) {
+        g->restoreValues[g->deviceNum] = current;
+        setGain(w, gp, (XtPointer)0);
+    } else if(g->restoreValues[g->deviceNum] > 0){
+        setGain(w, gp, (XtPointer)g->restoreValues[g->deviceNum]);
+        g->restoreValues[g->deviceNum] = 0;
+    }
+    showDevice((GlobalDataPtr)gp);
 }
 
 static void
@@ -359,6 +399,10 @@ GlobalDataPtr   g;
     }
 
     MakeWidget(g->menuButton, g->form, menuButtonWidgetClass, "devices");
+
+    MakeWidget(g->mute, g->form, toggleWidgetClass, "mute");
+    XtAddCallback(g->mute, XtNcallback, muteCB, g);
+    XtVaSetValues(g->mute, XtNsensitive, True, NULL);
 
     MakeCommandButton(g->quit, g->form, "quit", quitCB);
 
@@ -432,6 +476,9 @@ char          **argv;
     if (!(g->aud = AuOpenServer(audioServer, 0, NULL, 0, NULL, NULL)))
 	fatalError("Can't connect to audio server");
 
+    if(!(g->restoreValues = calloc(AuServerNumDevices(g->aud), sizeof(int))))
+        fatalError("Out of memory");
+
     createWidgets(g);
     XtRealizeWidget(g->top);
     alignWidgets(g);
@@ -442,5 +489,7 @@ char          **argv;
     showDevice(g);
 
     XtAppMainLoop(appContext);
+
+    free(g->restoreValues);
     return 0;
 }
