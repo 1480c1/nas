@@ -1,0 +1,59 @@
+Simple typo fixes reported by a Debian user...
+
+----- Forwarded message from Nicolas François <nicolas.francois@centraliens.net> -----
+
+From: Nicolas François <nicolas.francois@centraliens.net>
+Date: Tue, 24 Jan 2006 22:38:37 +0100
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: Bug#349728: libaudio-dev: typos in AuSetBucketAttributes and AuSoundCreateFileFromBucket manpages
+
+Package: libaudio-dev
+Version: 1.7-3
+Severity: normal
+Tags: patch
+
+Hello,
+
+The attached patch fixes two typos in the AuSoundCreateFileFromBucket and
+AuSetBucketAttributes manpages.
+
+(a wrong constant name is displayed in AuSetBucketAttributes, and a word
+is missing ("file" instead of "file format") in AuSoundCreateFileFromBucket)
+
+Best Regards,
+-- 
+Nekral
+
+diff -rauN ../orig/nas-1.7/doc/man/lib/AuSBAttr.man ./nas-1.7/doc/man/lib/AuSBAttr.man
+--- ../orig/nas-1.7/doc/man/lib/AuSBAttr.man	1999-05-08 20:47:26.000000000 +0200
++++ ./nas-1.7/doc/man/lib/AuSBAttr.man	2006-01-24 22:33:28.000000000 +0100
+@@ -47,7 +47,7 @@
+ Specifies the audio bucket.
+ .IP \fIvaluemask\fP 1i
+ Specifies which bucket attributes are defined in the attributes argument.
+-This must be a bitwise inclusive OR of one or more of these constants: \fBAuCompCommonIDMask\fP, \fBAuCompCommonKindMask\fP, \fBAuCompCommonUseMask\fP, \fBAuCommonFormatMask\fP, \fBAuCommonNumTracksMask\fP, \fBAuCommonAccessMask\fP, \fPAuCommonDescriptionMask\fP, \fPAuCompBucketSampleRateMask\fP, or \fBAuCompBucket\NumSamplesMask\fP.
++This must be a bitwise inclusive OR of one or more of these constants: \fBAuCompCommonIDMask\fP, \fBAuCompCommonKindMask\fP, \fBAuCompCommonUseMask\fP, \fBAuCommonFormatMask\fP, \fBAuCommonNumTracksMask\fP, \fBAuCommonAccessMask\fP, \fPAuCommonDescriptionMask\fP, \fPAuCompBucketSampleRateMask\fP, or \fBAuCompBucketNumSamplesMask\fP.
+ .IP \fIattributes\fP 1i
+ Specifies the structure from which the values (as specified by the value mask) are to be taken.
+ .IP \fIstatus\fP 1i
+diff -rauN ../orig/nas-1.7/doc/man/lib/AuSCFFBk.man ./nas-1.7/doc/man/lib/AuSCFFBk.man
+--- ../orig/nas-1.7/doc/man/lib/AuSCFFBk.man	1999-05-08 20:47:26.000000000 +0200
++++ ./nas-1.7/doc/man/lib/AuSCFFBk.man	2006-01-24 22:32:51.000000000 +0100
+@@ -47,7 +47,7 @@
+ Specifies the connection to the audio server.
+ .IP \fIfilename\fP 1i
+ Specifies the name of the file to use.
+-.IP \fIfile format\fP 1i
++.IP "\fIfile format\fP" 1i
+ Specifies the format of the file.
+ Currently, the following file formats are supported: \fBSoundFileFormatSnd\fP, \fBSoundFileFormatVoc\fP, \fBSoundFileFormatWave\fP, \fBSoundFileFormatAiff\fP, \fBSoundFileFormatSvx\fP.
+ .IP \fIbucket\fP 1i
+
+
+----- End forwarded message -----
+-- 
+Steve McIntyre, Cambridge, UK.                                steve@einval.com
+  Getting a SCSI chain working is perfectly simple if you remember that there
+  must be exactly three terminations: one on one end of the cable, one on the
+  far end, and the goat, terminated over the SCSI chain with a silver-handled
+  knife whilst burning *black* candles. --- Anthony DeBoer

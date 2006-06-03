@@ -1,0 +1,32 @@
+diff -Naur nas-1.7b/clients/audio/aupanel/Aupanel.ad nas-1.7b-new/clients/audio/aupanel/Aupanel.ad
+--- nas-1.7b/clients/audio/aupanel/Aupanel.ad	1999-09-05 04:42:56.000000000 +0200
++++ nas-1.7b-new/clients/audio/aupanel/Aupanel.ad	2005-11-15 09:55:30.000000000 +0100
+@@ -5,8 +5,11 @@
+ 
+ Aupanel*query.label:		Query
+ 
++Aupanel*mute.lanel:		Mute
++Aupanel*mute.fromHoriz:		devices
++
+ Aupanel*devices.label:		Devices
+-Aupanel*devices.fromHoriz:	query
++Aupanel*devices.fromHoriz:	mute
+ 
+ Aupanel*quit.label:		Quit
+ Aupanel*quit.fromHoriz:		devices
+diff -Naur nas-1.7b/clients/audio/aupanel/aupanel.c nas-1.7b-new/clients/audio/aupanel/aupanel.c
+--- nas-1.7b/clients/audio/aupanel/aupanel.c	2005-11-15 09:57:28.000000000 +0100
++++ nas-1.7b-new/clients/audio/aupanel/aupanel.c	2005-11-15 09:41:24.000000000 +0100
+@@ -340,6 +340,12 @@
+     AuDeviceGain(da) = AuFixedPointFromSum(value, 0);
+     AuSetDeviceAttributes(g->aud, AuDeviceIdentifier(da),
+ 			  AuCompDeviceGainMask, da, NULL);
++
++    if ((AuFixedPointRoundUp(AuDeviceGain(da)) != 0) &&
++        (g->restoreValues[g->deviceNum] > 0)) {
++        g->restoreValues[g->deviceNum] = 0;
++        XtCallActionProc(g->mute, "reset", NULL, NULL, 0);
++    }
+ }
+ 
+ static void

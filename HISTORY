@@ -1,42 +1,36 @@
 $Id$
 
-Version 1.7c (devel) 05/16/2006
+Version 1.8 (stable) 06/03/2006
 
-         - time for another stable release.
+        - time for another stable release.
 
-         - Correct problem in auvoxware, where if MixerInit is set to
-           false, remote volume (mixer) requests are ignored.
-           Reported by Paul Fox, with a fix determined by Steve
-           McIntyre and Erik Auerswald.
+        - Correct problem in auvoxware, where if MixerInit is set to
+          false, remote volume (mixer) requests are ignored.
+          Reported by Paul Fox, with a fix determined by Steve
+          McIntyre and Erik Auerswald.
 
-         - Applied patch from Nicolas Escuder correcting a Cygwin
-           issue in auvoxware.c
+        - Applied patch from Nicolas Escuder correcting a Cygwin
+          issue in auvoxware.c
 
-         - applied patch from Erik Auerswald adding a Mute button and
-           functionality to aupanel. 
+        - applied patch from Erik Auerswald adding a Mute button and
+          functionality to aupanel. 
 
-         - applied patch from Nicolas Franois  (via Steve McIntyre)
-           correcting some typos in the AuSetBucketAttributes and
-           AuSoundCreateFileFromBucket man pages.
+        - applied patch from Nicolas Franois  (via Steve McIntyre)
+          correcting some typos in the AuSetBucketAttributes and
+          AuSoundCreateFileFromBucket man pages.
 
+        - applied patch from 'Inma', correcting a connection hang in
+          Solaris 9.  This reworks some of the very old and primitive
+          fd_set stuff in Aulibint.c .
 
-Version 1.7b (devel) 6/3/2005 
+        - updated config/config.sub and config.guess to properly
+          detect DragonFly systems.
 
-         - applied patch from 'Inma', correcting a connection hang in
-           Solaris 9.  This reworks some of the very old and primitive
-           fd_set stuff in Aulibint.c .
+        - Applied patch from Mark Davies and Joerg Sonnenberger
+          correcting some BSD issues and adding DragonFly support.
 
-         - updated config/config.sub and config.guess to properly
-           detect DragonFly systems.
-
-         - Applied patch from Mark Davies and Joerg Sonnenberger
-           correcting some BSD issues and adding DragonFly support.
-
-           The nasd.conf man page is always installed in
-           $FILEMANDIR for all systems.
-
-
-Version 1.7a (devel) 4/10/2005
+          The nasd.conf man page is always installed in
+          $FILEMANDIR for all systems.
 
         - applied patch from Mark Davies correcting audio/Imakefile
           to properly define BSD44SOCKETS on NetBSD systems.

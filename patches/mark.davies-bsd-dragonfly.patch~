@@ -1,0 +1,75 @@
+--- lib/audio/Imakefile.orig	2005-04-11 09:20:56.000000000 +1200
++++ lib/audio/Imakefile	2005-06-03 00:52:09.000000000 +1200
+@@ -60,7 +60,7 @@
+ 
+ XCOMM JET - hmmm.
+ #if (defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || 
+defined(BSDArchitecture)) && defined(HasBSD44Sockets)
+-	EXTRA_DEFINES = -DBSD44SOCKETS
++ EXTRA_DEFINES = -DBSD44SOCKETS
+ #endif
+ 
+ XCOMM JET - see if we should avoid streams
+
+
+--- server/Imakefile.orig	2002-07-24 13:49:33.000000000 +1200
++++ server/Imakefile	2005-06-03 00:57:32.000000000 +1200
+@@ -99,7 +99,7 @@
+ #endif
+ 
+ 
+-#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || 
+defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || 
+defined(i386BsdArchitecture) || defined(USLArchitecture) || 
+defined(cygwinArchitecture)
++#if defined(i386SVR4Architecture) || defined(__FreeBSD__) || 
+defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || 
+defined(i386BsdArchitecture) || defined(USLArchitecture) || 
+defined(cygwinArchitecture) || defined(__DragonFly__)
+ # define CanBuildAuServer	YES
+ 
+ # if defined(LinuxArchitecture)
+--- server/dda/voxware/auvoxware.c.orig	2005-04-11 09:20:56.000000000 +1200
++++ server/dda/voxware/auvoxware.c	2005-06-03 01:00:26.000000000 +1200
+@@ -171,7 +171,12 @@
+ #include <sys/param.h>
+ #include <assert.h>
+ 
+-#ifdef __FreeBSD__
++#if defined(__DragonFly__)
++#  include <sys/soundcard.h>
++#  ifndef O_SYNC
++#     define O_SYNC O_FSYNC
++#  endif
++#elif defined(__FreeBSD__)
+ # if __FreeBSD_version >= 500001 
+ #  include <sys/soundcard.h> 
+ # else
+--- server/dia/auservertype.h.orig	2002-07-25 12:42:28.000000000 +1200
++++ server/dia/auservertype.h	2005-06-03 01:02:49.000000000 +1200
+@@ -14,7 +14,7 @@
+ # define SGI_SERVER
+ #endif						/* sgi */
+ 
+-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(linux) || 
+(defined(SVR4) && (defined(SYSV386) || defined(i386))) || defined(__CYGWIN__)
++#if defined(__DragonFly__) || defined(__FreeBSD__) || defined(__NetBSD__) || 
+defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386))) || 
+defined(__CYGWIN__)
+ # define VOXWARE_SERVER
+ #endif                                          /* voxware */
+ 
+--- server/os/WaitFor.c.orig	2002-07-24 13:41:07.000000000 +1200
++++ server/os/WaitFor.c	2005-06-03 01:06:28.000000000 +1200
+@@ -126,7 +126,9 @@
+ extern Bool EstablishNewConnections();
+ extern void ResetOsBuffers();
+ 
++#ifndef errno
+ extern int errno;
++#endif
+ 
+ #ifdef apollo
+ extern long apInputMask[];
+
+

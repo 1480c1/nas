@@ -1,0 +1,55 @@
+--- server/Imakefile.orig	2005-06-04 01:00:25.000000000 +1200
++++ server/Imakefile	2005-06-04 01:02:42.000000000 +1200
+@@ -80,21 +80,18 @@
+ #ifdef SunArchitecture
+ #define CanBuildAuServer	YES
+ ALL1 = nasd
+-RCMANDIR = $(MANDIR)
+ #define BuildSunServer
+ #endif
+ 
+ #ifdef SGIArchitecture
+ #define CanBuildAuServer	YES
+ ALL1 = nasd
+-RCMANDIR = $(MANDIR)
+ #define BuildSGIServer
+ #endif
+ 
+ #if defined(HPArchitecture) && !defined(LinuxArchitecture)
+ #define CanBuildAuServer        YES
+ ALL1 = nasd
+-RCMANDIR = $(MANDIR)
+ #define BuildHPServer
+ #endif
+ 
+@@ -102,14 +99,6 @@
+ #if defined(i386SVR4Architecture) || defined(__FreeBSD__) || 
+defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || 
+defined(i386BsdArchitecture) || defined(USLArchitecture) || 
+defined(cygwinArchitecture)
+ # define CanBuildAuServer	YES
+ 
+-# if defined(LinuxArchitecture)
+-    RCMANDIR = $(FILEMANDIR)
+-    RCMANSUFFIX = 5nas
+-# else
+-    RCMANDIR = $(MANDIR)
+-    RCMANSUFFIX = 5x
+-# endif
+-
+ # if defined(cygwinArchitecture)
+ ALL1 = nasd.exe
+ # else
+@@ -227,9 +216,9 @@
+ 
+ InstallManPage(nasd,$(MANDIR))
+ #ifdef InstallGenManPage
+-InstallGenManPage(nasd.conf,$(RCMANDIR),$(RCMANSUFFIX))
++InstallGenManPage(nasd.conf,$(FILEMANDIR),$(FILEMANSUFFIX))
+ #else
+-InstallManPage(nasd.conf,$(RCMANDIR))
++InstallManPage(nasd.conf,$(FILEMANDIR))
+ #endif
+ InstallNonExecFile(nasd.conf.eg,$(ETCDIR))
+ 
+

@@ -1,0 +1,15 @@
+--- clients/audio/audemo/audemo.c.orig	2002-07-21 02:13:29.000000000 +0100
++++ clients/audio/audemo/audemo.c	2004-04-23 16:28:34.410016000 +0100
+@@ -1855,7 +1855,11 @@
+ 
+     for (i = 0; i < nfiles; i++)
+     {
+-	p = strrchr(fileNames[i], '/') + 1;
++	if (p = strrchr(fileNames[i], '/')) {
++	    p++;
++	} else {
++	    p = fileNames[i];
++	}
+ 	fileList[i] = (char *) strdup(p);
+ 
+ 	if ((p = strrchr(fileList[i], '.')))

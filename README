@@ -34,11 +34,6 @@ network-transparent, client/server audio system, including:
     o	a variety of sample applications
 
 
-This version was built on the following OS's prior to release:
-
-        - Linux/glibc 2.1.3, 2.4.4 kernel (Mandrake 7)
-        - Unixware 2.03 (X11R6.4 and gcc 2.95.2 compiler)
-
 The client software can also be used with several models of NCD X
 terminals as well as NCD's PCXware (an X server for PCs running
 Microsoft Windows).
