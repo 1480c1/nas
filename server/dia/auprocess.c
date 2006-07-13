@@ -117,10 +117,7 @@ static AuUint16 ulawToLinearTable[] =
 #endif						/* AU_OPTIMIZE_SINGLE_SAMPLE */
 
 void
-AuULAW8ToNative(p, tracks, numSamples)
-AuUint8        *p;
-AuInt32         tracks,
-                numSamples;
+AuULAW8ToNative(AuUint8 *p, AuInt32 tracks, AuInt32 numSamples)
 {
     AuUint8        *s;
     AuInt16         i,
@@ -164,10 +161,7 @@ AuInt32         tracks,
 						 * 16 bit samples */
 
 void
-AuNativeToULAW8(s, tracks, numSamples)
-AuInt16        *s;
-AuInt32         tracks,
-                numSamples;
+AuNativeToULAW8(AuInt16 *s, AuInt32 tracks, AuInt32 numSamples)
 {
     static AuInt32  exp_lut[256] =
     {
@@ -225,10 +219,7 @@ AuInt32         tracks,
 }
 
 void
-AuSigned8ToNative(p, tracks, numSamples)
-AuUint8        *p;
-AuInt32         tracks,
-                numSamples;
+AuSigned8ToNative(AuInt8 *p, AuInt32 tracks, AuInt32 numSamples)
 {
     AuUint8        *s;
     AuInt16        *d;
@@ -242,10 +233,7 @@ AuInt32         tracks,
 }
 
 void
-AuNativeToSigned8(s, tracks, numSamples)
-AuUint16       *s;
-AuInt32         tracks,
-                numSamples;
+AuNativeToSigned8(AuUint16 *s, AuInt32 tracks, AuInt32 numSamples)
 {
     AuUint8        *d = (AuUint8 *) s;
     AuInt32         i;
@@ -255,10 +243,7 @@ AuInt32         tracks,
 }
 
 void
-AuUnsigned8ToNative(p, tracks, numSamples)
-AuUint8        *p;
-AuInt32         tracks,
-                numSamples;
+AuUnsigned8ToNative(AuUint8 *p, AuInt32 tracks, AuInt32 numSamples)
 {
     AuUint8        *s;
     AuInt16        *d;
@@ -272,10 +257,7 @@ AuInt32         tracks,
 }
 
 void
-AuNativeToUnsigned8(s, tracks, numSamples)
-AuInt16        *s;
-AuInt32         tracks,
-                numSamples;
+AuNativeToUnsigned8(AuInt16 *s, AuInt32 tracks, AuInt32 numSamples)
 {
     AuInt32         i;
     AuUint8        *d = (AuUint8 *) s;
@@ -285,10 +267,7 @@ AuInt32         tracks,
 }
 
 void
-changeSign(p, tracks, numSamples)
-AuUint16       *p;
-AuInt32         tracks,
-                numSamples;
+changeSign(AuUint16 *p, AuInt32 tracks, AuInt32 numSamples)
 {
     AuInt32         i;
 
@@ -297,10 +276,7 @@ AuInt32         tracks,
 }
 
 void
-AuNeg16LSBTo16MSB(p, tracks, numSamples)
-AuUint16       *p;
-AuInt32         tracks,
-                numSamples;
+AuNeg16LSBTo16MSB(AuUint16 *p, AuInt32 tracks, AuInt32 numSamples)
 {
     AuInt32         i;
     AuUint8         x;
@@ -314,10 +290,7 @@ AuInt32         tracks,
 }
 
 void
-AuNeg16MSBto16LSB(p, tracks, numSamples)
-AuInt16        *p;
-AuInt32         tracks,
-                numSamples;
+AuNeg16MSBto16LSB(AuInt16 *p, AuInt32 tracks, AuInt32 numSamples)
 {
     AuInt32         i;
     AuUint8         x;
@@ -331,10 +304,7 @@ AuInt32         tracks,
 }
 
 void
-byteSwap(p, tracks, numSamples)
-AuUint16       *p;
-AuInt32         tracks,
-                numSamples;
+byteSwap(AuUint16 *p, AuInt32 tracks, AuInt32 numSamples)
 {
     AuInt32         i;
     AuUint8         x;
@@ -349,9 +319,7 @@ AuInt32         tracks,
 
 /* returns AuTrue if a flow was started */
 AuBool
-AuStartFlow(newFlow, pOldFlow)
-CompiledFlowPtr newFlow,
-               *pOldFlow;
+AuStartFlow(CompiledFlowPtr newFlow, CompiledFlowPtr *pOldFlow)
 {
     AuBool          status;
     AuBlock         l;
@@ -408,8 +376,7 @@ CompiledFlowPtr newFlow,
 }
 
 static AuBool
-readWaveForm(input)
-CompiledFlowInputPtr input;
+readWaveForm(CompiledFlowInputPtr input)
 {
     ComponentPtr    c = input->component;
     FlowElementPtr  flowEl = input->flowEl;
@@ -488,8 +455,7 @@ CompiledFlowInputPtr input;
 }
 
 static AuBool
-readBucket(input)
-CompiledFlowInputPtr input;
+readBucket(CompiledFlowInputPtr input)
 {
     ComponentPtr    c = input->component;
     FlowElementPtr  flowEl = input->flowEl;
@@ -543,8 +509,7 @@ CompiledFlowInputPtr input;
 }
 
 static AuBool
-readClient(input)
-CompiledFlowInputPtr input;
+readClient(CompiledFlowInputPtr input)
 {
     ComponentPtr    c = input->component;
     FlowElementPtr  flowEl = input->flowEl;
@@ -640,8 +605,7 @@ CompiledFlowInputPtr input;
 }
 
 static AuBool
-readDevice(input)
-CompiledFlowInputPtr input;
+readDevice(CompiledFlowInputPtr input)
 {
     FlowElementPtr  flowEl = input->flowEl;
 
@@ -656,8 +620,7 @@ CompiledFlowInputPtr input;
 }
 
 static AuBool
-readInput(input)
-CompiledFlowInputPtr input;
+readInput(CompiledFlowInputPtr input)
 {
     AuBool          flowStateChanged;
     FlowElementPtr  flowEl = input->flowEl;
@@ -674,8 +637,7 @@ CompiledFlowInputPtr input;
 }
 
 static AuBool
-writeClient(output)
-CompiledFlowOutputPtr output;
+writeClient(CompiledFlowOutputPtr output)
 {
     ComponentPtr    c = output->component;
     FlowElementPtr  flowEl = output->flowEl;
@@ -742,8 +704,7 @@ CompiledFlowOutputPtr output;
 }
 
 static AuBool
-writeBucket(output)
-CompiledFlowOutputPtr output;
+writeBucket(CompiledFlowOutputPtr output)
 {
     ComponentPtr    c = output->component;
     FlowElementPtr  flowEl = output->flowEl;
@@ -794,8 +755,7 @@ CompiledFlowOutputPtr output;
 
 
 static AuBool
-writeMonitor(output)
-CompiledFlowOutputPtr output;
+writeMonitor(CompiledFlowOutputPtr output)
 {
     AuInt32         n;
 
@@ -831,8 +791,7 @@ CompiledFlowOutputPtr output;
 }
 
 static AuBool
-writeDevice(output)
-CompiledFlowOutputPtr output;
+writeDevice(CompiledFlowOutputPtr output)
 {
     FlowElementPtr  flowEl = output->flowEl;
     ComponentPtr    c = output->component;
@@ -852,8 +811,7 @@ CompiledFlowOutputPtr output;
 }
 
 static AuBool
-writeOutput(output)
-CompiledFlowOutputPtr output;
+writeOutput(CompiledFlowOutputPtr output)
 {
     FlowElementPtr  flowEl = output->flowEl;
 #ifdef OUTPUT_RANGE_CHECK
@@ -877,9 +835,7 @@ CompiledFlowOutputPtr output;
 }
 
 static void
-accumulateOutput(input, output)
-CompiledFlowInputPtr input;
-CompiledFlowOutputPtr output;
+accumulateOutput(CompiledFlowInputPtr input, CompiledFlowOutputPtr output)
 {
     AuInt16        *in = (AuInt16 *) input->flowEl->minibuf;
     AuUint32        i,
@@ -941,9 +897,7 @@ CompiledFlowOutputPtr output;
 }
 
 static void
-accumulateOutputSimpleMono(input, output)
-CompiledFlowInputPtr input;
-CompiledFlowOutputPtr output;
+accumulateOutputSimpleMono(CompiledFlowInputPtr input, CompiledFlowOutputPtr output)
 {
     AuUint32        i;
     AuInt16        *in = (AuInt16 *) input->flowEl->minibuf;
@@ -976,9 +930,7 @@ CompiledFlowOutputPtr output;
 }
 
 static void
-accumulateOutputSimpleStereo(input, output)
-CompiledFlowInputPtr input;
-CompiledFlowOutputPtr output;
+accumulateOutputSimpleStereo(CompiledFlowInputPtr input, CompiledFlowOutputPtr output)
 {
     AuUint32        i;
     AuInt16        *in = (AuInt16 *) input->flowEl->minibuf;
@@ -1012,9 +964,7 @@ CompiledFlowOutputPtr output;
 
 /* process an audio flow */
 void
-AuProcessFlow(fl, clocked)
-CompiledFlowPtr fl;
-AuBool          clocked;
+AuProcessFlow(CompiledFlowPtr fl, AuBool clocked)
 {
     AuInt32         i,
                     j;
@@ -1099,17 +1049,13 @@ AuProcessData()
 }
 
 void
-AuSetInputGainAndLineMode(gain, lineMode)
-AuFixedPoint    gain;
-AuUint8         lineMode;
+AuSetInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
 {
     AuCallback(AuSetPhysicalInputGainAndLineModeCB, (gain, lineMode));
 }
 
 void
-AuSetOutputGainAndMode(gain, mode)
-AuFixedPoint    gain;
-AuUint8         mode;
+AuSetOutputGainAndMode(AuFixedPoint gain, AuUint8 mode)
 {
     desiredOutputGain = gain;
 
@@ -1121,16 +1067,13 @@ AuUint8         mode;
 }
 
 void
-AuSetFeedbackGain(gain)
-AuFixedPoint    gain;
+AuSetFeedbackGain(AuFixedPoint gain)
 {
     AuCallbackIf(AuSetPhysicalFeedbackGainCB, (gain));
 }
 
 void
-AuGetOutputGainAndMode(gainp, modep)
-AuFixedPoint    *gainp;
-AuUint8         *modep;
+AuGetOutputGainAndMode(AuFixedPoint *gainp, AuUint8 *modep)
 {
     *gainp = AuCallback(AuGetPhysicalOutputGainCB, ());
     *modep = CallbackExists(AuGetPhysicalOutputModeCB)
@@ -1139,32 +1082,28 @@ AuUint8         *modep;
 }
 
 void
-AuGetInputGain(gainp)
-AuFixedPoint    *gainp;
+AuGetInputGain(AuFixedPoint *gainp)
 {
     if (CallbackExists(AuGetPhysicalInputGainCB))
        *gainp = AuCallback(AuGetPhysicalInputGainCB, ());
 }
 
 void
-AuGetInputMode(modep)
-AuUint8    *modep;
+AuGetInputMode(AuUint8 *modep)
 {
     if (CallbackExists(AuGetPhysicalInputModeCB))
        *modep = AuCallback(AuGetPhysicalInputModeCB, ());
 }
 
 void
-AuGetFeedbackGain(gainp)
-AuFixedPoint    *gainp;
+AuGetFeedbackGain(AuFixedPoint *gainp)
 {
     if (CallbackExists(AuGetPhysicalFeedbackGainCB))
        *gainp = AuCallback(AuGetPhysicalFeedbackGainCB, ());
 }
 
 void
-AuSetMaxOutputGain(gain)
-AuFixedPoint    gain;
+AuSetMaxOutputGain(AuFixedPoint gain)
 {
     AuUint8         mode;
     AuFixedPoint    g;
@@ -1260,9 +1199,7 @@ AuBool          isInput;
 }
 
 void
-AuSetupCompiledFlow(fl, rate)
-CompiledFlowPtr fl;
-AuUint32        rate;
+AuSetupCompiledFlow(CompiledFlowPtr fl, AuUint32 rate)
 {
     CompiledFlowOutputPtr output;
     CompiledFlowInputPtr input;
@@ -1471,13 +1408,7 @@ rc_x(rc_4, 4, *((AuInt32 *) d) = *(AuInt32 *) s)
 rc_x(rc_n, bps, aucopy(s, d, bps))
 
 static AuUint32
-rcNull(el, src, dst, want, avail, in)
-FlowElementPtr  el;
-AuUint8        *src,
-               *dst;
-AuInt32         want,
-                avail;
-AuUint32       *in;
+rcNull(FlowElementPtr el, AuUint8 *src, AuUint8 *dst, AuInt32 want, AuInt32 avail, AuUint32 *in)
 {
     AuUint32        size = aumin(want, avail);
 

@@ -103,15 +103,13 @@ static char    *auVendorString;
 /* REQUESTS */
 
 int
-ProcAuNotImplemented(client)
-ClientPtr       client;
+ProcAuNotImplemented(ClientPtr client)
 {
     AU_ERROR(AuBadImplementation, 0);
 }
 
 int
-ProcAuListDevices(client)
-ClientPtr       client;
+ProcAuListDevices(ClientPtr client)
 {
     REQUEST(auReq);
     auListDevicesReply rep;
@@ -204,8 +202,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuGetDeviceAttributes(client)
-ClientPtr       client;
+ProcAuGetDeviceAttributes(ClientPtr client)
 {
     REQUEST(auResourceReq);
     auGetDeviceAttributesReply rep;
@@ -251,8 +248,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuSetDeviceAttributes(client)
-ClientPtr       client;
+ProcAuSetDeviceAttributes(ClientPtr client)
 {
     REQUEST(auResourceReq);
     ComponentPtr    c;
@@ -295,8 +291,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuCreateBucket(client)
-ClientPtr       client;
+ProcAuCreateBucket(ClientPtr client)
 {
     REQUEST(auResourceReq);
     ComponentPtr    c;
@@ -361,8 +356,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuDestroyBucket(client)
-ClientPtr       client;
+ProcAuDestroyBucket(ClientPtr client)
 {
     REQUEST(auResourceReq);
     ComponentPtr    c;
@@ -383,8 +377,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuListBuckets(client)
-ClientPtr       client;
+ProcAuListBuckets(ClientPtr client)
 {
     REQUEST(auReq);
     auListBucketsReply rep;
@@ -457,8 +450,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuGetBucketAttributes(client)
-ClientPtr       client;
+ProcAuGetBucketAttributes(ClientPtr client)
 {
     REQUEST(auResourceReq);
     auGetBucketAttributesReply rep;
@@ -485,8 +477,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuCreateFlow(client)
-ClientPtr       client;
+ProcAuCreateFlow(ClientPtr client)
 {
     REQUEST(auResourceReq);
     FlowPtr         flow;
@@ -507,8 +498,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuDestroyFlow(client)
-ClientPtr       client;
+ProcAuDestroyFlow(ClientPtr client)
 {
     REQUEST(auResourceReq);
     FlowPtr         flow;
@@ -524,8 +514,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuGetElements(client)
-ClientPtr       client;
+ProcAuGetElements(ClientPtr client)
 {
     REQUEST(auResourceReq);
     auGetElementsReply rep;
@@ -597,8 +586,7 @@ static int      numDefaultActions[] =
 }
 
 int
-ProcAuSetElements(client)
-ClientPtr       client;
+ProcAuSetElements(ClientPtr client)
 {
     REQUEST(auSetElementsReq);
     FlowPtr         flow;
@@ -983,8 +971,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuSetElementStates(client)
-ClientPtr       client;
+ProcAuSetElementStates(ClientPtr client)
 {
     REQUEST(auSetElementStatesReq);
     int             i;
@@ -1037,8 +1024,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuGetElementStates(client)
-ClientPtr       client;
+ProcAuGetElementStates(ClientPtr client)
 {
     REQUEST(auGetElementStatesReq);
     auGetElementStatesReply rep;
@@ -1131,8 +1117,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuSetElementParameters(client)
-ClientPtr       client;
+ProcAuSetElementParameters(ClientPtr client)
 {
     REQUEST(auSetElementParametersReq);
     FlowPtr         flow;
@@ -1255,8 +1240,7 @@ ClientPtr       client;
      (s) == AuTransferStateEnd)
 
 int
-ProcAuWriteElement(client)
-ClientPtr       client;
+ProcAuWriteElement(ClientPtr client)
 {
     REQUEST(auWriteElementReq);
     FlowPtr         flow;
@@ -1363,8 +1347,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuReadElement(client)
-ClientPtr       client;
+ProcAuReadElement(ClientPtr client)
 {
     REQUEST(auReadElementReq);
     FlowPtr         flow;
@@ -1487,8 +1470,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuGetServerTime(client)
-ClientPtr       client;
+ProcAuGetServerTime(ClientPtr client)
 {
     REQUEST(auReq);
     auGetServerTimeReply rep;
@@ -1507,8 +1489,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuGetCloseDownMode(client)
-ClientPtr       client;
+ProcAuGetCloseDownMode(ClientPtr client)
 {
     REQUEST(auReq);
     auGetCloseDownModeReply rep;
@@ -1525,8 +1506,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuSetCloseDownMode(client)
-ClientPtr       client;
+ProcAuSetCloseDownMode(ClientPtr client)
 {
     REQUEST(auSetCloseDownModeReq);
 
@@ -1551,8 +1531,7 @@ ClientPtr       client;
  */
 
 int
-ProcAuKillClient(client)
-ClientPtr       client;
+ProcAuKillClient(ClientPtr client)
 {
     REQUEST(auResourceReq);
 
@@ -1595,8 +1574,7 @@ ClientPtr       client;
 }
 
 int
-ProcAuNoOperation(client)
-ClientPtr       client;
+ProcAuNoOperation(ClientPtr client)
 {
     return AuSuccess;
 }
@@ -1642,8 +1620,7 @@ AuInitSetupReply()
 
 /* sends return init packet */
 int
-AuSendInitResponse(client)
-ClientPtr       client;
+AuSendInitResponse(ClientPtr client)
 {
     extern ComponentPtr *auServerDevices,	/* array of devices */
                    *auServerBuckets,		/* array of server owned
@@ -1726,12 +1703,7 @@ ClientPtr       client;
 
 /* XXX - could probably toss this and just use SendErrorToClient */
 void
-SendAuErrorToClient(client, majorCode, minorCode, resId, errorCode)
-ClientPtr       client;
-unsigned        majorCode;
-unsigned short  minorCode;
-AuID             resId;
-int             errorCode;
+SendAuErrorToClient(ClientPtr client, unsigned majorCode, unsigned short minorCode, AuID resId, int errorCode)
 {
     auError         rep;
 

@@ -114,8 +114,7 @@ typedef int (*DeleteType)();
 static DeleteType *DeleteFuncs = (DeleteType *)NULL;
 
 RESTYPE
-CreateNewResourceType(deleteFunc)
-    DeleteType deleteFunc;
+CreateNewResourceType(DeleteType deleteFunc)
 {
     RESTYPE next = lastResourceType + 1;
     DeleteType *funcs;
@@ -153,8 +152,7 @@ ClientResourceRec clientTable[MAXCLIENTS];
  *****************/
 
 Bool
-InitClientResources(client)
-    ClientPtr client;
+InitClientResources(ClientPtr client)
 {
     register int i, j;
  
@@ -195,9 +193,7 @@ InitClientResources(client)
 }
 
 static int
-Hash(client, id)
-    int client;
-    register AuID id;
+Hash(int client, register AuID id)
 {
     id &= RESOURCE_ID_MASK;
     switch (clientTable[client].hashsize)
@@ -219,9 +215,7 @@ Hash(client, id)
 }
 
 static AuID
-AvailableID(client, id, maxid, goodid)
-    register int client;
-    register AuID id, maxid, goodid;
+AvailableID(register int client, register AuID id, register AuID maxid, register AuID goodid)
 {
     register ResourcePtr res;
 
@@ -247,8 +241,7 @@ AvailableID(client, id, maxid, goodid)
  */
 
 AuID
-FakeClientID(client)
-    register int client;
+FakeClientID(register int client)
 {
     register AuID id, maxid;
     register ResourcePtr *resp;
@@ -290,10 +283,7 @@ FakeClientID(client)
 }
 
 Bool
-AddResource(id, type, value)
-    AuID id;
-    RESTYPE type;
-    pointer value;
+AddResource(AuID id, RESTYPE type, pointer value)
 {
     int client;
     register ClientResourceRec *rrec;
@@ -329,8 +319,7 @@ AddResource(id, type, value)
 }
 
 static void
-RebuildTable(client)
-    int client;
+RebuildTable(int client)
 {
     register int j;
     register ResourcePtr res, next;
@@ -379,9 +368,7 @@ RebuildTable(client)
 }
 
 void
-FreeResource(id, skipDeleteFuncType)
-    AuID id;
-    RESTYPE skipDeleteFuncType;
+FreeResource(AuID id, RESTYPE skipDeleteFuncType)
 {
     int		cid;
     register    ResourcePtr res;
@@ -418,10 +405,7 @@ FreeResource(id, skipDeleteFuncType)
 	FatalError("Freeing resource id=%X which isn't there", id);
 }
 void
-FreeResourceByType(id, type, skipFree)
-    AuID id;
-    RESTYPE type;
-    Bool    skipFree;
+FreeResourceByType(AuID id, RESTYPE type, Bool skipFree)
 {
     int		cid;
     register    ResourcePtr res;
@@ -455,10 +439,7 @@ FreeResourceByType(id, type, skipFree)
  */
 
 Bool
-ChangeResourceValue (id, rtype, value)
-    AuID	id;
-    RESTYPE rtype;
-    pointer value;
+ChangeResourceValue (AuID id, RESTYPE rtype, pointer value)
 {
     int    cid;
     register    ResourcePtr res;
@@ -478,8 +459,7 @@ ChangeResourceValue (id, rtype, value)
 }
 
 void
-FreeClientResources(client)
-    ClientPtr client;
+FreeClientResources(ClientPtr client)
 {
     register ResourcePtr *resources;
     register ResourcePtr this;
@@ -532,9 +512,7 @@ FreeAllResources()
 }
 
 Bool
-LegalNewID(id, client)
-    AuID id;
-    register ClientPtr client;
+LegalNewID(AuID id, register ClientPtr client)
 {
     return ((client->clientAsMask == (id & ~RESOURCE_ID_MASK)) &&
 	    ((clientTable[client->index].expectID <= id) ||
@@ -545,9 +523,7 @@ LegalNewID(id, client)
  *  LookupIDByType returns the object with the given id and type, else NULL.
  */ 
 pointer
-LookupIDByType(id, rtype)
-    AuID id;
-    RESTYPE rtype;
+LookupIDByType(AuID id, RESTYPE rtype)
 {
     int    cid;
     register    ResourcePtr res;
@@ -568,9 +544,7 @@ LookupIDByType(id, rtype)
  *  given classes, else NULL.
  */ 
 pointer
-LookupIDByClass(id, classes)
-    AuID id;
-    RESTYPE classes;
+LookupIDByClass(AuID id, RESTYPE classes)
 {
     int    cid;
     register    ResourcePtr res;

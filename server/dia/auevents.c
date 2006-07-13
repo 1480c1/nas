@@ -71,10 +71,7 @@ static EventQueuePtr AuEventQueueTail;
 }
 
 static void
-WriteAuEventsToClient(pClient, count, events)
-ClientPtr       pClient;
-int             count;
-auEvent        *events;
+WriteAuEventsToClient(ClientPtr pClient, int count, auEvent *events)
 {
     /* pebl: check whether client is still there */
     if (pClient->clientGone == FALSE)
@@ -82,11 +79,7 @@ auEvent        *events;
 }
 
 static void
-fillInEvent(kind, reason, el, ev)
-int             kind,
-                reason;
-FlowElementPtr  el;
-auEvent        *ev;
+fillInEvent(int kind, int reason, FlowElementPtr el, auEvent *ev)
 {
     AuUint32           numBytes = 0;
     ComponentPtr    c = el->component;
@@ -165,10 +158,7 @@ ProcessAudioEvents()
 }
 
 void
-AuRequestElementNotifyEvent(kind, reason, el)
-int             kind,
-                reason;
-FlowElementPtr  el;
+AuRequestElementNotifyEvent(int kind, int reason, FlowElementPtr el)
 {
     EventQueuePtr   p;
 
@@ -194,9 +184,7 @@ FlowElementPtr  el;
 #define MONITOR_EVENT_DATA_SPACE	12
 
 void
-AuRequestMonitorNotifyEvent(el, data)
-FlowElementPtr  el;
-AuUint8          *data;
+AuRequestMonitorNotifyEvent(FlowElementPtr el, AuUint8 *data)
 {
     EventQueuePtr   p;
     auEvent        *ev;
@@ -243,8 +231,7 @@ AuUint8          *data;
 }
 
 void
-AuDequeueEvents(flow)
-FlowPtr         flow;
+AuDequeueEvents(FlowPtr flow)
 {
     AuBlock           l;
     EventQueuePtr   p,

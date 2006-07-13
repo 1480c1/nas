@@ -61,8 +61,7 @@ unsigned int    auBytesPerSample[] =
 };
 
 void
-AuFreeComponent(c)
-ComponentPtr    c;
+AuFreeComponent(ComponentPtr c)
 {
     if (!c->refCnt--)
     {
@@ -82,8 +81,7 @@ ComponentPtr    c;
 }
 
 static void
-freeCompiledFlow(cmp)
-CompiledFlowPtr cmp;
+freeCompiledFlow(CompiledFlowPtr cmp)
 {
     int             i;
 
@@ -135,8 +133,7 @@ CompiledFlowPtr cmp;
 }
 
 void
-AuFreeFlowElements(flow)
-FlowPtr         flow;
+AuFreeFlowElements(FlowPtr flow)
 {
     /* stop the flow if it's running */
     if (flow->state != AuStateStop)
@@ -159,8 +156,7 @@ FlowPtr         flow;
 }
 
 static void
-freeFlow(flow)
-FlowPtr         flow;
+freeFlow(FlowPtr flow)
 {
     if (flow->elements)
 	AuFreeFlowElements(flow);
@@ -177,9 +173,7 @@ AuCreateResourceTypes()
 }
 
 AuPointer
-aucalloc(nelem, elsize)
-AuUint32        nelem,
-                elsize;
+aucalloc(AuUint32 nelem, AuUint32 elsize)
 {
     AuPointer       p;
 
@@ -190,8 +184,7 @@ AuUint32        nelem,
 }
 
 AuPointer
-auProtectedAlloc(size)
-AuUint32        size;
+auProtectedAlloc(AuUint32 size)
 {
     AuBlock         l = AuBlockAudio();
     AuPointer       p;
@@ -202,9 +195,7 @@ AuUint32        size;
 }
 
 AuPointer
-auProtectedRealloc(p, size)
-AuPointer       p;
-AuUint32        size;
+auProtectedRealloc(AuPointer p, AuUint32 size)
 {
     AuBlock         l = AuBlockAudio();
 
@@ -214,8 +205,7 @@ AuUint32        size;
 }
 
 void
-auProtectedFree(p)
-AuPointer       p;
+auProtectedFree(AuPointer p)
 {
     AuBlock         l = AuBlockAudio();
 
@@ -225,13 +215,7 @@ AuPointer       p;
 
 /* create an import or export */
 static          ComponentPtr
-createPort(format, numTracks, numSamples, lowWater, highWater, discard)
-AuUint32        format,
-                numTracks,
-                numSamples,
-                lowWater,
-                highWater;
-AuBool          discard;
+createPort(AuUint32 format, AuUint32 numTracks, AuUint32 numSamples, AuUint32 lowWater, AuUint32 highWater, AuBool discard)
 {
     ComponentPtr    port;
     AuUint32        dataSize,
@@ -269,9 +253,7 @@ AuBool          discard;
 
 /* create a monitor export */
 static          ComponentPtr
-createMonitor(format, numTracks)
-AuUint32        format,
-                numTracks;
+createMonitor(AuUint32 format, AuUint32 numTracks)
 {
     ComponentPtr    c;
     AuUint32        minibufSize;
@@ -298,8 +280,7 @@ AuUint32        format,
 
 /* create a wave form import */
 static          ComponentPtr
-createWaveForm(form)
-int             form;
+createWaveForm(int form)
 {
     ComponentPtr    c;
     AuUint32        minibufSize, n;
@@ -377,20 +358,8 @@ int             form;
 }
 
 static int
-compileInputs(client, elements, output, inputNum, multiplyConstant, addConstant,
-	      numTracks, inTracks, firstOutTrack, recompile, inputCnt)
-ClientPtr       client;
-FlowElementPtr  elements;
-CompiledFlowOutputPtr output;
-AuUint32        inputNum,
-               *inputCnt;
-AuFixedPoint    multiplyConstant,
-                addConstant;
-AuBool          recompile;
-AuUint8         numTracks,
-               *inTracks,
-                firstOutTrack;
-
+compileInputs(ClientPtr client, FlowElementPtr elements, CompiledFlowOutputPtr output, AuUint32 inputNum, AuFixedPoint multiplyConstant, AuFixedPoint addConstant,
+	      AuUint8 numTracks, AuUint8 *inTracks, AuUint8 firstOutTrack, AuBool recompile, AuUint32 *inputCnt)
 {
     auElement      *el = elements[inputNum].raw;
     int             status = AuSuccess;
@@ -592,9 +561,7 @@ AuUint8         numTracks,
 }
 
 int
-AuCompileFlow(client, flow)
-ClientPtr       client;
-FlowPtr         flow;
+AuCompileFlow(ClientPtr client, FlowPtr flow)
 {
     AuUint32        i,
                     outputCnt = 0,
@@ -731,8 +698,7 @@ FlowPtr         flow;
 }
 
 static          CompiledFlowPtr
-AuProcessFlows(fl)
-FlowPtr         fl;
+AuProcessFlows(FlowPtr fl)
 {
     FlowPtr         flow,
                     f;
@@ -982,8 +948,7 @@ AuProcessClockedFlows()
 }
 
 static void
-setFlowState(flow)
-FlowPtr         flow;
+setFlowState(FlowPtr flow)
 {
     int             i,
                     stop,
@@ -1021,10 +986,7 @@ FlowPtr         flow;
 #define CHECK_REASON(t, r) ((t) == AuReasonAny || (t) == (r))
 
 static void
-checkForTriggeredActions(el, processFlow, reason)
-FlowElementPtr  el;
-AuBool          processFlow;
-int             reason;
+checkForTriggeredActions(FlowElementPtr el, AuBool processFlow, int reason)
 {
     int             i,
                     state = el->state,		/* so these don't get changed */
@@ -1056,12 +1018,7 @@ int             reason;
 
 /* could be called at audio interrupt level */
 AuBool
-AuChangeElementState(flow, elementNum, newState, processFlow, reason)
-FlowPtr         flow;
-AuUint32        elementNum,
-                newState;
-AuBool          processFlow;
-int             reason;
+AuChangeElementState(FlowPtr flow, AuUint32 elementNum, AuUint32 newState, AuUint32 processFlow, int reason)
 {
     AuBlock         l;
     FlowElementPtr  el;
@@ -1245,10 +1202,7 @@ int             reason;
 }
 
 void
-AuProcessStateChanges(numStates, states, flows)
-AuUint32        numStates;
-auElementState *states;
-FlowPtr        *flows;
+AuProcessStateChanges(AuUint32 numStates, auElementState *states, FlowPtr *flows)
 {
     while (numStates--)
     {
@@ -1267,10 +1221,7 @@ FlowPtr        *flows;
 #define BUCKET(x)	((auBucketAttributes *) a)->bucket.x
 
 int
-AuSetComponentAttributes(a, c, varData)
-AuUint8        *a,
-               *varData;
-ComponentPtr    c;
+AuSetComponentAttributes(AuUint8 *a, ComponentPtr c, AuUint8 *varData)
 {
     AuUint32        mask,
                     i;
@@ -1405,10 +1356,7 @@ ComponentPtr    c;
 #define COMPARE_DEVICE_MASK(x, y)    if (!(c->x & DEVICE(y))) 	return AuFalse
 
 AuBool
-AuMatchAttributes(a, c, varData)
-AuUint8        *a,
-               *varData;
-ComponentPtr    c;
+AuMatchAttributes(AuUint8 *a, ComponentPtr c, AuUint8 *varData)
 {
     AuUint32        mask,
                     i;
@@ -1553,9 +1501,7 @@ ComponentPtr    c;
 }
 
 AuFixedPoint
-AuFixedPointMultiply(m1, m2)
-AuFixedPoint    m1,
-                m2;
+AuFixedPointMultiply(AuFixedPoint m1, AuFixedPoint m2)
 {
     AuBool          negative = AuFalse;
     AuFixedPoint    result;

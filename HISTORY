@@ -1,5 +1,15 @@
 $Id$
 
+Version ??? (devel) 7/12/2006
+
+        - Applied patch from Stefan Huehner removing old 'const'
+          determination.  'const' is expected to be supported by your
+          compiler. 
+
+        - added patch from Erik Auerswald correcting an issue where
+          the preset gain was not applied when the device was opened
+          (if ReleaseDevice is enabled).
+
 Version 1.8 (stable) 06/03/2006
 
         - time for another stable release.

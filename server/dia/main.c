@@ -102,9 +102,7 @@ static FILE     *openConfigFile (char *path)
 
 
 int
-main(argc, argv)
-    int		argc;
-    char	*argv[];
+main(int argc, char *argv[])
 {
     int		i;
     char    *config_file;

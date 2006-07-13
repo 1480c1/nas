@@ -60,8 +60,7 @@ extern void IgnoreClient(), AttendClient();
  */
 
 int
-CompareTimeStamps(a, b)
-    TimeStamp a, b;
+CompareTimeStamps(TimeStamp a, TimeStamp b)
 {
     if (a.months < b.months)
 	return EARLIER;
@@ -81,8 +80,7 @@ CompareTimeStamps(a, b)
 
 #define HALFMONTH ((unsigned long) 1<<31)
 TimeStamp
-ClientTimeToServerTime(c)
-     CARD32 c;
+ClientTimeToServerTime(CARD32 c)
 {
     TimeStamp ts;
     if (c == CurrentTime)
@@ -234,8 +232,7 @@ ClientSignal (client)
 }
 
 void
-ClientWakeup (client)
-    ClientPtr	client;
+ClientWakeup (ClientPtr client)
 {
     SleepQueuePtr   q, *prev;
 
@@ -255,8 +252,7 @@ ClientWakeup (client)
 }
 
 Bool
-ClientIsAsleep (client)
-    ClientPtr	client;
+ClientIsAsleep (ClientPtr client)
 {
     SleepQueuePtr   q;
 

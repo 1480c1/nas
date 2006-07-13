@@ -57,10 +57,7 @@ extern void WriteToClient();
 extern int (* AuEventSwapVector[256]) ();
 
 void
-WriteEventsToClient(pClient, count, events)
-    ClientPtr	pClient;
-    int		count;
-    auEvent	*events;
+WriteEventsToClient(ClientPtr pClient, int count, auEvent *events)
 {
     if(pClient->swapped)
     {

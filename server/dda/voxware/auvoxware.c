@@ -1014,7 +1014,10 @@ static void enableProcessFlow()
     }
 
   if (relinquish_device)
+    {
       openDevice(AuTrue);
+      setPhysicalOutputGain(getPhysicalOutputGain());
+    }
 
 #ifdef sco
     if (!processFlowEnabled)

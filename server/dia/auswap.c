@@ -39,8 +39,7 @@ static void SwapBucketAttributes();
 /* audio request/reply swappers */
 
 int
-SProcAuSimpleReq(client)
-ClientPtr       client;
+SProcAuSimpleReq(ClientPtr client)
 {
     char            n;
 
@@ -50,8 +49,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuResourceReq(client)
-ClientPtr       client;
+SProcAuResourceReq(ClientPtr client)
 {
     char            n;
 
@@ -63,8 +61,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuSetDeviceAttributes(client)
-ClientPtr       client;
+SProcAuSetDeviceAttributes(ClientPtr client)
 {
     char            n;
 
@@ -77,8 +74,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuCreateBucket(client)
-ClientPtr       client;
+SProcAuCreateBucket(ClientPtr client)
 {
     char            n;
 
@@ -91,8 +87,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuListBuckets(client)
-ClientPtr       client;
+SProcAuListBuckets(ClientPtr client)
 {
     char            n;
 
@@ -104,8 +99,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuListDevices(client)
-ClientPtr       client;
+SProcAuListDevices(ClientPtr client)
 {
     char            n;
 
@@ -117,9 +111,7 @@ ClientPtr       client;
 }
 
 static auElement *
-SwapElement(e, incoming)
-auElement      *e;
-AuBool          incoming;
+SwapElement(auElement *e, AuBool incoming)
 {
     char            n;
     int             na = 0;
@@ -260,8 +252,7 @@ AuBool          incoming;
 }
 
 int
-SProcAuSetElements(client)
-ClientPtr       client;
+SProcAuSetElements(ClientPtr client)
 {
     char            n;
     int             i;
@@ -284,8 +275,7 @@ ClientPtr       client;
 
 /* NOTE: this is also used for GetElementStates */
 int
-SProcAuSetElementStates(client)
-ClientPtr       client;
+SProcAuSetElementStates(ClientPtr client)
 {
     char            n;
     int             i;
@@ -306,8 +296,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuSetElementParameters(client)
-ClientPtr       client;
+SProcAuSetElementParameters(ClientPtr client)
 {
     char            n;
     int             i;
@@ -334,8 +323,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuWriteElement(client)
-ClientPtr       client;
+SProcAuWriteElement(ClientPtr client)
 {
     char            n;
 
@@ -348,8 +336,7 @@ ClientPtr       client;
 }
 
 int
-SProcAuReadElement(client)
-ClientPtr       client;
+SProcAuReadElement(ClientPtr client)
 {
     char            n;
 
@@ -364,10 +351,7 @@ ClientPtr       client;
 /* replies */
 
 void
-SAuGetDeviceAttributesReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auGetDeviceAttributesReply *pRep;
+SAuGetDeviceAttributesReply(ClientPtr client, int size, auGetDeviceAttributesReply *pRep)
 {
     char            n;
 
@@ -378,10 +362,7 @@ auGetDeviceAttributesReply *pRep;
 }
 
 void
-SAuListBucketsReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auListBucketsReply *pRep;
+SAuListBucketsReply(ClientPtr client, int size, auListBucketsReply *pRep)
 {
     char            n;
 
@@ -393,10 +374,7 @@ auListBucketsReply *pRep;
 }
 
 void
-SAuListDevicesReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auListDevicesReply *pRep;
+SAuListDevicesReply(ClientPtr client, int size, auListDevicesReply *pRep)
 {
     char            n;
 
@@ -408,10 +386,7 @@ auListDevicesReply *pRep;
 }
 
 void
-SAuGetBucketAttributesReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auGetBucketAttributesReply *pRep;
+SAuGetBucketAttributesReply(ClientPtr client, int size, auGetBucketAttributesReply *pRep)
 {
     char            n;
 
@@ -422,10 +397,7 @@ auGetBucketAttributesReply *pRep;
 }
 
 void
-SAuReadElementReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auReadElementReply *pRep;
+SAuReadElementReply(ClientPtr client, int size, auReadElementReply *pRep)
 {
     char            n;
 
@@ -437,10 +409,7 @@ auReadElementReply *pRep;
 }
 
 void
-SAuGetElementsReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auGetElementsReply *pRep;
+SAuGetElementsReply(ClientPtr client, int size, auGetElementsReply *pRep)
 {
     char            n;
 
@@ -453,10 +422,7 @@ auGetElementsReply *pRep;
 }
 
 void
-SAuGetElementStatesReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auGetElementStatesReply *pRep;
+SAuGetElementStatesReply(ClientPtr client, int size, auGetElementStatesReply *pRep)
 {
     char            n;
 
@@ -468,10 +434,7 @@ auGetElementStatesReply *pRep;
 }
 
 void
-SAuGetCloseDownModeReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auGetCloseDownModeReply *pRep;
+SAuGetCloseDownModeReply(ClientPtr client, int size, auGetCloseDownModeReply *pRep)
 {
     char            n;
 
@@ -482,10 +445,7 @@ auGetCloseDownModeReply *pRep;
 }
 
 void
-SAuGetServerTimeReply(client, size, pRep)
-ClientPtr       client;
-int             size;
-auGetServerTimeReply *pRep;
+SAuGetServerTimeReply(ClientPtr client, int size, auGetServerTimeReply *pRep)
 {
     char            n;
 
@@ -497,8 +457,7 @@ auGetServerTimeReply *pRep;
 }
 
 static void
-SwapCommonAttributes(p)
-auCommonPart   *p;
+SwapCommonAttributes(auCommonPart *p)
 {
     char            n;
 
@@ -510,8 +469,7 @@ auCommonPart   *p;
 }
 
 static void
-SwapDeviceAttributes(p)
-auDeviceAttributes *p;
+SwapDeviceAttributes(auDeviceAttributes *p)
 {
     char            n;
 
@@ -524,18 +482,14 @@ auDeviceAttributes *p;
 }
 
 void
-AuSwapDeviceAttributesWrite(client, size, p)
-ClientPtr       client;
-int             size;
-auDeviceAttributes *p;
+AuSwapDeviceAttributesWrite(ClientPtr client, int size, auDeviceAttributes *p)
 {
     SwapDeviceAttributes(p);
     (void) WriteToClient(client, size, (char *) p);
 }
 
 static void
-SwapBucketAttributes(p)
-auBucketAttributes *p;
+SwapBucketAttributes(auBucketAttributes *p)
 {
     char            n;
 
@@ -546,20 +500,14 @@ auBucketAttributes *p;
 }
 
 void
-AuSwapBucketAttributesWrite(client, size, p)
-ClientPtr       client;
-int             size;
-auBucketAttributes *p;
+AuSwapBucketAttributesWrite(ClientPtr client, int size, auBucketAttributes *p)
 {
     SwapBucketAttributes(p);
     (void) WriteToClient(client, size, (char *) p);
 }
 
 void
-AuSwapSetupPrefix(client, size, p)
-ClientPtr       client;
-int             size;
-auConnSetupPrefix *p;
+AuSwapSetupPrefix(ClientPtr client, int size, auConnSetupPrefix *p)
 {
     auConnSetupPrefix sp;
 
@@ -573,10 +521,7 @@ auConnSetupPrefix *p;
 }
 
 void
-AuSwapSetup(client, size, p)
-ClientPtr       client;
-int             size;
-auConnSetup    *p;
+AuSwapSetup(ClientPtr client, int size, auConnSetup *p)
 {
     auConnSetup     sp;
 
@@ -593,10 +538,7 @@ auConnSetup    *p;
 }
 
 void
-AuCopySwapElementWrite(client, size, p)
-ClientPtr       client;
-int             size;
-auElement      *p;
+AuCopySwapElementWrite(ClientPtr client, int size, auElement *p)
 {
     auElement      *e;
 
@@ -611,10 +553,7 @@ auElement      *p;
 }
 
 void
-AuSwapElementStateWrite(client, size, p)
-ClientPtr       client;
-int             size;
-auElementState *p;
+AuSwapElementStateWrite(ClientPtr client, int size, auElementState *p)
 {
     char            n;
 
@@ -625,9 +564,7 @@ auElementState *p;
 /* events */
 
 void
-SAuElementNotifyEvent(from, to)
-auEvent        *from,
-               *to;
+SAuElementNotifyEvent(auEvent *from, auEvent *to)
 {
     to->u.u.type = from->u.u.type;
     to->u.u.detail = from->u.u.detail;
@@ -644,9 +581,7 @@ auEvent        *from,
 }
 
 void
-SAuMonitorNotifyEvent(from, to)
-auEvent        *from,
-               *to;
+SAuMonitorNotifyEvent(auEvent *from, auEvent *to)
 {
     to->u.u.type = from->u.u.type;
     to->u.u.detail = from->u.u.detail;
@@ -665,9 +600,7 @@ auEvent        *from,
 }
 
 void
-SAuErrorEvent(from, to)
-auError        *from,
-               *to;
+SAuErrorEvent(auError *from, auError *to)
 {
     to->type = Au_Error;
     to->errorCode = from->errorCode;

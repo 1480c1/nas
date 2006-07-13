@@ -218,8 +218,7 @@ Dispatch()
 
 /*ARGSUSED*/
 int
-ProcBadRequest(client)
-    ClientPtr client;
+ProcBadRequest(ClientPtr client)
 {
     return (AuBadRequest);
 }
@@ -254,8 +253,7 @@ extern int Ones();
 Bool terminateAtReset = FALSE;
 
 void
-CloseDownClient(client)
-    register ClientPtr client;
+CloseDownClient(register ClientPtr client)
 {
     if (!client->clientGone)
     {
@@ -336,10 +334,7 @@ CloseDownRetainedResources()
     }
 }
 
-void InitClient(client, i, ospriv)
-    ClientPtr client;
-    int i;
-    pointer ospriv;
+void InitClient(ClientPtr client, int i, pointer ospriv)
 {
     client->index = i;
     client->sequence = 0; 
@@ -366,8 +361,7 @@ void InitClient(client, i, ospriv)
  *************************/
 
 ClientPtr
-NextAvailableClient(ospriv)
-    pointer ospriv;
+NextAvailableClient(pointer ospriv)
 {
     register int i;
     register ClientPtr client;
@@ -401,8 +395,7 @@ NextAvailableClient(ospriv)
 }
 
 int
-ProcInitialConnection(client)
-    register ClientPtr client;
+ProcInitialConnection(register ClientPtr client)
 {
     REQUEST(auReq);
     register auConnClientPrefix *prefix;
@@ -429,8 +422,7 @@ ProcInitialConnection(client)
 }
 
 int
-ProcEstablishConnection(client)
-    register ClientPtr client;
+ProcEstablishConnection(register ClientPtr client)
 {
     char *reason, *auth_proto, *auth_string;
     register auConnClientPrefix *prefix;
@@ -476,8 +468,7 @@ ProcEstablishConnection(client)
 }
 
 void
-MarkClientException(client)
-    ClientPtr client;
+MarkClientException(ClientPtr client)
 {
     client->noClientException = -1;
 }
