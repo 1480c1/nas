@@ -1,10 +1,13 @@
 $Id$
 
-Version ??? (devel) 7/12/2006
+Version ??? (devel) 7/15/2006
 
-        - Applied patch from Stefan Huehner removing old 'const'
-          determination.  'const' is expected to be supported by your
-          compiler. 
+        - Applied patches from Stefan Huehner:
+
+          - removing old 'const' determination.  'const' is expected
+            to be supported by your compiler.
+
+          - ANSI'fy some of the clients (aupanel, etc...)
 
         - added patch from Erik Auerswald correcting an issue where
           the preset gain was not applied when the device was opened

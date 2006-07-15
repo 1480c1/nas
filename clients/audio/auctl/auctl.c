@@ -40,9 +40,7 @@ char *ProgramName;
 static int do_command_loop PROTO((AuServer *, AuBool));
 
 int
-main (argc, argv)
-    int argc;
-    char **argv;
+main (int argc, char **argv)
 {
     int i;
     char *audioname = NULL;
@@ -99,8 +97,7 @@ main (argc, argv)
 }
 
 
-static char *skip_space (s)
-    register char *s;
+static char *skip_space (register char *s)
 {
     if (!s) return NULL;
 
@@ -110,8 +107,7 @@ static char *skip_space (s)
 }
 
 
-static char *skip_nonspace (s)
-    register char *s;
+static char *skip_nonspace (register char *s)
 {
     if (!s) return NULL;
 
@@ -122,9 +118,7 @@ static char *skip_nonspace (s)
 }
 
 
-static char **split_into_words (src, argcp)  /* argvify string */
-    char *src;
-    int *argcp;
+static char **split_into_words (char *src, int *argcp)  /* argvify string */
 {
     char *jword;
     char savec;
@@ -164,9 +158,7 @@ static char **split_into_words (src, argcp)  /* argvify string */
 }
 
 
-static int do_command_loop (aud, doprompt)
-    AuServer *aud;
-    AuBool doprompt;
+static int do_command_loop (AuServer *aud, AuBool doprompt)
 {
     char buf[256];
     int len;

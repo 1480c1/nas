@@ -93,8 +93,7 @@ recognition options:\n\
  * indicate a relative time. OBH-4/16/91
  */
 static void
-usleep(usecs)
-unsigned int    usecs;
+usleep(unsigned int usecs)
 {
     double          s1;
     AuUint32   quad[2];
@@ -115,8 +114,7 @@ unsigned int    usecs;
 #include <poll.h>
 
 int
-usleep(usec)
-unsigned int    usec;
+usleep(unsigned int usec)
 {
     struct pollfd   f;
     return poll(&f, (unsigned long) 0, usec / 1000);
@@ -137,15 +135,13 @@ static void usleep(unsigned int usecs)
 #include <sys/time.h>
 
 static void
-stopme(sig)
-int sig;
+stopme(int sig)
 {
     signal(SIGALRM, SIG_DFL);
 }
 
 static void
-usleep(usecs)
-unsigned int    usecs;
+usleep(unsigned int usecs)
 {
     void            stopme();
     struct itimerval ntval,
@@ -215,11 +211,7 @@ static struct
 }
 
 static          AuFlowID
-createDTMFflow(aud, outputDevice, volume, duration)
-AuServer       *aud;
-AuDeviceID      outputDevice;
-int             volume,
-                duration;
+createDTMFflow(AuServer *aud, AuDeviceID outputDevice, int volume, int duration)
 {
     AuFlowID        flow;
     AuElement       elements[18];
@@ -263,12 +255,7 @@ int             volume,
 }
 
 static void
-dial(aud, flow, dialString, pause, spacing)
-AuServer       *aud;
-AuFlowID        flow;
-char           *dialString;
-int             pause,
-                spacing;
+dial(AuServer *aud, AuFlowID flow, char *dialString, int pause, int spacing)
 {
     AuEvent         event;
     AuElementState  states[3];
@@ -313,13 +300,7 @@ int             pause,
 }
 
 static void
-doDial(aud, dialString, volume, pause, spacing, duration)
-AuServer       *aud;
-char           *dialString;
-int             volume,
-                pause,
-                spacing,
-                duration;
+doDial(AuServer *aud, char *dialString, int volume, int pause, int spacing, int duration)
 {
     AuDeviceID      outputDevice = AuNone;
     AuFlowID        flow;
@@ -364,9 +345,7 @@ int             volume,
 #define THRESHHOLD 	3
 
 static void
-recognize(p, n)
-unsigned char  *p;
-int             n;
+recognize(unsigned char *p, int n)
 {
     static int      freqs[8] = {697, 770, 852, 941, 1209, 1336, 1477, 1633},
                     sums[8][NBINS],
@@ -482,11 +461,7 @@ int             n;
 }
 
 static void
-doRecognize(aud, mic, gain, time)
-AuServer       *aud;
-AuBool          mic;
-int             gain,
-                time;
+doRecognize(AuServer *aud, AuBool mic, int gain, int time)
 {
     AuElementAction actions[1];
     AuEvent         event;
@@ -592,9 +567,7 @@ int             gain,
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     int             i,
                     time = 0,

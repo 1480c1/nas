@@ -28,9 +28,7 @@
 #include <audio/soundlib.h>
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     return (argc == 2 && SoundOpenFileForReading(argv[1]) ? 0 : 1);
 }

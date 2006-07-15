@@ -54,8 +54,7 @@ char           *message,
 }
 
 static char    *
-convertQuotes(str)
-char           *str;
+convertQuotes(char *str)
 {
     int             len = strlen(str) * 2 + 1;	/* more then enough for
 						 * string */
@@ -78,9 +77,7 @@ char           *str;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     Sound           s;
     char           *p,

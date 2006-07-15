@@ -159,17 +159,13 @@ char           *message,
 }
 
 static void
-quitCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp;
-XtPointer       call_data;
+quitCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     exit(0);
 }
 
 static void
-showDevice(g)
-GlobalDataPtr   g;
+showDevice(GlobalDataPtr g)
 {
     Boolean         inputModeEnable, outputModeEnable,
                     gainEnable;
@@ -244,10 +240,7 @@ GlobalDataPtr   g;
 }
 
 static void
-queryCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp;
-XtPointer       call_data;
+queryCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
 
@@ -257,10 +250,7 @@ XtPointer       call_data;
 }
 
 static void
-inputModeCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp;
-XtPointer       call_data;
+inputModeCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     AuDeviceAttributes *da = &g->da[g->deviceNum];
@@ -279,10 +269,7 @@ XtPointer       call_data;
 }
 
 static void
-outputModeCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp;
-XtPointer       call_data;
+outputModeCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     AuDeviceAttributes *da = &g->da[g->deviceNum];
@@ -306,10 +293,7 @@ XtPointer       call_data;
 }
 
 static void
-menuCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp;
-XtPointer       call_data;
+menuCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     int             i;
@@ -328,10 +312,7 @@ XtPointer       call_data;
 }
 
 static void
-setGain(w, gp, valuep)
-Widget          w;
-XtPointer       gp;
-XtPointer       valuep;
+setGain(Widget w, XtPointer gp, XtPointer valuep)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     AuDeviceAttributes *da = &g->da[g->deviceNum];
@@ -349,10 +330,7 @@ XtPointer       valuep;
 }
 
 static void
-muteCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp;
-XtPointer       call_data;
+muteCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr g = (GlobalDataPtr) gp;
     AuDeviceAttributes *da;
@@ -373,8 +351,7 @@ XtPointer       call_data;
 }
 
 static void
-createWidgets(g)
-GlobalDataPtr   g;
+createWidgets(GlobalDataPtr g)
 {
     int             i;
     Widget          w;
@@ -429,8 +406,7 @@ GlobalDataPtr   g;
 }
 
 static void
-alignWidgets(g)
-GlobalDataPtr   g;
+alignWidgets(GlobalDataPtr g)
 {
     Dimension       w,
                     w1;
@@ -453,9 +429,7 @@ GlobalDataPtr   g;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     GlobalDataRec   globals;
     GlobalDataPtr   g = &globals;

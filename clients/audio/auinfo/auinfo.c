@@ -64,9 +64,7 @@ static _AuConst char *TITLEFMT = "%-24s";
 static _AuConst char *INDENTPAD = INDENTPADSTR;
 
 int
-main (argc, argv)
-    int argc;
-    char **argv;
+main (int argc, char **argv)
 {
     int i;
     char *audioname = NULL;
@@ -268,9 +266,7 @@ static NameTable _nt_linemodes[] = {
 
 #if TEXT_ALIGNMENT == TA_INDIVIDUAL
 #define ROUNDUP(n) ((((n) + 7) >> 3) << 3)
-static int _table_maxlen (tab, nents)
-    register NameTable *tab;
-    register int nents;
+static int _table_maxlen (register NameTable *tab, register int nents)
 {
     register int m = 0;
 
@@ -288,11 +284,8 @@ static int _table_maxlen (tab, nents)
 #define ALL_COLUMN_WIDTH 24
 #endif
 
-static NameTable *_lookup_name (tab, nents, val, isbit)
-    register NameTable *tab;
-    register int nents;
-    register int val;
-    register AuBool isbit;		/* use bit compare instead of equal? */
+static NameTable *_lookup_name (register NameTable *tab, register int nents, register int val, register AuBool isbit)
+/* isbit: use bit compare instead of equal? */
 {
     static NameTable nttmp;
     static char tmpbuf[20];
@@ -390,16 +383,12 @@ static void _print_names (aud, tab, nents, title, total, getvaliter, p, isbit)
 
 
 /* ARGSUSED2 */
-static int _get_format (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_format (AuServer *aud, int i, AuPointer p)
 {
     return AuServerFormat (aud, i);
 }
 
-static void print_formats (aud)
-    AuServer *aud;
+static void print_formats (AuServer *aud)
 {
     _print_names (aud, _nt_formats, NENTRIES(_nt_formats), 
 		  "Formats:", AuServerNumFormats(aud), _get_format, 
@@ -407,26 +396,18 @@ static void print_formats (aud)
 }
 
 /* ARGSUSED */
-static int _get_use (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_use (AuServer *aud, int i, AuPointer p)
 {
     return (1 << i) & AuCommonUse ((AuCommonPart *) p);
 }
 
 /* ARGSUSED */
-static int _get_access (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_access (AuServer *aud, int i, AuPointer p)
 {
     return (1 << i) & AuCommonAccess ((AuCommonPart *) p);
 }
 
-static void print_comp (aud, c)
-    AuServer *aud;
-    register AuCommonPart *c;
+static void print_comp (AuServer *aud, register AuCommonPart *c)
 {
     register AuMask vmask = AuCommonValueMask (c);
 
@@ -461,27 +442,19 @@ static void print_comp (aud, c)
 
 
 /* ARGSUSED */
-static int _get_devicechangables (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_devicechangables (AuServer *aud, int i, AuPointer p)
 {
     return (1 << i) & AuDeviceChangableMask((AuDeviceAttributes *) p);
 }
 
 /* ARGSUSED */
-static int _get_locations (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_locations (AuServer *aud, int i, AuPointer p)
 {
     return (1 << i) & AuDeviceLocation ((AuDeviceAttributes *) p);
 }
 
 
-static void print_device (aud, d)
-    AuServer *aud;
-    AuDeviceAttributes *d;
+static void print_device (AuServer *aud, AuDeviceAttributes *d)
 {
     AuMask vmask = AuDeviceValueMask (d);
 
@@ -525,8 +498,7 @@ static void print_device (aud, d)
     }
 }
 
-static void print_devices (aud)
-    AuServer *aud;
+static void print_devices (AuServer *aud)
 {
 
     int i;
@@ -538,9 +510,7 @@ static void print_devices (aud)
 }
 
 static void
-print_bucket(aud, ba)
-    AuServer	*aud;
-    AuBucketAttributes	*ba;
+print_bucket(AuServer *aud, AuBucketAttributes *ba)
 {
     AuMask vmask = AuBucketValueMask (ba);
 
@@ -554,8 +524,7 @@ print_bucket(aud, ba)
 }
 
 
-static void print_server_buckets (aud)
-    AuServer *aud;
+static void print_server_buckets (AuServer *aud)
 {
     int i;
 
@@ -566,8 +535,7 @@ static void print_server_buckets (aud)
 }
 
 
-static void print_client_buckets (aud)
-    AuServer *aud;
+static void print_client_buckets (AuServer *aud)
 {
     int	num, i;
     AuBucketAttributes	*bas;
@@ -593,16 +561,12 @@ static void print_client_buckets (aud)
 
 
 /* ARGSUSED2 */
-static int _get_elem_type (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_elem_type (AuServer *aud, int i, AuPointer p)
 {
     return AuServerElementType (aud, i);
 }
 
-static void print_elem_types (aud)
-    AuServer *aud;
+static void print_elem_types (AuServer *aud)
 {
     _print_names (aud, _nt_elemtypes, NENTRIES(_nt_elemtypes),
 		  "Element Types:", AuServerNumElementTypes(aud),
@@ -611,16 +575,12 @@ static void print_elem_types (aud)
 
 
 /* ARGSUSED2 */
-static int _get_wave_form (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_wave_form (AuServer *aud, int i, AuPointer p)
 {
     return AuServerWaveForm (aud, i);
 }
 
-static void print_wave_forms (aud)
-    AuServer *aud;
+static void print_wave_forms (AuServer *aud)
 {
     _print_names (aud, _nt_waveforms, NENTRIES(_nt_waveforms), 
 		  "Wave Forms:", AuServerNumWaveForms(aud), _get_wave_form,
@@ -629,16 +589,12 @@ static void print_wave_forms (aud)
 
 
 /* ARGSUSED2 */
-static int _get_action (aud, i, p)
-    AuServer *aud;
-    int i;
-    AuPointer p;
+static int _get_action (AuServer *aud, int i, AuPointer p)
 {
     return AuServerAction (aud, i);
 }
 
-static void print_actions (aud)
-    AuServer *aud;
+static void print_actions (AuServer *aud)
 {
     _print_names (aud, _nt_actions, NENTRIES(_nt_actions), 
 		  "Actions:", AuServerNumActions(aud), _get_action, 

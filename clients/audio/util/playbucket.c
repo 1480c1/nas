@@ -41,11 +41,7 @@ char           *message,
 }
 
 static void
-doneCB(aud, handler, ev, data)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
-AuPointer       data;
+doneCB(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev, AuPointer data)
 {
     AuBool         *done = (AuBool *) data;
 
@@ -53,9 +49,7 @@ AuPointer       data;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     Sound           s;
     char           *audioServer = NULL,

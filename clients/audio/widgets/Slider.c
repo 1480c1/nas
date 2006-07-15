@@ -123,11 +123,7 @@ SliderClassRec  sliderClassRec =
 WidgetClass     sliderWidgetClass = (WidgetClass) & sliderClassRec;
 
 static void
-setValue(w, value, setThumb, force)
-SliderWidget    w;
-int             value;
-Boolean         setThumb,
-                force;
+setValue(SliderWidget w, int value, Boolean setThumb, Boolean force)
 {
     if (value < w->slider.min)
 	value = w->slider.min;
@@ -155,10 +151,7 @@ Boolean         setThumb,
 }
 
 static void
-scroll(w, swp, positionp)
-Widget          w;
-XtPointer       swp,
-                positionp;
+scroll(Widget w, XtPointer swp, XtPointer positionp)
 {
     SliderWidget    sw = (SliderWidget) swp;
     int             position = (int) positionp;
@@ -167,10 +160,7 @@ XtPointer       swp,
 }
 
 static void
-jump(w, swp, percentp)
-Widget          w;
-XtPointer       swp,
-                percentp;
+jump(Widget w, XtPointer swp, XtPointer percentp)
 {
     SliderWidget    sw = (SliderWidget) swp;
     float          *percent = (float *) percentp;
@@ -179,11 +169,7 @@ XtPointer       swp,
 }
 
 static void
-Initialize(request, new, args, num_args)
-Widget          request,
-                new;
-ArgList         args;
-Cardinal       *num_args;
+Initialize(Widget request, Widget new, ArgList args, Cardinal *num_args)
 {
     SliderWidget    w = (SliderWidget) new;
 
@@ -224,12 +210,7 @@ Cardinal       *num_args;
 }
 
 static Boolean
-SetValues(current, request, new, in_args, in_num_args)
-Widget          current,
-                request,
-                new;
-ArgList         in_args;
-Cardinal       *in_num_args;
+SetValues(Widget current, Widget request, Widget new, ArgList in_args, Cardinal *in_num_args)
 {
     SliderWidget    w = (SliderWidget) new,
                     old = (SliderWidget) current;
