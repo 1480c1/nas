@@ -383,8 +383,7 @@ WakeUpMainThread()
 }
 
 static int
-SleepMainThread(timo)
-    interval timo;
+SleepMainThread(interval timo)
 {
 
     return (sema_trydown(&main_sema, timo) == 0) ? 0 : -1;
@@ -660,9 +659,7 @@ int sig;
 }
 
 static int
-timed_fwait(fwp, tvp)
-struct fwait *fwp;
-struct timeval *tvp;
+timed_fwait(struct fwait *fwp, struct timeval *tvp)
 {
 	struct timeval tv;
 	int r;

@@ -46,7 +46,7 @@
 #define Err()		{ WaveCloseFile(wi); return NULL; }
 #define readFourcc(_f)	fread(_f, sizeof(RIFF_FOURCC), 1, wi->fp)
 #define cmpID(_x, _y)							      \
-    strncmp((char *) (_x), (char *) (_y), sizeof(RIFF_FOURCC))
+    strncmp((const char *) (_x), (const char *) (_y), sizeof(RIFF_FOURCC))
 #define PAD2(_x)	(((_x) + 1) & ~1)
 
 static int

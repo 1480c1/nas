@@ -3,10 +3,6 @@
 #ifndef OPAQUE_H
 #define OPAQUE_H
 
-extern char *defaultFontPath;
-extern char *defaultTextFont;
-extern char *defaultCursorFont;
-extern char *rgbPath;
 extern long MaxClients;
 extern char isItTimeToYield;
 extern char dispatchException;
@@ -15,13 +11,8 @@ extern char dispatchException;
 #define DE_RESET     1
 #define DE_TERMINATE 2
 
-extern int CloseFont();
 extern void FreeResource();
 extern long TimeOutValue;
-extern long ScreenSaverTime;
-extern long ScreenSaverInterval;
-extern int  ScreenSaverBlanking;
-extern int  ScreenSaverAllowExposures;
 extern int argcGlobal;
 extern char **argvGlobal;
 

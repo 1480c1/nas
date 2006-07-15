@@ -190,7 +190,7 @@ AuPauseFlow(
 static struct
 {
     int             format;
-    char           *string,
+    const char     *string,
                    *define;
 } formats[] =
   {
@@ -258,7 +258,7 @@ AuDefineToFormat(_AuConst char *s)
 static struct
 {
     int             waveform;
-    char           *string;
+    const char      *string;
 } waveforms[] =
   {
     AuWaveFormSquare, "Square",

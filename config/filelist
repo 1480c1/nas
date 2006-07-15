@@ -612,13 +612,9 @@
 ./server/dia/swapreq.c
 ./server/dia/tables.c
 ./server/dia
-./server/include/closestr.h
 ./server/include/site.h
-./server/include/closure.h
 ./server/include/dix.h
 ./server/include/dixstruct.h
-./server/include/extension.h
-./server/include/extnsionst.h
 ./server/include/misc.h
 ./server/include/miscstruct.h
 ./server/include/opaque.h

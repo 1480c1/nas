@@ -76,7 +76,7 @@ static int	stack_dir;		/* 1 or -1 once known */
 #define	STACK_DIR	stack_dir
 
 static void
-find_stack_direction (/* void */)
+find_stack_direction (void)
 {
   static char	*addr = NULL;	/* address of first
 				   `dummy', once known */

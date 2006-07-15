@@ -748,7 +748,7 @@ WriteToClient (who, count, buf)
 
 #ifndef AMOEBA
 static ConnectionInputPtr
-AllocateInputBuffer()
+AllocateInputBuffer(void)
 {
     register ConnectionInputPtr oci;
 
@@ -769,7 +769,7 @@ AllocateInputBuffer()
 }
 
 static ConnectionOutputPtr
-AllocateOutputBuffer()
+AllocateOutputBuffer(void)
 {
     register ConnectionOutputPtr oco;
 

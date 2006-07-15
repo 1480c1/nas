@@ -110,7 +110,7 @@ addNode(dbNodePtr parent, dbNodePtr sib, char *p)
 }
 
 static XrmDatabase
-getFileDataBase(char *filename)
+getFileDataBase(const char *filename)
 {
     FILE           *fp;
     char            line[BUFSIZ],

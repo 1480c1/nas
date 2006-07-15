@@ -41,7 +41,7 @@
 
 #define Err()		{ AiffCloseFile(ai); return NULL; }
 #define readID(_f)	fread(_f, sizeof(AIFF_ID), 1, ai->fp)
-#define cmpID(_x, _y)	strncmp((char *) (_x), (char *) (_y), sizeof(AIFF_ID))
+#define cmpID(_x, _y)	strncmp((const char *) (_x), (const char *) (_y), sizeof(AIFF_ID))
 #define PAD2(_x)	(((_x) + 1) & ~1)
 
 /**

@@ -43,7 +43,7 @@
 #define Err()		{ SvxCloseFile(si); return NULL; }
 #define readID(_f)	fread(_f, sizeof(SVX_ID), 1, si->fp)
 #define readByte(_f)	fread(_f, 1, 1, si->fp)
-#define cmpID(_x, _y)	strncmp((char *) (_x), (char *) (_y), sizeof(SVX_ID))
+#define cmpID(_x, _y)	strncmp((const char *) (_x), (const char *) (_y), sizeof(SVX_ID))
 
 static int
 readChunk(SvxChunk *c, FILE *fp)

@@ -321,7 +321,7 @@ int _AuConnectServer (
     _AuConst char *lastp, *p;		/* char pointers */
     char *phostname = NULL;		/* start of host of server */
     char *psvrnum = NULL;		/* start of svrnum of server */
-    char *realtrans;			/* real audio transport prefix */
+    const char *realtrans;		/* real audio transport prefix */
     char newsvrnum[10];			/* in case need to convert from X */
     int saviserver;			/* a temp variable */
     AuBool xname = AuTrue;		/* most applications it will be */

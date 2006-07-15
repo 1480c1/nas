@@ -1341,7 +1341,7 @@ int _AuPrintDefaultError (AuServer *aud, AuErrorEvent *event, FILE *fp)
     char buffer[BUFSIZ];
     char mesg[BUFSIZ];
     char number[32];
-    char *mtype = "audiolib";
+    const char *mtype = "audiolib";
     register _AuExtension *ext = (_AuExtension *)NULL;
     _AuExtension *bext = (_AuExtension *)NULL;
     AuGetErrorText(aud, event->error_code, buffer, BUFSIZ);

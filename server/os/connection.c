@@ -410,8 +410,7 @@ open_tcp_socket ()
 Bool EstablishNewConnections();
 
 static int
-MNX_open_tcp_socket (extra_fd)
-int *extra_fd;
+MNX_open_tcp_socket (int *extra_fd)
 {
 	int fd, r, flags, retry;
 	char *tcp_dev, *check;
@@ -630,8 +629,7 @@ open_unix_socket ()
 
 #if !defined(SVR4) || defined(SVR4_ACP)
 static int
-connect_spipe(fd1, fd2)
-     int fd1, fd2;
+connect_spipe(int fd1, int fd2)
 {
   long temp;
   struct strfdinsert sbuf;
@@ -651,9 +649,7 @@ connect_spipe(fd1, fd2)
 }
 
 static int
-named_spipe(fd, path)
-     int fd;
-     char *path;
+named_spipe(int fd, char *path)
 {
   int oldUmask, ret;
   struct stat sbuf;
@@ -1318,13 +1314,7 @@ ResetWellKnownSockets ()
 }
 
 static void
-AuthAudit (client, letin, saddr, len, proto_n, auth_proto)
-    int client;
-    Bool letin;
-    struct sockaddr *saddr;
-    int len;
-    unsigned short proto_n;
-    char *auth_proto;
+AuthAudit (int client, Bool letin, struct sockaddr *saddr, int len, unsigned short proto_n, char *auth_proto)
 {
     char addr[128];
 
@@ -1587,8 +1577,7 @@ EstablishNewConnections(clientUnused, closure)
  ************/
 
 static void
-ErrorConnMax(fd)
-    register int fd;
+ErrorConnMax(register int fd)
 {
     auConnSetupPrefix csp;
     char pad[3];
@@ -1666,8 +1655,7 @@ ErrorConnMax(fd)
 #ifndef _MINIX
 
 static void
-CloseDownFileDescriptor(oc)
-    register OsCommPtr oc;
+CloseDownFileDescriptor(register OsCommPtr oc)
 {
     int connection = oc->fd;
 
@@ -2060,8 +2048,7 @@ EstablishNewConnections(clientUnused, closure)
 }
 
 static void
-CloseDownFileDescriptor(oc)
-    register OsCommPtr oc;
+CloseDownFileDescriptor(register OsCommPtr oc)
 {
     int connection = oc->fd;
     int i;
@@ -2501,8 +2488,7 @@ RemoveEnabledDevice(fd)
  * Wakeup main thread if necessary
  */
 static void
-UnblockMain(oc)
-    register OsCommPtr oc;
+UnblockMain(reguster OsCommPtr oc)
 {
     if ((oc->status & IGNORE) == 0) {
 	WakeUpMainThread();
@@ -2510,8 +2496,7 @@ UnblockMain(oc)
 }
 
 static char *
-OsCommFamily(family)
-    int family;
+OsCommFamily(int family)
 {
     switch (family) {
     case FamilyAmoeba:
@@ -2523,8 +2508,7 @@ OsCommFamily(family)
 }
 
 static char *
-OsCommStatus(status)
-    int status;
+OsCommStatus(int status)
 {
     static char buf[100];
 
@@ -2715,10 +2699,7 @@ NoSpace:
 }
 
 static void
-TcpIpReaderSignalCatcher(sig, us, extra)
-    signum sig;
-    thread_ustate *us;
-    char *extra;
+TcpIpReaderSignalCatcher(signum sig, thread_ustate *us, char *extra)
 {
     register OsCommPtr oc = (OsCommPtr) extra;
 
@@ -2735,9 +2716,7 @@ TcpIpReaderSignalCatcher(sig, us, extra)
  * TCP/IP reader thread
  */
 static void
-TcpIpReaderThread(argptr, argsize)
-    void *argptr;
-    int argsize;
+TcpIpReaderThread(void *argptr, argsize argsize)
 {
     register OsCommPtr oc;
 
@@ -2783,7 +2762,7 @@ TcpIpReaderThread(argptr, argsize)
  * thread prevents the main loop from blocking when there's no data.
  */
 static void
-AmoebaTCPConnectorThread()
+AmoebaTCPConnectorThread(void)
 {
     capability		svrcap, chancap;
     nwio_tcpconf_t	tcpconf;

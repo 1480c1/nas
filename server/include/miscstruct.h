@@ -28,18 +28,5 @@ SOFTWARE.
 #include "misc.h"
 
 extern unsigned long globalSerialNumber;
-typedef struct _DDXPoint {
-    short x, y;
-} DDXPointRec;
-
-typedef struct _Box {
-    short x1, y1, x2, y2;
-} BoxRec;
-
-typedef union _DevUnion {
-    pointer		ptr;
-    long		val;
-    unsigned long	uval;
-} DevUnion;
 
 #endif /* MISCSTRUCT_H */

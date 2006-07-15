@@ -47,7 +47,6 @@ SOFTWARE.
 #endif
 
 typedef pointer	FID;
-typedef struct _FontPathRec *FontPathPtr;
 typedef struct _NewClientRec *NewClientPtr;
 
 #ifndef NO_ALLOCA
@@ -143,7 +142,6 @@ extern void safe_free(void *ptr);
 
 int		ReadRequestFromClient();
 void		CloseDownConnection();
-FontPathPtr	ExpandFontNamePattern();
 FID		FiOpenForRead();
 void		CreateWellKnownSockets();
 int		SetDefaultFontPath();

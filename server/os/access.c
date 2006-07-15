@@ -144,10 +144,7 @@ Bool defeatAccessControl = FALSE;
 #if defined(SVR4) || defined(ISC)
 /* ifioctl() for SVR4 from Ian Donaldson <iand@labtam.labtam.oz.au> */
 static int
-ifioctl (fd, cmd, arg)
-    int fd;
-    int cmd;
-    char *arg;
+ifioctl (int fd, int cmd, char *arg)
 {
     struct strioctl ioc;
     int ret;
@@ -196,7 +193,7 @@ ifioctl (fd, cmd, arg)
 #endif /* SVR4 || ISC */
 
 static int ConvertAddr(), CheckAddr();
-static Bool NewHost();
+static Bool NewHost (short family, pointer addr, int len);
 
 typedef struct _host {
 	short		family;
@@ -580,8 +577,7 @@ ResetHosts (display)
 }
 
 static Bool
-AuthorizedClient(client)
-    ClientPtr client;
+AuthorizedClient(ClientPtr client)
 {
     int    		family;
 	socklen_t   alen;
@@ -699,10 +695,7 @@ ForEachHostInFamily (family, func, closure)
 /* Add a host to the access control list. This is the internal interface 
  * called when starting or resetting the server */
 static Bool
-NewHost (family, addr, len)
-    short	family;
-    pointer	addr;
-    int		len;
+NewHost (short family, pointer addr, int len)
 {
     register HOST *host;
 
@@ -818,10 +811,7 @@ GetHosts (data, pnHosts, pLen, pEnabled)
 
 /*ARGSUSED*/
 static int
-CheckAddr (family, pAddr, length)
-    int			family;
-    pointer		pAddr;
-    unsigned		length;
+CheckAddr (int family, pointer pAddr, unsigned length)
 {
     int	len;
 

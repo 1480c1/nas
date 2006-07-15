@@ -4,10 +4,14 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
-          - removing old 'const' determination.  'const' is expected
-            to be supported by your compiler.
+          - removing old 'const' determination, correcting some proper
+            uses of const.  'const' is expected to be supported by
+            your compiler.
 
-          - ANSI'fy some of the clients (aupanel, etc...)
+          - ANSIfication of various NAS components.
+
+          - remove unused portion of X11 server components (fonts,
+            GC's, etc).
 
         - added patch from Erik Auerswald correcting an issue where
           the preset gain was not applied when the device was opened

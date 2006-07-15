@@ -151,7 +151,4 @@ typedef unsigned long ATOM;
 extern void SwapLongs();
 extern void SwapShorts();
 
-typedef struct _DDXPoint *DDXPointPtr;
-typedef struct _Box *BoxPtr;
-
 #endif /* MISC_H */
