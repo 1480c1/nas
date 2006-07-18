@@ -270,8 +270,7 @@ static int      ElementCount,
 						 * headers on hosts that *do*
 						 * have strdup... */
 char           *
-strdup(s)
-char           *s;
+strdup(char *s)
 {
     char           *t;
 
@@ -284,9 +283,7 @@ char           *s;
 #endif
 
 static void
-RemoveFromElementList(globals, p)
-GlobalDataPtr   globals;
-ElementListPtr  p;
+RemoveFromElementList(GlobalDataPtr globals, ElementListPtr p)
 {
     RemoveFromLinkedList(ElementList, p);
     ElementCount--;
@@ -303,15 +300,12 @@ ElementListPtr  p;
 }
 
 static          ElementListId
-AddToElementList(flow, volumeElement, monitorElement)
-AuFlowID        flow;
-int             volumeElement,
-                monitorElement;
+AddToElementList(AuFlowID flow, int volumeElement, int monitorElement)
 {
     ElementListPtr  p;
 
     if (!(p = (ElementListPtr) malloc(sizeof(ElementListRec))))
-	fatalError("malloc error in AddToElementList");
+	fatalError("malloc error in AddToElementList", NULL);
 
     p->flow = flow;
     p->volumeElement = volumeElement;
@@ -327,8 +321,7 @@ int             volumeElement,
 }
 
 static void
-queryInputAttributes(globals)
-GlobalDataPtr   globals;
+queryInputAttributes(GlobalDataPtr globals)
 {
     Boolean         mode;
     AuDeviceAttributes *attr;
@@ -348,10 +341,7 @@ GlobalDataPtr   globals;
 }
 
 static void
-meterToggleCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+meterToggleCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     Boolean         meter;
@@ -394,12 +384,8 @@ XtPointer       call_data;
 #define MonitorNotifyEventMax(e, i)					       \
     ((short *) &(e)->data)[i * (e)->num_fields + 1]
 
-static void
-meterCB(aud, handler, ev, globals)
-AuServer       *aud;
-AuEventHandlerRec *handler;
-AuEvent        *ev;
-GlobalDataPtr   globals;
+static void meterCB(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev,
+                    GlobalDataPtr globals)
 {
     AuMonitorNotifyEvent *e = (AuMonitorNotifyEvent *) ev;
     static int      count;
@@ -453,11 +439,7 @@ typedef struct
 }               DonePrivRec, *DonePrivPtr;
 
 static void
-doneCB(aud, handler, ev, datap)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
-AuPointer       datap;
+doneCB(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev, AuPointer datap)
 {
     DonePrivPtr     data = (DonePrivPtr) datap;
 
@@ -468,10 +450,7 @@ AuPointer       datap;
 }
 
 static void
-modeCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+modeCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     Boolean         mode;
@@ -485,10 +464,7 @@ XtPointer       call_data;
 }
 
 static void
-newBucketCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+newBucketCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     String          s;
@@ -520,10 +496,7 @@ XtPointer       call_data;
 }
 
 static void
-rescanCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+rescanCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     static char    *noFilesString = "No files found";
@@ -558,10 +531,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketPlayCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketPlayCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     static Boolean  playing;
@@ -617,10 +587,7 @@ XtPointer       call_data;
 #define COMMENT_LEN 20
 
 static void
-bucketQueryCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketQueryCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     BucketDialogDataPtr buf = &globals->buf;
@@ -644,7 +611,7 @@ XtPointer       call_data;
 
     if (buf->numBuckets &&
     !(buf->bucketText = (char **) malloc(sizeof(char *) * buf->numBuckets)))
-	fatalError("malloc error in bucketQueryCB");
+	fatalError("malloc error in bucketQueryCB", NULL);
 
     for (i = 0; i < buf->numBuckets; i++)
     {
@@ -695,10 +662,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketDeleteCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketDeleteCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     XawListReturnStruct *sel;
@@ -715,10 +679,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketLoadCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketLoadCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     XawListReturnStruct *sel;
@@ -735,10 +696,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketsCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketsCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
 
@@ -748,10 +706,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketRecordStartCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketRecordStartCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     static Boolean  recording;
@@ -801,10 +756,7 @@ XtPointer       call_data;
 }
 
 static void
-recordStartCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+recordStartCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     static Boolean  recording;
@@ -865,10 +817,7 @@ XtPointer       call_data;
 }
 
 static void
-monitorCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+monitorCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     static Boolean  monitoring;
@@ -918,10 +867,7 @@ XtPointer       call_data;
 }
 
 static void
-saveCancel(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+saveCancel(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
 
@@ -930,10 +876,7 @@ XtPointer       call_data;
 }
 
 static void
-saveOk(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+saveOk(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     String          s;
@@ -963,11 +906,7 @@ XtPointer       call_data;
 }
 
 static void
-okAction(w, event, params, num_params)
-Widget          w;
-XEvent         *event;
-String         *params;
-Cardinal       *num_params;
+okAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     GlobalDataPtr   globals;
 
@@ -977,10 +916,7 @@ Cardinal       *num_params;
 }
 
 static void
-bucketSaveCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketSaveCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     XawListReturnStruct *sel;
@@ -995,10 +931,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketDismissCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketDismissCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
 
@@ -1012,10 +945,7 @@ XtPointer       call_data;
 }
 
 static void
-recordDismissCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+recordDismissCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
 
@@ -1028,10 +958,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketRecordDismissCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketRecordDismissCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
 
@@ -1053,17 +980,13 @@ XtPointer       call_data;
 }
 
 static void
-recordSensitives(globals, state)
-GlobalDataPtr   globals;
-Boolean         state;
+recordSensitives(GlobalDataPtr globals, Boolean state)
 {
     XtSetSensitive(globals->rec.file, state);
 }
 
 static void
-bucketRecordSensitives(globals, state)
-GlobalDataPtr   globals;
-Boolean         state;
+bucketRecordSensitives(GlobalDataPtr globals, Boolean state)
 {
     XtSetSensitive(globals->rec.duration, state);
     XtSetSensitive(globals->rec.readOnly, state);
@@ -1071,10 +994,7 @@ Boolean         state;
 }
 
 static void
-recordCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+recordCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
 
@@ -1092,10 +1012,7 @@ XtPointer       call_data;
 }
 
 static void
-bucketRecordCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+bucketRecordCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
 
@@ -1113,10 +1030,7 @@ XtPointer       call_data;
 }
 
 static void
-playCB(w, globalsp, datap)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       datap;
+playCB(Widget w, XtPointer globalsp, XtPointer datap)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     static Boolean  playing;
@@ -1166,10 +1080,7 @@ XtPointer       datap;
 }
 
 static void
-bucketListCB(w, globalsp, listInfop)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       listInfop;
+bucketListCB(Widget w, XtPointer globalsp, XtPointer listInfop)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     XawListReturnStruct *listInfo = (XawListReturnStruct *) listInfop;
@@ -1190,10 +1101,7 @@ XtPointer       listInfop;
 }
 
 static void
-samplesCB(w, globalsp, listInfop)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       listInfop;
+samplesCB(Widget w, XtPointer globalsp, XtPointer listInfop)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     XawListReturnStruct *listInfo = (XawListReturnStruct *) listInfop;
@@ -1226,7 +1134,7 @@ XtPointer       listInfop;
 }
 
 	    if (!(p = buf = (char *) malloc(2000 + strlen(SoundComment(s)))))
-		fatalError("Can't malloc text in samplesCB");
+		fatalError("Can't malloc text in samplesCB", NULL);
 
 	    PRINT(p, "   Filename: %s\n", globals->fileNames[lastSelection]);
 	    PRINT(p, "File Format: %s\n", SoundFileFormatString(s));
@@ -1250,17 +1158,13 @@ XtPointer       listInfop;
 }
 
 static void
-quitCB(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+quitCB(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     exit(0);
 }
 
 static void
-adjustVolume(globals)
-GlobalDataPtr   globals;
+adjustVolume(GlobalDataPtr globals)
 {
     AuElementParameters *parms;
     ElementListPtr  p = ElementList;
@@ -1271,7 +1175,7 @@ GlobalDataPtr   globals;
 
     if (!(parms = (AuElementParameters *)
 	  malloc(sizeof(AuElementParameters) * ElementCount)))
-	fatalError("malloc error in adjustVolume");
+	fatalError("malloc error in adjustVolume", NULL);
 
     while (p)
     {
@@ -1289,10 +1193,7 @@ GlobalDataPtr   globals;
 }
 
 static void
-scrollProcCB(w, globalsp, positionp)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       positionp;
+scrollProcCB(Widget w, XtPointer globalsp, XtPointer positionp)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     int             position = (int) positionp;
@@ -1319,10 +1220,7 @@ XtPointer       positionp;
 }
 
 static void
-jumpProcCB(w, globalsp, percentp)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       percentp;
+jumpProcCB(Widget w, XtPointer globalsp, XtPointer percentp)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     float          *percent = (float *) percentp;
@@ -1344,8 +1242,7 @@ XtPointer       percentp;
 }
 
 static void
-adjustGain(globals)
-GlobalDataPtr   globals;
+adjustGain(GlobalDataPtr globals)
 {
     AuDeviceAttributes a;
 
@@ -1356,10 +1253,7 @@ GlobalDataPtr   globals;
 }
 
 static void
-gainScrollCB(w, globalsp, positionp)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       positionp;
+gainScrollCB(Widget w, XtPointer globalsp, XtPointer positionp)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     int             position = (int) positionp;
@@ -1386,10 +1280,7 @@ XtPointer       positionp;
 }
 
 static void
-gainJumpCB(w, globalsp, percentp)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       percentp;
+gainJumpCB(Widget w, XtPointer globalsp, XtPointer percentp)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) globalsp;
     float          *percent = (float *) percentp;
@@ -1411,10 +1302,7 @@ XtPointer       percentp;
 }
 
 static void
-setFileFormatMenuButton(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+setFileFormatMenuButton(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) globalsp;
     String          string;
@@ -1427,10 +1315,7 @@ XtPointer       call_data;
 }
 
 static void
-setDataFormatMenuButton(w, globalsp, call_data)
-Widget          w;
-XtPointer       globalsp;
-XtPointer       call_data;
+setDataFormatMenuButton(Widget w, XtPointer globalsp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) globalsp;
     String          string;
@@ -1440,8 +1325,7 @@ XtPointer       call_data;
 }
 
 static void
-makeSaveDialog(g)
-GlobalDataPtr   g;
+makeSaveDialog(GlobalDataPtr g)
 {
     SaveDialogDataPtr s = &g->save;
     Widget          w;
@@ -1471,8 +1355,7 @@ GlobalDataPtr   g;
 }
 
 static void
-makeBucketDialog(g)
-GlobalDataPtr   g;
+makeBucketDialog(GlobalDataPtr g)
 {
     Widget          w;
     int             i;
@@ -1522,8 +1405,7 @@ GlobalDataPtr   g;
 }
 
 static void
-makeRecordDialog(g)
-GlobalDataPtr   g;
+makeRecordDialog(GlobalDataPtr g)
 {
     Widget          w;
     RecordDialogDataPtr r = &g->rec;
@@ -1581,9 +1463,7 @@ GlobalDataPtr   g;
 }
 
 static void
-createWidgets(g, dir)
-GlobalDataPtr   g;
-char           *dir;
+createWidgets(GlobalDataPtr g, char *dir)
 {
     Widget          w,
                     ww;
@@ -1684,8 +1564,7 @@ char           *dir;
 }
 
 static void
-alignWidgets(g)
-GlobalDataPtr   g;
+alignWidgets(GlobalDataPtr g)
 {
     Position        maxX,
                     x;
@@ -1744,9 +1623,7 @@ GlobalDataPtr   g;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     int             i,
                     endian = 1;
@@ -1793,7 +1670,7 @@ char          **argv;
 
     if (!(globals->aud =
 	  AuOpenServer(audioServerString, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server", NULL);
 
     globals->inputDeviceId = (AuDeviceID) 0;
 
@@ -1824,9 +1701,7 @@ char          **argv;
 #endif						/* XT */
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -1834,9 +1709,7 @@ char           *message,
 }
 
 static int
-sortRoutine(ap, bp)
-_AuConst void          *ap,
-                       *bp;
+sortRoutine(_AuConst void *ap, _AuConst void *bp)
 {
     _AuConst char **a = (_AuConst char **)ap;
     _AuConst char **b = (_AuConst char **)bp;
@@ -1845,9 +1718,7 @@ _AuConst void          *ap,
 }
 
 static char   **
-makeFileList(fileNames, nfiles)
-char          **fileNames;
-int             nfiles;
+makeFileList(char **fileNames, int nfiles)
 {
     char          **fileList,
                    *p;
@@ -1856,7 +1727,7 @@ int             nfiles;
     qsort(fileNames, nfiles, sizeof(char *), sortRoutine);
 
     if (!(fileList = (char **) malloc(sizeof(char *) * nfiles)))
-	fatalError("Can't malloc file list in makeFileList");
+	fatalError("Can't malloc file list in makeFileList", NULL);
 
     for (i = 0; i < nfiles; i++)
     {
@@ -1873,7 +1744,7 @@ int             nfiles;
 	fileList[i] = (char *) realloc(fileList[i], strlen(fileList[i]) + 1);
 
 	if (!fileList[i])
-	    fatalError("Can't realloc file list in makeFileList");
+	    fatalError("Can't realloc file list in makeFileList", NULL);
     }
 
     return fileList;
@@ -1881,9 +1752,7 @@ int             nfiles;
 
 #ifndef WIN32
 static FILE    *
-startFind(dir, template)
-char           *dir,
-               *template;
+startFind(char *dir, char *template)
 {
     char           *cmd,
                    *p;
@@ -1921,10 +1790,7 @@ char           *dir,
 #endif /* !WIN32 */
 
 static int
-getFileNames(dir, fileNames, template)
-char           *dir,
-             ***fileNames,
-               *template;
+getFileNames(char *dir, char ***fileNames, char *template)
 {
 #ifndef WIN32
     int             files;
@@ -1935,7 +1801,7 @@ char           *dir,
     *fileNames = (char **) malloc(1);
 
     if (!fileNames)
-	fatalError("Can't malloc file names in getFileNames");
+	fatalError("Can't malloc file names in getFileNames", NULL);
 
     if (!(fp = startFind(dir, template)))
     {
@@ -1951,7 +1817,7 @@ char           *dir,
 	    (char **) realloc(*fileNames, sizeof(char *) * (files + 1));
 
 	if (!*fileNames)
-	    fatalError("Can't realloc file names in getFileNames");
+	    fatalError("Can't realloc file names in getFileNames", NULL);
 
 	line[strlen(line) - 1] = 0;	       /* zap the trailing newline */
 	(*fileNames)[files++] = (char *) strdup(line);

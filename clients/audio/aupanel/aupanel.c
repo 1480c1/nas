@@ -149,9 +149,7 @@ static String   defaultResources[] =
 };
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -366,7 +364,7 @@ createWidgets(GlobalDataPtr g)
     g->da = AuListDevices(g->aud, 0, NULL, &g->numDevices, NULL);
 
     if (!g->numDevices)
-	fatalError("no devices");
+	fatalError("no devices", NULL);
 
     for (i = 0; i < g->numDevices; i++)
     {
@@ -443,15 +441,15 @@ main(int argc, char **argv)
 	if (!strncmp(argv[1], "-a", 2))
 	    audioServer = argv[2];
 	else
-	    fatalError(USAGE);
+	    fatalError(USAGE, NULL);
     else if (argc != 1)
-	fatalError(USAGE);
+	fatalError(USAGE, NULL);
 
     if (!(g->aud = AuOpenServer(audioServer, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server", NULL);
 
     if(!(g->restoreValues = calloc(AuServerNumDevices(g->aud), sizeof(int))))
-        fatalError("Out of memory");
+        fatalError("Out of memory", NULL);
 
     createWidgets(g);
     XtRealizeWidget(g->top);

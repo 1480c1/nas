@@ -161,9 +161,7 @@ usleep(unsigned int usecs)
 #endif						/* NEEDUSLEEP */
 
 static void
-fatalError(message, arg1)
-char           *message,
-               *arg1;
+fatalError(char *message, char *arg1)
 {
     fprintf(stderr, message, arg1);
     fprintf(stderr, "\n");
@@ -300,7 +298,8 @@ dial(AuServer *aud, AuFlowID flow, char *dialString, int pause, int spacing)
 }
 
 static void
-doDial(AuServer *aud, char *dialString, int volume, int pause, int spacing, int duration)
+doDial(AuServer *aud, char *dialString, int volume, int pause, int spacing,
+       int duration)
 {
     AuDeviceID      outputDevice = AuNone;
     AuFlowID        flow;
@@ -312,7 +311,7 @@ doDial(AuServer *aud, char *dialString, int volume, int pause, int spacing, int 
 	    break;
 
     if (i == AuServerNumElementTypes(aud))
-	fatalError("audio server does not support the wave form element type");
+	fatalError("audio server does not support the wave form element type", NULL);
 
     /* make sure the server supports sine waves */
     for (i = 0; i < AuServerNumWaveForms(aud); i++)
@@ -320,7 +319,7 @@ doDial(AuServer *aud, char *dialString, int volume, int pause, int spacing, int 
 	    break;
 
     if (i == AuServerNumWaveForms(aud))
-	fatalError("audio server does not support sine waves");
+	fatalError("audio server does not support sine waves", NULL);
 
     /* look for an appropriate output device */
     for (i = 0; i < AuServerNumDevices(aud); i++)
@@ -333,7 +332,7 @@ doDial(AuServer *aud, char *dialString, int volume, int pause, int spacing, int 
 	}
 
     if (outputDevice == AuNone)
-	fatalError("Couldn't find an appropriate output device");
+	fatalError("Couldn't find an appropriate output device", NULL);
 
     flow = createDTMFflow(aud, outputDevice, volume, duration);
 
@@ -492,11 +491,11 @@ doRecognize(AuServer *aud, AuBool mic, int gain, int time)
     }
 
     if (inputDevice == AuNone)
-	fatalError("Can't find an appropriate input device");
+	fatalError("Can't find an appropriate input device", NULL);
 
     if (!(buf = (char *) malloc(EXPORT_SIZE *
 				AuSizeofFormat(AuFormatLinearUnsigned8))))
-	fatalError("malloc error in doRecognize()");
+	fatalError("malloc error in doRecognize()", NULL);
 
     /* save old gain and line mode values */
     da = AuGetDeviceAttributes(aud, inputDevice, NULL);
@@ -652,11 +651,11 @@ main(int argc, char **argv)
     }
 
     if (usage || (!dialString && !recognize))
-	fatalError(USAGE);
+	fatalError(USAGE, NULL);
 
     /* open the audio server */
     if (!(aud = AuOpenServer(serverName, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server", NULL);
 
     if (recognize)
 	doRecognize(aud, mic, gain, time);

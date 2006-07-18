@@ -80,9 +80,7 @@ static struct
 };
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -90,7 +88,7 @@ char           *message,
 }
 
 static void
-usage()
+usage(void)
 {
     int             i;
 
@@ -114,8 +112,7 @@ usage()
 }
 
 static int
-convertDataFormat(s)
-char           *s;
+convertDataFormat(char *s)
 {
     int             f,
                     i;
@@ -128,8 +125,7 @@ char           *s;
 }
 
 static int
-convertFileFormat(s)
-char           *s;
+convertFileFormat(char *s)
 {
     int             f;
 
@@ -142,19 +138,14 @@ char           *s;
 }
 
 static void
-adjustVolume(count, data, v)
-int             count;
-short          *data;
-float           v;
+adjustVolume(int count, short *data, float v)
 {
     while (count--)
 	*data++ *= v;
 }
 
 static void
-maxVolume(count, data)
-int             count;
-short          *data;
+maxVolume(int count, short *data)
 {
     int             n = count;
     short          *p = data,
@@ -174,18 +165,14 @@ short          *data;
 }
 
 static void
-rateConvert(in, out, numBytes, data)
-Sound           in,
-                out;
-int             numBytes;
-char           *data;
+rateConvert(Sound in, Sound out, int numBytes, char *data)
 {
     int             size = SoundBytesPerSample(out),
                     phase = 0;
     char           *last;
 
     if (!(last = (char *) malloc(size)))
-	fatalError("Malloc error");
+	fatalError("Malloc error", NULL);
 
     while (numBytes)
     {
@@ -206,16 +193,14 @@ char           *data;
 	phase += SoundSampleRate(in);
 
 	if (SoundWriteFile(last, size, out) != size)
-	    fatalError("Error writing output file");
+	    fatalError("Error writing output file", NULL);
     }
 
     free(last);
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     FILE           *fp;
     char           *arg,
@@ -281,10 +266,10 @@ char          **argv;
     else
     {
 	if (fileFormat == -1)
-	    fatalError("You must specify a file format for raw files");
+	    fatalError("You must specify a file format for raw files", NULL);
 
 	if (!rate)
-	    fatalError("You must specify a sampling rate for raw files");
+	    fatalError("You must specify a sampling rate for raw files", NULL);
 
 	if (!(fp = fopen(inputFile, "r")))
 	    fatalError("Can't open input file %s", inputFile);
@@ -309,19 +294,19 @@ char          **argv;
     numBytes = SoundNumSamples(in) * SoundNumTracks(in) * sizeof(short);
 
     if (!(data = (short *) malloc(numBytes)))
-	fatalError("Malloc error");
+	fatalError("Malloc error", NULL);
 
     if (rawFormat == -1)
     {
 	if (SoundReadFile((char *) data, SoundNumBytes(in), in) !=
 	    SoundNumBytes(in))
-	    fatalError("Error reading input file");
+	    fatalError("Error reading input file", NULL);
     }
     else if (fread(data, 1, SoundNumBytes(in), fp) != SoundNumBytes(in))
-	fatalError("Error reading input file");
+	fatalError("Error reading input file", NULL);
 
     if (AuConvertDataToShort(SoundDataFormat(in), SoundNumBytes(in), data))
-	fatalError("Error converting input data");
+	fatalError("Error converting input data", NULL);
 
     if (!strncasecmp(volume, "max", 3))
 	maxVolume(numBytes / sizeof(short), data);
@@ -347,15 +332,15 @@ char          **argv;
 		      comment ? comment : SoundComment(in));
 
     if (!out)
-	fatalError("Error creating output sound");
+	fatalError("Error creating output sound", NULL);
 
     if (AuConvertShortToData(outputDataFormat, numBytes, data))
-	fatalError("Error converting output data");
+	fatalError("Error converting output data", NULL);
 
     if (!outputFile && strcmp(inputFile, "-"))
     {
 	if (!(outName = (char *) malloc(strlen(inputFile) + 7)))
-	    fatalError("Malloc error");
+	    fatalError("Malloc error", NULL);
 
 	sprintf(outName, "%sXXXXXX", inputFile);
 #if defined(HAS_MKSTEMP)
@@ -380,13 +365,13 @@ char          **argv;
     if (SoundSampleRate(in) == SoundSampleRate(out))
     {
 	if (SoundWriteFile((char *) data, numBytes, out) != numBytes)
-	    fatalError("Error writing output file");
+	    fatalError("Error writing output file", NULL);
     }
     else
 	rateConvert(in, out, numBytes, (char *)data);
 
     if (SoundCloseFile(out))
-	fatalError("Error closing output file");
+	fatalError("Error closing output file", NULL);
 
     if (!outputFile)
       {
@@ -395,7 +380,7 @@ char          **argv;
 	  close(fd);
 #endif
 	if (rename(outName, inputFile))
-	  fatalError("Error renaming temp file");
+	  fatalError("Error renaming temp file", NULL);
       }
 
     exit(0);

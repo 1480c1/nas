@@ -22,7 +22,7 @@ depend::
 
 
 clean::
-	rm -f config.h config.cache config.status
+	$(RM) config.h config.cache config.status config.log stamp-h1 libtool
 
 BuildIncludes($(HEADERS),,)
 

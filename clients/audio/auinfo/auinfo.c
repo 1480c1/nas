@@ -310,15 +310,10 @@ static NameTable *_lookup_name (register NameTable *tab, register int nents, reg
 }
 
 
-static void _print_names (aud, tab, nents, title, total, getvaliter, p, isbit)
-    AuServer *aud;
-    NameTable *tab;
-    int nents;
-    _AuConst char *title;
-    int total;
-    int (*getvaliter) PROTO((AuServer *, int, AuPointer));
-    AuPointer p;
-    AuBool isbit;
+static void _print_names (AuServer *aud, NameTable *tab, int nents,
+                          _AuConst char *title, int total,
+			  int (*getvaliter)(AuServer *, int, AuPointer),
+			  AuPointer p, AuBool isbit)
 {
     int i;
     char fmt[20];

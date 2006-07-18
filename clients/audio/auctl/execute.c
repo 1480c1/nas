@@ -41,11 +41,7 @@ static AuInt32 _parse_long PROTO((char *, AuBool *));
 
 #define NELEMS(what) ((sizeof(what))/(sizeof((what)[0])))
 
-int execute_command (aud, argc, argv, donep)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    AuBool *donep;
+int execute_command (AuServer *aud, int argc, char **argv, AuBool *donep)
 {
     static struct {
 	char *name;
@@ -86,14 +82,8 @@ typedef struct _NameValue {
 } NameTable;
 
 static int 
-_do_parse (aud, argc, argv, title, tab, ntab, data)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    _AuConst char *title;
-    NameTable *tab;
-    int ntab;
-    AuPointer data;
+_do_parse (AuServer *aud, int argc, char **argv, _AuConst char *title,
+           NameTable *tab, int ntab, AuPointer data)
 {
     int i;
     int len;
@@ -111,10 +101,7 @@ _do_parse (aud, argc, argv, title, tab, ntab, data)
 }
     
 
-static int _execute_set (aud, argc, argv)
-    AuServer *aud;
-    int argc;
-    char **argv;
+static int _execute_set (AuServer *aud, int argc, char **argv)
 {
     static NameTable settab[] = {
 	{ "device",	_execute_set_device },
@@ -131,10 +118,7 @@ static int _execute_set (aud, argc, argv)
 
 
 
-static int _execute_list (aud, argc, argv)
-    AuServer *aud;
-    int argc;
-    char **argv;
+static int _execute_list (AuServer *aud, int argc, char **argv)
 {
     static NameTable settab[] = {
 	{ "device",	_execute_list_device },
@@ -149,9 +133,7 @@ static int _execute_list (aud, argc, argv)
 }
 
 
-static AuDeviceID _parse_device_id (aud, s)
-    AuServer *aud;
-    char *s;
+static AuDeviceID _parse_device_id (AuServer *aud, char *s)
 {
     AuBool ishex; 
     AuDeviceID id = _parse_long (s, &ishex);
@@ -188,11 +170,8 @@ static AuDeviceID _parse_device_id (aud, s)
 
 
 /* ARGSUSED */
-static int _execute_set_device (aud, argc, argv, data)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    AuPointer data;
+static int
+_execute_set_device (AuServer *aud, int argc, char **argv, AuPointer data)
 {
     AuDeviceID id;
     static NameTable optab[] = {
@@ -217,10 +196,7 @@ static int _execute_set_device (aud, argc, argv, data)
 }
 
 
-static int _do_list_device_attributes (aud, id, mask)
-    AuServer *aud;
-    AuDeviceID id;
-    AuMask mask;
+static int _do_list_device_attributes(AuServer *aud, AuDeviceID id, AuMask mask)
 {
     AuStatus status;
     AuDeviceAttributes *d = AuGetDeviceAttributes (aud, id, &status);
@@ -264,11 +240,8 @@ static int _do_list_device_attributes (aud, id, mask)
 
 
 /* ARGSUSED */
-static int _execute_list_device (aud, argc, argv, data)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    AuPointer data;
+static int
+_execute_list_device (AuServer *aud, int argc, char **argv, AuPointer data)
 {
     AuDeviceID id;
     static NameTable optab[] = {
@@ -300,11 +273,8 @@ static int _execute_list_device (aud, argc, argv, data)
 
 
 /* ARGSUSED */
-static int _execute_list_gain (aud, argc, argv, data)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    AuPointer data;
+static int
+_execute_list_gain (AuServer *aud, int argc, char **argv, AuPointer data)
 {
     AuDeviceID id = *(AuDeviceID *) data;
     return _do_list_device_attributes (aud, id, AuCompDeviceGainMask);
@@ -312,21 +282,15 @@ static int _execute_list_gain (aud, argc, argv, data)
 
 
 /* ARGSUSED */
-static int _execute_list_linemode (aud, argc, argv, data)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    AuPointer data;
+static int
+_execute_list_linemode (AuServer *aud, int argc, char **argv, AuPointer data)
 {
     AuDeviceID id = *(AuDeviceID *) data;
     return _do_list_device_attributes (aud, id, AuCompDeviceGainMask);
 }
 
 
-static int _execute_help (aud, argc, argv)
-    AuServer *aud;
-    int argc;
-    char **argv;
+static int _execute_help (AuServer *aud, int argc, char **argv)
 {
     static _AuConst char * _AuConst msg[] = {
 "The following commands are supported:",
@@ -356,20 +320,14 @@ static int _execute_help (aud, argc, argv)
 
     
 /* ARGSUSED */
-static int _execute_nop (aud, argc, argv)
-    AuServer *aud;
-    int argc;
-    char **argv;
+static int _execute_nop (AuServer *aud, int argc, char **argv)
 {
     return 0;
 }
 
 
-static int _execute_set_gain (aud, argc, argv, data)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    AuPointer data;
+static int
+_execute_set_gain (AuServer *aud, int argc, char **argv, AuPointer data)
 {
     AuDeviceID id = *(AuDeviceID *) data;
     int p;
@@ -449,11 +407,8 @@ static int _execute_set_gain (aud, argc, argv, data)
     return 0;
 }
 
-static int _execute_set_linemode (aud, argc, argv, data)
-    AuServer *aud;
-    int argc;
-    char **argv;
-    AuPointer data;
+static int
+_execute_set_linemode (AuServer *aud, int argc, char **argv, AuPointer data)
 {
     AuDeviceID id = *(AuDeviceID *) data;
     AuDeviceAttributes attr;
@@ -512,8 +467,7 @@ static int _execute_set_linemode (aud, argc, argv, data)
 
 
 
-static char *_lower_word (s)
-    register char *s;
+static char *_lower_word (register char *s)
 {
     register char *cp;
 
@@ -525,9 +479,7 @@ static char *_lower_word (s)
 }
 
 
-static AuInt32 _parse_long (s, ishexp)
-    register char *s;
-    register AuBool *ishexp;
+static AuInt32 _parse_long (register char *s, register AuBool *ishexp)
 {
     char *fmt = "%ld";
     AuInt32 val = 0;
