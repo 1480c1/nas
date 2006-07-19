@@ -56,7 +56,7 @@
 #define	APP_CLASS		"Aupanel"
 
 #define USAGE "\
-usage: aupanel [-a audioserver]\
+usage: aupanel [-a audioserver] [-dev id]\
 "
 
 #define MakeCommandButton(w, parent, label, callback)			       \
@@ -290,6 +290,8 @@ outputModeCB(Widget w, XtPointer gp, XtPointer call_data)
     queryCB(w, g, call_data);
 }
 
+static void set_device_by_name(GlobalDataPtr g, const char *name);
+
 static void
 menuCB(Widget w, XtPointer gp, XtPointer call_data)
 {
@@ -299,12 +301,7 @@ menuCB(Widget w, XtPointer gp, XtPointer call_data)
 
     XtVaGetValues(w, XtNlabel, &string, NULL);
     XtVaSetValues(g->device, XtNlabel, string, NULL);
-
-    for (i = 0; i < g->numDevices; i++)
-	if (!strcmp(string, AuDeviceDescription(&g->da[i])->data))
-	    break;
-
-    g->deviceNum = i;
+    set_device_by_name(g, string);
     queryCB(w, g, call_data);
     showDevice(g);
 }
@@ -426,6 +423,61 @@ alignWidgets(GlobalDataPtr g)
     XtVaSetValues(g->device, XtNresizable, False, NULL);
 }
 
+static AuInt32 parse_hex(const char *s)
+{
+    AuInt32 val = 0;
+
+    sscanf (s, "%lx", &val);
+    return val;
+}
+
+static AuBool is_decimal_number(const char *s)
+{
+    int i;
+
+    if (!s)
+        return AuFalse;
+
+    for (i=0; s[i]; i++)
+        if ((s[i] < '0') || (s[i] > '9'))
+            return AuFalse;
+
+    return AuTrue;
+}
+
+static AuDeviceID parse_device_id(const char *s)
+{
+    if ((s[0] == '0') && ((s[1] == 'x') || (s[1] == 'X')))
+        return parse_hex(s);
+    return AuNone;
+}
+
+static void set_device_by_id(GlobalDataPtr g, AuDeviceID id)
+{
+    int i;
+    AuDeviceAttributes *d;
+
+    for (i=0; i<g->numDevices; i++) {
+        d = AuServerDevice(g->aud, i);
+        if ((AuDeviceValueMask(d) & AuCompCommonIDMask) &&
+            id == d->common.id) {
+            g->deviceNum = i;
+            break;
+        }
+    }
+}
+
+static void set_device_by_name(GlobalDataPtr g, const char *name)
+{
+    int i;
+
+    for (i = 0; i < g->numDevices; i++)
+	if (!strcmp(name, AuDeviceDescription(&g->da[i])->data)) {
+            g->deviceNum = i;
+	    break;
+        }
+}
+
 int
 main(int argc, char **argv)
 {
@@ -433,17 +485,23 @@ main(int argc, char **argv)
     GlobalDataPtr   g = &globals;
     XtAppContext    appContext;
     char           *audioServer = NULL;
+    int             i;
+    AuDeviceID      initialDevice = AuNone;
+    char           *initialDeviceName = NULL;
 
     g->top = XtVaAppInitialize(&appContext, APP_CLASS, NULL, ZERO,
 			       &argc, argv, defaultResources, NULL, 0);
 
-    if (argc == 3)
-	if (!strncmp(argv[1], "-a", 2))
-	    audioServer = argv[2];
-	else
-	    fatalError(USAGE, NULL);
-    else if (argc != 1)
-	fatalError(USAGE, NULL);
+    for (i = 1; i < argc; i++) {
+        if (!strncmp(argv[i], "-a", 2)) {
+            audioServer = argv[++i];
+        } else if (!strncmp(argv[i], "-dev", 4)) {
+            initialDeviceName = argv[++i];
+            initialDevice = parse_device_id(initialDeviceName);
+        } else {
+            fatalError(USAGE, NULL);
+        }
+    }
 
     if (!(g->aud = AuOpenServer(audioServer, 0, NULL, 0, NULL, NULL)))
 	fatalError("Can't connect to audio server", NULL);
@@ -458,6 +516,23 @@ main(int argc, char **argv)
     AuXtAppAddAudioHandler(appContext, g->aud);
 
     g->deviceNum = 0;
+
+    if (initialDevice != AuNone) {
+        set_device_by_id(g, initialDevice);
+    } else if (initialDeviceName) {
+        if (is_decimal_number(initialDeviceName)) {
+            g->deviceNum = atoi(initialDeviceName);
+            if (g->deviceNum >= g->numDevices) {
+                fprintf(stderr, "cannot activate device %d, there are only %d"
+                                " devices (0 to %d)\n",
+                                g->deviceNum, g->numDevices, g->numDevices - 1);
+                g->deviceNum = 0;
+            }
+        } else {
+            set_device_by_name(g, initialDeviceName);
+        }
+    }
+
     showDevice(g);
 
     XtAppMainLoop(appContext);
