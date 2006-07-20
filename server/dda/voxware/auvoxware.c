@@ -883,11 +883,7 @@ static void serverReset(void)
 
 
 static void
-#ifdef sco
-intervalProc(int i)
-#else
-intervalProc()
-#endif /* sco */
+intervalProc(int sig)
 {
 	extern void     AuProcessData();
 
