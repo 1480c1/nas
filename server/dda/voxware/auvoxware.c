@@ -318,15 +318,16 @@ extern AuInt32  auMinibufSamples;
    | AuCompDeviceGainMask \
    | AuCompDeviceChildrenMask)
 
-static void     setPhysicalOutputGain();
-static void     setPhysicalInputGainAndLineMode();
+static void     setPhysicalOutputGain(AuFixedPoint gain);
+static void     setPhysicalInputGainAndLineMode(AuFixedPoint gain,
+                                                AuUint8 lineMode);
 
-void setDebugOn ()
+void setDebugOn (void)
 {
   NasConfig.DoDebug = 1;
 }
 
-void setVerboseOn ()
+void setVerboseOn (void)
 {
   NasConfig.DoVerbose = 1;
 }
@@ -334,7 +335,7 @@ void setVerboseOn ()
 #ifdef sco
 
 AuBlock
-AuBlockAudio()
+AuBlockAudio(void)
 {
 	scoAudioBlocked = AuTrue;
 	return 0;
@@ -348,16 +349,11 @@ AuUnBlockAudio(AuBlock id)
 
 #endif /* sco */
 
-static int createServerComponents(auServerDeviceListSize,
-				  auServerBucketListSize,
-				  auServerRadioListSize,
-				  auServerMinRate,
-				  auServerMaxRate)
-AuUint32 *auServerDeviceListSize,
-         *auServerBucketListSize,
-         *auServerRadioListSize,
-         *auServerMinRate,
-         *auServerMaxRate;
+static int createServerComponents(AuUint32 *auServerDeviceListSize,
+                                  AuUint32 *auServerBucketListSize,
+                                  AuUint32 *auServerRadioListSize,
+                                  AuUint32 *auServerMinRate,
+                                  AuUint32 *auServerMaxRate)
 {
   AuDeviceID           stereo, mono;
   ComponentPtr         d, *p;
@@ -515,8 +511,7 @@ AuUint32 *auServerDeviceListSize,
   return AuSuccess;
 }
 
-static AuInt32 setTimer(rate)
-AuInt32 rate;
+static AuInt32 setTimer(AuInt32 rate)
 {
   AuInt32          timer_ms;
   AuInt32          foo;
@@ -550,7 +545,7 @@ AuInt32 rate;
 
 #ifdef sco
 static void
-oneMoreTick()
+oneMoreTick(void)
 {
 	struct itimerval ntval, otval;
 	int foo;
@@ -565,8 +560,7 @@ oneMoreTick()
 
 
 static void
-setFragmentSize(sndStatPtr)
-SndStat *sndStatPtr;
+setFragmentSize(SndStat *sndStatPtr)
 {
   int fragarg, i, j;
   int datarate, numfrags;
@@ -591,8 +585,7 @@ SndStat *sndStatPtr;
 }
 
 
-static AuUint32 setSampleRate(rate)
-AuUint32 rate;
+static AuUint32 setSampleRate(AuUint32 rate)
 {
   int numSamplesIn, numSamplesOut;
   AuBlock l;
@@ -650,8 +643,7 @@ AuUint32 rate;
 static void setupSoundcard(SndStat* sndStatPtr);
 
 static AuBool
-openDevice(wait)
-AuBool wait;
+openDevice(AuBool wait)
 {
   unsigned int extramode = 0;
   int retries;
@@ -770,7 +762,7 @@ AuBool wait;
 }
 
 static void
-closeDevice()
+closeDevice(void)
 {
   if (NasConfig.DoDebug)
     {
@@ -849,7 +841,7 @@ closeDevice()
 }
 
 
-static void serverReset()
+static void serverReset(void)
 {
   if (NasConfig.DoDebug)
     {
@@ -949,8 +941,7 @@ intervalProc()
 **/
 
 static void
-setPhysicalOutputGain(gain)
-    AuFixedPoint    gain;
+setPhysicalOutputGain(AuFixedPoint gain)
 {
     AuInt32         g = AuFixedPointIntegralAddend(gain);
     AuInt32         i, gusvolume;
@@ -967,7 +958,7 @@ setPhysicalOutputGain(gain)
 }
 
 static          AuFixedPoint
-getPhysicalOutputGain()
+getPhysicalOutputGain(void)
 {
     AuInt16         outputGain;
 
@@ -977,9 +968,7 @@ getPhysicalOutputGain()
 }
 
 static void
-setPhysicalInputGainAndLineMode(gain, lineMode)
-    AuFixedPoint    gain;
-    AuUint8         lineMode;
+setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
 {
   AuInt16 g = AuFixedPointIntegralAddend(gain);
   AuInt16 inputAttenuation;
@@ -1004,7 +993,7 @@ setPhysicalInputGainAndLineMode(gain, lineMode)
   }
 }
 
-static void enableProcessFlow()
+static void enableProcessFlow(void)
 {
   AuUint8        *p;
 
@@ -1041,7 +1030,7 @@ static void enableProcessFlow()
 #endif /* sco */
 }
 
-static void disableProcessFlow()
+static void disableProcessFlow(void)
 {
 
 #ifndef sco
@@ -1099,8 +1088,7 @@ static void disableProcessFlow()
 #if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
-static void monoToStereoLinearSigned16LSB(numSamples)
-AuUint32 numSamples;
+static void monoToStereoLinearSigned16LSB(AuUint32 numSamples)
 {
   AuInt16 *s = (AuInt16*)monoOutputDevice->minibuf;
   AuInt16 *d = (AuInt16*)stereoOutputDevice->minibuf;
@@ -1114,8 +1102,7 @@ AuUint32 numSamples;
 #if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
-static void monoToStereoLinearUnsigned8(numSamples)
-AuUint32 numSamples;
+static void monoToStereoLinearUnsigned8(AuUint32 numSamples)
 {
   AuUint8 *s = (AuUint8*)monoOutputDevice->minibuf;
   AuUint8 *d = (AuUint8*)stereoOutputDevice->minibuf;
@@ -1126,7 +1113,7 @@ AuUint32 numSamples;
   }
 }
 
-static void writePhysicalOutputsMono()
+static void writePhysicalOutputsMono(void)
 {
   AuBlock l;
   void* buf;
@@ -1175,8 +1162,7 @@ static void writePhysicalOutputsMono()
 #if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
-static void stereoToMonoLinearSigned16LSB(numSamples)
-AuUint32 numSamples;
+static void stereoToMonoLinearSigned16LSB(AuUint32 numSamples)
 {
   AuInt16 *s = (AuInt16*)stereoOutputDevice->minibuf;
   AuInt16 *d = (AuInt16*)monoOutputDevice->minibuf;
@@ -1190,8 +1176,7 @@ AuUint32 numSamples;
 #if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
-static void stereoToMonoLinearUnsigned8(numSamples)
-AuUint32 numSamples;
+static void stereoToMonoLinearUnsigned8(AuUint32 numSamples)
 {
   AuUint8 *s = (AuUint8*)stereoOutputDevice->minibuf;
   AuUint8 *d = (AuUint8*)monoOutputDevice->minibuf;
@@ -1202,7 +1187,7 @@ AuUint32 numSamples;
   }
 }
 
-static void writePhysicalOutputsStereo()
+static void writePhysicalOutputsStereo(void)
 {
   AuBlock l;
   void* buf;
@@ -1248,7 +1233,7 @@ static void writePhysicalOutputsStereo()
   AuUnBlockAudio(l);
 }
 
-static void writePhysicalOutputsBoth()
+static void writePhysicalOutputsBoth(void)
 {
   AuInt16 *m = (AuInt16 *) monoOutputDevice->minibuf;
   AuInt16 *p, *s;
@@ -1286,7 +1271,7 @@ static void writePhysicalOutputsBoth()
   writePhysicalOutputsStereo();
 }
 
-static void readPhysicalInputs()
+static void readPhysicalInputs(void)
 {
   AuBlock l;
 
@@ -1312,14 +1297,12 @@ static void readPhysicalInputs()
 }
 
 static void
-noop()
+noop(void)
 {
 }
 
 static void
-setWritePhysicalOutputFunction(flow, funct)
-    CompiledFlowPtr flow;
-    void            (**funct) ();
+setWritePhysicalOutputFunction(CompiledFlowPtr flow, void (**funct)(void))
 {
     AuUint32        mask = flow->physicalDeviceMask;
 
@@ -1337,8 +1320,7 @@ setWritePhysicalOutputFunction(flow, funct)
 /*
  * Setup soundcard at maximum audio quality.
  */
-static void setupSoundcard(sndStatPtr)
-SndStat* sndStatPtr;
+static void setupSoundcard(SndStat *sndStatPtr)
 {
   int samplesize;
 
@@ -1416,7 +1398,7 @@ SndStat* sndStatPtr;
 
 #ifdef sco
 static AuBool
-scoInterrupts()
+scoInterrupts(void)
 {
 	struct sigaction act;
 
@@ -1434,7 +1416,7 @@ scoInterrupts()
 }
 #endif /* sco */
 
-static AuBool initMixer()
+static AuBool initMixer(void)
 {
   unsigned int extramode = 0;
   AuInt32 i;
@@ -1511,7 +1493,7 @@ static AuBool initMixer()
   }
 }
       
-AuBool AuInitPhysicalDevices()
+AuBool AuInitPhysicalDevices(void)
 {
   static AuBool    AL_initialized = AuFalse;
   static AuUint8  *physicalBuffers;
