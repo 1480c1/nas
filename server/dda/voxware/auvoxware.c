@@ -220,7 +220,9 @@ static AuBool  relinquish_device = 0;
 static AuBool  leave_mixer = 0;
 static AuBool  share_in_out = 0;
 
-static int      Letsplay;
+static int      lastPhysicalOutputGain;       /* output gain */
+static int      lastPhysicalInputGain;     /* input gain */
+static int      lastPhysicalInputLineMode;     /* input line mode */
 static int      level[100];
 static int      mixerfd;	/* The mixer device */
 static int      devmask = 0;	/* Bitmask for supported mixer devices */
@@ -947,7 +949,7 @@ setPhysicalOutputGain(AuFixedPoint gain)
 	g = 100;
     if (g < 0)
         g = 0;
-    Letsplay = g;
+    lastPhysicalOutputGain = g;
     gusvolume = g | (g << 8);
     if (mixerfd != -1)
       i = ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume);
@@ -958,7 +960,7 @@ getPhysicalOutputGain(void)
 {
     AuInt16         outputGain;
 
-    outputGain = Letsplay;
+    outputGain = lastPhysicalOutputGain;
 
     return AuFixedPointFromSum(outputGain, 0);
 }
@@ -975,18 +977,45 @@ setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
     inputAttenuation = g;
   else
     inputAttenuation = 100;
+
+  lastPhysicalInputGain = inputAttenuation;
+  lastPhysicalInputLineMode = lineMode;
   
   inputAttenuation = inputAttenuation << 8 | inputAttenuation;
   
   if (lineMode == AuDeviceLineModeHigh) {
-    ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &inputAttenuation);
-    ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &zero);
+    if (mixerfd != -1) {
+      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &inputAttenuation);
+      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &zero);
+    }
   }
  
   if (lineMode == AuDeviceLineModeLow) {
-    ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &inputAttenuation);
-    ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &zero);
+    if (mixerfd != -1) {
+      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &inputAttenuation);
+      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &zero);
+    }
   }
+}
+
+static AuFixedPoint
+getPhysicalInputGain(void)
+{
+    AuInt16         inputGain;
+
+    inputGain = lastPhysicalInputGain;
+
+    return AuFixedPointFromSum(inputGain, 0);
+}
+
+static AuInt8
+getPhysicalInputLineMode(void)
+{
+    AuInt8          lineMode;
+
+    lineMode = lastPhysicalInputLineMode;
+
+    return lineMode;
 }
 
 static void enableProcessFlow(void)
@@ -1002,6 +1031,8 @@ static void enableProcessFlow(void)
     {
       openDevice(AuTrue);
       setPhysicalOutputGain(getPhysicalOutputGain());
+      setPhysicalInputGainAndLineMode(getPhysicalInputGain(),
+                                      getPhysicalInputLineMode());
     }
 
 #ifdef sco
