@@ -46,12 +46,9 @@ extern unsigned long serverGeneration;
 #define MAXSCREENS	3
 #define MAXCLIENTS	128
 #define MAXFORMATS	8
-#define MAXVISUALS_PER_SCREEN 50
 
 typedef unsigned char *pointer;
 typedef int Bool;
-typedef unsigned long PIXEL;
-typedef unsigned long ATOM;
 
 
 #ifndef TRUE
@@ -61,16 +58,7 @@ typedef unsigned long ATOM;
 #include "os.h" 	/* for ALLOCATE_LOCAL and DEALLOCATE_LOCAL */
 #include <X11/Xfuncs.h> /* for bcopy, bzero, and bcmp */
 
-#define NullBox ((BoxPtr)0)
-#define MILLI_PER_MIN (1000 * 60)
 #define MILLI_PER_SECOND (1000)
-
-    /* this next is used with None and ParentRelative to tell
-       PaintWin() what to use to paint the background. Also used
-       in the macro IS_VALID_PIXMAP */
-
-#define USE_BACKGROUND_PIXEL 3
-#define USE_BORDER_PIXEL 3
 
 
 /* byte swap a long literal */

@@ -22,16 +22,8 @@
 #include <X11/Xauth.h>
 #include <X11/Xos.h>
 
-#ifndef _Xconst
-# if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
-#  define _Xconst const
-# else
-#  define _Xconst
-# endif
-#endif /* _Xconst */
-
 static
-binaryEqual (register _Xconst char *a, register _Xconst char *b, int len)
+binaryEqual (register const char *a, register const char *b, int len)
 {
   while (len--)
     if (*a++ != *b++)
@@ -45,12 +37,12 @@ Xauth *
 XauGetBestAuthByAddr (
     unsigned short	family,
     unsigned short	address_length,
-    _Xconst char*	address,
+    const char*		address,
     unsigned short	number_length,
-    _Xconst char*	number,
+    const char*		number,
     int			types_length,
     char**		types,
-    _Xconst int*	type_lengths)
+    const int*		type_lengths)
 {
     FILE    *auth_file;
     char    *auth_name;

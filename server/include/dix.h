@@ -73,7 +73,6 @@ SOFTWARE.
       (*(pClient)->pSwapReplyFunc)(pClient, (int)(size), pbuf); \
    else (void) WriteToClient (pClient, (int)(size), (char *)(pbuf));
 
-typedef struct _TimeStamp *TimeStampPtr;
 typedef struct _Client *ClientPtr;
 
 typedef struct _WorkQueue	*WorkQueuePtr;

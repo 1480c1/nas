@@ -32,22 +32,12 @@ SOFTWARE.
 #include <alloca.h>
 #endif
 
-#define NullFID ((FID) 0)
-
-#define SCREEN_SAVER_ON   0
-#define SCREEN_SAVER_OFF  1
-#define SCREEN_SAVER_FORCER 2
-#define SCREEN_SAVER_CYCLE  3
-
 #ifndef MAX_REQUEST_SIZE
 #define MAX_REQUEST_SIZE 65535
 #endif
 #ifndef MAX_BIG_REQUEST_SIZE
 #define MAX_BIG_REQUEST_SIZE 1048575
 #endif
-
-typedef pointer	FID;
-typedef struct _NewClientRec *NewClientPtr;
 
 #ifndef NO_ALLOCA
 /*
@@ -142,7 +132,6 @@ extern void safe_free(void *ptr);
 
 int		ReadRequestFromClient();
 void		CloseDownConnection();
-FID		FiOpenForRead();
 void		CreateWellKnownSockets();
 int		SetDefaultFontPath();
 void		FreeFontRecord();
