@@ -216,13 +216,19 @@ static void closeDevice(void);
 
 /* VOXware sound driver mixer control variables */
 
+#define useMixerNone 0
+#define useMixerIGain 1
+#define useMixerRecLev 2
+#define useMixerLineMic 3
+
 static AuBool  relinquish_device = 0;
 static AuBool  leave_mixer = 0;
 static AuBool  share_in_out = 0;
 
-static int      lastPhysicalOutputGain;       /* output gain */
-static int      lastPhysicalInputGain;     /* input gain */
-static int      lastPhysicalInputLineMode;     /* input line mode */
+static int      lastPhysicalOutputGain;     /* output gain */
+static int      lastPhysicalInputGain;      /* input gain */
+static int      lastPhysicalInputLineMode;  /* input line mode */
+static int      recControlMode = 0;         /* how to control recording level */
 static int      level[100];
 static int      mixerfd;	/* The mixer device */
 static int      devmask = 0;	/* Bitmask for supported mixer devices */
@@ -942,7 +948,7 @@ static void
 setPhysicalOutputGain(AuFixedPoint gain)
 {
     AuInt32         g = AuFixedPointIntegralAddend(gain);
-    AuInt32         i, gusvolume;
+    AuInt32         gusvolume;
 
 
     if (g > 100)
@@ -952,7 +958,9 @@ setPhysicalOutputGain(AuFixedPoint gain)
     lastPhysicalOutputGain = g;
     gusvolume = g | (g << 8);
     if (mixerfd != -1)
-      i = ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume);
+      if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume) == -1)
+        osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_PCM)) failed: %s\n",
+                 sndStatOut.mixer, strerror(errno));
 }
 
 static          AuFixedPoint
@@ -971,7 +979,6 @@ setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
   AuInt16 g = AuFixedPointIntegralAddend(gain);
   AuInt16 inputAttenuation;
   AuInt16 zero = 0;
-  AuInt32 params[4];
   
   if (g < 100)
     inputAttenuation = g;
@@ -980,21 +987,59 @@ setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
 
   lastPhysicalInputGain = inputAttenuation;
   lastPhysicalInputLineMode = lineMode;
+
+  if (lineMode == AuDeviceLineModeHigh) {
+    recsrc = SOUND_MASK_MIC & recmask;
+  } else if (lineMode == AuDeviceLineModeLow) {
+    recsrc = SOUND_MASK_LINE & recmask;
+  }
   
   inputAttenuation = inputAttenuation << 8 | inputAttenuation;
   
-  if (lineMode == AuDeviceLineModeHigh) {
-    if (mixerfd != -1) {
-      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &inputAttenuation);
-      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &zero);
+  if (mixerfd != -1) {
+    switch (recControlMode) {
+      case useMixerNone:
+        break;
+
+      case useMixerIGain:
+        if (ioctl(mixerfd,MIXER_WRITE(SOUND_MIXER_IGAIN),&inputAttenuation)==-1)
+          osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_IGAIN)) failed: %s\n",
+                   sndStatOut.mixer, strerror(errno));
+          break;
+
+      case useMixerRecLev:
+        if(ioctl(mixerfd,MIXER_WRITE(SOUND_MIXER_RECLEV),&inputAttenuation)==-1)
+          osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_RECLEV)) failed: %s\n",
+                   sndStatOut.mixer, strerror(errno));
+          break;
+
+      case useMixerLineMic:
+        if (lineMode == AuDeviceLineModeHigh) {
+          if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &zero) == -1)
+            osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_LINE)) failed: %s\n",
+                     sndStatOut.mixer, strerror(errno));
+          if (ioctl(mixerfd,MIXER_WRITE(SOUND_MIXER_MIC),&inputAttenuation)==-1)
+            osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_MIC)) failed: %s\n",
+                     sndStatOut.mixer, strerror(errno));
+        } else if (lineMode == AuDeviceLineModeLow) {
+          if(ioctl(mixerfd,MIXER_WRITE(SOUND_MIXER_LINE),&inputAttenuation)==-1)
+            osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_LINE)) failed: %s\n",
+                     sndStatOut.mixer, strerror(errno));
+          if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &zero) == -1)
+            osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_MIC)) failed: %s\n",
+                     sndStatOut.mixer, strerror(errno));
+        }
+        break;
+
+      default:
+        osLogMsg("unknown value %d of recControlMode\n", recControlMode);
+        break;
     }
-  }
- 
-  if (lineMode == AuDeviceLineModeLow) {
-    if (mixerfd != -1) {
-      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &inputAttenuation);
-      ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &zero);
-    }
+
+    if (!leave_mixer)
+      if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_RECSRC), &recsrc) == -1)
+        osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_RECSRC)) failed: %s\n",
+                 sndStatOut.mixer, strerror(errno));
   }
 }
 
@@ -1463,29 +1508,24 @@ static AuBool initMixer(void)
     close(mixerfd);
     mixerfd = -1;
   } else {
+    if (devmask & (1<<SOUND_MIXER_IGAIN)) {
+      recControlMode = useMixerIGain;
+    } else if (devmask & (1<<SOUND_MIXER_RECLEV)) {
+      recControlMode = useMixerRecLev;
+    } else if ((devmask & (1<<SOUND_MIXER_LINE)) ||
+               (devmask & (1<<SOUND_MIXER_MIC))) {
+      recControlMode = useMixerLineMic;
+    } else {
+      recControlMode = useMixerNone;
+      osLogMsg("%s: can't control recording level\n", sndStatOut.mixer);
+    }
+    osLogMsg("%s: using recording level control method %d\n",
+             sndStatOut.mixer, recControlMode);
+
     if (ioctl(mixerfd, SOUND_MIXER_READ_RECMASK, &recmask) == -1) {
       return AuFalse;
     }
   
-    {
-      /* Enable all used recording sources ( mic & line ) and
-       * control which is active via level setting later. There
-       * should be a better way to do this!
-       */
-     if (!leave_mixer)
-     {
-       int mask = SOUND_MASK_MIC | SOUND_MASK_LINE; /* enable these */
-       mask &= recmask;    /* if supported */
-       if (ioctl(mixerfd, SOUND_MIXER_WRITE_RECSRC, &mask) == -1) 
-         {
-           osLogMsg("%s: ioctl(SOUND_MIXER_WRITE_RECSRC) failed: %s\n",
-                    sndStatOut.mixer,
-                    strerror(errno));
-           /*                return AuFalse; - no need to exit here..*/
-         }
-     }
-    }
-
     if (ioctl(mixerfd, SOUND_MIXER_READ_RECSRC, &recsrc) == -1) {
       UNIDENTMSG;
       osLogMsg("%s: ioctl(SOUND_MIXER_READ_RECSRC) failed: %s\n",

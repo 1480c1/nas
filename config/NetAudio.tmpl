@@ -285,7 +285,7 @@ AuComplexProgramTarget(program)
 #ifndef WIN32
 #define BuildReleaseHeader()						    @@\
 release.h: $(TOP)/RELEASE				    		    @@\
-	@echo "static char *release = \"@(#)`cat $(TOP)/RELEASE`\";" > $@   @@\
+	@echo "static char *release = \"`cat $(TOP)/RELEASE`\";" > $@   @@\
 						    			    @@\
 depend:: release.h				    			    @@\
 						    			    @@\
