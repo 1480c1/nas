@@ -21,6 +21,7 @@ number				[0-9]+
 [Oo][Uu][Tt][Pp][Uu][Tt][Ss][Ee][Cc][Tt][Ii][Oo][Nn] { return OUTPUTSECTION; }
 [Ee][Nn][Dd]                            { return ENDSECTION; }
 [Gg][Aa][Ii][Nn]                        { return GAIN; }
+[Gg][Aa][Ii][Nn][Ss][Cc][Aa][Ll][Ee]    { return GAINSCALE; }
 [Ww][Oo][Rr][Dd][Ss][Ii][Zz][Ee]	{ return WORDSIZE; }
 [Ff][Rr][Aa][Gg][Ss][Ii][Zz][Ee]	{ return FRAGSIZE; }
 [Mm][Ii][Nn][Ff][Rr][Aa][Gg][Ss]	{ return MINFRAGS; }

@@ -265,7 +265,8 @@ SndStat sndStatIn =
 	1,			/* autoOpen */
 	0,			/* forceRate */
 	0,			/* isPCSpeaker */
-	50			/* default gain */
+	50,			/* default gain */
+	100			/* gain reduction factor */
 }, sndStatOut =
 {
 	-1,			/* fd */
@@ -287,7 +288,8 @@ SndStat sndStatIn =
 	1,			/* autoOpen */
 	0,			/* forceRate */
 	0,			/* isPCSpeaker */
-	50			/* default gain */
+	50,			/* default gain */
+	100			/* gain reduction factor */
 };
 
 #define auDefaultInputGain	AuFixedPointFromSum(sndStatIn.gain, 0)
@@ -956,6 +958,12 @@ setPhysicalOutputGain(AuFixedPoint gain)
     if (g < 0)
         g = 0;
     lastPhysicalOutputGain = g;
+
+    if (sndStatOut.gainScale ) {
+	g *= sndStatOut.gainScale;
+	g /= 100;
+    }
+
     gusvolume = g | (g << 8);
     if (mixerfd != -1)
       if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume) == -1)

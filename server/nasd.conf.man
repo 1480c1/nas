@@ -53,12 +53,17 @@ Specifies what mixer device is used. An example is \fBmixer "/dev/mixer"\fR.
 .B gain number
 Specifies the default volume (0-100). The default is 50.
 .PP
+.B gainscale number
+This factor (expressed as a percentage) is applied to all volume-setting
+requests.  This lets the server transparently limit the actual
+maximum volume that can be set by clients.
+.PP
 .B maxrate number
-the maximum number of samples per second that we'll drive the
+The maximum number of samples per second that we'll drive the
 card at.
 .PP
 .B minrate number
-the minimum number of samples per second that the card will be driven
+The minimum number of samples per second that the card will be driven
 at.
 .PP
 .B maxfrags number

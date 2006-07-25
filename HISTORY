@@ -2,6 +2,9 @@ $Id$
 
 Version ??? (devel) 7/15/2006
 
+        - Patch from Paul Fox, allowing the specification of a scaling
+          factor to apply to the output gain.
+
         - Applied patches from Stefan Huehner:
 
           - removing old 'const' determination, correcting some proper

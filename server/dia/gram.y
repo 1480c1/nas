@@ -28,7 +28,7 @@ extern int yylineno;
 %token <num> INPUTSECTION OUTPUTSECTION ENDSECTION WORDSIZE FRAGSIZE MAXFRAGS
 %token <num> MINFRAGS MAXRATE MINRATE NUMCHANS MIXER DEVICE NUMBER 
 %token <num> CDEBUG VERBOSE
-%token <num> READWRITE FORCERATE AUTOOPEN GAIN
+%token <num> READWRITE FORCERATE AUTOOPEN GAIN GAINSCALE
 %token <num> RELEASEDEVICE OUTDEVTYPE MIXERINIT
 %token <ptr> STRING 
 
@@ -141,6 +141,8 @@ stmt		: error
 			{ ddaSetConfig(MINRATE, (void *)$2); }
 		| GAIN number
 			{ ddaSetConfig(GAIN, (void *)$2); }
+		| GAINSCALE number
+			{ ddaSetConfig(GAINSCALE, (void *)$2); }
                 ;
 
 string		: STRING		{ ptr = (char *)malloc(strlen($1)+1);

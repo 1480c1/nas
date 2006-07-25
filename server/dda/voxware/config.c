@@ -43,6 +43,14 @@ void ddaSetConfig(int token, void *value)
       confStat->forceRate = num ;
       break;
 
+    case GAINSCALE :
+      num = (int) value;
+      if (num < 0 || num > 100) 
+	osLogMsg("config: gain scaling must be within the range 0-100\n");
+      else
+      confStat->gainScale = num ;
+      break;
+
     case GAIN :
       num = (int) value;
       /* the default is 50, so if it's just out of range, don't

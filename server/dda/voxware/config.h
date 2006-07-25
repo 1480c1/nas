@@ -25,7 +25,8 @@ typedef struct
   int	autoOpen ;
   int	forceRate ;
   int isPCSpeaker;
-  int gain;			/* default gain */
+  int gain;		/* default gain */
+  int gainScale;	/* percentage by which gain is always reduced */ 
 } SndStat;
 
 
