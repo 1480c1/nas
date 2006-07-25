@@ -28,11 +28,16 @@ Sets the debug flag, which will provide a trace of the server's activities
 on stderr.  Set <num> to 0 to disable debug messages, 99 for *alot* of
 debug messages.
 .PP
-.B mixerinit "YES"|"NO"
-Set to "YES" to "NO".  Defines whether the server will init the mixer
-device on startup. (voxware)
+.B ReleaseDevice "YES" | "NO"
+Set to "YES" or "NO". Defines whether the server should release the audio
+device when finished playing or recording a sound. (voxware, hpux, sun)
 .PP
-.B OutDevType "EXT"|"INT"
+.B MixerInit "YES" | "NO"
+Set to "YES" or "NO".  Defines whether the server will init the mixer
+device on startup. Later changes of gain or input mode will change the
+mixer settings. (voxware)
+.PP
+.B OutDevType "EXT" | "INT"
 For HPUX servers, define to "EXT" to use the external output device
 (headphone/speakers) or "INT" for the internal output device (internal
 speaker).  Defaults to external.

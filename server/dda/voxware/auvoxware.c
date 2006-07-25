@@ -477,7 +477,6 @@ static int createServerComponents(AuUint32 *auServerDeviceListSize,
   d->location = AuDeviceLocationRightMask | AuDeviceLocationLeftMask
                 | AuDeviceLocationExternalMask;
   d->numChildren = 0;
-  d->gain = auDefaultInputGain;
   d->minibuf = auInput;
   d->minibufSize = d->numTracks * bytesPerSampleIn * auMinibufSamples;
   d->physicalDeviceMask = (sndStatIn.isStereo) ? PhysicalInputStereo
@@ -504,8 +503,40 @@ static int createServerComponents(AuUint32 *auServerDeviceListSize,
 
   if (!initialized) {
     initialized = AuTrue;
-    setPhysicalOutputGain(auDefaultOutputGain);
-    setPhysicalInputGainAndLineMode(auDefaultInputGain, 0);
+    if (leave_mixer) {
+      lastPhysicalOutputGain = stereoOutputDevice->gain = monoOutputDevice->gain
+                             = level[SOUND_MIXER_PCM] >> 8;
+
+      switch (recControlMode) {
+        case useMixerIGain:
+          stereoInputDevice->gain = monoInputDevice->gain
+                                  = level[SOUND_MIXER_IGAIN] >> 8;
+          break;
+
+        case useMixerRecLev:
+          stereoInputDevice->gain = monoInputDevice->gain
+                                  = level[SOUND_MIXER_RECLEV] >> 8;
+          break;
+
+        case useMixerLineMic:
+          if (recsrc && (recsrc & SOUND_MASK_LINE))
+            stereoInputDevice->gain = monoInputDevice->gain
+                                    = level[SOUND_MIXER_LINE] >> 8;
+          if (recsrc && (recsrc & SOUND_MASK_MIC))
+            stereoInputDevice->gain = monoInputDevice->gain
+                                    = level[SOUND_MIXER_MIC] >> 8;
+          break;
+
+        default:
+          osLogMsg("%s: can't read current recording level\n",sndStatOut.mixer);
+          stereoInputDevice->gain = monoInputDevice->gain = 0;
+          break;
+      }
+      lastPhysicalInputGain = stereoInputDevice->gain;
+    } else {
+      setPhysicalOutputGain(auDefaultOutputGain);
+      setPhysicalInputGainAndLineMode(auDefaultInputGain, AuDeviceLineModeLow);
+    }
 
     /* JET - close the device if requested... only needs to happen
        here during first time init as diasableProcessFlow will handle
@@ -1044,10 +1075,9 @@ setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
         break;
     }
 
-    if (!leave_mixer)
-      if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_RECSRC), &recsrc) == -1)
-        osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_RECSRC)) failed: %s\n",
-                 sndStatOut.mixer, strerror(errno));
+    if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_RECSRC), &recsrc) == -1)
+      osLogMsg("%s: ioctl(MIXER_WRITE(SOUND_MIXER_RECSRC)) failed: %s\n",
+               sndStatOut.mixer, strerror(errno));
   }
 }
 
@@ -1541,6 +1571,12 @@ static AuBool initMixer(void)
                  strerror(errno));
       recsrc = 0;
       /* 	  return AuFalse; - let's not be too hasty */
+    } else {
+      if (recsrc == SOUND_MASK_MIC) {
+        lastPhysicalInputLineMode = AuDeviceLineModeHigh;
+      } else {
+        lastPhysicalInputLineMode = AuDeviceLineModeLow;
+      }
     }
   
     if (ioctl(mixerfd, SOUND_MIXER_READ_STEREODEVS, &stereodevs) == -1) {
@@ -1741,6 +1777,8 @@ AuBool AuInitPhysicalDevices(void)
   AuRegisterCallback(AuGetPhysicalOutputGainCB, getPhysicalOutputGain);
   AuRegisterCallback(AuSetPhysicalInputGainAndLineModeCB,
 		     setPhysicalInputGainAndLineMode);
+  AuRegisterCallback(AuGetPhysicalInputGainCB, getPhysicalInputGain);
+  AuRegisterCallback(AuGetPhysicalInputModeCB, getPhysicalInputLineMode);
   AuRegisterCallback(AuEnableProcessFlowCB, enableProcessFlow);
   AuRegisterCallback(AuDisableProcessFlowCB, disableProcessFlow);
   AuRegisterCallback(AuReadPhysicalInputsCB, readPhysicalInputs);
