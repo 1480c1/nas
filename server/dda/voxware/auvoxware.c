@@ -1602,6 +1602,7 @@ static AuBool initMixer(void)
       }
     }
   }
+  return AuTrue;
 }
       
 AuBool AuInitPhysicalDevices(void)

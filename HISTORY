@@ -2,8 +2,12 @@ $Id$
 
 Version ??? (devel) 7/15/2006
 
-        - Patch from Paul Fox, allowing the specification of a scaling
-          factor to apply to the output gain.
+        - Patches from Paul Fox:
+
+          - allow the specification of a scaling factor to apply to
+            the output gain
+
+          - add a proper return value in auvowware.c:initMixer()
 
         - Applied patches from Stefan Huehner:
 
