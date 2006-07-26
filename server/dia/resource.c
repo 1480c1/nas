@@ -47,18 +47,18 @@ SOFTWARE.
 
 ********************************************************/
 
-/*	Routines to manage various kinds of resources:
+/*      Routines to manage various kinds of resources:
  *
- *	CreateNewResourceType, CreateNewResourceClass, InitClientResources,
- *	FakeClientID, AddResource, FreeResource, FreeClientResources,
- *	FreeAllResources, LookupIDByType, LookupIDByClass
+ *      CreateNewResourceType, CreateNewResourceClass, InitClientResources,
+ *      FakeClientID, AddResource, FreeResource, FreeClientResources,
+ *      FreeAllResources, LookupIDByType, LookupIDByClass
  */
 
 /* 
  *      A resource ID is a 32 bit quantity, the upper 3 bits of which are
- *	off-limits for client-visible resources.  The next 7 bits are
+ *      off-limits for client-visible resources.  The next 7 bits are
  *      used as client ID, and the low 22 bits come from the client.
- *	A resource ID is "hashed" by extracting and xoring subfields
+ *      A resource ID is "hashed" by extracting and xoring subfields
  *      (varying with the size of the hash table).
  *
  *      It is sometimes necessary for the server to create an ID that looks
@@ -74,7 +74,7 @@ SOFTWARE.
 #include <audio/Aproto.h>
 #include "misc.h"
 #include "os.h"
-#include "dixstruct.h" 
+#include "dixstruct.h"
 #include "opaque.h"
 
 extern void MarkClientException();
@@ -86,32 +86,32 @@ extern void MarkClientException();
 #define MAXHASHSIZE 11
 
 typedef struct _Resource {
-    struct _Resource	*next;
-    AuID			id;
-    RESTYPE		type;
-    pointer		value;
+    struct _Resource *next;
+    AuID id;
+    RESTYPE type;
+    pointer value;
 } ResourceRec, *ResourcePtr;
 #define NullResource ((ResourcePtr)NULL)
 
 typedef struct _ClientResource {
     ResourcePtr *resources;
-    int		elements;
-    int		buckets;
-    int		hashsize;	/* log(2)(buckets) */
-    AuID		fakeID;
-    AuID		endFakeID;
-    AuID		expectID;
+    int elements;
+    int buckets;
+    int hashsize;               /* log(2)(buckets) */
+    AuID fakeID;
+    AuID endFakeID;
+    AuID expectID;
 } ClientResourceRec;
 
 static RESTYPE lastResourceType;
 static RESTYPE lastResourceClass;
 static RESTYPE TypeAuMask;
 
-static void	RebuildTable();
+static void RebuildTable();
 
-typedef int (*DeleteType)();
+typedef int (*DeleteType) ();
 
-static DeleteType *DeleteFuncs = (DeleteType *)NULL;
+static DeleteType *DeleteFuncs = (DeleteType *) NULL;
 
 RESTYPE
 CreateNewResourceType(DeleteType deleteFunc)
@@ -120,11 +120,11 @@ CreateNewResourceType(DeleteType deleteFunc)
     DeleteType *funcs;
 
     if (next & lastResourceClass)
-	return 0;
-    funcs = (DeleteType *)xrealloc(DeleteFuncs,
-				   (next + 1) * sizeof(DeleteType));
+        return 0;
+    funcs = (DeleteType *) xrealloc(DeleteFuncs,
+                                    (next + 1) * sizeof(DeleteType));
     if (!funcs)
-	return 0;
+        return 0;
     lastResourceType = next;
     DeleteFuncs = funcs;
     DeleteFuncs[next] = deleteFunc;
@@ -137,7 +137,7 @@ CreateNewResourceClass()
     RESTYPE next = lastResourceClass >> 1;
 
     if (next & lastResourceType)
-	return 0;
+        return 0;
     lastResourceClass = next;
     TypeAuMask = next - 1;
     return next;
@@ -155,24 +155,23 @@ Bool
 InitClientResources(ClientPtr client)
 {
     register int i, j;
- 
-    if (client == serverClient)
-    {
-	lastResourceType = RT_LASTPREDEF;
-	lastResourceClass = RC_LASTPREDEF;
-	TypeAuMask = RC_LASTPREDEF - 1;
-	if (DeleteFuncs)
-	    xfree(DeleteFuncs);
-	DeleteFuncs = (DeleteType *)xalloc((lastResourceType + 1) *
-					   sizeof(DeleteType));
-	if (!DeleteFuncs)
-	    return FALSE;
-	DeleteFuncs[RT_NONE & TypeAuMask] = (int (*)()) NoopDDA;
+
+    if (client == serverClient) {
+        lastResourceType = RT_LASTPREDEF;
+        lastResourceClass = RC_LASTPREDEF;
+        TypeAuMask = RC_LASTPREDEF - 1;
+        if (DeleteFuncs)
+            xfree(DeleteFuncs);
+        DeleteFuncs = (DeleteType *) xalloc((lastResourceType + 1) *
+                                            sizeof(DeleteType));
+        if (!DeleteFuncs)
+            return FALSE;
+        DeleteFuncs[RT_NONE & TypeAuMask] = (int (*)()) NoopDDA;
     }
     clientTable[i = client->index].resources =
-	(ResourcePtr *)xalloc(INITBUCKETS*sizeof(ResourcePtr));
+            (ResourcePtr *) xalloc(INITBUCKETS * sizeof(ResourcePtr));
     if (!clientTable[i].resources)
-	return FALSE;
+        return FALSE;
     clientTable[i].buckets = INITBUCKETS;
     clientTable[i].elements = 0;
     clientTable[i].hashsize = INITHASHSIZE;
@@ -182,11 +181,11 @@ InitClientResources(ClientPtr client)
      * clients, we can start from zero, with SERVER_BIT set.
      */
     clientTable[i].fakeID = client->clientAsMask |
-			    (client->index ? SERVER_BIT : SERVER_MINID);
-    clientTable[i].endFakeID = (clientTable[i].fakeID | RESOURCE_ID_MASK) + 1;
+            (client->index ? SERVER_BIT : SERVER_MINID);
+    clientTable[i].endFakeID =
+            (clientTable[i].fakeID | RESOURCE_ID_MASK) + 1;
     clientTable[i].expectID = client->clientAsMask;
-    for (j=0; j<INITBUCKETS; j++) 
-    {
+    for (j = 0; j < INITBUCKETS; j++) {
         clientTable[i].resources[j] = NullResource;
     }
     return TRUE;
@@ -196,38 +195,37 @@ static int
 Hash(int client, register AuID id)
 {
     id &= RESOURCE_ID_MASK;
-    switch (clientTable[client].hashsize)
-    {
-	case 6:
-	    return ((int)(0x03F & (id ^ (id>>6) ^ (id>>12))));
-	case 7:
-	    return ((int)(0x07F & (id ^ (id>>7) ^ (id>>13))));
-	case 8:
-	    return ((int)(0x0FF & (id ^ (id>>8) ^ (id>>16))));
-	case 9:
-	    return ((int)(0x1FF & (id ^ (id>>9))));
-	case 10:
-	    return ((int)(0x3FF & (id ^ (id>>10))));
-	case 11:
-	    return ((int)(0x7FF & (id ^ (id>>11))));
+    switch (clientTable[client].hashsize) {
+    case 6:
+        return ((int) (0x03F & (id ^ (id >> 6) ^ (id >> 12))));
+    case 7:
+        return ((int) (0x07F & (id ^ (id >> 7) ^ (id >> 13))));
+    case 8:
+        return ((int) (0x0FF & (id ^ (id >> 8) ^ (id >> 16))));
+    case 9:
+        return ((int) (0x1FF & (id ^ (id >> 9))));
+    case 10:
+        return ((int) (0x3FF & (id ^ (id >> 10))));
+    case 11:
+        return ((int) (0x7FF & (id ^ (id >> 11))));
     }
     return -1;
 }
 
 static AuID
-AvailableID(register int client, register AuID id, register AuID maxid, register AuID goodid)
+AvailableID(register int client, register AuID id, register AuID maxid,
+            register AuID goodid)
 {
     register ResourcePtr res;
 
     if ((goodid >= id) && (goodid <= maxid))
-	return goodid;
-    for (; id <= maxid; id++)
-    {
-	res = clientTable[client].resources[Hash(client, id)];
-	while (res && (res->id != id))
-	    res = res->next;
-	if (!res)
-	    return id;
+        return goodid;
+    for (; id <= maxid; id++) {
+        res = clientTable[client].resources[Hash(client, id)];
+        while (res && (res->id != id))
+            res = res->next;
+        if (!res)
+            return id;
     }
     return 0;
 }
@@ -251,31 +249,31 @@ FakeClientID(register int client)
 
     id = clientTable[client].fakeID++;
     if (id != clientTable[client].endFakeID)
-	return id;
-    id = ((AuMask)client << CLIENTOFFSET) | (client ? SERVER_BIT : SERVER_MINID);
+        return id;
+    id = ((AuMask) client << CLIENTOFFSET) | (client ? SERVER_BIT :
+                                              SERVER_MINID);
     maxid = id | RESOURCE_ID_MASK;
     goodid = 0;
-    for (resp = clientTable[client].resources, i = clientTable[client].buckets;
-	 --i >= 0;)
-    {
-	for (res = *resp++; res; res = res->next)
-	{
-	    if ((res->id < id) || (res->id > maxid))
-		continue;
-	    if (((res->id - id) >= (maxid - res->id)) ?
-		(goodid = AvailableID(client, id, res->id - 1, goodid)) :
-		!(goodid = AvailableID(client, res->id + 1, maxid, goodid)))
-		maxid = res->id - 1;
-	    else
-		id = res->id + 1;
-	}
+    for (resp = clientTable[client].resources, i =
+         clientTable[client].buckets; --i >= 0;) {
+        for (res = *resp++; res; res = res->next) {
+            if ((res->id < id) || (res->id > maxid))
+                continue;
+            if (((res->id - id) >= (maxid - res->id)) ?
+                (goodid = AvailableID(client, id, res->id - 1, goodid)) :
+                !(goodid =
+                  AvailableID(client, res->id + 1, maxid, goodid)))
+                maxid = res->id - 1;
+            else
+                id = res->id + 1;
+        }
     }
     if (id > maxid) {
-	if (!client)
-	    FatalError("FakeClientID: server internal ids exhausted\n");
-	MarkClientException(clients[client]);
-	id = ((AuMask)client << CLIENTOFFSET) | (SERVER_BIT * 3);
-	maxid = id | RESOURCE_ID_MASK;
+        if (!client)
+            FatalError("FakeClientID: server internal ids exhausted\n");
+        MarkClientException(clients[client]);
+        id = ((AuMask) client << CLIENTOFFSET) | (SERVER_BIT * 3);
+        maxid = id | RESOURCE_ID_MASK;
     }
     clientTable[client].fakeID = id + 1;
     clientTable[client].endFakeID = maxid + 1;
@@ -288,24 +286,22 @@ AddResource(AuID id, RESTYPE type, pointer value)
     int client;
     register ClientResourceRec *rrec;
     register ResourcePtr res, *head;
-    	
+
     client = CLIENT_ID(id);
     rrec = &clientTable[client];
-    if (!rrec->buckets)
-    {
-	ErrorF("AddResource(%x, %x, %x), client=%d \n",
-		id, type, (unsigned long)value, client);
+    if (!rrec->buckets) {
+        ErrorF("AddResource(%x, %x, %x), client=%d \n",
+               id, type, (unsigned long) value, client);
         FatalError("client not in use\n");
     }
-    if ((rrec->elements >= 4*rrec->buckets) &&
-	(rrec->hashsize < MAXHASHSIZE))
-	RebuildTable(client);
+    if ((rrec->elements >= 4 * rrec->buckets) &&
+        (rrec->hashsize < MAXHASHSIZE))
+        RebuildTable(client);
     head = &rrec->resources[Hash(client, id)];
-    res = (ResourcePtr)xalloc(sizeof(ResourceRec));
-    if (!res)
-    {
-	(*DeleteFuncs[type & TypeAuMask])(value, id);
-	return FALSE;
+    res = (ResourcePtr) xalloc(sizeof(ResourceRec));
+    if (!res) {
+        (*DeleteFuncs[type & TypeAuMask]) (value, id);
+        return FALSE;
     }
     res->next = *head;
     res->id = id;
@@ -314,7 +310,7 @@ AddResource(AuID id, RESTYPE type, pointer value)
     *head = res;
     rrec->elements++;
     if (!(id & SERVER_BIT) && (id >= rrec->expectID))
-	rrec->expectID = id + 1;
+        rrec->expectID = id + 1;
     return TRUE;
 }
 
@@ -332,34 +328,28 @@ RebuildTable(int client)
      */
 
     j = 2 * clientTable[client].buckets;
-    tails = (ResourcePtr **)ALLOCATE_LOCAL(j * sizeof(ResourcePtr *));
+    tails = (ResourcePtr **) ALLOCATE_LOCAL(j * sizeof(ResourcePtr *));
     if (!tails)
-	return;
-    resources = (ResourcePtr *)xalloc(j * sizeof(ResourcePtr));
-    if (!resources)
-    {
-	DEALLOCATE_LOCAL(tails);
-	return;
+        return;
+    resources = (ResourcePtr *) xalloc(j * sizeof(ResourcePtr));
+    if (!resources) {
+        DEALLOCATE_LOCAL(tails);
+        return;
     }
-    for (rptr = resources, tptr = tails; --j >= 0; rptr++, tptr++)
-    {
-	*rptr = NullResource;
-	*tptr = rptr;
+    for (rptr = resources, tptr = tails; --j >= 0; rptr++, tptr++) {
+        *rptr = NullResource;
+        *tptr = rptr;
     }
     clientTable[client].hashsize++;
     for (j = clientTable[client].buckets,
-	 rptr = clientTable[client].resources;
-	 --j >= 0;
-	 rptr++)
-    {
-	for (res = *rptr; res; res = next)
-	{
-	    next = res->next;
-	    res->next = NullResource;
-	    tptr = &tails[Hash(client, res->id)];
-	    **tptr = res;
-	    *tptr = &res->next;
-	}
+         rptr = clientTable[client].resources; --j >= 0; rptr++) {
+        for (res = *rptr; res; res = next) {
+            next = res->next;
+            res->next = NullResource;
+            tptr = &tails[Hash(client, res->id)];
+            **tptr = res;
+            *tptr = &res->next;
+        }
     }
     DEALLOCATE_LOCAL(tails);
     clientTable[client].buckets *= 2;
@@ -370,64 +360,59 @@ RebuildTable(int client)
 void
 FreeResource(AuID id, RESTYPE skipDeleteFuncType)
 {
-    int		cid;
-    register    ResourcePtr res;
-    register	ResourcePtr *prev, *head;
-    register	int *eltptr;
-    int		elements;
-    Bool	gotOne = FALSE;
+    int cid;
+    register ResourcePtr res;
+    register ResourcePtr *prev, *head;
+    register int *eltptr;
+    int elements;
+    Bool gotOne = FALSE;
 
-    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets)
-    {
-	head = &clientTable[cid].resources[Hash(cid, id)];
-	eltptr = &clientTable[cid].elements;
+    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
+        head = &clientTable[cid].resources[Hash(cid, id)];
+        eltptr = &clientTable[cid].elements;
 
-	prev = head;
-	while ((res = *prev))
-	{
-	    if (res->id == id)
-	    {
-		RESTYPE rtype = res->type;
-		*prev = res->next;
-		elements = --*eltptr;
-		if (rtype != skipDeleteFuncType)
-		    (*DeleteFuncs[rtype & TypeAuMask])(res->value, res->id);
-		xfree(res);
-		if (*eltptr != elements)
-		    prev = head; /* prev may no longer be valid */
-		gotOne = TRUE;
-	    }
-	    else
-		prev = &res->next;
+        prev = head;
+        while ((res = *prev)) {
+            if (res->id == id) {
+                RESTYPE rtype = res->type;
+                *prev = res->next;
+                elements = --*eltptr;
+                if (rtype != skipDeleteFuncType)
+                    (*DeleteFuncs[rtype & TypeAuMask]) (res->value,
+                                                        res->id);
+                xfree(res);
+                if (*eltptr != elements)
+                    prev = head;        /* prev may no longer be valid */
+                gotOne = TRUE;
+            } else
+                prev = &res->next;
         }
     }
     if (!gotOne)
-	FatalError("Freeing resource id=%X which isn't there", id);
+        FatalError("Freeing resource id=%X which isn't there", id);
 }
+
 void
 FreeResourceByType(AuID id, RESTYPE type, Bool skipFree)
 {
-    int		cid;
-    register    ResourcePtr res;
-    register	ResourcePtr *prev, *head;
+    int cid;
+    register ResourcePtr res;
+    register ResourcePtr *prev, *head;
 
-    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets)
-    {
-	head = &clientTable[cid].resources[Hash(cid, id)];
+    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
+        head = &clientTable[cid].resources[Hash(cid, id)];
 
-	prev = head;
-	while ((res = *prev))
-	{
-	    if (res->id == id && res->type == type)
-	    {
-		*prev = res->next;
-		if (!skipFree)
-		    (*DeleteFuncs[type & TypeAuMask])(res->value, res->id);
-		xfree(res);
-		break;
-	    }
-	    else
-		prev = &res->next;
+        prev = head;
+        while ((res = *prev)) {
+            if (res->id == id && res->type == type) {
+                *prev = res->next;
+                if (!skipFree)
+                    (*DeleteFuncs[type & TypeAuMask]) (res->value,
+                                                       res->id);
+                xfree(res);
+                break;
+            } else
+                prev = &res->next;
         }
     }
 }
@@ -439,21 +424,19 @@ FreeResourceByType(AuID id, RESTYPE type, Bool skipFree)
  */
 
 Bool
-ChangeResourceValue (AuID id, RESTYPE rtype, pointer value)
+ChangeResourceValue(AuID id, RESTYPE rtype, pointer value)
 {
-    int    cid;
-    register    ResourcePtr res;
+    int cid;
+    register ResourcePtr res;
 
-    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets)
-    {
-	res = clientTable[cid].resources[Hash(cid, id)];
+    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
+        res = clientTable[cid].resources[Hash(cid, id)];
 
-	for (; res; res = res->next)
-	    if ((res->id == id) && (res->type == rtype))
-	    {
-		res->value = value;
-		return TRUE;
-	    }
+        for (; res; res = res->next)
+            if ((res->id == id) && (res->type == rtype)) {
+                res->value = value;
+                return TRUE;
+            }
     }
     return FALSE;
 }
@@ -466,34 +449,32 @@ FreeClientResources(ClientPtr client)
     int j;
 
     /* This routine shouldn't be called with a null client, but just in
-	case ... */
+       case ... */
 
     if (!client)
-	return;
+        return;
 
     resources = clientTable[client->index].resources;
-    for (j=0; j < clientTable[client->index].buckets; j++) 
-    {
+    for (j = 0; j < clientTable[client->index].buckets; j++) {
         /* It may seem silly to update the head of this resource list as
-	we delete the members, since the entire list will be deleted any way, 
-	but there are some resource deletion functions "FreeClientPixels" for 
-	one which do a LookupID on another resource id (a Colormap id in this
-	case), so the resource list must be kept valid up to the point that
-	it is deleted, so every time we delete a resource, we must update the
-	head, just like in FreeResource. I hope that this doesn't slow down
-	mass deletion appreciably. PRH */
+           we delete the members, since the entire list will be deleted any way, 
+           but there are some resource deletion functions "FreeClientPixels" for 
+           one which do a LookupID on another resource id (a Colormap id in this
+           case), so the resource list must be kept valid up to the point that
+           it is deleted, so every time we delete a resource, we must update the
+           head, just like in FreeResource. I hope that this doesn't slow down
+           mass deletion appreciably. PRH */
 
-	ResourcePtr *head;
+        ResourcePtr *head;
 
-	head = &resources[j];
+        head = &resources[j];
 
-        for (this = *head; this; this = *head)
-	{
-	    RESTYPE rtype = this->type;
-	    *head = this->next;
-	    (*DeleteFuncs[rtype & TypeAuMask])(this->value, this->id);
-	    xfree(this);	    
-	}
+        for (this = *head; this; this = *head) {
+            RESTYPE rtype = this->type;
+            *head = this->next;
+            (*DeleteFuncs[rtype & TypeAuMask]) (this->value, this->id);
+            xfree(this);
+        }
     }
     xfree(clientTable[client->index].resources);
     clientTable[client->index].buckets = 0;
@@ -502,12 +483,11 @@ FreeClientResources(ClientPtr client)
 void
 FreeAllResources()
 {
-    int	i;
+    int i;
 
-    for (i = currentMaxClients; --i >= 0; ) 
-    {
-        if (clientTable[i].buckets) 
-	    FreeClientResources(clients[i]);
+    for (i = currentMaxClients; --i >= 0;) {
+        if (clientTable[i].buckets)
+            FreeClientResources(clients[i]);
     }
 }
 
@@ -515,47 +495,45 @@ Bool
 LegalNewID(AuID id, register ClientPtr client)
 {
     return ((client->clientAsMask == (id & ~RESOURCE_ID_MASK)) &&
-	    ((clientTable[client->index].expectID <= id) ||
-	     !LookupIDByClass(id, RC_ANY)));
+            ((clientTable[client->index].expectID <= id) ||
+             !LookupIDByClass(id, RC_ANY)));
 }
 
 /*
  *  LookupIDByType returns the object with the given id and type, else NULL.
- */ 
+ */
 pointer
 LookupIDByType(AuID id, RESTYPE rtype)
 {
-    int    cid;
-    register    ResourcePtr res;
+    int cid;
+    register ResourcePtr res;
 
-    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets)
-    {
-	res = clientTable[cid].resources[Hash(cid, id)];
+    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
+        res = clientTable[cid].resources[Hash(cid, id)];
 
-	for (; res; res = res->next)
-	    if ((res->id == id) && (res->type == rtype))
-		return res->value;
+        for (; res; res = res->next)
+            if ((res->id == id) && (res->type == rtype))
+                return res->value;
     }
-    return (pointer)NULL;
+    return (pointer) NULL;
 }
 
 /*
  *  LookupIDByClass returns the object with the given id and any one of the
  *  given classes, else NULL.
- */ 
+ */
 pointer
 LookupIDByClass(AuID id, RESTYPE classes)
 {
-    int    cid;
-    register    ResourcePtr res;
+    int cid;
+    register ResourcePtr res;
 
-    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets)
-    {
-	res = clientTable[cid].resources[Hash(cid, id)];
+    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
+        res = clientTable[cid].resources[Hash(cid, id)];
 
-	for (; res; res = res->next)
-	    if ((res->id == id) && (res->type & classes))
-		return res->value;
+        for (; res; res = res->next)
+            if ((res->id == id) && (res->type & classes))
+                return res->value;
     }
-    return (pointer)NULL;
+    return (pointer) NULL;
 }

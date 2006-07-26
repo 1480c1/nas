@@ -21,32 +21,32 @@
  * 
  * $NCDId: @(#)auconfig.c,v 1.8 1994/08/15 22:41:06 greg Exp $
  */
-#include	"misc.h"
-#include	"dixstruct.h"
-#include	<audio/audio.h>
-#include	<audio/Aproto.h>
-#include	"au.h"
+#include        "misc.h"
+#include        "dixstruct.h"
+#include        <audio/audio.h>
+#include        <audio/Aproto.h>
+#include        "au.h"
 
 extern AuBool AuInitPhysicalDevices();
 extern void AuCreateResourceTypes();
 
-ComponentPtr   *auServerDevices,		/* array of devices */
-               *auServerBuckets,		/* array of server owned
-						 * buckets */
-               *auServerRadios,			/* array of server owned
-						 * radios */
-                auDevices,			/* list of all devices */
-                auBuckets,			/* list of all buckets */
-                auRadios;			/* list of all radios */
-AuUint32        auNumServerDevices,		/* number of devices */
-                auNumActions,			/* number of defined actions */
-                auNumServerBuckets,		/* number of server owned
-						 * buckets */
-                auNumServerRadios;		/* number of server owned
-						 * radios */
+ComponentPtr *auServerDevices,  /* array of devices */
+   *auServerBuckets,            /* array of server owned
+                                 * buckets */
+   *auServerRadios,             /* array of server owned
+                                 * radios */
+    auDevices,                  /* list of all devices */
+    auBuckets,                  /* list of all buckets */
+    auRadios;                   /* list of all radios */
+AuUint32 auNumServerDevices,    /* number of devices */
+    auNumActions,               /* number of defined actions */
+    auNumServerBuckets,         /* number of server owned
+                                 * buckets */
+    auNumServerRadios;          /* number of server owned
+                                 * radios */
 
 #define auNumFormats NUMARRAY(auFormats)
-AuUint8         auFormats[] =			/* data formats supported */
+AuUint8 auFormats[] =           /* data formats supported */
 {
     AuFormatULAW8,
     AuFormatLinearUnsigned8,
@@ -58,7 +58,7 @@ AuUint8         auFormats[] =			/* data formats supported */
 };
 
 #define auNumElementTypes NUMARRAY(auElementTypes)
-AuUint8         auElementTypes[] =		/* element types supported */
+AuUint8 auElementTypes[] =      /* element types supported */
 {
     AuElementTypeImportClient,
     AuElementTypeImportDevice,
@@ -77,14 +77,14 @@ AuUint8         auElementTypes[] =		/* element types supported */
 };
 
 #define auNumWaveForms NUMARRAY(auWaveForms)
-AuUint8         auWaveForms[] =			/* wave forms supported */
+AuUint8 auWaveForms[] =         /* wave forms supported */
 {
-    AuWaveFormSquare, AuWaveFormSine,		/* AuWaveFormConstant,
-						 * AuWaveFormSaw, */
+    AuWaveFormSquare, AuWaveFormSine,   /* AuWaveFormConstant,
+                                         * AuWaveFormSaw, */
 };
 
 #define auNumActions NUMARRAY(auActions)
-AuUint8         auActions[] =			/* actions supported */
+AuUint8 auActions[] =           /* actions supported */
 {
     AuElementActionChangeState,
     AuElementActionSendNotify,
@@ -93,35 +93,33 @@ AuUint8         auActions[] =			/* actions supported */
 
 AuBool
 AuInitDevice(auSetup, len)
-auConnSetup    *auSetup;
-int            *len;
+auConnSetup *auSetup;
+int *len;
 {
-    AuUint32        auServerDeviceListSize,
-                    auServerBucketListSize,
-                    auServerRadioListSize,
-                    auServerMinRate,
-                    auServerMaxRate,
-                    i;
+    AuUint32 auServerDeviceListSize,
+            auServerBucketListSize,
+            auServerRadioListSize, auServerMinRate, auServerMaxRate, i;
     extern AuUint32 auCurrentSampleRate;
 
     /* free up old arrays */
     if (auServerDevices)
-	aufree(auServerDevices);
+        aufree(auServerDevices);
     if (auServerBuckets)
-	aufree(auServerBuckets);
+        aufree(auServerBuckets);
     if (auServerRadios)
-	aufree(auServerRadios);
+        aufree(auServerRadios);
 
     for (i = 0; i < AuMaxCB; i++)
-	AuCallbacks[i] = 0;
+        AuCallbacks[i] = 0;
 
     if (!AuInitPhysicalDevices())
-	return AuFalse;
+        return AuFalse;
 
     AuCreateResourceTypes();
     AuCallback(AuCreateServerComponentsCB,
-	       (&auServerDeviceListSize, &auServerBucketListSize,
-		&auServerRadioListSize, &auServerMinRate, &auServerMaxRate));
+               (&auServerDeviceListSize, &auServerBucketListSize,
+                &auServerRadioListSize, &auServerMinRate,
+                &auServerMaxRate));
 
     auSetup->minSampleRate = auServerMinRate;
     auSetup->maxSampleRate = auServerMaxRate;
@@ -135,12 +133,11 @@ int            *len;
     auSetup->numRadios = auNumServerRadios;
 
     *len = PAD4(auNumFormats) +
-	PAD4(auNumElementTypes) +
-	PAD4(auNumWaveForms) +
-	PAD4(auNumActions) +
-	auServerDeviceListSize +
-	auServerBucketListSize +
-	auServerRadioListSize;
+            PAD4(auNumElementTypes) +
+            PAD4(auNumWaveForms) +
+            PAD4(auNumActions) +
+            auServerDeviceListSize +
+            auServerBucketListSize + auServerRadioListSize;
 
     auCurrentSampleRate = 0;
 

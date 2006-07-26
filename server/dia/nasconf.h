@@ -15,29 +15,30 @@
 # define GEXTERN extern
 #endif /* NASCONFIG_INSTANTIATE */
 
-				/* global configurables */
+                                /* global configurables */
 typedef struct {
-  int DoDebug;
-  int DoVerbose;
-  int DoDeviceRelease;
-  int DoDaemon;
-  int LocalOnly;
-  int AllowAny;
+    int DoDebug;
+    int DoVerbose;
+    int DoDeviceRelease;
+    int DoKeepMixer;
+    int DoDaemon;
+    int LocalOnly;
+    int AllowAny;
 } NasConfig_t;
 
 GEXTERN NasConfig_t NasConfig;
 
-				/* defined in server's config.c file */
+                                /* defined in server's config.c file */
 void ddaSetConfig(int token, void *value);
-				/* dda specific arg handling */
+                                /* dda specific arg handling */
 int ddaProcessArg(int *index, int argc, char *argv[]);
-				/* dda specific usage summary */
+                                /* dda specific usage summary */
 void ddaUseMsg(void);
 
-				/* A special token for ddaSetConfig */
+                                /* A special token for ddaSetConfig */
 #define CONF_SET_SECTION (-1)
 
-void diaInitGlobalConfig(void);	/* init function */
+void diaInitGlobalConfig(void); /* init function */
 
 #undef GEXTERN
 #endif /* NASCONFIG_H_INCLUDED */

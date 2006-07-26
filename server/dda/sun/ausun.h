@@ -25,8 +25,8 @@
 #ifndef _AUSUN_H_
 #define _AUSUN_H_
 
-#define VENDOR_STRING		ausunVendorString
-#define	VENDOR_RELEASE		1
+#define VENDOR_STRING           ausunVendorString
+#define VENDOR_RELEASE          1
 
 #ifndef _AUSUN_C_
 extern char *VENDOR_STRING;
@@ -36,26 +36,26 @@ extern char *VENDOR_STRING;
  * NOTE: The native format endianess should match that of the machine
  * running the audio server.
  */
-#define auNativeFormat		AuFormatLinearSigned16MSB
-#define auNativeBytesPerSample	2
+#define auNativeFormat          AuFormatLinearSigned16MSB
+#define auNativeBytesPerSample  2
 
 #include <signal.h>
 
 typedef int AuBlock;
 #if defined(SYSV) || defined(SVR4)
-#define	AuUnBlockAudio(_x)						      \
-do									      \
-{									      \
-    if ((int) (_x) != (int) SIG_HOLD)					      \
-	(void) sigset(SIGPOLL, (void (*)(int))(_x));			      \
+#define AuUnBlockAudio(_x)                                                    \
+do                                                                            \
+{                                                                             \
+    if ((int) (_x) != (int) SIG_HOLD)                                         \
+        (void) sigset(SIGPOLL, (void (*)(int))(_x));                          \
 } while(0)
 
-#define	AuBlockAudio()		(int) sigset(SIGPOLL, SIG_HOLD)
+#define AuBlockAudio()          (int) sigset(SIGPOLL, SIG_HOLD)
 #else
-#define	AuUnBlockAudio(_x)	sigsetmask(_x)
-#define	AuBlockAudio()		sigblock(sigmask(SIGPOLL))
+#define AuUnBlockAudio(_x)      sigsetmask(_x)
+#define AuBlockAudio()          sigblock(sigmask(SIGPOLL))
 #endif
-#define AuProtectedMalloc(_s)	xalloc(_s)
-#define AuProtectedFree(_p)	free(_p)
+#define AuProtectedMalloc(_s)   xalloc(_s)
+#define AuProtectedFree(_p)     free(_p)
 
 #endif /* !_AUSUN_H_ */

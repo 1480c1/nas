@@ -54,10 +54,10 @@ SOFTWARE.
 #include "opaque.h"
 #include "servermd.h"
 
-extern void     ProcessAudioEvents(), SendAuErrorToClient(),
-                SwapConnClientPrefix(), ResetCurrentRequest(), WriteToClient();
-extern int      CompareTimeStamps(), WaitForSomething(), AuSendInitResponse();
-extern Bool     ClientIsAsleep(), ClientSignal();
+extern void ProcessAudioEvents(), SendAuErrorToClient(),
+SwapConnClientPrefix(), ResetCurrentRequest(), WriteToClient();
+extern int CompareTimeStamps(), WaitForSomething(), AuSendInitResponse();
+extern Bool ClientIsAsleep(), ClientSignal();
 
 #define mskcnt ((MAXCLIENTS + 31) / 32)
 #define BITMASK(i) (1 << ((i) & 31))
@@ -70,7 +70,7 @@ extern Bool     ClientIsAsleep(), ClientSignal();
 extern void NotImplemented();
 extern Bool InitClientResources();
 
-extern int (* InitialVector[3]) ();
+extern int (*InitialVector[3]) ();
 extern void Swap32Write(), WriteSConnectionInfo();
 extern void WriteSConnSetupPrefix();
 extern char *ClientAuthorized();
@@ -78,14 +78,14 @@ extern Bool InsertFakeRequest();
 static void KillAllClients();
 extern void ProcessWorkQueue();
 
-extern int (* AuProcVector[256]) ();
-extern int (* AuSwappedProcVector[256]) ();
-extern void (* AuEventSwapVector[256]) ();
-extern void (* AuReplySwapVector[256]) ();
+extern int (*AuProcVector[256]) ();
+extern int (*AuSwappedProcVector[256]) ();
+extern void (*AuEventSwapVector[256]) ();
+extern void (*AuReplySwapVector[256]) ();
 
-static int nextFreeClientID; /* always MIN free client ID */
+static int nextFreeClientID;    /* always MIN free client ID */
 
-static int	nClients;	/* number active clients */
+static int nClients;            /* number active clients */
 
 char dispatchException = 0;
 char isItTimeToYield;
@@ -95,7 +95,7 @@ char isItTimeToYield;
  * Rather than changing interfaces and breaking untold code we introduce
  * a new global that dispatch can use.
  */
-AuID clientErrorValue;   /* XXX this is a kludge */
+AuID clientErrorValue;          /* XXX this is a kludge */
 
 void
 UpdateCurrentTime()
@@ -108,10 +108,10 @@ UpdateCurrentTime()
     systime.months = currentTime.months;
     systime.milliseconds = GetTimeInMillis();
     if (systime.milliseconds < currentTime.milliseconds)
-	systime.months++;
+        systime.months++;
     ProcessAudioEvents();
     if (CompareTimeStamps(systime, currentTime) == LATER)
-	currentTime = systime;
+        currentTime = systime;
 }
 
 /* Like UpdateCurrentTime, but can't call ProcessInputEvents */
@@ -123,7 +123,7 @@ UpdateCurrentTimeIf()
     systime.months = currentTime.months;
     systime.milliseconds = GetTimeInMillis();
     if (systime.milliseconds < currentTime.milliseconds)
-	systime.months++;
+        systime.months++;
 
     currentTime = systime;
 }
@@ -133,81 +133,75 @@ UpdateCurrentTimeIf()
 void
 Dispatch()
 {
-    register int        *clientReady;     /* array of request ready clients */
-    register int	result;
-    register ClientPtr	client;
-    register int	nready;
+    register int *clientReady;  /* array of request ready clients */
+    register int result;
+    register ClientPtr client;
+    register int nready;
 
     nextFreeClientID = 1;
     nClients = 0;
 
     clientReady = (int *) ALLOCATE_LOCAL(sizeof(int) * MaxClients);
     if (!clientReady)
-	return;
+        return;
 
-    while (!dispatchException)
-    {
-	FlushIfCriticalOutputPending();
+    while (!dispatchException) {
+        FlushIfCriticalOutputPending();
 
-	ProcessAudioEvents();
+        ProcessAudioEvents();
 
-	nready = WaitForSomething(clientReady);
+        nready = WaitForSomething(clientReady);
 
        /***************** 
-	*  Handle events in round robin fashion, doing input between 
-	*  each round 
-	*****************/
+        *  Handle events in round robin fashion, doing input between 
+        *  each round 
+        *****************/
 
-	while (!dispatchException && (--nready >= 0))
-	{
-	    client = clients[clientReady[nready]];
-	    if (! client)
-	    {
-		/* KillClient can cause this to happen */
-		continue;
-	    }
-	    isItTimeToYield = FALSE;
- 
-	    while (!isItTimeToYield)
-	    {
-		FlushIfCriticalOutputPending();
+        while (!dispatchException && (--nready >= 0)) {
+            client = clients[clientReady[nready]];
+            if (!client) {
+                /* KillClient can cause this to happen */
+                continue;
+            }
+            isItTimeToYield = FALSE;
 
-		ProcessAudioEvents();
-	   
-		/* now, finally, deal with client requests */
+            while (!isItTimeToYield) {
+                FlushIfCriticalOutputPending();
 
-	        result = ReadRequestFromClient(client);
-	        if (result <= 0) 
-	        {
-		    if (result < 0)
-			CloseDownClient(client);
-		    break;
-	        }
+                ProcessAudioEvents();
 
-		client->sequence++;
+                /* now, finally, deal with client requests */
+
+                result = ReadRequestFromClient(client);
+                if (result <= 0) {
+                    if (result < 0)
+                        CloseDownClient(client);
+                    break;
+                }
+
+                client->sequence++;
 #ifdef DEBUG
-		if (client->requestLogIndex == MAX_REQUEST_LOG)
-		    client->requestLogIndex = 0;
-		client->requestLog[client->requestLogIndex] = MAJOROP;
-		client->requestLogIndex++;
+                if (client->requestLogIndex == MAX_REQUEST_LOG)
+                    client->requestLogIndex = 0;
+                client->requestLog[client->requestLogIndex] = MAJOROP;
+                client->requestLogIndex++;
 #endif
-		if (result > (MAX_BIG_REQUEST_SIZE << 2))
-		    result = AuBadLength;
-		else
-		    result = (* client->requestVector[MAJOROP])(client);
-	    
-		if (result != AuSuccess) 
-		{
-		    if (client->noClientException != AuSuccess)
+                if (result > (MAX_BIG_REQUEST_SIZE << 2))
+                    result = AuBadLength;
+                else
+                    result = (*client->requestVector[MAJOROP]) (client);
+
+                if (result != AuSuccess) {
+                    if (client->noClientException != AuSuccess)
                         CloseDownClient(client);
                     else
-		        SendAuErrorToClient(client, MAJOROP,
-					  0, client->errorValue, result);
-		    break;
-	        }
-	    }
-	    FlushAllOutput();
-	}
+                        SendAuErrorToClient(client, MAJOROP,
+                                            0, client->errorValue, result);
+                    break;
+                }
+            }
+            FlushAllOutput();
+        }
     }
     KillAllClients();
     DEALLOCATE_LOCAL(clientReady);
@@ -216,8 +210,7 @@ Dispatch()
 
 #undef MAJOROP
 
-/*ARGSUSED*/
-int
+ /*ARGSUSED*/ int
 ProcBadRequest(ClientPtr client)
 {
     return (AuBadRequest);
@@ -228,17 +221,15 @@ AuInitProcVectors()
 {
     int i;
 
-    for (i = 0; i < 256; i++)
-    {
-	if(!AuProcVector[i])
-	{
+    for (i = 0; i < 256; i++) {
+        if (!AuProcVector[i]) {
             AuProcVector[i] = AuSwappedProcVector[i] = ProcBadRequest;
-	    AuReplySwapVector[i] = NotImplemented;
-	}
+            AuReplySwapVector[i] = NotImplemented;
+        }
     }
 
     for (i = AuLastEventType + 1; i < 256; i++)
-	AuEventSwapVector[i] = NotImplemented;
+        AuEventSwapVector[i] = NotImplemented;
 }
 
 extern int Ones();
@@ -255,62 +246,55 @@ Bool terminateAtReset = FALSE;
 void
 CloseDownClient(register ClientPtr client)
 {
-    if (!client->clientGone)
-    {
-	    client->clientGone = TRUE;  /* so events aren't sent to client */
-	    CloseDownConnection(client);
+    if (!client->clientGone) {
+        client->clientGone = TRUE;      /* so events aren't sent to client */
+        CloseDownConnection(client);
 
-	if (client->closeDownMode == AuCloseDownDestroy)
-	{
-	    FreeClientResources(client);
-	    if (ClientIsAsleep (client))
-		ClientSignal (client);
-	    if (client->index < nextFreeClientID)
-		nextFreeClientID = client->index;
-	    clients[client->index] = NullClient;
+        if (client->closeDownMode == AuCloseDownDestroy) {
+            FreeClientResources(client);
+            if (ClientIsAsleep(client))
+                ClientSignal(client);
+            if (client->index < nextFreeClientID)
+                nextFreeClientID = client->index;
+            clients[client->index] = NullClient;
 
-	    /* Pebl: decrease first as the compiler might skip the second test
-	     * if first fails, then check if client was idle.  BUG: if a
-	     * persistent client is running flows all flows are killed if
-	     * there is no more clients, except if it was the only client.  */
-	    if ((--nClients == 0) &&
-		(client->requestVector != InitialVector))
-	    {
-		if (terminateAtReset)
-		    dispatchException |= DE_TERMINATE;
-		else
-		    dispatchException |= DE_RESET;
-	    }
-	    xfree(client);
-	}
-	else
-	{
-	    --nClients;
-	}
-    }
-    else
-    {
-	/* really kill resources this time */
+            /* Pebl: decrease first as the compiler might skip the second test
+             * if first fails, then check if client was idle.  BUG: if a
+             * persistent client is running flows all flows are killed if
+             * there is no more clients, except if it was the only client.  */
+            if ((--nClients == 0) &&
+                (client->requestVector != InitialVector)) {
+                if (terminateAtReset)
+                    dispatchException |= DE_TERMINATE;
+                else
+                    dispatchException |= DE_RESET;
+            }
+            xfree(client);
+        } else {
+            --nClients;
+        }
+    } else {
+        /* really kill resources this time */
         FreeClientResources(client);
-	if (ClientIsAsleep (client))
-	    ClientSignal (client);
-	if (client->index < nextFreeClientID)
-	    nextFreeClientID = client->index;
-	clients[client->index] = NullClient;
+        if (ClientIsAsleep(client))
+            ClientSignal(client);
+        if (client->index < nextFreeClientID)
+            nextFreeClientID = client->index;
+        clients[client->index] = NullClient;
         xfree(client);
     }
 
-    while (!clients[currentMaxClients-1])
-      currentMaxClients--;
+    while (!clients[currentMaxClients - 1])
+        currentMaxClients--;
 }
 
 static void
 KillAllClients()
 {
     int i;
-    for (i=1; i<currentMaxClients; i++)
+    for (i = 1; i < currentMaxClients; i++)
         if (clients[i])
-            CloseDownClient(clients[i]);     
+            CloseDownClient(clients[i]);
 }
 
 /*********************
@@ -325,20 +309,20 @@ CloseDownRetainedResources()
     register int i;
     register ClientPtr client;
 
-    for (i=1; i<currentMaxClients; i++)
-    {
+    for (i = 1; i < currentMaxClients; i++) {
         client = clients[i];
         if (client && (client->closeDownMode == AuCloseDownRetainTemporary)
-	    && (client->clientGone))
-	    CloseDownClient(client);
+            && (client->clientGone))
+            CloseDownClient(client);
     }
 }
 
-void InitClient(ClientPtr client, int i, pointer ospriv)
+void
+InitClient(ClientPtr client, int i, pointer ospriv)
 {
     client->index = i;
-    client->sequence = 0; 
-    client->clientAsMask = ((AuMask)i) << CLIENTOFFSET;
+    client->sequence = 0;
+    client->clientAsMask = ((AuMask) i) << CLIENTOFFSET;
     client->clientGone = FALSE;
     client->noClientException = AuSuccess;
 #ifdef DEBUG
@@ -350,7 +334,7 @@ void InitClient(ClientPtr client, int i, pointer ospriv)
     client->big_requests = FALSE;
     client->closeDownMode = AuCloseDownDestroy;
     /* pebl: init unused field? */
-    bzero(client->screenPrivate,MAXSCREENS * sizeof(pointer));
+    bzero(client->screenPrivate, MAXSCREENS * sizeof(pointer));
 }
 
 /************************
@@ -369,29 +353,27 @@ NextAvailableClient(pointer ospriv)
 
     i = nextFreeClientID;
     if (i == MAXCLIENTS)
-	return (ClientPtr)NULL;
-    clients[i] = client = (ClientPtr)xalloc(sizeof(ClientRec));
+        return (ClientPtr) NULL;
+    clients[i] = client = (ClientPtr) xalloc(sizeof(ClientRec));
     if (!client)
-	return (ClientPtr)NULL;
+        return (ClientPtr) NULL;
     InitClient(client, i, ospriv);
-    if (!InitClientResources(client))
-    {
-	xfree(client);
-	return (ClientPtr)NULL;
+    if (!InitClientResources(client)) {
+        xfree(client);
+        return (ClientPtr) NULL;
     }
     data.reqType = 1;
     data.length = (sz_auReq + sz_auConnClientPrefix) >> 2;
-    if (!InsertFakeRequest(client, (char *)&data, sz_auReq))
-    {
-	FreeClientResources(client);
-	xfree(client);
-	return (ClientPtr)NULL;
+    if (!InsertFakeRequest(client, (char *) &data, sz_auReq)) {
+        FreeClientResources(client);
+        xfree(client);
+        return (ClientPtr) NULL;
     }
     if (i == currentMaxClients)
-	currentMaxClients++;
+        currentMaxClients++;
     while ((nextFreeClientID < MAXCLIENTS) && clients[nextFreeClientID])
-	nextFreeClientID++;
-    return(client);
+        nextFreeClientID++;
+    return (client);
 }
 
 int
@@ -401,21 +383,19 @@ ProcInitialConnection(register ClientPtr client)
     register auConnClientPrefix *prefix;
     int whichbyte = 1;
 
-    prefix = (auConnClientPrefix *)((char *)stuff + sz_auReq);
+    prefix = (auConnClientPrefix *) ((char *) stuff + sz_auReq);
     if ((prefix->byteOrder != 'l') && (prefix->byteOrder != 'B'))
-	return (client->noClientException = -1);
+        return (client->noClientException = -1);
     if (((*(char *) &whichbyte) && (prefix->byteOrder == 'B')) ||
-	(!(*(char *) &whichbyte) && (prefix->byteOrder == 'l')))
-    {
-	client->swapped = TRUE;
-	SwapConnClientPrefix(prefix);
+        (!(*(char *) &whichbyte) && (prefix->byteOrder == 'l'))) {
+        client->swapped = TRUE;
+        SwapConnClientPrefix(prefix);
     }
     stuff->reqType = 2;
     stuff->length += (((int) prefix->nbytesAuthProto + 3) >> 2) +
-		     (((int) prefix->nbytesAuthString + 3) >> 2);
-    if (client->swapped)
-    {
-	swaps(&stuff->length, whichbyte);
+            (((int) prefix->nbytesAuthString + 3) >> 2);
+    if (client->swapped) {
+        swaps(&stuff->length, whichbyte);
     }
     ResetCurrentRequest(client);
     return (client->noClientException);
@@ -428,42 +408,42 @@ ProcEstablishConnection(register ClientPtr client)
     register auConnClientPrefix *prefix;
     REQUEST(auReq);
 
-    prefix = (auConnClientPrefix *)((char *)stuff + sz_auReq);
-    auth_proto = (char *)prefix + sz_auConnClientPrefix;
+    prefix = (auConnClientPrefix *) ((char *) stuff + sz_auReq);
+    auth_proto = (char *) prefix + sz_auConnClientPrefix;
     auth_string = auth_proto + ((prefix->nbytesAuthProto + 3) & ~3);
     if (prefix->majorVersion != AuProtocolMajorVersion)
-	reason = "Protocol version mismatch";
+        reason = "Protocol version mismatch";
     else
-	reason = ClientAuthorized(client,
-				  (unsigned short)prefix->nbytesAuthProto,
-				  auth_proto,
-				  (unsigned short)prefix->nbytesAuthString,
-				  auth_string);
-    if (reason)
-    {
-	auConnSetupPrefix csp;
-	char pad[3];
+        reason = ClientAuthorized(client,
+                                  (unsigned short) prefix->nbytesAuthProto,
+                                  auth_proto,
+                                  (unsigned short) prefix->
+                                  nbytesAuthString, auth_string);
+    if (reason) {
+        auConnSetupPrefix csp;
+        char pad[3];
 
-	csp.success = auFalse;
-	csp.lengthReason = strlen(reason);
-	csp.length = ((int) csp.lengthReason + 3) >> 2;
-	csp.majorVersion = AuProtocolMajorVersion;
-	csp.minorVersion = AuProtocolMinorVersion;
-	if (client->swapped)
-	    WriteSConnSetupPrefix(client, &csp);
-	else
-	    (void)WriteToClient(client, sz_auConnSetupPrefix, (char *) &csp);
-        (void)WriteToClient(client, (int)csp.lengthReason, reason);
-	if (csp.lengthReason & 3)
-	    (void)WriteToClient(client, (int)(4 - (csp.lengthReason & 3)),
-				pad);
-	return (client->noClientException = -1);
+        csp.success = auFalse;
+        csp.lengthReason = strlen(reason);
+        csp.length = ((int) csp.lengthReason + 3) >> 2;
+        csp.majorVersion = AuProtocolMajorVersion;
+        csp.minorVersion = AuProtocolMinorVersion;
+        if (client->swapped)
+            WriteSConnSetupPrefix(client, &csp);
+        else
+            (void) WriteToClient(client, sz_auConnSetupPrefix,
+                                 (char *) &csp);
+        (void) WriteToClient(client, (int) csp.lengthReason, reason);
+        if (csp.lengthReason & 3)
+            (void) WriteToClient(client,
+                                 (int) (4 - (csp.lengthReason & 3)), pad);
+        return (client->noClientException = -1);
     }
 
     nClients++;
     client->sequence = 0;
-    client->requestVector = 
-	client->swapped ? AuSwappedProcVector : AuProcVector;
+    client->requestVector =
+            client->swapped ? AuSwappedProcVector : AuProcVector;
     return AuSendInitResponse(client);
 }
 

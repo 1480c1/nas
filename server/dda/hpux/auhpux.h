@@ -25,8 +25,8 @@
 /*---------------------------------------------------------
  Hewlett Packard Device Dependent Server Version 1.0
 
- CHANGES :	Author : J D Brister (University of Manchester, Computer Graphics Unit)
-																		
+ CHANGES :      Author : J D Brister (University of Manchester, Computer Graphics Unit)
+                                                                                                                                                
  (C) Copyright 1995, The University of Manchester, United Kingdom
  
   THIS SOFTWARE IS PROVIDED `AS-IS'.  THE UNIVERSITY OF MANCHESTER,
@@ -37,7 +37,7 @@
  SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES, INCLUDING LOSS OF USE, DATA,
  OR PROFITS, EVEN IF ADVISED OF THE POSSIBILITY THEREOF, AND REGARDLESS OF
  WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
- CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.						
+ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.                                               
 
  This program may be used freely within the UK academic community, but it must not be used 
  for commercial gain without the written permission of the authors.
@@ -49,14 +49,14 @@
 
 
 #define _AUHPUX_C_
-/*#define __DEBUG__	  */		/* show __DEBUG__ging info at run time.... */
-#define __AUDIO__II__		/* remove if using audio(I) hardware.	*/
+/*#define __DEBUG__       *//* show __DEBUG__ging info at run time.... */
+#define __AUDIO__II__           /* remove if using audio(I) hardware.   */
 
 #ifndef _AUHPUX_H_
 #define _AUHPUX_H_
 
-#define V_STRING		auhpuxVendorString
-#define	VENDOR_RELEASE		1
+#define V_STRING                auhpuxVendorString
+#define VENDOR_RELEASE          1
 #define VENDOR_STRING           "HP /dev/audio"
 
 #ifndef _AUHPUX_C_
@@ -67,8 +67,8 @@ extern char *V_STRING;
  * NOTE: The native format endianess should match that of the machine
  * running the audio server.
  */
-#define auNativeFormat		AuFormatLinearSigned16MSB
-#define auNativeBytesPerSample	2
+#define auNativeFormat          AuFormatLinearSigned16MSB
+#define auNativeBytesPerSample  2
 
 #include <signal.h>
 
@@ -80,58 +80,61 @@ typedef int AuBlock;
 #define sigset  _local_signal
 
 #ifndef NeedFunctionPrototypes
-static void (*_local_signal(sig, action))()
+static void (*_local_signal(sig, action)) ()
 int sig;
-void (*action)();
+void (*action) ();
 #else /* NeedFunctionPrototypes */
-static void (*_local_signal(int sig, void (*action)(int)))(int)
-#endif /* NeedFunctionPrototypes */
+static void (*_local_signal(int sig, void (*action) (int))) (int)
+#endif                          /* NeedFunctionPrototypes */
 {
-        struct sigvec   vec;
-        struct sigvec   ovec;
+    struct sigvec vec;
+    struct sigvec ovec;
 
-        vec.sv_handler = action;
-        vec.sv_flags = 0;
-        if (sigvector(sig, &vec, &ovec) != 0)
-	{
-		perror("sigvector");
-	}
+    vec.sv_handler = action;
+    vec.sv_flags = 0;
+    if (sigvector(sig, &vec, &ovec) != 0) {
+        perror("sigvector");
+    }
 
-        return(ovec.sv_handler);
+    return (ovec.sv_handler);
 }
 
 #ifndef NeedFunctionPrototypes
-static void AuUnBlockAudio(l)
+static void
+AuUnBlockAudio(l)
 AuBlock l;
 #else /* NeedFunctionPrototypes */
-static void AuUnBlockAudio(AuBlock l)
-#endif /* NeedFunctionPrototypes */
+static void
+AuUnBlockAudio(AuBlock l)
+#endif                          /* NeedFunctionPrototypes */
 {
 }
 
 #ifndef NeedFunctionPrototypes
-static AuBlock AuBlockAudio()
+static AuBlock
+AuBlockAudio()
 #else /* NeedFunctionPrototypes */
-static AuBlock AuBlockAudio(void)
-#endif /* NeedFunctionPrototypes */
+static AuBlock
+AuBlockAudio(void)
+#endif                          /* NeedFunctionPrototypes */
 {
 }
 #else
 
-#define	AuUnBlockAudio(_x)						      \
-do									      \
-{									      \
-    if ((int) (_x) != (int) SIG_HOLD)					      \
-	(void) signal(SIGALRM, (void (*)(int))(_x));			      \
+#define AuUnBlockAudio(_x)                                                    \
+do                                                                            \
+{                                                                             \
+    if ((int) (_x) != (int) SIG_HOLD)                                         \
+        (void) signal(SIGALRM, (void (*)(int))(_x));                          \
 } while(0)
 
-#define	AuBlockAudio()		(int) signal(SIGALRM, SIG_HOLD)
+#define AuBlockAudio()          (int) signal(SIGALRM, SIG_HOLD)
 #endif
 #else
-#define	AuUnBlockAudio(_x)	sigsetmask(_x)
-#define	AuBlockAudio()		sigblock(sigmask(SIGALRM))
+#define AuUnBlockAudio(_x)      sigsetmask(_x)
+#define AuBlockAudio()          sigblock(sigmask(SIGALRM))
 #endif
-#define AuProtectedMalloc(_s)	xalloc(_s)
-#define AuProtectedFree(_p)	free(_p)
+#define AuProtectedMalloc(_s)   xalloc(_s)
+#define AuProtectedFree(_p)     free(_p)
 
 #endif /* !_AUHPUX_H_ */

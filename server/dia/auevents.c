@@ -22,90 +22,87 @@
  * $NCDId: @(#)auevents.c,v 1.9 1994/04/21 21:50:59 greg Exp $
  */
 
-#include	"misc.h"
-#include	"dixstruct.h"
+#include        "misc.h"
+#include        "dixstruct.h"
 
 #ifdef sgi
-# define		_BSD_SIGNALS
+# define                _BSD_SIGNALS
 #endif
 
 #ifdef __NetBSD__
 # include       <sys/types.h>
 #endif
 
-#include 	<sys/signal.h>
-#include	<audio/audio.h>
-#include	<audio/Aproto.h>
-#include	"au.h"
+#include        <sys/signal.h>
+#include        <audio/audio.h>
+#include        <audio/Aproto.h>
+#include        "au.h"
 
 extern void WriteEventsToClient(), AuProcessClockedFlows();
 
-typedef struct _EventQueueRec
-{
-    auEvent         event;
-    AuBool          processClockedFlows;
-    FlowPtr         flow;
-    ClientPtr       client;
-    struct _EventQueueRec *prev,
-                   *next;
-}               EventQueueRec, *EventQueuePtr;
+typedef struct _EventQueueRec {
+    auEvent event;
+    AuBool processClockedFlows;
+    FlowPtr flow;
+    ClientPtr client;
+    struct _EventQueueRec *prev, *next;
+} EventQueueRec, *EventQueuePtr;
 
-EventQueuePtr   AuEventQueue;
+EventQueuePtr AuEventQueue;
 static EventQueuePtr AuEventQueueTail;
 
-#define AddToEventQueue(e)						       \
-{									       \
-    if (AuEventQueueTail)						       \
-    {									       \
-	AuEventQueueTail->next = (e);					       \
-	(e)->prev = AuEventQueueTail;					       \
-    }									       \
-    else								       \
-    {									       \
-	(e)->prev = NULL;						       \
-	AuEventQueue = (e);						       \
-    }									       \
-									       \
-    (e)->next = NULL;							       \
-    AuEventQueueTail = (e);						       \
+#define AddToEventQueue(e)                                                     \
+{                                                                              \
+    if (AuEventQueueTail)                                                      \
+    {                                                                          \
+        AuEventQueueTail->next = (e);                                          \
+        (e)->prev = AuEventQueueTail;                                          \
+    }                                                                          \
+    else                                                                       \
+    {                                                                          \
+        (e)->prev = NULL;                                                      \
+        AuEventQueue = (e);                                                    \
+    }                                                                          \
+                                                                               \
+    (e)->next = NULL;                                                          \
+    AuEventQueueTail = (e);                                                    \
 }
 
 static void
-WriteAuEventsToClient(ClientPtr pClient, int count, auEvent *events)
+WriteAuEventsToClient(ClientPtr pClient, int count, auEvent * events)
 {
     /* pebl: check whether client is still there */
     if (pClient->clientGone == FALSE)
-    WriteEventsToClient(pClient, count, events);
+        WriteEventsToClient(pClient, count, events);
 }
 
 static void
-fillInEvent(int kind, int reason, FlowElementPtr el, auEvent *ev)
+fillInEvent(int kind, int reason, FlowElementPtr el, auEvent * ev)
 {
-    AuUint32           numBytes = 0;
-    ComponentPtr    c = el->component;
+    AuUint32 numBytes = 0;
+    ComponentPtr c = el->component;
 
-    switch (el->raw->type)
-    {
-	case AuElementTypeImportClient:
-	    numBytes = c->dataSize - c->currentSize - c->incoming;
+    switch (el->raw->type) {
+    case AuElementTypeImportClient:
+        numBytes = c->dataSize - c->currentSize - c->incoming;
 
-	    if (el->state != AuStateStop)
-		c->incoming += numBytes;
-	    break;
-	case AuElementTypeImportDevice:
-	    break;
-	case AuElementTypeImportBucket:
-	    break;
-	case AuElementTypeImportWaveForm:
-	    break;
-	case AuElementTypeExportClient:
-	    numBytes = c->currentSize - c->outgoing;
-	    c->outgoing += numBytes;
-	    break;
-	case AuElementTypeExportDevice:
-	    break;
-	case AuElementTypeExportBucket:
-	    break;
+        if (el->state != AuStateStop)
+            c->incoming += numBytes;
+        break;
+    case AuElementTypeImportDevice:
+        break;
+    case AuElementTypeImportBucket:
+        break;
+    case AuElementTypeImportWaveForm:
+        break;
+    case AuElementTypeExportClient:
+        numBytes = c->currentSize - c->outgoing;
+        c->outgoing += numBytes;
+        break;
+    case AuElementTypeExportDevice:
+        break;
+    case AuElementTypeExportBucket:
+        break;
     }
 
     UpdateCurrentTimeIf();
@@ -125,55 +122,51 @@ fillInEvent(int kind, int reason, FlowElementPtr el, auEvent *ev)
 void
 ProcessAudioEvents()
 {
-    AuBlock           l;
-    EventQueuePtr   p,
-                    next;
+    AuBlock l;
+    EventQueuePtr p, next;
 
     l = AuBlockAudio();
     p = AuEventQueue;
     AuUnBlockAudio(l);
 
-    while (p)
-    {
-	if (p->processClockedFlows)
-	    AuProcessClockedFlows();
-	else
-	{
-	    p->event.u.u.sequenceNumber = p->client->sequence;
-	    WriteAuEventsToClient(p->client, 1, &p->event);
-	}
+    while (p) {
+        if (p->processClockedFlows)
+            AuProcessClockedFlows();
+        else {
+            p->event.u.u.sequenceNumber = p->client->sequence;
+            WriteAuEventsToClient(p->client, 1, &p->event);
+        }
 
-	l = AuBlockAudio();
-	RemoveFromLinkedList(AuEventQueue, p);
+        l = AuBlockAudio();
+        RemoveFromLinkedList(AuEventQueue, p);
 
-	if (!AuEventQueue)
-	    AuEventQueueTail = NULL;
+        if (!AuEventQueue)
+            AuEventQueueTail = NULL;
 
-	next = p->next;
-	AuUnBlockAudio(l);
+        next = p->next;
+        AuUnBlockAudio(l);
 
-	AuProtectedFree(p);
-	p = next;
+        AuProtectedFree(p);
+        p = next;
     }
 }
 
 void
 AuRequestElementNotifyEvent(int kind, int reason, FlowElementPtr el)
 {
-    EventQueuePtr   p;
+    EventQueuePtr p;
 
     if (!(p = (EventQueuePtr) AuProtectedMalloc(sizeof(EventQueueRec))))
-	return;
+        return;
 
     if (kind == AuElementNotifyKindSpecial)
-	p->processClockedFlows = AuTrue;
-    else
-    {
-	p->processClockedFlows = AuFalse;
-	p->client = (ClientPtr) (el->client);
-	p->flow = el->flow;
+        p->processClockedFlows = AuTrue;
+    else {
+        p->processClockedFlows = AuFalse;
+        p->client = (ClientPtr) (el->client);
+        p->flow = el->flow;
 
-	fillInEvent(kind, reason, el, &p->event);
+        fillInEvent(kind, reason, el, &p->event);
     }
 
     AddToEventQueue(p);
@@ -181,49 +174,48 @@ AuRequestElementNotifyEvent(int kind, int reason, FlowElementPtr el)
     WAKEUP_SERVER();
 }
 
-#define MONITOR_EVENT_DATA_SPACE	12
+#define MONITOR_EVENT_DATA_SPACE        12
 
 void
-AuRequestMonitorNotifyEvent(FlowElementPtr el, AuUint8 *data)
+AuRequestMonitorNotifyEvent(FlowElementPtr el, AuUint8 * data)
 {
-    EventQueuePtr   p;
-    auEvent        *ev;
-    AuUint32           count,
-                    numBytes;
-    ComponentPtr    c = el->component;
+    EventQueuePtr p;
+    auEvent *ev;
+    AuUint32 count, numBytes;
+    ComponentPtr c = el->component;
 
     numBytes = c->bytesPerSample * 2;
     count = (numBytes + (MONITOR_EVENT_DATA_SPACE - 1)) /
-	MONITOR_EVENT_DATA_SPACE;
+            MONITOR_EVENT_DATA_SPACE;
 
-    while (count--)
-    {
-	if (!(p = (EventQueuePtr) AuProtectedMalloc(sizeof(EventQueueRec))))
-	    return;
+    while (count--) {
+        if (!
+            (p = (EventQueuePtr) AuProtectedMalloc(sizeof(EventQueueRec))))
+            return;
 
-	p->processClockedFlows = AuFalse;
-	p->client = (ClientPtr) (el->client);
-	p->flow = el->flow;
+        p->processClockedFlows = AuFalse;
+        p->client = (ClientPtr) (el->client);
+        p->flow = el->flow;
 
-	ev = &p->event;
+        ev = &p->event;
 
-	UpdateCurrentTimeIf();
+        UpdateCurrentTimeIf();
 
-	ev->u.u.type = AuEventTypeMonitorNotify;
-	ev->u.u.time = currentTime.milliseconds;
+        ev->u.u.type = AuEventTypeMonitorNotify;
+        ev->u.u.time = currentTime.milliseconds;
 
-	ev->u.monitorNotify.flow = el->flow->flowId;
-	ev->u.monitorNotify.element_num = el->elementNum;
-	ev->u.monitorNotify.format = c->format;
-	ev->u.monitorNotify.num_tracks = c->numTracks;
-	ev->u.monitorNotify.count = count;
-	ev->u.monitorNotify.num_fields = 2;
+        ev->u.monitorNotify.flow = el->flow->flowId;
+        ev->u.monitorNotify.element_num = el->elementNum;
+        ev->u.monitorNotify.format = c->format;
+        ev->u.monitorNotify.num_tracks = c->numTracks;
+        ev->u.monitorNotify.count = count;
+        ev->u.monitorNotify.num_fields = 2;
 
-	bcopy(data, (char *) &ev->u.monitorNotify.data,
-	      MONITOR_EVENT_DATA_SPACE);
-	data += MONITOR_EVENT_DATA_SPACE;
+        bcopy(data, (char *) &ev->u.monitorNotify.data,
+              MONITOR_EVENT_DATA_SPACE);
+        data += MONITOR_EVENT_DATA_SPACE;
 
-	AddToEventQueue(p);
+        AddToEventQueue(p);
     };
 
     AuCallbackIf(AuEventPostedCB, ());
@@ -233,33 +225,30 @@ AuRequestMonitorNotifyEvent(FlowElementPtr el, AuUint8 *data)
 void
 AuDequeueEvents(FlowPtr flow)
 {
-    AuBlock           l;
-    EventQueuePtr   p,
-                    next;
+    AuBlock l;
+    EventQueuePtr p, next;
 
     l = AuBlockAudio();
     p = AuEventQueue;
     AuUnBlockAudio(l);
 
-    while (p)
-    {
-	l = AuBlockAudio();
-	next = p->next;
-	AuUnBlockAudio(l);
+    while (p) {
+        l = AuBlockAudio();
+        next = p->next;
+        AuUnBlockAudio(l);
 
-	if (p->flow == flow)
-	{
-	    l = AuBlockAudio();
+        if (p->flow == flow) {
+            l = AuBlockAudio();
 
-	    RemoveFromLinkedList(AuEventQueue, p);
+            RemoveFromLinkedList(AuEventQueue, p);
 
-	    if (!AuEventQueue)
-		AuEventQueueTail = NULL;
+            if (!AuEventQueue)
+                AuEventQueueTail = NULL;
 
-	    AuUnBlockAudio(l);
-	    AuProtectedFree(p);
-	}
+            AuUnBlockAudio(l);
+            AuProtectedFree(p);
+        }
 
-	p = next;
+        p = next;
     }
 }

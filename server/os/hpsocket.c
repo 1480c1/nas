@@ -6,32 +6,32 @@
 #include <sys/socket.h>
 
 int
-set_socket_option (socket_id, option)
+set_socket_option(socket_id, option)
 int socket_id;
 char option;
 {
-	int optlen = 1;
-	char optval = 0x0;
+    int optlen = 1;
+    char optval = 0x0;
 
-	getsockopt (socket_id, SOL_SOCKET, option, &optval, &optlen);
+    getsockopt(socket_id, SOL_SOCKET, option, &optval, &optlen);
 
-	optval |= option;
+    optval |= option;
 
-	setsockopt (socket_id, SOL_SOCKET, option, &optval, 1);
+    setsockopt(socket_id, SOL_SOCKET, option, &optval, 1);
 }
 
 
 int
-unset_socket_option (socket_id, option)
+unset_socket_option(socket_id, option)
 int socket_id;
 char option;
 {
-	int optlen = 1;
-	char optval = 0x0;
+    int optlen = 1;
+    char optval = 0x0;
 
-	getsockopt (socket_id, SOL_SOCKET, option, &optval, &optlen);
+    getsockopt(socket_id, SOL_SOCKET, option, &optval, &optlen);
 
-	optval &= ~option;
+    optval &= ~option;
 
-	setsockopt (socket_id, SOL_SOCKET, option, &optval, 1);
+    setsockopt(socket_id, SOL_SOCKET, option, &optval, 1);
 }

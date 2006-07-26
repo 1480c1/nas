@@ -43,9 +43,9 @@ extern unsigned long serverGeneration;
 #endif
 #endif
 
-#define MAXSCREENS	3
-#define MAXCLIENTS	128
-#define MAXFORMATS	8
+#define MAXSCREENS      3
+#define MAXCLIENTS      128
+#define MAXFORMATS      8
 
 typedef unsigned char *pointer;
 typedef int Bool;
@@ -55,17 +55,17 @@ typedef int Bool;
 #define TRUE 1
 #define FALSE 0
 #endif
-#include "os.h" 	/* for ALLOCATE_LOCAL and DEALLOCATE_LOCAL */
-#include <X11/Xfuncs.h> /* for bcopy, bzero, and bcmp */
+#include "os.h"                 /* for ALLOCATE_LOCAL and DEALLOCATE_LOCAL */
+#include <X11/Xfuncs.h>         /* for bcopy, bzero, and bcmp */
 
 #define MILLI_PER_SECOND (1000)
 
 
 /* byte swap a long literal */
 #define lswapl(x) ((((x) & 0xff) << 24) |\
-		   (((x) & 0xff00) << 8) |\
-		   (((x) & 0xff0000) >> 8) |\
-		   (((x) >> 24) & 0xff))
+                   (((x) & 0xff00) << 8) |\
+                   (((x) & 0xff0000) >> 8) |\
+                   (((x) >> 24) & 0xff))
 
 /* byte swap a short literal */
 #define lswaps(x) ((((x) & 0xff) << 8) | (((x) >> 8) & 0xff))
@@ -76,7 +76,7 @@ typedef int Bool;
 #define abs(a) ((a) > 0 ? (a) : -(a))
 #endif
 #ifndef fabs
-#define fabs(a) ((a) > 0.0 ? (a) : -(a))	/* floating absolute value */
+#define fabs(a) ((a) > 0.0 ? (a) : -(a))        /* floating absolute value */
 #endif
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0))
 /* this assumes b > 0 */
@@ -91,7 +91,7 @@ typedef int Bool;
 #define lowbit(x) ((x) & (~(x) + 1))
 
 #define MAXSHORT 32767
-#define MINSHORT -MAXSHORT 
+#define MINSHORT -MAXSHORT
 
 
 /* some macros to help swap requests, replies, and events */
@@ -113,16 +113,16 @@ typedef int Bool;
 
 /* byte swap a long */
 #define swapl(x, n) n = ((char *) (x))[0];\
-		 ((char *) (x))[0] = ((char *) (x))[3];\
-		 ((char *) (x))[3] = n;\
-		 n = ((char *) (x))[1];\
-		 ((char *) (x))[1] = ((char *) (x))[2];\
-		 ((char *) (x))[2] = n;
+                 ((char *) (x))[0] = ((char *) (x))[3];\
+                 ((char *) (x))[3] = n;\
+                 n = ((char *) (x))[1];\
+                 ((char *) (x))[1] = ((char *) (x))[2];\
+                 ((char *) (x))[2] = n;
 
 /* byte swap a short */
 #define swaps(x, n) n = ((char *) (x))[0];\
-		 ((char *) (x))[0] = ((char *) (x))[1];\
-		 ((char *) (x))[1] = n
+                 ((char *) (x))[0] = ((char *) (x))[1];\
+                 ((char *) (x))[1] = n
 
 /* copy long from src to dst byteswapping on the way */
 #define cpswapl(src, dst) \
@@ -133,8 +133,8 @@ typedef int Bool;
 
 /* copy short from src to dst byteswapping on the way */
 #define cpswaps(src, dst)\
-		 ((char *) &(dst))[0] = ((char *) &(src))[1];\
-		 ((char *) &(dst))[1] = ((char *) &(src))[0];
+                 ((char *) &(dst))[0] = ((char *) &(src))[1];\
+                 ((char *) &(dst))[1] = ((char *) &(src))[0];
 
 extern void SwapLongs();
 extern void SwapShorts();

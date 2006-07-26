@@ -95,95 +95,89 @@ OsInit()
 
     if (!been_here) {
 #if !defined(SCO) && !defined(__386BSD__)
-	fclose(stdin);
-	fclose(stdout);
+        fclose(stdin);
+        fclose(stdout);
 #endif
-	/* hack test to decide where to log errors */
-	if (write (2, fname, 0)) 
-	{
-	    FILE *err;
-	    sprintf (fname, ADMPATH, display);
-	    /*
-	     * uses stdio to avoid os dependencies here,
-	     * a real os would use
- 	     *  open (fname, O_WRONLY|O_APPEND|O_CREAT, 0666)
-	     */
-	    if (!(err = fopen (fname, "a+")))
-		err = fopen ("/dev/null", "w");
-	    if (err && (fileno(err) != 2)) {
-		dup2 (fileno (err), 2);
-		fclose (err);
-	    }
+        /* hack test to decide where to log errors */
+        if (write(2, fname, 0)) {
+            FILE *err;
+            sprintf(fname, ADMPATH, display);
+            /*
+             * uses stdio to avoid os dependencies here,
+             * a real os would use
+             *  open (fname, O_WRONLY|O_APPEND|O_CREAT, 0666)
+             */
+            if (!(err = fopen(fname, "a+")))
+                err = fopen("/dev/null", "w");
+            if (err && (fileno(err) != 2)) {
+                dup2(fileno(err), 2);
+                fclose(err);
+            }
 #if defined(SYSV) || defined(SVR4) || defined(AMOEBA) || defined(_MINIX)
-	    {
-	    static char buf[BUFSIZ];
-	    setvbuf (stderr, buf, _IOLBF, BUFSIZ);
-	    }
+            {
+                static char buf[BUFSIZ];
+                setvbuf(stderr, buf, _IOLBF, BUFSIZ);
+            }
 #else
 # if !defined(__CYGWIN__)
-	    setlinebuf(stderr);
+            setlinebuf(stderr);
 # endif
 #endif
-	}
-
+        }
 #ifndef X_NOT_POSIX
-	if (getpgrp () == 0)
-	    setpgid (0, 0);
+        if (getpgrp() == 0)
+            setpgid(0, 0);
 #else
 #ifndef SYSV
-	if (getpgrp (0) == 0)
-	    setpgrp (0, getpid ());
+        if (getpgrp(0) == 0)
+            setpgrp(0, getpid());
 #endif
 #endif
 
 #ifdef RLIMIT_DATA
-	if (limitDataSpace >= 0)
-	{
-	    struct rlimit	rlim;
+        if (limitDataSpace >= 0) {
+            struct rlimit rlim;
 
-	    if (!getrlimit(RLIMIT_DATA, &rlim))
-	    {
-		if ((limitDataSpace > 0) && (limitDataSpace < rlim.rlim_max))
-		    rlim.rlim_cur = limitDataSpace;
-		else
-		    rlim.rlim_cur = rlim.rlim_max;
-		(void)setrlimit(RLIMIT_DATA, &rlim);
-	    }
-	}
+            if (!getrlimit(RLIMIT_DATA, &rlim)) {
+                if ((limitDataSpace > 0)
+                    && (limitDataSpace < rlim.rlim_max))
+                    rlim.rlim_cur = limitDataSpace;
+                else
+                    rlim.rlim_cur = rlim.rlim_max;
+                (void) setrlimit(RLIMIT_DATA, &rlim);
+            }
+        }
 #endif
 #ifdef RLIMIT_STACK
-	if (limitStackSpace >= 0)
-	{
-	    struct rlimit	rlim;
+        if (limitStackSpace >= 0) {
+            struct rlimit rlim;
 
-	    if (!getrlimit(RLIMIT_STACK, &rlim))
-	    {
-		if ((limitStackSpace > 0) && (limitStackSpace < rlim.rlim_max))
-		    rlim.rlim_cur = limitStackSpace;
-		else
-		    rlim.rlim_cur = rlim.rlim_max;
-		(void)setrlimit(RLIMIT_STACK, &rlim);
-	    }
-	}
+            if (!getrlimit(RLIMIT_STACK, &rlim)) {
+                if ((limitStackSpace > 0)
+                    && (limitStackSpace < rlim.rlim_max))
+                    rlim.rlim_cur = limitStackSpace;
+                else
+                    rlim.rlim_cur = rlim.rlim_max;
+                (void) setrlimit(RLIMIT_STACK, &rlim);
+            }
+        }
 #endif
 #ifdef RLIMIT_NOFILE
-	if (limitNoFile >= 0)
-	{
-	    struct rlimit	rlim;
+        if (limitNoFile >= 0) {
+            struct rlimit rlim;
 
-	    if (!getrlimit(RLIMIT_NOFILE, &rlim))
-	    {
-		if ((limitNoFile > 0) && (limitNoFile < rlim.rlim_max))
-		    rlim.rlim_cur = limitNoFile;
-		else
-		    rlim.rlim_cur = rlim.rlim_max;
-		if (rlim.rlim_cur > MAXSOCKS)
-		    rlim.rlim_cur = MAXSOCKS;
-		(void)setrlimit(RLIMIT_NOFILE, &rlim);
-	    }
-	}
+            if (!getrlimit(RLIMIT_NOFILE, &rlim)) {
+                if ((limitNoFile > 0) && (limitNoFile < rlim.rlim_max))
+                    rlim.rlim_cur = limitNoFile;
+                else
+                    rlim.rlim_cur = rlim.rlim_max;
+                if (rlim.rlim_cur > MAXSOCKS)
+                    rlim.rlim_cur = MAXSOCKS;
+                (void) setrlimit(RLIMIT_NOFILE, &rlim);
+            }
+        }
 #endif
-	been_here = TRUE;
+        been_here = TRUE;
 #endif /* AMOEBA */
     }
     OsInitAllocator();

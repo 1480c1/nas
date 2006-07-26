@@ -60,45 +60,46 @@ SOFTWARE.
 #include "dixstruct.h"
 #include "os.h"
 
-				/* Instantiate all of the globals
-				   here only */
+                                /* Instantiate all of the globals
+                                   here only */
 
-				/* instantiate global config options */
+                                /* instantiate global config options */
 #define NASCONFIG_INSTANTIATE
 #include "nasconf.h"
 #undef NASCONFIG_INSTANTIATE
 
-				/* instantiate other globals */
+                                /* instantiate other globals */
 #define GLOBALS_INSTANTIATE
 #include "globals.h"
-#undef GLOBALS_INSTANTIATE		/* clean up */
+#undef GLOBALS_INSTANTIATE      /* clean up */
 
 /* Initialize the globals, called from main */
 
-void diaInitGlobals()
+void
+diaInitGlobals()
 {
-  clients = (ClientPtr *)0;
-  serverClient = (ClientPtr)NULL;
-  currentMaxClients = 0;
+    clients = (ClientPtr *) 0;
+    serverClient = (ClientPtr) NULL;
+    currentMaxClients = 0;
 
-  globalSerialNumber = 0;
-  serverGeneration = 0;
+    globalSerialNumber = 0;
+    serverGeneration = 0;
 
-  currentTime.months = 0;
-  currentTime.milliseconds = 0;
-  lastDeviceEventTime.months = 0;
-  lastDeviceEventTime.milliseconds = 0;
+    currentTime.months = 0;
+    currentTime.milliseconds = 0;
+    lastDeviceEventTime.months = 0;
+    lastDeviceEventTime.milliseconds = 0;
 
 
-  display = NULL;
+    display = NULL;
 
-  TimeOutValue = DEFAULT_TIMEOUT * MILLI_PER_SECOND;
+    TimeOutValue = DEFAULT_TIMEOUT * MILLI_PER_SECOND;
 
-  argcGlobal = 0;
-  argvGlobal = NULL;
+    argcGlobal = 0;
+    argvGlobal = NULL;
 
-				/* init the global configs */
-  diaInitGlobalConfig();
+    /* init the global configs */
+    diaInitGlobalConfig();
 
-  return;			/* that's it */
+    return;                     /* that's it */
 }

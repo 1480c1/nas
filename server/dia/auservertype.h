@@ -8,18 +8,18 @@
 
 #ifdef sun
 # define SUN_SERVER
-#endif						/* sun */
+#endif /* sun */
 
 #ifdef sgi
 # define SGI_SERVER
-#endif						/* sgi */
+#endif /* sgi */
 
 #if defined(__DragonFly__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(linux) || (defined(SVR4) && (defined(SYSV386) || defined(i386))) || defined(__CYGWIN__)
 # define VOXWARE_SERVER
-#endif                                          /* voxware */
+#endif /* voxware */
 
 #ifdef hpux
 # define HPUX_SERVER
-#endif						/* hpux */
+#endif /* hpux */
 
-#endif	/* _AUSERVERTYPE_H_ */
+#endif /* _AUSERVERTYPE_H_ */

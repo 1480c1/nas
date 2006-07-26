@@ -1,6 +1,6 @@
 /*
 *
-*	config.h 
+*       config.h 
 *
 * $Id$
 */

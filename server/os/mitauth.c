@@ -46,115 +46,114 @@
 #include "os.h"
 
 static struct auth {
-    struct auth	*next;
-    unsigned short	len;
-    char	*data;
-    AuID		id;
-} *mit_auth;
+    struct auth *next;
+    unsigned short len;
+    char *data;
+    AuID id;
+}  *mit_auth;
 
 int
-MitAddCookie (data_length, data, id)
-unsigned short	data_length;
-char	*data;
-AuID	id;
+MitAddCookie(data_length, data, id)
+unsigned short data_length;
+char *data;
+AuID id;
 {
-    struct auth	*new;
+    struct auth *new;
 
-    new = (struct auth *) xalloc (sizeof (struct auth));
+    new = (struct auth *) xalloc(sizeof(struct auth));
     if (!new)
-	return 0;
-    new->data = (char *) xalloc ((unsigned) data_length);
+        return 0;
+    new->data = (char *) xalloc((unsigned) data_length);
     if (!new->data) {
-	xfree(new);
-	return 0;
+        xfree(new);
+        return 0;
     }
     new->next = mit_auth;
     mit_auth = new;
-    bcopy (data, new->data, (int) data_length);
+    bcopy(data, new->data, (int) data_length);
     new->len = data_length;
     new->id = id;
     return 1;
 }
 
 AuID
-MitCheckCookie (data_length, data)
-unsigned short	data_length;
-char	*data;
+MitCheckCookie(data_length, data)
+unsigned short data_length;
+char *data;
 {
-    struct auth	*auth;
+    struct auth *auth;
 
-    for (auth = mit_auth; auth; auth=auth->next) {
+    for (auth = mit_auth; auth; auth = auth->next) {
         if (data_length == auth->len &&
-	   bcmp (data, auth->data, (int) data_length) == 0)
-	    return auth->id;
+            bcmp(data, auth->data, (int) data_length) == 0)
+            return auth->id;
     }
-    return (AuID) -1;
+    return (AuID) - 1;
 }
 
 int
-MitResetCookie ()
+MitResetCookie()
 {
-    struct auth	*auth, *next;
+    struct auth *auth, *next;
 
-    for (auth = mit_auth; auth; auth=next) {
-	next = auth->next;
-	xfree (auth->data);
-	xfree (auth);
+    for (auth = mit_auth; auth; auth = next) {
+        next = auth->next;
+        xfree(auth->data);
+        xfree(auth);
     }
     mit_auth = 0;
 }
 
 AuID
-MitToID (data_length, data)
-unsigned short	data_length;
-char	*data;
+MitToID(data_length, data)
+unsigned short data_length;
+char *data;
 {
-    struct auth	*auth;
+    struct auth *auth;
 
-    for (auth = mit_auth; auth; auth=auth->next) {
-	if (data_length == auth->len &&
-	    bcmp (data, auth->data, data_length) == 0)
-	    return auth->id;
+    for (auth = mit_auth; auth; auth = auth->next) {
+        if (data_length == auth->len &&
+            bcmp(data, auth->data, data_length) == 0)
+            return auth->id;
     }
-    return (AuID) -1;
+    return (AuID) - 1;
 }
 
-MitFromID (id, data_lenp, datap)
+MitFromID(id, data_lenp, datap)
 AuID id;
-unsigned short	*data_lenp;
-char	**datap;
+unsigned short *data_lenp;
+char **datap;
 {
-    struct auth	*auth;
+    struct auth *auth;
 
-    for (auth = mit_auth; auth; auth=auth->next) {
-	if (id == auth->id) {
-	    *data_lenp = auth->len;
-	    *datap = auth->data;
-	    return 1;
-	}
+    for (auth = mit_auth; auth; auth = auth->next) {
+        if (id == auth->id) {
+            *data_lenp = auth->len;
+            *datap = auth->data;
+            return 1;
+        }
     }
     return 0;
 }
 
-MitRemoveCookie (data_length, data)
-unsigned short	data_length;
-char	*data;
+MitRemoveCookie(data_length, data)
+unsigned short data_length;
+char *data;
 {
-    struct auth	*auth, *prev;
+    struct auth *auth, *prev;
 
     prev = 0;
-    for (auth = mit_auth; auth; auth=auth->next) {
-	if (data_length == auth->len &&
-	    bcmp (data, auth->data, data_length) == 0)
- 	{
-	    if (prev)
-		prev->next = auth->next;
-	    else
-		mit_auth = auth->next;
-	    xfree (auth->data);
-	    xfree (auth);
-	    return 1;
-	}
+    for (auth = mit_auth; auth; auth = auth->next) {
+        if (data_length == auth->len &&
+            bcmp(data, auth->data, data_length) == 0) {
+            if (prev)
+                prev->next = auth->next;
+            else
+                mit_auth = auth->next;
+            xfree(auth->data);
+            xfree(auth);
+            return 1;
+        }
     }
     return 0;
 }

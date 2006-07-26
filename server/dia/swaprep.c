@@ -56,45 +56,43 @@ extern void WriteToClient();
 
 void
 Swap32Write(pClient, size, pbuf)
-    ClientPtr	pClient;
-    int		size;  /* in bytes */
-    register long *pbuf;
+ClientPtr pClient;
+int size;                       /* in bytes */
+register long *pbuf;
 {
     register int i;
     register char n;
 
     size >>= 2;
-    for(i = 0; i < size; i++)
-    /* brackets are mandatory here, because "swapl" macro expands
-       to several statements */
-    {   
-	swapl(&pbuf[i], n);
+    for (i = 0; i < size; i++)
+        /* brackets are mandatory here, because "swapl" macro expands
+           to several statements */
+    {
+        swapl(&pbuf[i], n);
     }
-    (void)WriteToClient(pClient, size << 2, (char *) pbuf);
+    (void) WriteToClient(pClient, size << 2, (char *) pbuf);
 }
 
 void
 CopySwap32Write(pClient, size, pbuf)
-    ClientPtr	pClient;
-    int		size;   /* in bytes */
-    long	*pbuf;
+ClientPtr pClient;
+int size;                       /* in bytes */
+long *pbuf;
 {
     int bufsize = size;
     long *pbufT;
     register long *from, *to, *fromLast, *toLast;
     long tmpbuf[1];
-    
+
     /* Allocate as big a buffer as we can... */
-    while (!(pbufT = (long *) ALLOCATE_LOCAL(bufsize)))
-    {
+    while (!(pbufT = (long *) ALLOCATE_LOCAL(bufsize))) {
         bufsize >>= 1;
-	if (bufsize == 4)
-	{
-	    pbufT = tmpbuf;
-	    break;
-	}
+        if (bufsize == 4) {
+            pbufT = tmpbuf;
+            break;
+        }
     }
-    
+
     /* convert lengths from # of bytes to # of longs */
     size >>= 2;
     bufsize >>= 2;
@@ -102,46 +100,44 @@ CopySwap32Write(pClient, size, pbuf)
     from = pbuf;
     fromLast = from + size;
     while (from < fromLast) {
-	int nbytes;
+        int nbytes;
         to = pbufT;
-        toLast = to + min (bufsize, fromLast - from);
+        toLast = to + min(bufsize, fromLast - from);
         nbytes = (toLast - to) << 2;
         while (to < toLast) {
             /* can't write "cpswapl(*from++, *to++)" because cpswapl is a macro
-	       that evaulates its args more than once */
-	    cpswapl(*from, *to);
+               that evaulates its args more than once */
+            cpswapl(*from, *to);
             from++;
             to++;
-	    }
-	(void)WriteToClient (pClient, nbytes, (char *) pbufT);
-	}
+        }
+        (void) WriteToClient(pClient, nbytes, (char *) pbufT);
+    }
 
     if (pbufT != tmpbuf)
-	DEALLOCATE_LOCAL ((char *) pbufT);
+        DEALLOCATE_LOCAL((char *) pbufT);
 }
 
 void
 CopySwap16Write(pClient, size, pbuf)
-    ClientPtr	pClient;
-    int		size;   /* in bytes */
-    short	*pbuf;
+ClientPtr pClient;
+int size;                       /* in bytes */
+short *pbuf;
 {
     int bufsize = size;
     short *pbufT;
     register short *from, *to, *fromLast, *toLast;
     short tmpbuf[2];
-    
+
     /* Allocate as big a buffer as we can... */
-    while (!(pbufT = (short *) ALLOCATE_LOCAL(bufsize)))
-    {
+    while (!(pbufT = (short *) ALLOCATE_LOCAL(bufsize))) {
         bufsize >>= 1;
-	if (bufsize == 4)
-	{
-	    pbufT = tmpbuf;
-	    break;
-	}
+        if (bufsize == 4) {
+            pbufT = tmpbuf;
+            break;
+        }
     }
-    
+
     /* convert lengths from # of bytes to # of shorts */
     size >>= 1;
     bufsize >>= 1;
@@ -149,35 +145,35 @@ CopySwap16Write(pClient, size, pbuf)
     from = pbuf;
     fromLast = from + size;
     while (from < fromLast) {
-	int nbytes;
+        int nbytes;
         to = pbufT;
-        toLast = to + min (bufsize, fromLast - from);
+        toLast = to + min(bufsize, fromLast - from);
         nbytes = (toLast - to) << 1;
         while (to < toLast) {
             /* can't write "cpswaps(*from++, *to++)" because cpswaps is a macro
-	       that evaulates its args more than once */
-	    cpswaps(*from, *to);
+               that evaulates its args more than once */
+            cpswaps(*from, *to);
             from++;
             to++;
-	    }
-	(void)WriteToClient (pClient, nbytes, (char *) pbufT);
-	}
+        }
+        (void) WriteToClient(pClient, nbytes, (char *) pbufT);
+    }
 
     if (pbufT != tmpbuf)
-	DEALLOCATE_LOCAL ((char *) pbufT);
+        DEALLOCATE_LOCAL((char *) pbufT);
 }
 
 void
 WriteSConnSetupPrefix(pClient, pcsp)
-    ClientPtr		pClient;
-    auConnSetupPrefix	*pcsp;
+ClientPtr pClient;
+auConnSetupPrefix *pcsp;
 {
-    auConnSetupPrefix	cspT;
+    auConnSetupPrefix cspT;
 
     cspT.success = pcsp->success;
     cspT.lengthReason = pcsp->lengthReason;
     cpswaps(pcsp->majorVersion, cspT.majorVersion);
     cpswaps(pcsp->minorVersion, cspT.minorVersion);
     cpswaps(pcsp->length, cspT.length);
-    (void)WriteToClient(pClient, sizeof(cspT), (char *) &cspT);
+    (void) WriteToClient(pClient, sizeof(cspT), (char *) &cspT);
 }

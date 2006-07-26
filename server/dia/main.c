@@ -67,18 +67,18 @@ SOFTWARE.
 #include "nasconf.h"
 #include "release.h"
 
-extern void     OsInit(), InitClient(), ResetWellKnownSockets(),
-                Dispatch(), FreeAllResources();
-extern int      AuInitSetupReply();
-extern void 	AuInitProcVectors();
-extern Bool     InitClientResources();
+extern void OsInit(), InitClient(), ResetWellKnownSockets(),
+Dispatch(), FreeAllResources();
+extern int AuInitSetupReply();
+extern void AuInitProcVectors();
+extern Bool InitClientResources();
 
 static char *AuServerName(void);
 
-extern char     *display;
+extern char *display;
 
 static int restart = 0;
-FILE    *yyin;			/* for the config parser */
+FILE *yyin;                     /* for the config parser */
 
 void
 NotImplemented()
@@ -90,39 +90,41 @@ NotImplemented()
  *  Find the config file
  */
 
-static FILE     *openConfigFile (char *path)
+static FILE *
+openConfigFile(char *path)
 {
-  FILE *config;
+    FILE *config;
 
-  if ((config = fopen (path, "r")) != NULL)
-    return config;
-  else
-    return NULL;
+    if ((config = fopen(path, "r")) != NULL)
+        return config;
+    else
+        return NULL;
 }
 
 
 int
 main(int argc, char *argv[])
 {
-    int		i;
-    char    *config_file;
+    int i;
+    char *config_file;
 
     /* Notice if we're restart.  Probably this is because we jumped through
      * uninitialized pointer */
     if (restart)
-	FatalError("server restarted. Jumped through uninitialized pointer?\n");
+        FatalError
+                ("server restarted. Jumped through uninitialized pointer?\n");
     else
-	restart = 1;
+        restart = 1;
 
     /* Init the globals... */
     diaInitGlobals();
 
     if ((config_file = FindConfigFile(argc, argv)) == NULL)
-        config_file = NASCONFSEARCHPATH"/nasd.conf";
+        config_file = NASCONFSEARCHPATH "/nasd.conf";
 
     /* Now parse the config file */
-    if ((yyin = openConfigFile (config_file)) != NULL)
-      yyparse();
+    if ((yyin = openConfigFile(config_file)) != NULL)
+        yyparse();
 
     /* These are needed by some routines which are called from interrupt
      * handlers, thus have no direct calling path back to main and thus
@@ -133,68 +135,62 @@ main(int argc, char *argv[])
     display = NULL;
     ProcessCommandLine(argc, argv);
 
-				/* if display wasn't spec'd on the command
-				   line, find a suitable default */
+    /* if display wasn't spec'd on the command
+       line, find a suitable default */
     if (display == NULL)
-      display = AuServerName();
+        display = AuServerName();
 
-    if (NasConfig.DoVerbose)
-      {
+    if (NasConfig.DoVerbose) {
         printf("%s\n", release);
         osLogMsg("%s\n", release);
-      }
+    }
 
-    if (NasConfig.DoDaemon)
-      {
-	osBecomeOrphan();
-	osBecomeDaemon();
+    if (NasConfig.DoDaemon) {
+        osBecomeOrphan();
+        osBecomeDaemon();
 
-	/* we could store pid info here... */
-	/* osStorePid() */
-      }
+        /* we could store pid info here... */
+        /* osStorePid() */
+    }
 
     /* And cd to / so we don't hold anything up; core files will also
        go there. */
     chdir("/");
 
-    while(1)
-    {
-	serverGeneration++;
-	/* Perform any operating system dependent initializations you'd like */
-	OsInit();		
-	if(serverGeneration == 1)
-	{
-	    CreateWellKnownSockets();
-	    AuInitProcVectors();
-	    clients = (ClientPtr *)xalloc(MAXCLIENTS * sizeof(ClientPtr));
-	    if (!clients)
-		FatalError("couldn't create client array");
-	    for (i=1; i<MAXCLIENTS; i++) 
-		clients[i] = NullClient;
-	    serverClient = (ClientPtr)xalloc(sizeof(ClientRec));
-	    if (!serverClient)
-		FatalError("couldn't create server client");
-	    InitClient(serverClient, 0, (pointer)NULL);
-	}
-	else
-	    ResetWellKnownSockets ();
+    while (1) {
+        serverGeneration++;
+        /* Perform any operating system dependent initializations you'd like */
+        OsInit();
+        if (serverGeneration == 1) {
+            CreateWellKnownSockets();
+            AuInitProcVectors();
+            clients = (ClientPtr *) xalloc(MAXCLIENTS * sizeof(ClientPtr));
+            if (!clients)
+                FatalError("couldn't create client array");
+            for (i = 1; i < MAXCLIENTS; i++)
+                clients[i] = NullClient;
+            serverClient = (ClientPtr) xalloc(sizeof(ClientRec));
+            if (!serverClient)
+                FatalError("couldn't create server client");
+            InitClient(serverClient, 0, (pointer) NULL);
+        } else
+            ResetWellKnownSockets();
         clients[0] = serverClient;
         currentMaxClients = 1;
 
-	if (!InitClientResources(serverClient))      /* for root resources */
-	    FatalError("couldn't init server resources");
+        if (!InitClientResources(serverClient)) /* for root resources */
+            FatalError("couldn't init server resources");
 
-	if (!AuInitSetupReply())
-	    FatalError("could not create audio connection block info");
+        if (!AuInitSetupReply())
+            FatalError("could not create audio connection block info");
 
-	Dispatch();
+        Dispatch();
 
-	FreeAllResources();
+        FreeAllResources();
 
-	if (dispatchException & DE_TERMINATE)
-	{
-	    break;
-	}
+        if (dispatchException & DE_TERMINATE) {
+            break;
+        }
     }
     exit(0);
 }
@@ -204,38 +200,33 @@ main(int argc, char *argv[])
  *  DISPLAY if set.
  */
 
-static char *AuServerName (void)
+static char *
+AuServerName(void)
 {
-  char *name = NULL;
-  char *ch, *ch1;
+    char *name = NULL;
+    char *ch, *ch1;
 
-    name = (char *) getenv ("AUDIOSERVER");
-    if (name)
-      {
-	if ((ch = strchr(name, ':')) != NULL)
-	  {
-	    ch++;
-	    if ((ch1 = strchr(ch, '.')) != NULL)
-	      *ch1 = '\0';
-	    return(ch);
-	  }
-	else
-	  return name;
-      }
+    name = (char *) getenv("AUDIOSERVER");
+    if (name) {
+        if ((ch = strchr(name, ':')) != NULL) {
+            ch++;
+            if ((ch1 = strchr(ch, '.')) != NULL)
+                *ch1 = '\0';
+            return (ch);
+        } else
+            return name;
+    }
 
-    name = (char *) getenv ("DISPLAY");
-    if (name)
-      {
-	if ((ch = strchr(name, ':')) != NULL)
-	  {
-	    ch++;
-	    if ((ch1 = strchr(ch, '.')) != NULL)
-	      *ch1 = '\0';
-	    return(ch);
-	  }
-	else
-	  return name;
-      }
+    name = (char *) getenv("DISPLAY");
+    if (name) {
+        if ((ch = strchr(name, ':')) != NULL) {
+            ch++;
+            if ((ch1 = strchr(ch, '.')) != NULL)
+                *ch1 = '\0';
+            return (ch);
+        } else
+            return name;
+    }
 
     return "0";
 }

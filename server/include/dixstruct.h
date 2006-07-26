@@ -31,50 +31,50 @@ SOFTWARE.
 #include "resource.h"
 
 /*
- * 	direct-mapped hash table, used by resource manager to store
+ *      direct-mapped hash table, used by resource manager to store
  *      translation from client ids to server addresses.
  */
 
 typedef struct _TimeStamp {
-    unsigned long months;	/* really ~49.7 days */
+    unsigned long months;       /* really ~49.7 days */
     unsigned long milliseconds;
-}           TimeStamp;
+} TimeStamp;
 
 #ifdef DEBUG
 #define MAX_REQUEST_LOG 100
 #endif
 
 typedef struct _Client {
-    int         index;
-    AuMask        clientAsMask;
-    pointer     requestBuffer;
-    pointer     osPrivate;	/* for OS layer, including scheduler */
-    Bool        swapped;
-    void        (*pSwapReplyFunc) ();
-    AuID         errorValue;
-    int         sequence;
-    int         closeDownMode;
-    int         clientGone;
-    int         noClientException;	/* this client died or needs to be
-					 * killed */
-    int         numSaved;
-    pointer     screenPrivate[MAXSCREENS];
-    int         (**requestVector) ();
-    unsigned long req_len;		/* length of current request */
-    Bool	big_requests;		/* supports large requests */
+    int index;
+    AuMask clientAsMask;
+    pointer requestBuffer;
+    pointer osPrivate;          /* for OS layer, including scheduler */
+    Bool swapped;
+    void (*pSwapReplyFunc) ();
+    AuID errorValue;
+    int sequence;
+    int closeDownMode;
+    int clientGone;
+    int noClientException;      /* this client died or needs to be
+                                 * killed */
+    int numSaved;
+    pointer screenPrivate[MAXSCREENS];
+    int (**requestVector) ();
+    unsigned long req_len;      /* length of current request */
+    Bool big_requests;          /* supports large requests */
 
 #ifdef DEBUG
     unsigned char requestLog[MAX_REQUEST_LOG];
-    int         requestLogIndex;
+    int requestLogIndex;
 #endif
-}           ClientRec;
+} ClientRec;
 
 typedef struct _WorkQueue {
     struct _WorkQueue *next;
-    Bool        (*function) ();
-    ClientPtr   client;
-    pointer     closure;
-}           WorkQueueRec;
+        Bool(*function) ();
+    ClientPtr client;
+    pointer closure;
+} WorkQueueRec;
 
 extern TimeStamp currentTime;
 extern TimeStamp lastDeviceEventTime;
@@ -84,4 +84,4 @@ extern TimeStamp ClientTimeToServerTime();
 extern void UpdateCurrentTime();
 extern void UpdateCurrentTimeIf();
 
-#endif				/* DIXSTRUCT_H */
+#endif /* DIXSTRUCT_H */

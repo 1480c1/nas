@@ -14,7 +14,7 @@
 
 #include "osdep.h"
 
-#define	MAXEVENTQUEUE	32
+#define MAXEVENTQUEUE   32
 
 capability iopcap;
 
@@ -33,8 +33,8 @@ static void IOPServerReader();
 void
 InitializeIOPServerReader()
 {
-    char		host[100];
-    errstat		err;
+    char host[100];
+    errstat err;
 
     /*
      * Initialize event queue
@@ -48,23 +48,23 @@ InitializeIOPServerReader()
      * Get IOP capability, and enable the server
      */
     if (AuServerHostName == NULL)
-	FatalError("No hostname, no screen\n");
+        FatalError("No hostname, no screen\n");
     sprintf(host, "%s/%s/%s", HOST_DIR, AuServerHostName, DEF_IOPSVRNAME);
     if ((err = name_lookup(host, &iopcap)) != STD_OK)
-	FatalError("Cannot find IOP server %s: %s\n", host, err_why(err));
+        FatalError("Cannot find IOP server %s: %s\n", host, err_why(err));
 
     /*
      * Enable IOP server
      */
     if ((err = iop_enable(&iopcap)) != STD_OK)
-	FatalError("iop_enable failed (%s)\n", err_why(err));
+        FatalError("iop_enable failed (%s)\n", err_why(err));
 
     /*
      * Start IOP reader thread
      */
     atexit(IOPCleanUp);
     if (thread_newthread(IOPServerReader, DEVREADER_STACK, 0, 0) <= 0)
-	FatalError("Cannot start IOP reader thread\n");
+        FatalError("Cannot start IOP reader thread\n");
 }
 
 /*
@@ -77,7 +77,7 @@ IOPCleanUp()
     errstat err;
 
     if ((err = iop_disable(&iopcap)) != STD_OK)
-	ErrorF("iop_disable failed (%s)\n", err_why(err));
+        ErrorF("iop_disable failed (%s)\n", err_why(err));
 }
 
 /*
@@ -88,38 +88,39 @@ IOPCleanUp()
 static void
 IOPServerReader()
 {
-    IOPEvent		queue[MAXEVENTQUEUE-1];
-    int			nevents, i;
-    errstat		err;
+    IOPEvent queue[MAXEVENTQUEUE - 1];
+    int nevents, i;
+    errstat err;
 
     WaitForInitialization();
 
 #ifdef XDEBUG
-    if (amDebug) ErrorF("IOPServerReader() running ...\n");
+    if (amDebug)
+        ErrorF("IOPServerReader() running ...\n");
 #endif
 
     for (;;) {
-	do {
-	    nevents = MAXEVENTQUEUE - 1;
-	    err = iop_getevents(&iopcap, queue, &nevents);
-	    if (err != STD_OK) {
-	        if (err != RPC_FAILURE) {
-		    ErrorF("iop_getevents failed (%s)\n", err_why(err));
-		}
-		nevents = 0;
-	    }
-	} while (nevents <= 0);
+        do {
+            nevents = MAXEVENTQUEUE - 1;
+            err = iop_getevents(&iopcap, queue, &nevents);
+            if (err != STD_OK) {
+                if (err != RPC_FAILURE) {
+                    ErrorF("iop_getevents failed (%s)\n", err_why(err));
+                }
+                nevents = 0;
+            }
+        } while (nevents <= 0);
 
-	/* store event(s) in the global event queue */
-	sema_mdown(&empty, nevents);
-	mu_lock(&lock);
-	for (i = 0; i < nevents; i++) {
-	    event_queue[event_qin] = queue[i];
-	    event_qin = (event_qin + 1) % MAXEVENTQUEUE;
-	}
-	mu_unlock(&lock);
-	sema_mup(&filled, nevents);
-	WakeUpMainThread();
+        /* store event(s) in the global event queue */
+        sema_mdown(&empty, nevents);
+        mu_lock(&lock);
+        for (i = 0; i < nevents; i++) {
+            event_queue[event_qin] = queue[i];
+            event_qin = (event_qin + 1) % MAXEVENTQUEUE;
+        }
+        mu_unlock(&lock);
+        sema_mup(&filled, nevents);
+        WakeUpMainThread();
     }
 }
 
@@ -139,23 +140,23 @@ AmoebaEventsAvailable()
  */
 int
 AmoebaGetEvents(queue, size)
-    IOPEvent	*queue;
-    int		size;
+IOPEvent *queue;
+int size;
 {
-    int		nevents, i;
+    int nevents, i;
 
-    if (sema_level(&filled) <= 0) return 0;
+    if (sema_level(&filled) <= 0)
+        return 0;
     if ((nevents = sema_level(&filled)) > size)
-	nevents = size;
+        nevents = size;
     sema_mdown(&filled, nevents);
     mu_lock(&lock);
     for (i = 0; i < nevents; i++) {
-	queue[i] = event_queue[event_qout];
-	event_qout = (event_qout + 1) % MAXEVENTQUEUE;
+        queue[i] = event_queue[event_qout];
+        event_qout = (event_qout + 1) % MAXEVENTQUEUE;
     }
     mu_unlock(&lock);
     sema_mup(&empty, nevents);
     return nevents;
 }
 #endif /* AMOEBA */
-

@@ -55,67 +55,67 @@ SOFTWARE.
 /* Byte swap a list of longs */
 
 void
-SwapLongs (register long *list, register unsigned long count)
+SwapLongs(register long *list, register unsigned long count)
 {
-	register char n;
+    register char n;
 
-	while (count >= 8) {
-	    swapl(list+0, n);
-	    swapl(list+1, n);
-	    swapl(list+2, n);
-	    swapl(list+3, n);
-	    swapl(list+4, n);
-	    swapl(list+5, n);
-	    swapl(list+6, n);
-	    swapl(list+7, n);
-	    list += 8;
-	    count -= 8;
-	}
-	if (count != 0) {
-	    do {
-		swapl(list, n);
-		list++;
-	    } while (--count != 0);
-	}
+    while (count >= 8) {
+        swapl(list + 0, n);
+        swapl(list + 1, n);
+        swapl(list + 2, n);
+        swapl(list + 3, n);
+        swapl(list + 4, n);
+        swapl(list + 5, n);
+        swapl(list + 6, n);
+        swapl(list + 7, n);
+        list += 8;
+        count -= 8;
+    }
+    if (count != 0) {
+        do {
+            swapl(list, n);
+            list++;
+        } while (--count != 0);
+    }
 }
 
 /* Byte swap a list of shorts */
 
 void
-SwapShorts (register short *list, register unsigned long count)
+SwapShorts(register short *list, register unsigned long count)
 {
-	register char n;
+    register char n;
 
-	while (count >= 16) {
-	    swaps(list+0, n);
-	    swaps(list+1, n);
-	    swaps(list+2, n);
-	    swaps(list+3, n);
-	    swaps(list+4, n);
-	    swaps(list+5, n);
-	    swaps(list+6, n);
-	    swaps(list+7, n);
-	    swaps(list+8, n);
-	    swaps(list+9, n);
-	    swaps(list+10, n);
-	    swaps(list+11, n);
-	    swaps(list+12, n);
-	    swaps(list+13, n);
-	    swaps(list+14, n);
-	    swaps(list+15, n);
-	    list += 16;
-	    count -= 16;
-	}
-	if (count != 0) {
-	    do {
-		swaps(list, n);
-		list++;
-	    } while (--count != 0);
-	}
+    while (count >= 16) {
+        swaps(list + 0, n);
+        swaps(list + 1, n);
+        swaps(list + 2, n);
+        swaps(list + 3, n);
+        swaps(list + 4, n);
+        swaps(list + 5, n);
+        swaps(list + 6, n);
+        swaps(list + 7, n);
+        swaps(list + 8, n);
+        swaps(list + 9, n);
+        swaps(list + 10, n);
+        swaps(list + 11, n);
+        swaps(list + 12, n);
+        swaps(list + 13, n);
+        swaps(list + 14, n);
+        swaps(list + 15, n);
+        list += 16;
+        count -= 16;
+    }
+    if (count != 0) {
+        do {
+            swaps(list, n);
+            list++;
+        } while (--count != 0);
+    }
 }
 
 void
-SwapConnClientPrefix(auConnClientPrefix *pCCP)
+SwapConnClientPrefix(auConnClientPrefix * pCCP)
 {
     register char n;
 

@@ -47,36 +47,35 @@ SOFTWARE.
 
 ********************************************************/
 
-#include	<audio/audio.h>
-#include	<audio/Aproto.h>
+#include        <audio/audio.h>
+#include        <audio/Aproto.h>
 #include "misc.h"
 #include "resource.h"
 #include "dixstruct.h"
 
 extern void WriteToClient();
-extern int (* AuEventSwapVector[256]) ();
+extern int (*AuEventSwapVector[256]) ();
 
 void
-WriteEventsToClient(ClientPtr pClient, int count, auEvent *events)
+WriteEventsToClient(ClientPtr pClient, int count, auEvent * events)
 {
-    if(pClient->swapped)
-    {
-        int	i;
-        auEvent	eventTo, *eventFrom;
+    if (pClient->swapped) {
+        int i;
+        auEvent eventTo, *eventFrom;
 
-	for(i = 0; i < count; i++)
-	{
-	    eventFrom = &events[i];
-	    /* Remember to strip off the leading bit of type in case
-	       this event was sent with "SendEvent." */
-	    (*AuEventSwapVector[eventFrom->u.u.type & 0177])
-		(eventFrom, &eventTo);
-	    (void)WriteToClient(pClient, sizeof(auEvent), (char *)&eventTo);
-	}
+        for (i = 0; i < count; i++) {
+            eventFrom = &events[i];
+            /* Remember to strip off the leading bit of type in case
+               this event was sent with "SendEvent." */
+            (*AuEventSwapVector[eventFrom->u.u.type & 0177])
+                    (eventFrom, &eventTo);
+            (void) WriteToClient(pClient, sizeof(auEvent),
+                                 (char *) &eventTo);
+        }
     }
 
-    else
-    {
-	(void)WriteToClient(pClient, count * sizeof(auEvent), (char *) events);
+    else {
+        (void) WriteToClient(pClient, count * sizeof(auEvent),
+                             (char *) events);
     }
 }

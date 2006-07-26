@@ -9,50 +9,51 @@
 #include "aulog.h"
 #include "../../dia/gram.h"
 
-void ddaSetConfig(int token, void *value)
+void
+ddaSetConfig(int token, void *value)
 {
-  int num;
-  char *str;
+    int num;
+    char *str;
 
-  /* a switch statement based on the lex/yacc token (defined in 
-     ../../dia/gram.h) is done here... Ignore any token not handled
-     or understood by this server */
+    /* a switch statement based on the lex/yacc token (defined in 
+       ../../dia/gram.h) is done here... Ignore any token not handled
+       or understood by this server */
 
-  switch(token)
-    {
+    switch (token) {
 
-      /* nothing here yet for SUN */
+        /* nothing here yet for SUN */
 
-    default:			/* ignore any other tokens */
-      if (NasConfig.DoDebug > 5)
-	osLogMsg("ddaSetConfig(): WARNING: unknown token %d, ignored\n", token);
+    default:                   /* ignore any other tokens */
+        if (NasConfig.DoDebug > 5)
+            osLogMsg("ddaSetConfig(): WARNING: unknown token %d, ignored\n", token);
 
-      break;
+        break;
     }
 
-  return;			/* that's it... */
+    return;                     /* that's it... */
 }
-      
-int ddaProcessArg(int *index, int argc, char *argv[])
+
+int
+ddaProcessArg(int *index, int argc, char *argv[])
 {
-				/* If you have an option that takes an
-				   arguement, be sure to increment
-				   index after processing the arg,
-				   otherwise, leave it alone. 
-				   DO NOT MODIFY argv! */
+    /* If you have an option that takes an
+       arguement, be sure to increment
+       index after processing the arg,
+       otherwise, leave it alone. 
+       DO NOT MODIFY argv! */
 
-				/* nothing here yet... */
+    /* nothing here yet... */
 
-				/* always return 1 to indicate failure */
-  return(1);
+    /* always return 1 to indicate failure */
+    return (1);
 }
 
-void ddaUseMsg(void)
+void
+ddaUseMsg(void)
 {
-				/* print usage summary for this server,
-				   called from UseMsg() in utils.c */
-  ErrorF("\nNo Server specific options supported.\n");
+    /* print usage summary for this server,
+       called from UseMsg() in utils.c */
+    ErrorF("\nNo Server specific options supported.\n");
 
-  return;
+    return;
 }
-

@@ -12,14 +12,14 @@
 #define GLOBALS_H_INCLUDED
 
 #ifdef GLOBALS_INSTANTIATE
-# define GEXTERN 
+# define GEXTERN
 #else
 # define GEXTERN extern
 #endif /* GLOBALS_INSTANTIATE */
 
 GEXTERN ClientPtr *clients;
-GEXTERN ClientPtr  serverClient;
-GEXTERN int  currentMaxClients;   /* current size of clients array */
+GEXTERN ClientPtr serverClient;
+GEXTERN int currentMaxClients;  /* current size of clients array */
 
 GEXTERN unsigned long globalSerialNumber;
 GEXTERN unsigned long serverGeneration;
@@ -30,12 +30,12 @@ GEXTERN TimeStamp lastDeviceEventTime;
 GEXTERN char *display;
 
 GEXTERN long TimeOutValue;
-GEXTERN int	argcGlobal;
-GEXTERN char	**argvGlobal;
+GEXTERN int argcGlobal;
+GEXTERN char **argvGlobal;
 
 GEXTERN NasConfig_t NasConfig;
 
-void diaInitGlobals(void);	/* init function */
+void diaInitGlobals(void);      /* init function */
 
-#undef GEXTERN 
+#undef GEXTERN
 #endif /* GLOBALS_H_INCLUDED */

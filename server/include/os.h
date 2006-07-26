@@ -50,13 +50,13 @@ SOFTWARE.
 extern char *alloca();
 
 #if HCVERSION < 21003
-#define ALLOCATE_LOCAL(size)	alloca((int)(size))
+#define ALLOCATE_LOCAL(size)    alloca((int)(size))
 #pragma on(alloca);
 #else /* HCVERSION >= 21003 */
-#define	ALLOCATE_LOCAL(size)	_Alloca((int)(size))
+#define ALLOCATE_LOCAL(size)    _Alloca((int)(size))
 #endif /* HCVERSION < 21003 */
 
-#define DEALLOCATE_LOCAL(ptr)  /* as nothing */
+#define DEALLOCATE_LOCAL(ptr)   /* as nothing */
 
 #endif /* defined(__HIGHC__) */
 
@@ -86,17 +86,17 @@ extern void debug_dealloca();
 #define DEALLOCATE_LOCAL(ptr) debug_dealloca(__FILE__,__LINE__,(ptr))
 #else
 #define ALLOCATE_LOCAL(size) alloca((int)(size))
-#define DEALLOCATE_LOCAL(ptr)  /* as nothing */
+#define DEALLOCATE_LOCAL(ptr)   /* as nothing */
 #endif
 #endif /* who does alloca */
 
 #endif /* NO_ALLOCA */
 
 #ifdef CAHILL_MALLOC
-#define Xalloc(len)		debug_Xalloc(__FILE__,__LINE__,(len))
-#define Xcalloc(len)		debug_Xcalloc(__FILE__,__LINE__,(len))
-#define Xrealloc(ptr,len)	debug_Xrealloc(__FILE__,__LINE__,(ptr),(len))
-#define Xfree(ptr)		debug_Xfree(__FILE__,__LINE__,(ptr))
+#define Xalloc(len)             debug_Xalloc(__FILE__,__LINE__,(len))
+#define Xcalloc(len)            debug_Xcalloc(__FILE__,__LINE__,(len))
+#define Xrealloc(ptr,len)       debug_Xrealloc(__FILE__,__LINE__,(ptr),(len))
+#define Xfree(ptr)              debug_Xfree(__FILE__,__LINE__,(ptr))
 #endif
 
 #ifndef ALLOCATE_LOCAL
@@ -116,7 +116,7 @@ extern void safe_free(void *ptr);
 
 #define xalloc(size) safe_alloc((size))
 #define xrealloc(ptr, size) \
-	safe_realloc(((pointer)(ptr)), (size))
+        safe_realloc(((pointer)(ptr)), (size))
 #define xfree(ptr) safe_free(((pointer)(ptr)))
 #endif /* sgi */
 
@@ -130,31 +130,31 @@ extern void safe_free(void *ptr);
 #endif
 #endif
 
-int		ReadRequestFromClient();
-void		CloseDownConnection();
-void		CreateWellKnownSockets();
-int		SetDefaultFontPath();
-void		FreeFontRecord();
-int		SetFontPath();
-void		ErrorF();
-void		Error();
-void		FatalError();
-void		ProcessCommandLine();
-char        *FindConfigFile ();
-void		FlushAllOutput();
-void		FlushIfCriticalOutputPending();
+int ReadRequestFromClient();
+void CloseDownConnection();
+void CreateWellKnownSockets();
+int SetDefaultFontPath();
+void FreeFontRecord();
+int SetFontPath();
+void ErrorF();
+void Error();
+void FatalError();
+void ProcessCommandLine();
+char *FindConfigFile();
+void FlushAllOutput();
+void FlushIfCriticalOutputPending();
 #ifndef CAHILL_MALLOC
-void		Xfree(register pointer ptr);
-void            *Xalloc(unsigned long size);
-void            *Xcalloc(unsigned long amount);
-void            *Xrealloc(register pointer ptr, unsigned long amount);
+void Xfree(register pointer ptr);
+void *Xalloc(unsigned long size);
+void *Xcalloc(unsigned long amount);
+void *Xrealloc(register pointer ptr, unsigned long amount);
 #else
-void		debug_Xfree(char *file, int line, register pointer ptr);
-void            *debug_Xalloc(char *file, int line, unsigned long amount);
-void            *debug_Xcalloc(char *file, int line, unsigned long amount);
-void            *debug_Xrealloc(char *file, int line, register pointer ptr,
-				unsigned long amount);
+void debug_Xfree(char *file, int line, register pointer ptr);
+void *debug_Xalloc(char *file, int line, unsigned long amount);
+void *debug_Xcalloc(char *file, int line, unsigned long amount);
+void *debug_Xrealloc(char *file, int line, register pointer ptr,
+                     unsigned long amount);
 #endif
-long		GetTimeInMillis();
+long GetTimeInMillis();
 
 #endif /* OS_H */

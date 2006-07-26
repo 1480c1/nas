@@ -9,6 +9,8 @@ Version ??? (devel) 7/15/2006
 
           - add a proper return value in auvowware.c:initMixer()
 
+          - mondo indentification of server/*
+
         - Applied patches from Stefan Huehner:
 
           - removing old 'const' determination, correcting some proper

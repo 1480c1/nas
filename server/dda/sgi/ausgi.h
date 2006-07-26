@@ -32,18 +32,18 @@
 #define _SGI_H_
 
 #ifdef SNI
-#define	VENDOR_STRING		"SNI RWxxx"
+#define VENDOR_STRING           "SNI RWxxx"
 #else
-#define	VENDOR_STRING		"SGI"
+#define VENDOR_STRING           "SGI"
 #endif
-#define	VENDOR_RELEASE		1
+#define VENDOR_RELEASE          1
 
 /*
  * NOTE: The native format endianess should match that of the machine
  * running the audio server.
  */
-#define auNativeFormat		AuFormatLinearSigned16MSB
-#define auNativeBytesPerSample	2
+#define auNativeFormat          AuFormatLinearSigned16MSB
+#define auNativeBytesPerSample  2
 
 #define _BSD_SIGNALS
 #include <signal.h>
@@ -53,9 +53,9 @@ extern void *safe_realloc(void *ptr, size_t size);
 extern void safe_free(void *ptr);
 
 typedef int AuBlock;
-#define	AuUnBlockAudio(_x)	sigsetmask(_x)
-#define	AuBlockAudio()		sigblock(sigmask(SIGALRM))
-#define AuProtectedMalloc(_s)	safe_alloc(_s)
-#define AuProtectedFree(_p)		safe_free(_p)
+#define AuUnBlockAudio(_x)      sigsetmask(_x)
+#define AuBlockAudio()          sigblock(sigmask(SIGALRM))
+#define AuProtectedMalloc(_s)   safe_alloc(_s)
+#define AuProtectedFree(_p)             safe_free(_p)
 
 #endif /* !_SGI_H_ */

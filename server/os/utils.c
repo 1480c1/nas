@@ -80,21 +80,21 @@ SOFTWARE.
 #define sigset  _local_signal
 
 #ifndef NeedFunctionPrototypes
-static void (*_local_signal(sig, action))()
+static void (*_local_signal(sig, action)) ()
 int sig;
-void (*action)();
+void (*action) ();
 #else /* NeedFunctionPrototypes */
-static void (*_local_signal(int sig, void (*action)(int)))(int)
-#endif /* NeedFunctionPrototypes */
+static void (*_local_signal(int sig, void (*action) (int))) (int)
+#endif                          /* NeedFunctionPrototypes */
 {
-        struct sigvec   vec;
-        struct sigvec   ovec;
+    struct sigvec vec;
+    struct sigvec ovec;
 
-        vec.sv_handler = action;
-        vec.sv_flags = 0;
-        sigvector(sig, &vec, &ovec);
+    vec.sv_handler = action;
+    vec.sv_flags = 0;
+    sigvector(sig, &vec, &ovec);
 
-        return(ovec.sv_handler);
+    return (ovec.sv_handler);
 }
 #else
 #define signal sigset
@@ -119,7 +119,6 @@ int auditTrailLevel = 1;
 #ifdef AMOEBA
 static mutex print_lock
 #endif
-
 void ddxUseMsg(void);
 
 #if defined(SVR4) || defined(hpux) || defined(linux) || defined(AMOEBA) || defined(_MINIX)
@@ -129,7 +128,7 @@ void ddxUseMsg(void);
 #ifdef AIXV3
 #define AIXFILE "/tmp/aixfile"
 FILE *aixfd;
-int SyncOn  = 0;
+int SyncOn = 0;
 extern int SelectWaitTime;
 #endif
 
@@ -151,22 +150,21 @@ int userdefinedfontpath = 0;
 
 Bool Must_have_memory = FALSE;
 
-char *dev_tty_from_init = NULL;		/* since we need to parse it anyway */
+char *dev_tty_from_init = NULL; /* since we need to parse it anyway */
 
 /* Force connections to close on SIGHUP from init */
 
-/*ARGSUSED*/
-SIGVAL
-AutoResetServer (int sig)
+ /*ARGSUSED*/ SIGVAL
+AutoResetServer(int sig)
 {
     dispatchException |= DE_RESET;
     isItTimeToYield = TRUE;
 #ifdef GPROF
-    chdir ("/tmp");
-    exit (0);
+    chdir("/tmp");
+    exit(0);
 #endif
 #if defined(USG) || defined(SYSV) || defined(SVR4) || defined(linux) || defined(_MINIX)
-    signal (SIGHUP, AutoResetServer);
+    signal(SIGHUP, AutoResetServer);
 #endif
 #ifdef AMOEBA
     WakeUpMainThread();
@@ -175,8 +173,7 @@ AutoResetServer (int sig)
 
 /* Force connections to close and then exit on SIGTERM, SIGINT */
 
-/*ARGSUSED*/
-SIGVAL
+ /*ARGSUSED*/ SIGVAL
 GiveUp(int sig)
 {
 
@@ -184,7 +181,7 @@ GiveUp(int sig)
     /*
      * Don't let any additional occurances of thses signals cause
      * premature termination
-    */
+     */
     signal(SIGTERM, SIG_IGN);
     signal(SIGINT, SIG_IGN);
 #endif
@@ -201,14 +198,13 @@ static void
 AbortServer(void)
 {
     fflush(stderr);
-    if (CoreDump)
-    {
+    if (CoreDump) {
 #ifdef AMOEBA
-	IOPCleanUp();
+        IOPCleanUp();
 #endif
-	abort();
+        abort();
     }
-    exit (1);
+    exit(1);
 }
 
 void
@@ -228,10 +224,10 @@ Error(char *str)
 long
 GetTimeInMillis(void)
 {
-    struct timeval  tp;
+    struct timeval tp;
 
     gettimeofday(&tp, 0);
-    return(tp.tv_sec * 1000) + (tp.tv_usec / 1000);
+    return (tp.tv_sec * 1000) + (tp.tv_usec / 1000);
 }
 #else
 long
@@ -242,30 +238,27 @@ GetTimeInMillis(void)
 #endif /* AMOEBA */
 #endif
 
-AdjustWaitForDelay (pointer waitTime, unsigned long newdelay)
+AdjustWaitForDelay(pointer waitTime, unsigned long newdelay)
 {
-    static struct timeval   delay_val;
-    struct timeval	    **wt = (struct timeval **) waitTime;
-    unsigned long	    olddelay;
+    static struct timeval delay_val;
+    struct timeval **wt = (struct timeval **) waitTime;
+    unsigned long olddelay;
 
-    if (*wt == NULL)
-    {
-	delay_val.tv_sec = newdelay / 1000;
-	delay_val.tv_usec = 1000 * (newdelay % 1000);
-	*wt = &delay_val;
-    }
-    else
-    {
-	olddelay = (*wt)->tv_sec * 1000 + (*wt)->tv_usec / 1000;
-	if (newdelay < olddelay)
-	{
-	    (*wt)->tv_sec = newdelay / 1000;
-	    (*wt)->tv_usec = 1000 * (newdelay % 1000);
-	}
+    if (*wt == NULL) {
+        delay_val.tv_sec = newdelay / 1000;
+        delay_val.tv_usec = 1000 * (newdelay % 1000);
+        *wt = &delay_val;
+    } else {
+        olddelay = (*wt)->tv_sec * 1000 + (*wt)->tv_usec / 1000;
+        if (newdelay < olddelay) {
+            (*wt)->tv_sec = newdelay / 1000;
+            (*wt)->tv_usec = 1000 * (newdelay % 1000);
+        }
     }
 }
 
-void UseMsg(void)
+void
+UseMsg(void)
 {
     ErrorF("Usage: nasd [:<listen port offset>] [option]\n");
     ErrorF(" -aa                allow any client to connect\n");
@@ -284,7 +277,7 @@ void UseMsg(void)
     ErrorF(" -nopn              partial networking disabled [default]\n");
 #endif
 #endif
-    ddaUseMsg();		/* print dda specific usage */
+    ddaUseMsg();                /* print dda specific usage */
 }
 
 /* 
@@ -295,22 +288,22 @@ void UseMsg(void)
  * file and (potentially) overridden by command-line options later.
  */
 char *
-FindConfigFile (int argc, char *argv[] )
+FindConfigFile(int argc, char *argv[])
 {
-  int i;
+    int i;
 
-  for (i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "-config") == 0) {
-      i++;
-      if (i < argc)
-        return argv[i];
-      else {
-        UseMsg();
-        exit(1);
-      }
+    for (i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-config") == 0) {
+            i++;
+            if (i < argc)
+                return argv[i];
+            else {
+                UseMsg();
+                exit(1);
+            }
+        }
     }
-  }
-  return NULL; /* Not found */
+    return NULL;                /* Not found */
 }
 
 
@@ -320,92 +313,78 @@ FindConfigFile (int argc, char *argv[] )
  * argc or any of the strings pointed to by argv.
  */
 void
-ProcessCommandLine ( int argc, char *argv[] )
+ProcessCommandLine(int argc, char *argv[])
 {
-     int	i;
+    int i;
 #ifndef AMOEBA
 #ifdef PART_NET
-     PartialNetwork = TRUE;
+    PartialNetwork = TRUE;
 #endif
 #endif
 
-     for (i = 1; i < argc; i++) {
-	if (argv[i][0] == ':') {
-	    display = argv[i];
-	    display++;
-	} else if (strcmp(argv[i], "-aa") == 0)
-	    NasConfig.AllowAny = TRUE;
+    for (i = 1; i < argc; i++) {
+        if (argv[i][0] == ':') {
+            display = argv[i];
+            display++;
+        } else if (strcmp(argv[i], "-aa") == 0)
+            NasConfig.AllowAny = TRUE;
 #ifdef STARTSERVER
-	else if (strcmp(argv[i], "-timeout") == 0) {
-	    i++;
-	    if (i < argc)
-		timeoutWithNoClients = atoi(argv[i]);
-	    else {
-		UseMsg();
-		exit(1);
-	    }
-	}
+        else if (strcmp(argv[i], "-timeout") == 0) {
+            i++;
+            if (i < argc)
+                timeoutWithNoClients = atoi(argv[i]);
+            else {
+                UseMsg();
+                exit(1);
+            }
+        }
 #endif /* STARTSERVER */
 #ifndef AMOEBA
-	else if (strcmp(argv[i], "-pn") == 0)
-	    PartialNetwork = TRUE;
-	else if (strcmp(argv[i], "-nopn") == 0)
-	    PartialNetwork = FALSE;
+        else if (strcmp(argv[i], "-pn") == 0)
+            PartialNetwork = TRUE;
+        else if (strcmp(argv[i], "-nopn") == 0)
+            PartialNetwork = FALSE;
 #endif
-	else if (strcmp(argv[i], "-v") == 0)
-	  {
-	    NasConfig.DoVerbose = TRUE;
-	  }
-    else if (strcmp(argv[i], "-config") == 0)
-    {
-        i++;
-	    if (i < argc)
-	      i++;
-	    else {
-	      UseMsg();
-	      exit(1);
+        else if (strcmp(argv[i], "-v") == 0) {
+            NasConfig.DoVerbose = TRUE;
+        } else if (strcmp(argv[i], "-config") == 0) {
+            i++;
+            if (i < argc)
+                i++;
+            else {
+                UseMsg();
+                exit(1);
+            }
+        } else if (strcmp(argv[i], "-b") == 0) {
+            NasConfig.DoDaemon = TRUE;
+        } else if (strcmp(argv[i], "-V") == 0) {        /* print version and exit */
+            printf("%s\n", release);
+            exit(0);
+        } else if (strcmp(argv[i], "-d") == 0) {
+            i++;
+            if (i < argc)
+                NasConfig.DoDebug = atoi(argv[i]);
+            else {
+                UseMsg();
+                exit(1);
+            }
+        } else if (strcmp(argv[i], "-local") == 0) {
+            NasConfig.LocalOnly = TRUE;
+        } else {
+            /* see if the dda understands it.
+               we pass (in addition to argc/argv
+               an index to the current arg
+               being processed.  If the arg is
+               processed, i is set to the last arg
+               processed (in the event of an option
+               that takes an arguement */
+            if (ddaProcessArg(&i, argc, argv)) {        /* returns non-zero for an unidentified
+                                                           arg */
+                UseMsg();       /* this will call ddaUseMsg() */
+                exit(1);
+            }
         }
     }
-	else if (strcmp(argv[i], "-b") == 0)
-	  {
-	    NasConfig.DoDaemon = TRUE;
-	  }
-	else if (strcmp(argv[i], "-V") == 0)
-	  {                     /* print version and exit */
-	    printf("%s\n", release);
-            exit(0);
-	  }
-	else if (strcmp(argv[i], "-d") == 0)
-	  {
-	    i++;
-	    if (i < argc)
-	      NasConfig.DoDebug = atoi(argv[i]);
-	    else {
-	      UseMsg();
-	      exit(1);
-	    }
-	  }
-	else if (strcmp(argv[i], "-local") == 0)
-	  {
-	    NasConfig.LocalOnly = TRUE;
-	  }
-	else 
-	  {
-				/* see if the dda understands it.
-				   we pass (in addition to argc/argv
-				    an index to the current arg
-				    being processed.  If the arg is
-				    processed, i is set to the last arg
-				    processed (in the event of an option
-				    that takes an arguement */
-	    if (ddaProcessArg(&i, argc, argv))
-	      {			/* returns non-zero for an unidentified
-				   arg */
-		UseMsg();	/* this will call ddaUseMsg() */
-		exit(1);
-	      }
-	  }
-     }
 }
 
 /* XALLOC -- X's internal memory allocator.  Why does it return unsigned
@@ -420,24 +399,24 @@ ProcessCommandLine ( int argc, char *argv[] )
  * expectations of malloc, but this makes lint happier.
  */
 
-void * 
-Xalloc (unsigned long amount)
+void *
+Xalloc(unsigned long amount)
 {
-    register pointer  ptr;
-	
-    if ((long)amount <= 0)
-	return NULL;
+    register pointer ptr;
+
+    if ((long) amount <= 0)
+        return NULL;
     /* aligned extra on long word boundary */
     amount = (amount + 3) & ~3;
 #ifdef MEMBUG
     if (!Must_have_memory && Memory_fail &&
-	((random() % MEM_FAIL_SCALE) < Memory_fail))
-	return NULL;
+        ((random() % MEM_FAIL_SCALE) < Memory_fail))
+        return NULL;
 #endif
-    if (ptr = (pointer)malloc(amount))
-	return ptr;
+    if (ptr = (pointer) malloc(amount))
+        return ptr;
     if (Must_have_memory)
-	FatalError("Out of memory");
+        FatalError("Out of memory");
     return NULL;
 }
 
@@ -446,13 +425,13 @@ Xalloc (unsigned long amount)
  *****************/
 
 void *
-Xcalloc (unsigned long amount)
+Xcalloc(unsigned long amount)
 {
-    unsigned long   *ret;
+    unsigned long *ret;
 
-    ret = Xalloc (amount);
+    ret = Xalloc(amount);
     if (ret)
-	bzero ((char *) ret, (int) amount);
+        bzero((char *) ret, (int) amount);
     return ret;
 }
 
@@ -461,60 +440,59 @@ Xcalloc (unsigned long amount)
  *****************/
 
 void *
-Xrealloc (register pointer ptr, unsigned long amount)
+Xrealloc(register pointer ptr, unsigned long amount)
 {
 
 #ifdef MEMBUG
     if (!Must_have_memory && Memory_fail &&
-	((random() % MEM_FAIL_SCALE) < Memory_fail))
-	return (unsigned long *)NULL;
+        ((random() % MEM_FAIL_SCALE) < Memory_fail))
+        return (unsigned long *) NULL;
 #endif
-    if (amount <= 0)
-    {
-	if (ptr && !amount)
-	    free(ptr);
-	return NULL;
+    if (amount <= 0) {
+        if (ptr && !amount)
+            free(ptr);
+        return NULL;
     }
     amount = (amount + 3) & ~3;
     if (ptr)
-        ptr = (pointer)realloc((char *)ptr, amount);
+        ptr = (pointer) realloc((char *) ptr, amount);
     else
-	ptr = (pointer)malloc(amount);
+        ptr = (pointer) malloc(amount);
     if (ptr)
         return ptr;
     if (Must_have_memory)
-	FatalError("Out of memory");
+        FatalError("Out of memory");
     return NULL;
 }
-                    
+
 /*****************
  *  Xfree
  *    calls free 
- *****************/    
+ *****************/
 
 void
 Xfree(register pointer ptr)
 {
     if (ptr)
-	free((char *)ptr); 
+        free((char *) ptr);
 }
 
 #ifdef CAHILL_MALLOC
 #include <malloc.h>
 
-void * 
-debug_Xalloc (char *file, int line, unsigned long amount)
+void *
+debug_Xalloc(char *file, int line, unsigned long amount)
 {
-    register pointer  ptr;
-	
-    if ((long)amount <= 0)
-      return NULL;
+    register pointer ptr;
+
+    if ((long) amount <= 0)
+        return NULL;
     /* aligned extra on long word boundary */
     amount = (amount + 3) & ~3;
-    if (ptr = (pointer)debug_malloc(file, line, amount))
-	return ptr;
+    if (ptr = (pointer) debug_malloc(file, line, amount))
+        return ptr;
     if (Must_have_memory)
-	FatalError("Out of memory");
+        FatalError("Out of memory");
     return NULL;
 }
 
@@ -523,16 +501,16 @@ debug_Xalloc (char *file, int line, unsigned long amount)
  *****************/
 
 void *
-debug_Xcalloc (char *file, int line, unsigned long amount)
-    char *file;
-    int line;
-    unsigned long   amount;
+debug_Xcalloc(char *file, int line, unsigned long amount)
+char *file;
+int line;
+unsigned long amount;
 {
-    unsigned long   *ret;
+    unsigned long *ret;
 
-    ret = debug_Xalloc (file, line, amount);
+    ret = debug_Xalloc(file, line, amount);
     if (ret)
-	bzero ((char *) ret, (int) amount);
+        bzero((char *) ret, (int) amount);
     return ret;
 }
 
@@ -541,59 +519,59 @@ debug_Xcalloc (char *file, int line, unsigned long amount)
  *****************/
 
 void *
-debug_Xrealloc (char *file, int line, register pointer ptr, 
-		unsigned long amount)
+debug_Xrealloc(char *file, int line, register pointer ptr,
+               unsigned long amount)
 {
-    if ((long)amount <= 0)
-    {
-	if (ptr && !amount)
-	    debug_free(file, line, ptr);
-	return NULL;
+    if ((long) amount <= 0) {
+        if (ptr && !amount)
+            debug_free(file, line, ptr);
+        return NULL;
     }
     amount = (amount + 3) & ~3;
     if (ptr)
-        ptr = (pointer)debug_realloc(file, line, (char *)ptr, amount);
+        ptr = (pointer) debug_realloc(file, line, (char *) ptr, amount);
     else
-	ptr = (pointer)debug_malloc(file, line, amount);
+        ptr = (pointer) debug_malloc(file, line, amount);
     if (ptr)
         return ptr;
     if (Must_have_memory)
-	FatalError("Out of memory");
+        FatalError("Out of memory");
     return NULL;
 }
-                    
+
 /*****************
  *  Xfree
  *    calls free 
- *****************/    
+ *****************/
 
 void
 debug_Xfree(char *file, int line, register pointer ptr)
 {
     if (ptr)
-	debug_free(file, line, (char *)ptr); 
+        debug_free(file, line, (char *) ptr);
 }
 #endif
 
-void OsInitAllocator (void)
+void
+OsInitAllocator(void)
 {
 #ifdef MEMBUG
-    static int	been_here;
+    static int been_here;
 
     /* Check the memory system after each generation */
     if (been_here)
-	CheckMemory ();
+        CheckMemory();
     else
-	been_here = 1;
+        been_here = 1;
 #endif
     return;
 }
 
 /*VARARGS1*/
 void
-AuditF(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5, 
-       char *s6, char *s7, char *s8, char *s9) /* limit of ten args */
-{
+AuditF(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
+       char *s6, char *s7, char *s8, char *s9)
+{                               /* limit of ten args */
 #ifdef X_NOT_STDC_ENV
     long tm;
 #else
@@ -601,17 +579,16 @@ AuditF(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
 #endif
     char *autime, *s;
 
-    if (*f != ' ')
-    {
-	time(&tm);
-	autime = ctime(&tm);
-	if (s = index(autime, '\n'))
-	    *s = '\0';
-	if (s = rindex(argvGlobal[0], '/'))
-	    s++;
-	else
-	    s = argvGlobal[0];
-	ErrorF("AUDIT: %s: %d %s: ", autime, getpid(), s);
+    if (*f != ' ') {
+        time(&tm);
+        autime = ctime(&tm);
+        if (s = index(autime, '\n'))
+            *s = '\0';
+        if (s = rindex(argvGlobal[0], '/'))
+            s++;
+        else
+            s = argvGlobal[0];
+        ErrorF("AUDIT: %s: %d %s: ", autime, getpid(), s);
     }
     ErrorF(f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
 
@@ -620,26 +597,24 @@ AuditF(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
 
 /*VARARGS1*/
 void
-FatalError(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, 
-	   char *s5, char *s6, char *s7, char *s8, 
-	   char *s9) /* limit of ten args */
-{
+FatalError(char *f, char *s0, char *s1, char *s2, char *s3, char *s4,
+           char *s5, char *s6, char *s7, char *s8, char *s9)
+{                               /* limit of ten args */
     ErrorF("\nFatal server error:\n");
     ErrorF(f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
     ErrorF("\n");
     AbortServer();
-    /*NOTREACHED*/
-    return;
+     /*NOTREACHED*/ return;
 }
 
 /*VARARGS1*/
 void
-ErrorF( char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5, 
-	char *s6, char *s7, char *s8, char *s9) /* limit of ten args */
-{
+ErrorF(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
+       char *s6, char *s7, char *s8, char *s9)
+{                               /* limit of ten args */
 #ifdef AIXV3
     fprintf(aixfd, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
-    fflush (aixfd);
+    fflush(aixfd);
 
     if (SyncOn)
         sync();
@@ -647,7 +622,7 @@ ErrorF( char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
 #ifdef AMOEBA
     mu_lock(&print_lock);
 #endif
-    fprintf( stderr, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
+    fprintf(stderr, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
 #ifdef AMOEBA
     mu_unlock(&print_lock);
 #endif
@@ -657,15 +632,15 @@ ErrorF( char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
 }
 
 #ifdef AIXV3
-void OpenDebug(void)
+void
+OpenDebug(void)
 {
-        if((aixfd = fopen(AIXFILE,"w")) == NULL )
-        {
-                fprintf(stderr,"open aixfile failed\n");
-                exit(-1);
-        }
-        chmod(AIXFILE,00777);
+    if ((aixfd = fopen(AIXFILE, "w")) == NULL) {
+        fprintf(stderr, "open aixfile failed\n");
+        exit(-1);
+    }
+    chmod(AIXFILE, 00777);
 
-	return;
+    return;
 }
 #endif

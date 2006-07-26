@@ -32,7 +32,7 @@ SOFTWARE.
 
 #define NullClient ((ClientPtr) 0)
 #define REQUEST(type) \
-	register type *stuff = (type *)client->requestBuffer
+        register type *stuff = (type *)client->requestBuffer
 
 
 #define REQUEST_SIZE_MATCH(req)\
@@ -51,15 +51,15 @@ SOFTWARE.
 #define LEGAL_NEW_RESOURCE(id,client)\
     if (!LegalNewID(id,client)) \
     {\
-	client->errorValue = id;\
+        client->errorValue = id;\
         return(AuBadIDChoice);\
     }
 
 #define WriteAuReplyToClient(pClient, size, pReply) \
     if ((pClient)->swapped) \
-	(* AuReplySwapVector[((auReq *)(pClient)->requestBuffer)->reqType]) \
-		(pClient, (int)(size), pReply); \
-	else (void) WriteToClient(pClient, (int)(size), (char *)(pReply));
+        (* AuReplySwapVector[((auReq *)(pClient)->requestBuffer)->reqType]) \
+                (pClient, (int)(size), pReply); \
+        else (void) WriteToClient(pClient, (int)(size), (char *)(pReply));
 
 
 #define WriteReplyToClient(pClient, size, pReply) \
@@ -75,7 +75,7 @@ SOFTWARE.
 
 typedef struct _Client *ClientPtr;
 
-typedef struct _WorkQueue	*WorkQueuePtr;
+typedef struct _WorkQueue *WorkQueuePtr;
 
 
 extern ClientPtr requestingClient;

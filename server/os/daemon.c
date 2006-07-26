@@ -62,7 +62,7 @@ from the X Consortium.
 #include "os.h"
 
 void
-osBecomeOrphan ()
+osBecomeOrphan()
 {
     Pid_t child_id;
     int stat;
@@ -80,37 +80,38 @@ osBecomeOrphan ()
     child_id = fork();
     switch (child_id) {
     case 0:
-	/* child */
-	break;
+        /* child */
+        break;
     case -1:
-	/* error */
-	FatalError("daemon fork failed, errno = %d\n", errno);
-	break;
+        /* error */
+        FatalError("daemon fork failed, errno = %d\n", errno);
+        break;
 
     default:
-	/* parent */
+        /* parent */
 
 #if !defined(CSRG_BASED) && !defined(__QNXNTO__)
 #if defined(SVR4)
-	stat = setpgid(child_id, child_id);
-	/* This gets error EPERM.  Why? */
+        stat = setpgid(child_id, child_id);
+        /* This gets error EPERM.  Why? */
 #else
 #if defined(SYSV)
-	stat = 0;	/* don't know how to set child's process group */
+        stat = 0;               /* don't know how to set child's process group */
 #else
-	stat = setpgrp(child_id, child_id);
-	if (stat != 0)
-	    FatalError("setting process grp for daemon failed, errno = %d\n",
-		     errno);
+        stat = setpgrp(child_id, child_id);
+        if (stat != 0)
+            FatalError
+                    ("setting process grp for daemon failed, errno = %d\n",
+                     errno);
 #endif
 #endif
 #endif /* !CSRG_BASED */
-	exit (0);
+        exit(0);
     }
 }
 
 void
-osBecomeDaemon ()
+osBecomeDaemon()
 {
     register int i;
 
@@ -119,33 +120,33 @@ osBecomeDaemon ()
      */
 
 #if defined(CSRG_BASED) || defined(__QNXNTO__)
-    daemon (0, 0);
+    daemon(0, 0);
 #else
 #if defined(SYSV) || defined(SVR4)
-    setpgrp ();
+    setpgrp();
 #else
-    setpgrp (0, getpid());
+    setpgrp(0, getpid());
 #endif
 
-    close (0); 
-    close (1);
-    close (2);
+    close(0);
+    close(1);
+    close(2);
 
 #if !defined(__UNIXOS2__) && !defined(__CYGWIN__)
 #if !((defined(SYSV) || defined(SVR4)) && defined(i386))
-    if ((i = open ("/dev/tty", O_RDWR)) >= 0) {	/* did open succeed? */
+    if ((i = open("/dev/tty", O_RDWR)) >= 0) {  /* did open succeed? */
 #if defined(USG) && defined(TCCLRCTTY)
-	int zero = 0;
-	(void) ioctl (i, TCCLRCTTY, &zero);
+        int zero = 0;
+        (void) ioctl(i, TCCLRCTTY, &zero);
 #else
 #if (defined(SYSV) || defined(SVR4)) && defined(TIOCTTY)
-	int zero = 0;
-	(void) ioctl (i, TIOCTTY, &zero);
+        int zero = 0;
+        (void) ioctl(i, TIOCTTY, &zero);
 #else
-	(void) ioctl (i, TIOCNOTTY, (char *) 0);    /* detach, BSD style */
+        (void) ioctl(i, TIOCNOTTY, (char *) 0); /* detach, BSD style */
 #endif
 #endif
-	(void) close (i);
+        (void) close(i);
     }
 #endif /* !((SYSV || SVR4) && i386) */
 #endif /* !__UNIXOS2__ */
@@ -153,9 +154,9 @@ osBecomeDaemon ()
     /*
      * Set up the standard file descriptors.
      */
-    (void) open ("/", O_RDONLY);	/* root inode already in core */
-    (void) dup2 (0, 1);
-    (void) dup2 (0, 2);
+    (void) open("/", O_RDONLY); /* root inode already in core */
+    (void) dup2(0, 1);
+    (void) dup2(0, 2);
 #endif /* CSRG_BASED */
 }
 
@@ -166,26 +167,24 @@ char *pidFile = "/var/run/nasd.pid";
 #endif
 
 int
-osStorePid ()
+osStorePid()
 {
 #if defined(linux) || defined(CSRG_BASED) || defined(__QNXNTO__)
-    int         oldpid;
+    int oldpid;
 
     if (pidFile[0] != '\0') {
-        pidFd = open (pidFile, 2);
+        pidFd = open(pidFile, 2);
         if (pidFd == -1 && errno == ENOENT)
-            pidFd = open (pidFile, O_RDWR|O_CREAT, 0666);
-        if (pidFd == -1 || !(pidFilePtr = fdopen (pidFd, "r+")))
-        {
-            osLogMsg("process-id file %s cannot be opened\n",
-                      pidFile);
+            pidFd = open(pidFile, O_RDWR | O_CREAT, 0666);
+        if (pidFd == -1 || !(pidFilePtr = fdopen(pidFd, "r+"))) {
+            osLogMsg("process-id file %s cannot be opened\n", pidFile);
             return -1;
         }
-        if (fscanf (pidFilePtr, "%d\n", &oldpid) != 1)
+        if (fscanf(pidFilePtr, "%d\n", &oldpid) != 1)
             oldpid = -1;
-        fseek (pidFilePtr, 0l, 0);
-        fprintf (pidFilePtr, "%5d\n", getpid ());
-        (void) fflush (pidFilePtr);
+        fseek(pidFilePtr, 0l, 0);
+        fprintf(pidFilePtr, "%5d\n", getpid());
+        (void) fflush(pidFilePtr);
     }
 #endif
     return 0;

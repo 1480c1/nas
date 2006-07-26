@@ -63,13 +63,13 @@ int
 CompareTimeStamps(TimeStamp a, TimeStamp b)
 {
     if (a.months < b.months)
-	return EARLIER;
+        return EARLIER;
     if (a.months > b.months)
-	return LATER;
+        return LATER;
     if (a.milliseconds < b.milliseconds)
-	return EARLIER;
+        return EARLIER;
     if (a.milliseconds > b.milliseconds)
-	return LATER;
+        return LATER;
     return SAMETIME;
 }
 
@@ -84,22 +84,19 @@ ClientTimeToServerTime(CARD32 c)
 {
     TimeStamp ts;
     if (c == CurrentTime)
-	return currentTime;
+        return currentTime;
     ts.months = currentTime.months;
     ts.milliseconds = c;
-    if (c > currentTime.milliseconds)
-    {
-	if (((unsigned long) c - currentTime.milliseconds) > HALFMONTH)
-	    ts.months -= 1;
-    }
-    else if (c < currentTime.milliseconds)
-    {
-	if (((unsigned long)currentTime.milliseconds - c) > HALFMONTH)
-	    ts.months += 1;
+    if (c > currentTime.milliseconds) {
+        if (((unsigned long) c - currentTime.milliseconds) > HALFMONTH)
+            ts.months -= 1;
+    } else if (c < currentTime.milliseconds) {
+        if (((unsigned long) currentTime.milliseconds - c) > HALFMONTH)
+            ts.months += 1;
     }
     return ts;
 }
-#endif	/* junk */
+#endif /* junk */
 
 /* No-op Don't Do Anything : sometimes we need to be able to call a procedure
  * that doesn't do anything.  For example, on screen with only static
@@ -116,15 +113,15 @@ NoopDDA()
  * sleeps for input.
  */
 
-WorkQueuePtr		workQueue;
-static WorkQueuePtr	*workQueueLast = &workQueue;
-/* static Bool		WorkBlockHandlerRegistered; */
+WorkQueuePtr workQueue;
+static WorkQueuePtr *workQueueLast = &workQueue;
+/* static Bool          WorkBlockHandlerRegistered; */
 
 /* ARGSUSED */
 void
 ProcessWorkQueue()
 {
-    WorkQueuePtr    q, n, p;
+    WorkQueuePtr q, n, p;
 
     p = NULL;
     /*
@@ -133,43 +130,38 @@ ProcessWorkQueue()
      * they will be called again.  This must be reentrant with
      * QueueWorkProc, hence the crufty usage of variables.
      */
-    for (q = workQueue; q; q = n)
-    {
-	if ((*q->function) (q->client, q->closure))
-	{
-	    /* remove q from the list */
-	    n = q->next;    /* don't fetch until after func called */
-	    if (p)
-		p->next = n;
-	    else
-		workQueue = n;
-	    xfree (q);
-	}
-	else
-	{
-	    n = q->next;    /* don't fetch until after func called */
-	    p = q;
-	}
+    for (q = workQueue; q; q = n) {
+        if ((*q->function) (q->client, q->closure)) {
+            /* remove q from the list */
+            n = q->next;        /* don't fetch until after func called */
+            if (p)
+                p->next = n;
+            else
+                workQueue = n;
+            xfree(q);
+        } else {
+            n = q->next;        /* don't fetch until after func called */
+            p = q;
+        }
     }
     if (p)
-	workQueueLast = &p->next;
-    else
-    {
-	workQueueLast = &workQueue;
+        workQueueLast = &p->next;
+    else {
+        workQueueLast = &workQueue;
     }
 }
 
 Bool
-QueueWorkProc (function, client, closure)
-    Bool	(*function)();
-    ClientPtr	client;
-    pointer	closure;
+QueueWorkProc(function, client, closure)
+Bool(*function) ();
+ClientPtr client;
+pointer closure;
 {
-    WorkQueuePtr    q;
+    WorkQueuePtr q;
 
-    q = (WorkQueuePtr) xalloc (sizeof *q);
+    q = (WorkQueuePtr) xalloc(sizeof *q);
     if (!q)
-	return FALSE;
+        return FALSE;
     q->function = function;
     q->client = client;
     q->closure = closure;
@@ -188,27 +180,27 @@ QueueWorkProc (function, client, closure)
  */
 
 typedef struct _SleepQueue {
-    struct _SleepQueue	*next;
-    ClientPtr		client;
-    Bool		(*function)();
-    pointer		closure;
+    struct _SleepQueue *next;
+    ClientPtr client;
+        Bool(*function) ();
+    pointer closure;
 } SleepQueueRec, *SleepQueuePtr;
 
-static SleepQueuePtr	sleepQueue = NULL;
+static SleepQueuePtr sleepQueue = NULL;
 
 Bool
-ClientSleep (client, function, closure)
-    ClientPtr	client;
-    Bool	(*function)();
-    pointer	closure;
+ClientSleep(client, function, closure)
+ClientPtr client;
+Bool(*function) ();
+pointer closure;
 {
-    SleepQueuePtr   q;
+    SleepQueuePtr q;
 
-    q = (SleepQueuePtr) xalloc (sizeof *q);
+    q = (SleepQueuePtr) xalloc(sizeof *q);
     if (!q)
-	return FALSE;
+        return FALSE;
 
-    IgnoreClient (client);
+    IgnoreClient(client);
     q->next = sleepQueue;
     q->client = client;
     q->function = function;
@@ -218,46 +210,43 @@ ClientSleep (client, function, closure)
 }
 
 Bool
-ClientSignal (client)
-    ClientPtr	client;
+ClientSignal(client)
+ClientPtr client;
 {
-    SleepQueuePtr   q;
+    SleepQueuePtr q;
 
     for (q = sleepQueue; q; q = q->next)
-	if (q->client == client)
-	{
-	    return QueueWorkProc (q->function, q->client, q->closure);
-	}
+        if (q->client == client) {
+            return QueueWorkProc(q->function, q->client, q->closure);
+        }
     return FALSE;
 }
 
 void
-ClientWakeup (ClientPtr client)
+ClientWakeup(ClientPtr client)
 {
-    SleepQueuePtr   q, *prev;
+    SleepQueuePtr q, *prev;
 
     prev = &sleepQueue;
-    while ((q = *prev))
-    {
-	if (q->client == client)
-	{
-	    *prev = q->next;
-	    xfree (q);
-	    if (!client->clientGone)
-		AttendClient (client);
-	    break;
-	}
-	prev = &q->next;
+    while ((q = *prev)) {
+        if (q->client == client) {
+            *prev = q->next;
+            xfree(q);
+            if (!client->clientGone)
+                AttendClient(client);
+            break;
+        }
+        prev = &q->next;
     }
 }
 
 Bool
-ClientIsAsleep (ClientPtr client)
+ClientIsAsleep(ClientPtr client)
 {
-    SleepQueuePtr   q;
+    SleepQueuePtr q;
 
     for (q = sleepQueue; q; q = q->next)
-	if (q->client == client)
-	    return TRUE;
+        if (q->client == client)
+            return TRUE;
     return FALSE;
 }

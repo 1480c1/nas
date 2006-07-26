@@ -22,15 +22,15 @@
  * $NCDId: @(#)auswap.c,v 1.7 1994/04/20 22:35:21 greg Exp $
  */
 
-#include	<audio/audio.h>
-#include	<audio/Aproto.h>
-#include	"misc.h"
-#include	"dixstruct.h"
-#include	"au.h"
+#include        <audio/audio.h>
+#include        <audio/Aproto.h>
+#include        "misc.h"
+#include        "dixstruct.h"
+#include        "au.h"
 
 extern void WriteToClient();
 
-extern int      (*AuProcVector[256]) ();
+extern int (*AuProcVector[256]) ();
 
 static void SwapDeviceAttributes();
 static void SwapBucketAttributes();
@@ -41,7 +41,7 @@ static void SwapBucketAttributes();
 int
 SProcAuSimpleReq(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auReq);
     swaps(&stuff->length, n);
@@ -51,11 +51,11 @@ SProcAuSimpleReq(ClientPtr client)
 int
 SProcAuResourceReq(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auResourceReq);
     swaps(&stuff->length, n);
-    REQUEST_AT_LEAST_SIZE(auResourceReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auResourceReq);       /* not EXACT */
     swapl(&stuff->id, n);
     return (*AuProcVector[stuff->reqType]) (client);
 }
@@ -63,11 +63,11 @@ SProcAuResourceReq(ClientPtr client)
 int
 SProcAuSetDeviceAttributes(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auResourceReq);
     swaps(&stuff->length, n);
-    REQUEST_AT_LEAST_SIZE(auResourceReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auResourceReq);       /* not EXACT */
     swapl(&stuff->id, n);
     SwapDeviceAttributes(&stuff[1]);
     return (*AuProcVector[stuff->reqType]) (client);
@@ -76,11 +76,11 @@ SProcAuSetDeviceAttributes(ClientPtr client)
 int
 SProcAuCreateBucket(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auResourceReq);
     swaps(&stuff->length, n);
-    REQUEST_AT_LEAST_SIZE(auResourceReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auResourceReq);       /* not EXACT */
     swapl(&stuff->id, n);
     SwapBucketAttributes(&stuff[1]);
     return (*AuProcVector[stuff->reqType]) (client);
@@ -89,11 +89,11 @@ SProcAuCreateBucket(ClientPtr client)
 int
 SProcAuListBuckets(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auReq);
     swaps(&stuff->length, n);
-    REQUEST_AT_LEAST_SIZE(auReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auReq);       /* not EXACT */
     SwapBucketAttributes(&stuff[1]);
     return (*AuProcVector[stuff->reqType]) (client);
 }
@@ -101,151 +101,149 @@ SProcAuListBuckets(ClientPtr client)
 int
 SProcAuListDevices(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auReq);
     swaps(&stuff->length, n);
-    REQUEST_AT_LEAST_SIZE(auReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auReq);       /* not EXACT */
     SwapDeviceAttributes(&stuff[1]);
     return (*AuProcVector[stuff->reqType]) (client);
 }
 
 static auElement *
-SwapElement(auElement *e, AuBool incoming)
+SwapElement(auElement * e, AuBool incoming)
 {
-    char            n;
-    int             na = 0;
-    AuUint8          *varData = (AuUint8 *) &e[1];
+    char n;
+    int na = 0;
+    AuUint8 *varData = (AuUint8 *) & e[1];
 
     if (incoming) {
-	swaps(&e->type, n);
+        swaps(&e->type, n);
     }
 
-    switch (e->type)
-    {
-	case AuElementTypeImportClient:
-	    swaps(&e->importclient.sample_rate, n);
-	    swapl(&e->importclient.max_samples, n);
-	    swapl(&e->importclient.low_water_mark, n);
-	    if (!incoming)
-		na = e->importclient.actions.num_actions;
-	    swapl(&e->importclient.actions.num_actions, n);
-	    if (incoming)
-		na = e->importclient.actions.num_actions;
-	    break;
-	case AuElementTypeImportDevice:
-	    swaps(&e->importdevice.sample_rate, n);
-	    swapl(&e->importdevice.num_samples, n);
-	    swapl(&e->importdevice.device, n);
-	    if (!incoming)
-		na = e->importdevice.actions.num_actions;
-	    swapl(&e->importdevice.actions.num_actions, n);
-	    if (incoming)
-		na = e->importdevice.actions.num_actions;
-	    break;
-	case AuElementTypeImportBucket:
-	    swaps(&e->importbucket.sample_rate, n);
-	    swapl(&e->importbucket.num_samples, n);
-	    swapl(&e->importbucket.bucket, n);
-	    swapl(&e->importbucket.offset, n);
-	    if (!incoming)
-		na = e->importbucket.actions.num_actions;
-	    swapl(&e->importbucket.actions.num_actions, n);
-	    if (incoming)
-		na = e->importbucket.actions.num_actions;
-	    break;
-	case AuElementTypeImportWaveForm:
-	    swaps(&e->importwaveform.sample_rate, n);
-	    swapl(&e->importwaveform.num_samples, n);
-	    swapl(&e->importwaveform.frequency, n);
-	    if (!incoming)
-		na = e->importwaveform.actions.num_actions;
-	    swapl(&e->importwaveform.actions.num_actions, n);
-	    if (incoming)
-		na = e->importwaveform.actions.num_actions;
-	    break;
-	case AuElementTypeBundle:
-	    if (incoming) {
-		swaps(&e->bundle.num_inputs, n);
-	    }
-	    /* nothing to swap in the track list */
-	    varData += e->bundle.num_inputs * sizeof(auInputTrack);
-	    if (!incoming) {
-		swaps(&e->bundle.num_inputs, n);
-	    }
-	    break;
-	case AuElementTypeMultiplyConstant:
-	    swaps(&e->multiplyconstant.input, n);
-	    swapl(&e->multiplyconstant.constant, n);
-	    break;
-	case AuElementTypeAddConstant:
-	    swaps(&e->addconstant.input, n);
-	    swapl(&e->addconstant.constant, n);
-	    break;
-	case AuElementTypeSum:
-	    if (incoming) {
-		swaps(&e->sum.num_inputs, n);
-	    }
-	    SwapShorts(&e[1], e->sum.num_inputs);
-	    varData += PAD4(e->sum.num_inputs * sizeof(CARD16));
-	    if (!incoming) {
-		swaps(&e->sum.num_inputs, n);
-	    }
-	    break;
-	case AuElementTypeExportClient:
-	    swaps(&e->exportclient.sample_rate, n);
-	    swaps(&e->exportclient.input, n);
-	    swapl(&e->exportclient.max_samples, n);
-	    swapl(&e->exportclient.high_water_mark, n);
-	    if (!incoming)
-		na = e->exportclient.actions.num_actions;
-	    swapl(&e->exportclient.actions.num_actions, n);
-	    if (incoming)
-		na = e->exportclient.actions.num_actions;
-	    break;
-	case AuElementTypeExportDevice:
-	    swaps(&e->exportdevice.sample_rate, n);
-	    swaps(&e->exportdevice.input, n);
-	    swapl(&e->exportdevice.num_samples, n);
-	    swapl(&e->exportdevice.device, n);
-	    if (!incoming)
-		na = e->exportdevice.actions.num_actions;
-	    swapl(&e->exportdevice.actions.num_actions, n);
-	    if (incoming)
-		na = e->exportdevice.actions.num_actions;
-	    break;
-	case AuElementTypeExportBucket:
-	    swaps(&e->exportbucket.input, n);
-	    swapl(&e->exportbucket.num_samples, n);
-	    swapl(&e->exportbucket.bucket, n);
-	    swapl(&e->exportbucket.offset, n);
-	    if (!incoming)
-		na = e->exportbucket.actions.num_actions;
-	    swapl(&e->exportbucket.actions.num_actions, n);
-	    if (incoming)
-		na = e->exportbucket.actions.num_actions;
-	    break;
-	case AuElementTypeExportMonitor:
-	    swaps(&e->exportmonitor.event_rate, n);
-	    swaps(&e->exportmonitor.input, n);
-	    break;
-	default:
-	    return AuFalse;
+    switch (e->type) {
+    case AuElementTypeImportClient:
+        swaps(&e->importclient.sample_rate, n);
+        swapl(&e->importclient.max_samples, n);
+        swapl(&e->importclient.low_water_mark, n);
+        if (!incoming)
+            na = e->importclient.actions.num_actions;
+        swapl(&e->importclient.actions.num_actions, n);
+        if (incoming)
+            na = e->importclient.actions.num_actions;
+        break;
+    case AuElementTypeImportDevice:
+        swaps(&e->importdevice.sample_rate, n);
+        swapl(&e->importdevice.num_samples, n);
+        swapl(&e->importdevice.device, n);
+        if (!incoming)
+            na = e->importdevice.actions.num_actions;
+        swapl(&e->importdevice.actions.num_actions, n);
+        if (incoming)
+            na = e->importdevice.actions.num_actions;
+        break;
+    case AuElementTypeImportBucket:
+        swaps(&e->importbucket.sample_rate, n);
+        swapl(&e->importbucket.num_samples, n);
+        swapl(&e->importbucket.bucket, n);
+        swapl(&e->importbucket.offset, n);
+        if (!incoming)
+            na = e->importbucket.actions.num_actions;
+        swapl(&e->importbucket.actions.num_actions, n);
+        if (incoming)
+            na = e->importbucket.actions.num_actions;
+        break;
+    case AuElementTypeImportWaveForm:
+        swaps(&e->importwaveform.sample_rate, n);
+        swapl(&e->importwaveform.num_samples, n);
+        swapl(&e->importwaveform.frequency, n);
+        if (!incoming)
+            na = e->importwaveform.actions.num_actions;
+        swapl(&e->importwaveform.actions.num_actions, n);
+        if (incoming)
+            na = e->importwaveform.actions.num_actions;
+        break;
+    case AuElementTypeBundle:
+        if (incoming) {
+            swaps(&e->bundle.num_inputs, n);
+        }
+        /* nothing to swap in the track list */
+        varData += e->bundle.num_inputs * sizeof(auInputTrack);
+        if (!incoming) {
+            swaps(&e->bundle.num_inputs, n);
+        }
+        break;
+    case AuElementTypeMultiplyConstant:
+        swaps(&e->multiplyconstant.input, n);
+        swapl(&e->multiplyconstant.constant, n);
+        break;
+    case AuElementTypeAddConstant:
+        swaps(&e->addconstant.input, n);
+        swapl(&e->addconstant.constant, n);
+        break;
+    case AuElementTypeSum:
+        if (incoming) {
+            swaps(&e->sum.num_inputs, n);
+        }
+        SwapShorts(&e[1], e->sum.num_inputs);
+        varData += PAD4(e->sum.num_inputs * sizeof(CARD16));
+        if (!incoming) {
+            swaps(&e->sum.num_inputs, n);
+        }
+        break;
+    case AuElementTypeExportClient:
+        swaps(&e->exportclient.sample_rate, n);
+        swaps(&e->exportclient.input, n);
+        swapl(&e->exportclient.max_samples, n);
+        swapl(&e->exportclient.high_water_mark, n);
+        if (!incoming)
+            na = e->exportclient.actions.num_actions;
+        swapl(&e->exportclient.actions.num_actions, n);
+        if (incoming)
+            na = e->exportclient.actions.num_actions;
+        break;
+    case AuElementTypeExportDevice:
+        swaps(&e->exportdevice.sample_rate, n);
+        swaps(&e->exportdevice.input, n);
+        swapl(&e->exportdevice.num_samples, n);
+        swapl(&e->exportdevice.device, n);
+        if (!incoming)
+            na = e->exportdevice.actions.num_actions;
+        swapl(&e->exportdevice.actions.num_actions, n);
+        if (incoming)
+            na = e->exportdevice.actions.num_actions;
+        break;
+    case AuElementTypeExportBucket:
+        swaps(&e->exportbucket.input, n);
+        swapl(&e->exportbucket.num_samples, n);
+        swapl(&e->exportbucket.bucket, n);
+        swapl(&e->exportbucket.offset, n);
+        if (!incoming)
+            na = e->exportbucket.actions.num_actions;
+        swapl(&e->exportbucket.actions.num_actions, n);
+        if (incoming)
+            na = e->exportbucket.actions.num_actions;
+        break;
+    case AuElementTypeExportMonitor:
+        swaps(&e->exportmonitor.event_rate, n);
+        swaps(&e->exportmonitor.input, n);
+        break;
+    default:
+        return AuFalse;
     }
 
-    if (na)
-    {
-	int             i;
-	auElementAction *a = (auElementAction *) varData;
+    if (na) {
+        int i;
+        auElementAction *a = (auElementAction *) varData;
 
-	for (i = 0; i < na; i++, a++) {
-	    swapl(&a->flow, n);	/* swap action */
-	}
-	varData += na * sizeof(auElementAction);
+        for (i = 0; i < na; i++, a++) {
+            swapl(&a->flow, n); /* swap action */
+        }
+        varData += na * sizeof(auElementAction);
     }
 
     if (!incoming) {
-	swaps(&e->type, n);
+        swaps(&e->type, n);
     }
 
     return (auElement *) varData;
@@ -254,21 +252,21 @@ SwapElement(auElement *e, AuBool incoming)
 int
 SProcAuSetElements(ClientPtr client)
 {
-    char            n;
-    int             i;
-    auElement      *e;
+    char n;
+    int i;
+    auElement *e;
 
     REQUEST(auSetElementsReq);
     swaps(&stuff->length, n);
     swapl(&stuff->flow, n);
     swapl(&stuff->numElements, n);
-    REQUEST_AT_LEAST_SIZE(auSetElementsReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auSetElementsReq);    /* not EXACT */
 
     e = (auElement *) & stuff[1];
 
     for (i = 0; i < stuff->numElements; i++)
-	if (!(e = SwapElement(e, AuTrue)))
-	    AU_ERROR(AuBadElement, e->type);
+        if (!(e = SwapElement(e, AuTrue)))
+            AU_ERROR(AuBadElement, e->type);
 
     return (*AuProcVector[stuff->reqType]) (client);
 }
@@ -277,19 +275,18 @@ SProcAuSetElements(ClientPtr client)
 int
 SProcAuSetElementStates(ClientPtr client)
 {
-    char            n;
-    int             i;
+    char n;
+    int i;
     auElementState *states;
 
     REQUEST(auSetElementStatesReq);
     swaps(&stuff->length, n);
     swapl(&stuff->numStates, n);
-    REQUEST_AT_LEAST_SIZE(auSetElementStatesReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auSetElementStatesReq);       /* not EXACT */
     states = (auElementState *) & stuff[1];
 
-    for (i = 0; i < stuff->numStates; i++, states++)
-    {
-	swapl(&states->flow, n);
+    for (i = 0; i < stuff->numStates; i++, states++) {
+        swapl(&states->flow, n);
     }
 
     return (*AuProcVector[stuff->reqType]) (client);
@@ -298,25 +295,24 @@ SProcAuSetElementStates(ClientPtr client)
 int
 SProcAuSetElementParameters(ClientPtr client)
 {
-    char            n;
-    int             i;
+    char n;
+    int i;
     auElementParameters *parms;
-    CARD32         *p;
-    AuUint8	   *tmp;
+    CARD32 *p;
+    AuUint8 *tmp;
 
     REQUEST(auSetElementParametersReq);
     swaps(&stuff->length, n);
     swapl(&stuff->numParameters, n);
-    REQUEST_AT_LEAST_SIZE(auSetElementParametersReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auSetElementParametersReq);   /* not EXACT */
     parms = (auElementParameters *) & stuff[1];
-    for (i = 0; i < stuff->numParameters; i++)
-    {
-	swapl(&parms->flow, n);
-	p = (CARD32 *) & parms[1];
-	SwapLongs(p, parms->num_parameters);
-	tmp = (AuUint8 *) parms;
-	tmp += parms->num_parameters * sizeof(CARD32);
-	parms = (auElementParameters *) tmp;
+    for (i = 0; i < stuff->numParameters; i++) {
+        swapl(&parms->flow, n);
+        p = (CARD32 *) & parms[1];
+        SwapLongs(p, parms->num_parameters);
+        tmp = (AuUint8 *) parms;
+        tmp += parms->num_parameters * sizeof(CARD32);
+        parms = (auElementParameters *) tmp;
     }
 
     return (*AuProcVector[stuff->reqType]) (client);
@@ -325,35 +321,36 @@ SProcAuSetElementParameters(ClientPtr client)
 int
 SProcAuWriteElement(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auWriteElementReq);
     swaps(&stuff->length, n);
     swapl(&stuff->flow, n);
     swapl(&stuff->num_bytes, n);
-    REQUEST_AT_LEAST_SIZE(auWriteElementReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auWriteElementReq);   /* not EXACT */
     return (*AuProcVector[stuff->reqType]) (client);
 }
 
 int
 SProcAuReadElement(ClientPtr client)
 {
-    char            n;
+    char n;
 
     REQUEST(auReadElementReq);
     swaps(&stuff->length, n);
     swapl(&stuff->flow, n);
     swapl(&stuff->num_bytes, n);
-    REQUEST_AT_LEAST_SIZE(auReadElementReq);	/* not EXACT */
+    REQUEST_AT_LEAST_SIZE(auReadElementReq);    /* not EXACT */
     return (*AuProcVector[stuff->reqType]) (client);
 }
 
 /* replies */
 
 void
-SAuGetDeviceAttributesReply(ClientPtr client, int size, auGetDeviceAttributesReply *pRep)
+SAuGetDeviceAttributesReply(ClientPtr client, int size,
+                            auGetDeviceAttributesReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -362,9 +359,9 @@ SAuGetDeviceAttributesReply(ClientPtr client, int size, auGetDeviceAttributesRep
 }
 
 void
-SAuListBucketsReply(ClientPtr client, int size, auListBucketsReply *pRep)
+SAuListBucketsReply(ClientPtr client, int size, auListBucketsReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -374,9 +371,9 @@ SAuListBucketsReply(ClientPtr client, int size, auListBucketsReply *pRep)
 }
 
 void
-SAuListDevicesReply(ClientPtr client, int size, auListDevicesReply *pRep)
+SAuListDevicesReply(ClientPtr client, int size, auListDevicesReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -386,9 +383,10 @@ SAuListDevicesReply(ClientPtr client, int size, auListDevicesReply *pRep)
 }
 
 void
-SAuGetBucketAttributesReply(ClientPtr client, int size, auGetBucketAttributesReply *pRep)
+SAuGetBucketAttributesReply(ClientPtr client, int size,
+                            auGetBucketAttributesReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -397,9 +395,9 @@ SAuGetBucketAttributesReply(ClientPtr client, int size, auGetBucketAttributesRep
 }
 
 void
-SAuReadElementReply(ClientPtr client, int size, auReadElementReply *pRep)
+SAuReadElementReply(ClientPtr client, int size, auReadElementReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -409,9 +407,9 @@ SAuReadElementReply(ClientPtr client, int size, auReadElementReply *pRep)
 }
 
 void
-SAuGetElementsReply(ClientPtr client, int size, auGetElementsReply *pRep)
+SAuGetElementsReply(ClientPtr client, int size, auGetElementsReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -422,9 +420,10 @@ SAuGetElementsReply(ClientPtr client, int size, auGetElementsReply *pRep)
 }
 
 void
-SAuGetElementStatesReply(ClientPtr client, int size, auGetElementStatesReply *pRep)
+SAuGetElementStatesReply(ClientPtr client, int size,
+                         auGetElementStatesReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -434,9 +433,10 @@ SAuGetElementStatesReply(ClientPtr client, int size, auGetElementStatesReply *pR
 }
 
 void
-SAuGetCloseDownModeReply(ClientPtr client, int size, auGetCloseDownModeReply *pRep)
+SAuGetCloseDownModeReply(ClientPtr client, int size,
+                         auGetCloseDownModeReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -445,9 +445,10 @@ SAuGetCloseDownModeReply(ClientPtr client, int size, auGetCloseDownModeReply *pR
 }
 
 void
-SAuGetServerTimeReply(ClientPtr client, int size, auGetServerTimeReply *pRep)
+SAuGetServerTimeReply(ClientPtr client, int size,
+                      auGetServerTimeReply * pRep)
 {
-    char            n;
+    char n;
 
     swaps(&pRep->sequenceNumber, n);
     swapl(&pRep->length, n);
@@ -457,9 +458,9 @@ SAuGetServerTimeReply(ClientPtr client, int size, auGetServerTimeReply *pRep)
 }
 
 static void
-SwapCommonAttributes(auCommonPart *p)
+SwapCommonAttributes(auCommonPart * p)
 {
-    char            n;
+    char n;
 
     swapl(&p->value_mask, n);
     swapl(&p->changable_mask, n);
@@ -469,9 +470,9 @@ SwapCommonAttributes(auCommonPart *p)
 }
 
 static void
-SwapDeviceAttributes(auDeviceAttributes *p)
+SwapDeviceAttributes(auDeviceAttributes * p)
 {
-    char            n;
+    char n;
 
     SwapCommonAttributes(&p->common);
 
@@ -482,16 +483,17 @@ SwapDeviceAttributes(auDeviceAttributes *p)
 }
 
 void
-AuSwapDeviceAttributesWrite(ClientPtr client, int size, auDeviceAttributes *p)
+AuSwapDeviceAttributesWrite(ClientPtr client, int size,
+                            auDeviceAttributes * p)
 {
     SwapDeviceAttributes(p);
     (void) WriteToClient(client, size, (char *) p);
 }
 
 static void
-SwapBucketAttributes(auBucketAttributes *p)
+SwapBucketAttributes(auBucketAttributes * p)
 {
-    char            n;
+    char n;
 
     SwapCommonAttributes(&p->common);
 
@@ -500,14 +502,15 @@ SwapBucketAttributes(auBucketAttributes *p)
 }
 
 void
-AuSwapBucketAttributesWrite(ClientPtr client, int size, auBucketAttributes *p)
+AuSwapBucketAttributesWrite(ClientPtr client, int size,
+                            auBucketAttributes * p)
 {
     SwapBucketAttributes(p);
     (void) WriteToClient(client, size, (char *) p);
 }
 
 void
-AuSwapSetupPrefix(ClientPtr client, int size, auConnSetupPrefix *p)
+AuSwapSetupPrefix(ClientPtr client, int size, auConnSetupPrefix * p)
 {
     auConnSetupPrefix sp;
 
@@ -521,9 +524,9 @@ AuSwapSetupPrefix(ClientPtr client, int size, auConnSetupPrefix *p)
 }
 
 void
-AuSwapSetup(ClientPtr client, int size, auConnSetup *p)
+AuSwapSetup(ClientPtr client, int size, auConnSetup * p)
 {
-    auConnSetup     sp;
+    auConnSetup sp;
 
     sp = *p;
     cpswapl(p->release, sp.release);
@@ -538,12 +541,12 @@ AuSwapSetup(ClientPtr client, int size, auConnSetup *p)
 }
 
 void
-AuCopySwapElementWrite(ClientPtr client, int size, auElement *p)
+AuCopySwapElementWrite(ClientPtr client, int size, auElement * p)
 {
-    auElement      *e;
+    auElement *e;
 
     if (!(e = (auElement *) aualloc(size)))
-	return;			/* XXX - what should we really do? */
+        return;                 /* XXX - what should we really do? */
 
     bcopy(p, e, size);
     SwapElement(e, AuFalse);
@@ -553,9 +556,9 @@ AuCopySwapElementWrite(ClientPtr client, int size, auElement *p)
 }
 
 void
-AuSwapElementStateWrite(ClientPtr client, int size, auElementState *p)
+AuSwapElementStateWrite(ClientPtr client, int size, auElementState * p)
 {
-    char            n;
+    char n;
 
     swapl(&p->flow, n);
     (void) WriteToClient(client, size, (char *) p);
@@ -564,7 +567,7 @@ AuSwapElementStateWrite(ClientPtr client, int size, auElementState *p)
 /* events */
 
 void
-SAuElementNotifyEvent(auEvent *from, auEvent *to)
+SAuElementNotifyEvent(auEvent * from, auEvent * to)
 {
     to->u.u.type = from->u.u.type;
     to->u.u.detail = from->u.u.detail;
@@ -572,16 +575,20 @@ SAuElementNotifyEvent(auEvent *from, auEvent *to)
     cpswapl(from->u.u.time, to->u.u.time);
 
     cpswapl(from->u.elementNotify.flow, to->u.elementNotify.flow);
-    cpswaps(from->u.elementNotify.element_num, to->u.elementNotify.element_num);
+    cpswaps(from->u.elementNotify.element_num,
+            to->u.elementNotify.element_num);
     cpswaps(from->u.elementNotify.kind, to->u.elementNotify.kind);
-    cpswaps(from->u.elementNotify.prev_state, to->u.elementNotify.prev_state);
-    cpswaps(from->u.elementNotify.cur_state, to->u.elementNotify.cur_state);
+    cpswaps(from->u.elementNotify.prev_state,
+            to->u.elementNotify.prev_state);
+    cpswaps(from->u.elementNotify.cur_state,
+            to->u.elementNotify.cur_state);
     cpswaps(from->u.elementNotify.reason, to->u.elementNotify.reason);
-    cpswapl(from->u.elementNotify.num_bytes, to->u.elementNotify.num_bytes);
+    cpswapl(from->u.elementNotify.num_bytes,
+            to->u.elementNotify.num_bytes);
 }
 
 void
-SAuMonitorNotifyEvent(auEvent *from, auEvent *to)
+SAuMonitorNotifyEvent(auEvent * from, auEvent * to)
 {
     to->u.u.type = from->u.u.type;
     to->u.u.detail = from->u.u.detail;
@@ -589,18 +596,20 @@ SAuMonitorNotifyEvent(auEvent *from, auEvent *to)
     cpswapl(from->u.u.time, to->u.u.time);
 
     cpswapl(from->u.monitorNotify.flow, to->u.monitorNotify.flow);
-    cpswaps(from->u.monitorNotify.element_num, to->u.monitorNotify.element_num);
+    cpswaps(from->u.monitorNotify.element_num,
+            to->u.monitorNotify.element_num);
     to->u.monitorNotify.format = from->u.monitorNotify.format;
     to->u.monitorNotify.num_tracks = from->u.monitorNotify.num_tracks;
     cpswaps(from->u.monitorNotify.count, to->u.monitorNotify.count);
-    cpswaps(from->u.monitorNotify.num_fields, to->u.monitorNotify.num_fields);
+    cpswaps(from->u.monitorNotify.num_fields,
+            to->u.monitorNotify.num_fields);
     to->u.monitorNotify.data = from->u.monitorNotify.data;
     to->u.monitorNotify.data1 = from->u.monitorNotify.data1;
     to->u.monitorNotify.data2 = from->u.monitorNotify.data2;
 }
 
 void
-SAuErrorEvent(auError *from, auError *to)
+SAuErrorEvent(auError * from, auError * to)
 {
     to->type = Au_Error;
     to->errorCode = from->errorCode;

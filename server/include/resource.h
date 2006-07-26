@@ -34,30 +34,30 @@ SOFTWARE.
 
 typedef unsigned long RESTYPE;
 
-#define RC_VANILLA	((RESTYPE)0)
-#define RC_CACHED	((RESTYPE)1<<31)
-#define RC_DRAWABLE	((RESTYPE)1<<30)
-#define RC_LASTPREDEF	RC_DRAWABLE
-#define RC_ANY		(~(RESTYPE)0)
+#define RC_VANILLA      ((RESTYPE)0)
+#define RC_CACHED       ((RESTYPE)1<<31)
+#define RC_DRAWABLE     ((RESTYPE)1<<30)
+#define RC_LASTPREDEF   RC_DRAWABLE
+#define RC_ANY          (~(RESTYPE)0)
 
 /* types for Resource routines */
 
-#define RT_NONE		((RESTYPE)0)
-#define RT_LASTPREDEF	RT_NONE
+#define RT_NONE         ((RESTYPE)0)
+#define RT_LASTPREDEF   RT_NONE
 
 /* bits and fields within a resource id */
-#define CLIENTOFFSET 22					/* client field */
-#define RESOURCE_ID_MASK	0x3FFFFF		/* low 22 bits */
-#define CLIENT_BITS(id) ((id) & 0x1fc00000)		/* hi 7 bits */
+#define CLIENTOFFSET 22         /* client field */
+#define RESOURCE_ID_MASK        0x3FFFFF        /* low 22 bits */
+#define CLIENT_BITS(id) ((id) & 0x1fc00000)     /* hi 7 bits */
 #define CLIENT_ID(id) ((int)(CLIENT_BITS(id) >> CLIENTOFFSET))
-#define SERVER_BIT		0x20000000		/* use illegal bit */
+#define SERVER_BIT              0x20000000      /* use illegal bit */
 
 #ifdef INVALID
-#undef INVALID	/* needed on HP/UX */
+#undef INVALID                  /* needed on HP/UX */
 #endif
 
 /* Invalid resource id */
-#define INVALID	(0)
+#define INVALID (0)
 
 #define BAD_RESOURCE 0xe0000000
 

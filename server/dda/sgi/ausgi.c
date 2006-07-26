@@ -33,8 +33,8 @@
 
 #define _BSD_SIGNALS
 
-#include "dixstruct.h"				/* for RESTYPE */
-#include "os.h"					/* for xalloc/xfree and NULL */
+#include "dixstruct.h"          /* for RESTYPE */
+#include "os.h"                 /* for xalloc/xfree and NULL */
 #include <fcntl.h>
 #include <stropts.h>
 #include <sys/time.h>
@@ -47,92 +47,81 @@
 #include <audio/Aproto.h>
 #include "au.h"
 
-static ALconfig in_conf,
-                out_mono_conf,
-                out_stereo_conf;
-static ALport   in_port,
-                out_mono_port,
-                out_stereo_port;
-static AuUint8 *auOutputMono,
-               *auOutputStereo,
-               *auInputMono;
-static AuBool   processFlowEnabled;
-static AuUint32 *monoSamples,
-               *stereoSamples;
+static ALconfig in_conf, out_mono_conf, out_stereo_conf;
+static ALport in_port, out_mono_port, out_stereo_port;
+static AuUint8 *auOutputMono, *auOutputStereo, *auInputMono;
+static AuBool processFlowEnabled;
+static AuUint32 *monoSamples, *stereoSamples;
 
-extern AuInt32  auMinibufSamples;
+extern AuInt32 auMinibufSamples;
 
-#define	SERVER_CLIENT		0
-#define MINIBUF_SIZE		800
+#define SERVER_CLIENT           0
+#define MINIBUF_SIZE            800
 
-#define auMinSampleRate		AL_RATE_8000
-#define auMaxSampleRate		AL_RATE_48000
-#define auDefaultInputGain	AuFixedPointFromSum(50, 0)
-#define auDefaultOutputGain	AuFixedPointFromSum(50, 0)
-#define minALqueueSize		1024
+#define auMinSampleRate         AL_RATE_8000
+#define auMaxSampleRate         AL_RATE_48000
+#define auDefaultInputGain      AuFixedPointFromSum(50, 0)
+#define auDefaultOutputGain     AuFixedPointFromSum(50, 0)
+#define minALqueueSize          1024
 
 #define auPhysicalOutputChangableMask AuCompDeviceGainMask
 
-#define auPhysicalOutputValueMask					       \
-    (AuCompCommonAllMasks |						       \
-     AuCompDeviceMinSampleRateMask |					       \
-     AuCompDeviceMaxSampleRateMask |					       \
-     AuCompDeviceMaxSampleRateMask |					       \
-     AuCompDeviceGainMask |						       \
-     AuCompDeviceLocationMask |						       \
+#define auPhysicalOutputValueMask                                              \
+    (AuCompCommonAllMasks |                                                    \
+     AuCompDeviceMinSampleRateMask |                                           \
+     AuCompDeviceMaxSampleRateMask |                                           \
+     AuCompDeviceMaxSampleRateMask |                                           \
+     AuCompDeviceGainMask |                                                    \
+     AuCompDeviceLocationMask |                                                \
      AuCompDeviceChildrenMask)
 
 #define auPhysicalInputChangableMask AuCompDeviceGainMask
 
-#define auPhysicalInputValueMask					       \
-    (AuCompCommonAllMasks |						       \
-     AuCompDeviceMinSampleRateMask |					       \
-     AuCompDeviceMaxSampleRateMask |					       \
-     AuCompDeviceLocationMask |						       \
-     AuCompDeviceGainMask)						       \
+#define auPhysicalInputValueMask                                               \
+    (AuCompCommonAllMasks |                                                    \
+     AuCompDeviceMinSampleRateMask |                                           \
+     AuCompDeviceMaxSampleRateMask |                                           \
+     AuCompDeviceLocationMask |                                                \
+     AuCompDeviceGainMask)                                                     \
 
-static void            setPhysicalOutputGain();
-static void            setPhysicalInputGainAndLineMode();
+static void setPhysicalOutputGain();
+static void setPhysicalInputGainAndLineMode();
 
 static int
 createServerComponents(auServerDeviceListSize, auServerBucketListSize,
-		       auServerRadioListSize, auServerMinRate,
-		       auServerMaxRate)
-AuUint32       *auServerDeviceListSize,
-               *auServerBucketListSize,
-               *auServerRadioListSize,
-               *auServerMinRate,
-               *auServerMaxRate;
+                       auServerRadioListSize, auServerMinRate,
+                       auServerMaxRate)
+AuUint32 *auServerDeviceListSize,
+        *auServerBucketListSize,
+        *auServerRadioListSize, *auServerMinRate, *auServerMaxRate;
 {
-    AuDeviceID      stereo,
-                    mono;
-    ComponentPtr    d,
-                   *p;
-    int             i;
-    static AuBool   initialized = AuFalse;
-    extern RESTYPE  auComponentType;
-    extern ComponentPtr *auServerDevices,	/* array of devices */
-                   *auServerBuckets,		/* array of server owned
-						 * buckets */
-                   *auServerRadios,		/* array of server owned
-						 * radios */
-                    auDevices,			/* list of all devices */
-                    auBuckets,			/* list of all buckets */
-                    auRadios;			/* list of all radios */
-    extern AuUint32 auNumServerDevices,		/* number of devices */
-                    auNumActions,		/* number of defined actions */
-                    auNumServerBuckets,		/* number of server owned
-						 * buckets */
-                    auNumServerRadios;		/* number of server owned
-						 * radios */
+    AuDeviceID stereo, mono;
+    ComponentPtr d, *p;
+    int i;
+    static AuBool initialized = AuFalse;
+    extern RESTYPE auComponentType;
+    extern ComponentPtr *auServerDevices,       /* array of devices */
+       *auServerBuckets,        /* array of server owned
+                                 * buckets */
+       *auServerRadios,         /* array of server owned
+                                 * radios */
+        auDevices,              /* list of all devices */
+        auBuckets,              /* list of all buckets */
+        auRadios;               /* list of all radios */
+    extern AuUint32 auNumServerDevices, /* number of devices */
+        auNumActions,           /* number of defined actions */
+        auNumServerBuckets,     /* number of server owned
+                                 * buckets */
+        auNumServerRadios;      /* number of server owned
+                                 * radios */
 
     osLogMsg("ausgi: AuCreateServerComponents()\n");
 
     *auServerMinRate = auMinSampleRate;
     *auServerMaxRate = auMaxSampleRate;
 
-    auNumServerDevices = *auServerDeviceListSize = *auServerBucketListSize =
-	*auServerRadioListSize = 0;
+    auNumServerDevices = *auServerDeviceListSize =
+            *auServerBucketListSize = *auServerRadioListSize = 0;
 
     stereo = FakeClientID(SERVER_CLIENT);
     mono = FakeClientID(SERVER_CLIENT);
@@ -151,11 +140,12 @@ AuUint32       *auServerDeviceListSize,
     d->description.len = strlen(d->description.string);
     d->minSampleRate = auMinSampleRate;
     d->maxSampleRate = auMaxSampleRate;
-    d->location = AuDeviceLocationCenterMask | AuDeviceLocationInternalMask;
+    d->location =
+            AuDeviceLocationCenterMask | AuDeviceLocationInternalMask;
     d->numChildren = 0;
     d->minibuf = auOutputMono;
     d->minibufSize = auMinibufSamples * auNativeBytesPerSample *
-	d->numTracks;
+            d->numTracks;
     d->physicalDeviceMask = PhysicalOutputMono;
     monoSamples = &d->minibufSamples;
     AU_ADD_DEVICE(d);
@@ -174,14 +164,15 @@ AuUint32       *auServerDeviceListSize,
     d->description.len = strlen(d->description.string);
     d->minSampleRate = auMinSampleRate;
     d->maxSampleRate = auMaxSampleRate;
-    d->location = AuDeviceLocationCenterMask | AuDeviceLocationInternalMask;
+    d->location =
+            AuDeviceLocationCenterMask | AuDeviceLocationInternalMask;
     d->numChildren = 1;
     d->children = (AuID *) ((AuUint8 *) d + PAD4(sizeof(ComponentRec)));
     d->childSwap = (char *) (d->children + d->numChildren);
     d->children[0] = mono;
     d->minibuf = auOutputStereo;
     d->minibufSize = auMinibufSamples * auNativeBytesPerSample *
-	d->numTracks;
+            d->numTracks;
     d->physicalDeviceMask = PhysicalOutputStereo;
     stereoSamples = &d->minibufSamples;
     AU_ADD_DEVICE(d);
@@ -201,34 +192,33 @@ AuUint32       *auServerDeviceListSize,
     d->minSampleRate = auMinSampleRate;
     d->maxSampleRate = auMaxSampleRate;
     d->location = AuDeviceLocationRightMask | AuDeviceLocationLeftMask |
-	AuDeviceLocationExternalMask;
+            AuDeviceLocationExternalMask;
     d->numChildren = 0;
     d->gain = auDefaultInputGain;
     d->minibuf = auInputMono;
     d->minibufSize = auMinibufSamples * auNativeBytesPerSample *
-	d->numTracks;
+            d->numTracks;
     d->physicalDeviceMask = PhysicalInputMono;
     AU_ADD_DEVICE(d);
 
     /* set the array of server devices */
     if (!(auServerDevices =
-       (ComponentPtr *) aualloc(sizeof(ComponentPtr) * auNumServerDevices)))
-	return AuBadAlloc;
+          (ComponentPtr *) aualloc(sizeof(ComponentPtr) *
+                                   auNumServerDevices)))
+        return AuBadAlloc;
 
     p = auServerDevices;
     d = auDevices;
 
-    while (d)
-    {
-	*p++ = d;
-	d = d->next;
+    while (d) {
+        *p++ = d;
+        d = d->next;
     }
 
-    if (!initialized)
-    {
-	initialized = AuTrue;
-	setPhysicalOutputGain(auDefaultOutputGain);
-	setPhysicalInputGainAndLineMode(auDefaultInputGain, 0);
+    if (!initialized) {
+        initialized = AuTrue;
+        setPhysicalOutputGain(auDefaultOutputGain);
+        setPhysicalInputGainAndLineMode(auDefaultInputGain, 0);
     }
 
     return AuSuccess;
@@ -236,24 +226,23 @@ AuUint32       *auServerDeviceListSize,
 
 static AuUint32
 setSampleRate(rate)
-AuUint32        rate;
+AuUint32 rate;
 {
 #undef NUM_PARAMS
 #define NUM_PARAMS 4
 
-    AuInt32         params[NUM_PARAMS];
-    struct itimerval ntval,
-                    otval;
-    AuInt16         timer_ms;
-    AuInt32         queue_size;
+    AuInt32 params[NUM_PARAMS];
+    struct itimerval ntval, otval;
+    AuInt16 timer_ms;
+    AuInt32 queue_size;
 
     /* should I also change the device->minibufSize ? */
 
     /* change timer according to new sample rate */
     timer_ms = (auMinibufSamples * 1000) / rate;
 
-    osLogMsg("ausgi: setSampleRate(%d) setitimer to %ld ms \n", rate, 
-	      timer_ms);
+    osLogMsg("ausgi: setSampleRate(%d) setitimer to %ld ms \n", rate,
+             timer_ms);
 
     ntval.it_interval.tv_sec = 0;
     ntval.it_interval.tv_usec = timer_ms;
@@ -272,7 +261,7 @@ AuUint32        rate;
     /**
      * set queue size according to sampling rate.
      * queue_size = MAX((rate/10), minALqueueSize);
-     * osLogMsg ("	ALsetqueuesize() to %ld\n", queue_size, 0);
+     * osLogMsg ("      ALsetqueuesize() to %ld\n", queue_size, 0);
      * ALsetqueuesize (in_conf, queue_size);
      * ALsetqueuesize (out_mono_conf, queue_size);
      * ALsetqueuesize (out_stereo_conf, (2 * queue_size));
@@ -305,8 +294,8 @@ serverReset()
 #ifdef DEBUG
 static void
 errorHandler(errnum, fmt)
-long            errnum;
-const char     *fmt;
+long errnum;
+const char *fmt;
 {
     osLogMsg("ausgi: errorHandler()\n");
 }
@@ -315,56 +304,54 @@ const char     *fmt;
 static void
 intervalProc()
 {
-    extern void     AuProcessData();
+    extern void AuProcessData();
 
     /* don't interrupt blocking ALwritesamps or ALreadsamps */
     signal(SIGALRM, SIG_IGN);
 
-    if (processFlowEnabled)
-    {
-	AuProcessData();
+    if (processFlowEnabled) {
+        AuProcessData();
 
-	signal(SIGALRM, intervalProc);
+        signal(SIGALRM, intervalProc);
     }
 }
 
 /**
   * Gains are mapped thusly:
   *
-  *   Software   s	0 - 49     50 - 100
-  *   Hardware   h	0 - 49     50 - 255
+  *   Software   s      0 - 49     50 - 100
+  *   Hardware   h      0 - 49     50 - 255
   *   ==>
-  *		if ( [s|h] >=50 ) {
+  *             if ( [s|h] >=50 ) {
   *
-  *				(100-50)   (255-50)
-  *				-------- = --------
-  *				( s -50)   ( h -50)
+  *                             (100-50)   (255-50)
+  *                             -------- = --------
+  *                             ( s -50)   ( h -50)
   *
-  *					   205 * (s-50)
-  *				    h    = ------------ + 50
-  *					       50
+  *                                        205 * (s-50)
+  *                                 h    = ------------ + 50
+  *                                            50
   *
-  *				           50 * (h-50)
-  *				    s    = ----------- + 50
-  *				              205
-  *		}
+  *                                        50 * (h-50)
+  *                                 s    = ----------- + 50
+  *                                           205
+  *             }
   */
 static void
 setPhysicalOutputGain(gain)
-AuFixedPoint    gain;
+AuFixedPoint gain;
 {
-    AuInt16         g = AuFixedPointIntegralAddend(gain);
-    AuInt16         outputGain;
-    AuInt32         params[4];
+    AuInt16 g = AuFixedPointIntegralAddend(gain);
+    AuInt16 outputGain;
+    AuInt32 params[4];
 
     if (g < 50)
-	outputGain = g;
+        outputGain = g;
     else
-	/* (gain - 50) * (205 / 50) + 50 */
-	outputGain = ((0x41999 * (g - 50)) >> 16) + 50;
+        /* (gain - 50) * (205 / 50) + 50 */
+        outputGain = ((0x41999 * (g - 50)) >> 16) + 50;
 
-    osLogMsg("ausgi: setPhysicalOutputGain(%d) -> %d\n", g, 
-	      outputGain);
+    osLogMsg("ausgi: setPhysicalOutputGain(%d) -> %d\n", g, outputGain);
 
     params[0] = AL_LEFT_SPEAKER_GAIN;
     params[1] = (AuInt32) outputGain;
@@ -373,11 +360,11 @@ AuFixedPoint    gain;
     ALsetparams(AL_DEFAULT_DEVICE, params, 4);
 }
 
-static          AuFixedPoint
+static AuFixedPoint
 getPhysicalOutputGain()
 {
-    AuInt16         outputGain;
-    AuInt32         params[4];
+    AuInt16 outputGain;
+    AuInt32 params[4];
 
     params[1] = params[3] = 1;
     params[0] = AL_LEFT_SPEAKER_GAIN;
@@ -387,7 +374,7 @@ getPhysicalOutputGain()
     outputGain = (params[1] + params[3]) / 2;
 
     if (outputGain < 50)
-	return AuFixedPointFromSum(outputGain, 0);
+        return AuFixedPointFromSum(outputGain, 0);
 
     /* (gain - 50) * (50 / 205) + 50 */
     return (outputGain - 50) * 0x3e70 + 0x320000;
@@ -396,30 +383,30 @@ getPhysicalOutputGain()
 /**
   * Gain is mapped to attenuation thusly
   *
-  *   Software    gain	0   - 50   50 - 100
-  *   Hardware	  atten 255 - 50   50 - 0
+  *   Software    gain  0   - 50   50 - 100
+  *   Hardware    atten 255 - 50   50 - 0
   */
 
 static void
 setPhysicalInputGainAndLineMode(gain, lineMode)
-AuFixedPoint    gain;
-AuUint8         lineMode;
+AuFixedPoint gain;
+AuUint8 lineMode;
 {
-    AuInt16         g = AuFixedPointIntegralAddend(gain);
-    AuInt16         inputAttenuation;
-    AuInt32         params[4];
+    AuInt16 g = AuFixedPointIntegralAddend(gain);
+    AuInt16 inputAttenuation;
+    AuInt32 params[4];
 
-    osLogMsg("ausgi: setPhysicalInputGainAndLineMode(%d,%d)\n", g, 
-	      lineMode);
+    osLogMsg("ausgi: setPhysicalInputGainAndLineMode(%d,%d)\n", g,
+             lineMode);
 
     if (g < 50)
-	/* gain  * (-205 / 50) + 255 */
-	inputAttenuation = 255 - ((0x41999 * g) >> 16);
+        /* gain  * (-205 / 50) + 255 */
+        inputAttenuation = 255 - ((0x41999 * g) >> 16);
     else
-	/* -gain + 100 */
-	inputAttenuation = 100 - g;
+        /* -gain + 100 */
+        inputAttenuation = 100 - g;
 
-    osLogMsg("	mapped to %d\n", inputAttenuation);
+    osLogMsg("  mapped to %d\n", inputAttenuation);
 
     params[0] = AL_LEFT_INPUT_ATTEN;
     params[1] = (AuInt32) inputAttenuation;
@@ -431,7 +418,7 @@ AuUint8         lineMode;
 static void
 enableProcessFlow()
 {
-    AuUint8        *p;
+    AuUint8 *p;
 
     osLogMsg("ausgi: AuEnableProcessFlow()\n");
 
@@ -469,8 +456,8 @@ writePhysicalOutputsStereo()
 static void
 writePhysicalOutputsBoth()
 {
-    osLogMsg("wb=%ld=%ld", ALgetfilled(out_mono_port), 
-	      ALgetfilled(out_stereo_port));
+    osLogMsg("wb=%ld=%ld", ALgetfilled(out_mono_port),
+             ALgetfilled(out_stereo_port));
 
     ALwritesamps(out_stereo_port, auOutputStereo, 2 * *stereoSamples);
     ALwritesamps(out_mono_port, auOutputMono, *monoSamples);
@@ -479,7 +466,7 @@ writePhysicalOutputsBoth()
 static void
 readPhysicalInputs()
 {
-    int             n;
+    int n;
 
     osLogMsg("r %ld", ALgetfillable(in_port));
 
@@ -494,95 +481,95 @@ noop()
 static void
 setWritePhysicalOutputFunction(flow, funct)
 CompiledFlowPtr flow;
-void            (**funct) ();
+void (**funct) ();
 {
-    AuUint32        mask = flow->physicalDeviceMask;
+    AuUint32 mask = flow->physicalDeviceMask;
 
     if ((mask & (PhysicalOutputMono | PhysicalOutputStereo)) ==
-	(PhysicalOutputMono | PhysicalOutputStereo))
-	*funct = writePhysicalOutputsBoth;
+        (PhysicalOutputMono | PhysicalOutputStereo))
+        *funct = writePhysicalOutputsBoth;
     else if (mask & PhysicalOutputMono)
-	*funct = writePhysicalOutputsMono;
+        *funct = writePhysicalOutputsMono;
     else if (mask & PhysicalOutputStereo)
-	*funct = writePhysicalOutputsStereo;
+        *funct = writePhysicalOutputsStereo;
     else
-	*funct = noop;
+        *funct = noop;
 }
 
 void
-*safe_alloc (size_t size)
-{ 
-    void	*retval = NULL;
+   *
+safe_alloc(size_t size)
+{
+    void *retval = NULL;
 
     int mask = sigblock(sigmask(SIGALRM));
     retval = Xalloc(size);
-    sigsetmask(mask); 
+    sigsetmask(mask);
     return retval;
 }
 
 void
-*safe_realloc (void *ptr, size_t size)
-{ 
-    void	*retval = NULL;
+   *
+safe_realloc(void *ptr, size_t size)
+{
+    void *retval = NULL;
 
     int mask = sigblock(sigmask(SIGALRM));
     retval = Xrealloc(ptr, size);
-    sigsetmask(mask); 
+    sigsetmask(mask);
     return retval;
 }
 
 void
-safe_free (void *ptr)
-{ 
+safe_free(void *ptr)
+{
     int mask = sigblock(sigmask(SIGALRM));
     Xfree(ptr);
-    sigsetmask(mask); 
+    sigsetmask(mask);
     return;
 }
 
-#define	PhysicalOneTrackBufferSize					       \
+#define PhysicalOneTrackBufferSize                                             \
     PAD4(auMinibufSamples * auNativeBytesPerSample * 1)
-#define	PhysicalTwoTrackBufferSize					       \
+#define PhysicalTwoTrackBufferSize                                             \
     PAD4(auMinibufSamples * auNativeBytesPerSample * 2)
 
 AuBool
 AuInitPhysicalDevices()
 {
     static AuUint8 *physicalBuffers;
-    AuUint32        physicalBuffersSize;
-    static AuBool   AL_initialized = AuFalse;
-    struct itimerval ntval,
-                    otval;
-    AuInt16         timer_ms;
-    AuInt32         queue_size;
+    AuUint32 physicalBuffersSize;
+    static AuBool AL_initialized = AuFalse;
+    struct itimerval ntval, otval;
+    AuInt16 timer_ms;
+    AuInt32 queue_size;
     extern AuUint32 auPhysicalOutputBuffersSize;
     extern AuUint8 *auPhysicalOutputBuffers;
-    extern void     AuProcessData();
+    extern void AuProcessData();
 
 #undef NUM_PARAMS
 #define NUM_PARAMS 6
 
-    long            buf[NUM_PARAMS] = {
-	AL_INPUT_RATE, AL_RATE_8000,
-	AL_OUTPUT_RATE, AL_RATE_8000,
-	AL_INPUT_SOURCE, AL_INPUT_MIC
+    long buf[NUM_PARAMS] = {
+        AL_INPUT_RATE, AL_RATE_8000,
+        AL_OUTPUT_RATE, AL_RATE_8000,
+        AL_INPUT_SOURCE, AL_INPUT_MIC
     };
 
     osLogMsg("ausgi: AuInitPhysicalDevices()\n", 0, 0);
 
     if (physicalBuffers)
-	aufree(physicalBuffers);
+        aufree(physicalBuffers);
 
     auMinibufSamples = MINIBUF_SIZE;
 
     /* the output buffers need to be twice as large for output range checking */
-    physicalBuffersSize =
-	PhysicalOneTrackBufferSize +		/* mono input */
-	PhysicalOneTrackBufferSize * 2 +	/* mono output */
-	PhysicalTwoTrackBufferSize * 2;		/* stereo output */
+    physicalBuffersSize = PhysicalOneTrackBufferSize +  /* mono input */
+            PhysicalOneTrackBufferSize * 2 +    /* mono output */
+            PhysicalTwoTrackBufferSize * 2;     /* stereo output */
 
     if (!(physicalBuffers = (AuUint8 *) aualloc(physicalBuffersSize)))
-	return AuFalse;
+        return AuFalse;
 
     auInputMono = physicalBuffers;
     auOutputMono = auInputMono + PhysicalOneTrackBufferSize;
@@ -590,63 +577,65 @@ AuInitPhysicalDevices()
 
     auPhysicalOutputBuffers = auOutputMono;
     auPhysicalOutputBuffersSize = physicalBuffersSize -
-	PhysicalOneTrackBufferSize;
+            PhysicalOneTrackBufferSize;
 
     /*
      * create the input and output ports
      */
-    if (!AL_initialized)
-    {
-	AL_initialized = AuTrue;
+    if (!AL_initialized) {
+        AL_initialized = AuTrue;
 
-	/*
-	 * Unfortunately the queue size of a port cannot be changed
-	 * dynamically (see comment in setSampleRate()). We therefore set it
-	 * to a queue size according to the max sampling rate, which is too
-	 * big for slower sampling rates :-(
-	 */
-	queue_size = MAX((auMaxSampleRate / 10), minALqueueSize);
-	osLogMsg("ausgi: ALsetqueuesize to %ld\n", queue_size);
+        /*
+         * Unfortunately the queue size of a port cannot be changed
+         * dynamically (see comment in setSampleRate()). We therefore set it
+         * to a queue size according to the max sampling rate, which is too
+         * big for slower sampling rates :-(
+         */
+        queue_size = MAX((auMaxSampleRate / 10), minALqueueSize);
+        osLogMsg("ausgi: ALsetqueuesize to %ld\n", queue_size);
 
-	in_conf = ALnewconfig();
-	ALsetwidth(in_conf, AL_SAMPLE_16);
-	ALsetchannels(in_conf, AL_MONO);
-	ALsetqueuesize(in_conf, queue_size);
-	out_mono_conf = ALnewconfig();
-	ALsetwidth(out_mono_conf, AL_SAMPLE_16);
-	ALsetchannels(out_mono_conf, AL_MONO);
-	ALsetqueuesize(out_mono_conf, queue_size);
-	out_stereo_conf = ALnewconfig();
-	ALsetwidth(out_stereo_conf, AL_SAMPLE_16);
-	ALsetchannels(out_stereo_conf, AL_STEREO);
-	ALsetqueuesize(out_stereo_conf, (2 * queue_size));
+        in_conf = ALnewconfig();
+        ALsetwidth(in_conf, AL_SAMPLE_16);
+        ALsetchannels(in_conf, AL_MONO);
+        ALsetqueuesize(in_conf, queue_size);
+        out_mono_conf = ALnewconfig();
+        ALsetwidth(out_mono_conf, AL_SAMPLE_16);
+        ALsetchannels(out_mono_conf, AL_MONO);
+        ALsetqueuesize(out_mono_conf, queue_size);
+        out_stereo_conf = ALnewconfig();
+        ALsetwidth(out_stereo_conf, AL_SAMPLE_16);
+        ALsetchannels(out_stereo_conf, AL_STEREO);
+        ALsetqueuesize(out_stereo_conf, (2 * queue_size));
 
-	in_port = ALopenport("NetAudio in", "r", in_conf);
-	out_mono_port = ALopenport("NetAudio mono out", "w", out_mono_conf);
-	out_stereo_port = ALopenport("NetAudio stereo out", "w", out_stereo_conf);
+        in_port = ALopenport("NetAudio in", "r", in_conf);
+        out_mono_port =
+                ALopenport("NetAudio mono out", "w", out_mono_conf);
+        out_stereo_port =
+                ALopenport("NetAudio stereo out", "w", out_stereo_conf);
 
-	if (in_port == NULL || out_mono_port == NULL || out_stereo_port == NULL)
-	    return AuFalse;
+        if (in_port == NULL || out_mono_port == NULL
+            || out_stereo_port == NULL)
+            return AuFalse;
 
-	ALsetparams(AL_DEFAULT_DEVICE, buf, NUM_PARAMS);
+        ALsetparams(AL_DEFAULT_DEVICE, buf, NUM_PARAMS);
 
 #ifdef DEBUG
-	ALseterrorhandler(errorHandler);
+        ALseterrorhandler(errorHandler);
 #endif
 
-	/*
-	 * Call AuProcessData() in signal handler often enough to drain the
-	 * input devices and keep the output devices full at the current
-	 * sample rate.
-	 */
-	timer_ms = (auMinibufSamples * 1000) / AL_RATE_8000;
-	osLogMsg("ausgi: setitimer to %ld ms\n", timer_ms);
-	ntval.it_interval.tv_sec = 0;
-	ntval.it_interval.tv_usec = timer_ms;
-	ntval.it_value.tv_sec = 0;
-	ntval.it_value.tv_usec = timer_ms;
-	signal(SIGALRM, SIG_IGN);
-	setitimer(ITIMER_REAL, &ntval, &otval);
+        /*
+         * Call AuProcessData() in signal handler often enough to drain the
+         * input devices and keep the output devices full at the current
+         * sample rate.
+         */
+        timer_ms = (auMinibufSamples * 1000) / AL_RATE_8000;
+        osLogMsg("ausgi: setitimer to %ld ms\n", timer_ms);
+        ntval.it_interval.tv_sec = 0;
+        ntval.it_interval.tv_usec = timer_ms;
+        ntval.it_value.tv_sec = 0;
+        ntval.it_value.tv_usec = timer_ms;
+        signal(SIGALRM, SIG_IGN);
+        setitimer(ITIMER_REAL, &ntval, &otval);
     }
 
     processFlowEnabled = AuFalse;
@@ -655,12 +644,12 @@ AuInitPhysicalDevices()
     AuRegisterCallback(AuSetPhysicalOutputGainCB, setPhysicalOutputGain);
     AuRegisterCallback(AuGetPhysicalOutputGainCB, getPhysicalOutputGain);
     AuRegisterCallback(AuSetPhysicalInputGainAndLineModeCB,
-		       setPhysicalInputGainAndLineMode);
+                       setPhysicalInputGainAndLineMode);
     AuRegisterCallback(AuEnableProcessFlowCB, enableProcessFlow);
     AuRegisterCallback(AuDisableProcessFlowCB, disableProcessFlow);
     AuRegisterCallback(AuReadPhysicalInputsCB, readPhysicalInputs);
     AuRegisterCallback(AuSetWritePhysicalOutputFunctionCB,
-		       setWritePhysicalOutputFunction);
+                       setWritePhysicalOutputFunction);
 
     AuRegisterCallback(AuSetSampleRateCB, setSampleRate);
 
@@ -670,7 +659,7 @@ AuInitPhysicalDevices()
 
     /* bogus resource so we can have a cleanup function at server reset */
     AddResource(FakeClientID(SERVER_CLIENT),
-		CreateNewResourceType(serverReset), 0);
+                CreateNewResourceType(serverReset), 0);
 
     return AuTrue;
 }

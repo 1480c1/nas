@@ -38,7 +38,7 @@ SOFTWARE.
  * by the vendor.
  */
 #ifndef VENDOR_RELEASE
-#define VENDOR_RELEASE	5000
+#define VENDOR_RELEASE  5000
 #endif
 
 /*
@@ -50,42 +50,42 @@ SOFTWARE.
  * DO NOT CHANGE THESE VALUES OR THE DIX IMAKEFILE!
  */
 #ifndef COMPILEDDEFAULTFONTPATH
-#define COMPILEDDEFAULTFONTPATH	"/usr/lib/X11/fonts/misc/"
+#define COMPILEDDEFAULTFONTPATH "/usr/lib/X11/fonts/misc/"
 #endif
 #ifndef RGB_DB
-#define RGB_DB			"/usr/lib/X11/rgb"
+#define RGB_DB                  "/usr/lib/X11/rgb"
 #endif
 
 /*
  * The following constants contain default values for all of the variables 
  * that can be initialized on the server command line or in the environment.
  */
-#define COMPILEDDEFAULTFONT	"fixed"
-#define COMPILEDCURSORFONT	"cursor"
+#define COMPILEDDEFAULTFONT     "fixed"
+#define COMPILEDCURSORFONT      "cursor"
 #ifndef COMPILEDDISPLAYCLASS
-#define COMPILEDDISPLAYCLASS	"MIT-unspecified"
+#define COMPILEDDISPLAYCLASS    "MIT-unspecified"
 #endif
-#define DEFAULT_TIMEOUT		60	/* seconds */
-#define DEFAULT_KEYBOARD_CLICK 	0
-#define DEFAULT_BELL		50
-#define DEFAULT_BELL_PITCH	400
-#define DEFAULT_BELL_DURATION	100
-#define DEFAULT_AUTOREPEAT	FALSE
-#define DEFAULT_AUTOREPEATS	{\
-	0, 0, 0, 0, 0, 0, 0, 0,\
-	0, 0, 0, 0, 0, 0, 0, 0,\
-	0, 0, 0, 0, 0, 0, 0, 0,\
-	0, 0, 0, 0, 0, 0, 0, 0 }
-#define DEFAULT_LEDS		0x0        /* all off */
-#define DEFAULT_LEDS_MASK	0xffffffff /* 32 */
-#define DEFAULT_INT_RESOLUTION		1000
-#define DEFAULT_INT_MIN_VALUE		0
-#define DEFAULT_INT_MAX_VALUE		100
-#define DEFAULT_INT_DISPLAYED		0
+#define DEFAULT_TIMEOUT         60      /* seconds */
+#define DEFAULT_KEYBOARD_CLICK  0
+#define DEFAULT_BELL            50
+#define DEFAULT_BELL_PITCH      400
+#define DEFAULT_BELL_DURATION   100
+#define DEFAULT_AUTOREPEAT      FALSE
+#define DEFAULT_AUTOREPEATS     {\
+        0, 0, 0, 0, 0, 0, 0, 0,\
+        0, 0, 0, 0, 0, 0, 0, 0,\
+        0, 0, 0, 0, 0, 0, 0, 0,\
+        0, 0, 0, 0, 0, 0, 0, 0 }
+#define DEFAULT_LEDS            0x0     /* all off */
+#define DEFAULT_LEDS_MASK       0xffffffff      /* 32 */
+#define DEFAULT_INT_RESOLUTION          1000
+#define DEFAULT_INT_MIN_VALUE           0
+#define DEFAULT_INT_MAX_VALUE           100
+#define DEFAULT_INT_DISPLAYED           0
 
-#define DEFAULT_PTR_NUMERATOR	2
-#define DEFAULT_PTR_DENOMINATOR	1
-#define DEFAULT_PTR_THRESHOLD	4
+#define DEFAULT_PTR_NUMERATOR   2
+#define DEFAULT_PTR_DENOMINATOR 1
+#define DEFAULT_PTR_THRESHOLD   4
 
 #ifndef DEFAULT_ACCESS_CONTROL
 #define DEFAULT_ACCESS_CONTROL TRUE

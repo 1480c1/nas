@@ -28,7 +28,7 @@ PERFORMANCE OF THIS SOFTWARE.
 /*
    SCO Modification History:
    S001, 22-Mar-95, shawnm@sco.com
-	change AuBlockAudio, AuUnBlockAudio, vendor string
+        change AuBlockAudio, AuUnBlockAudio, vendor string
 */
 /*
  * Copyright 1993 Network Computing Devices, Inc. Copyright (C) Siemens
@@ -62,15 +62,15 @@ PERFORMANCE OF THIS SOFTWARE.
 #ifndef _AUVOXWARE_H_
 #define _AUVOXWARE_H_
 
-#define	VENDOR_STRING		"VoxWare"
-#define	VENDOR_RELEASE		1
+#define VENDOR_STRING           "VoxWare"
+#define VENDOR_RELEASE          1
 
 /*
  * NOTE: The native format endianess should match that of the machine
  * running the audio server.
  */
-#define auNativeFormat		AuFormatLinearSigned16LSB
-#define auNativeBytesPerSample	2
+#define auNativeFormat          AuFormatLinearSigned16LSB
+#define auNativeBytesPerSample  2
 
 #include <signal.h>
 
@@ -81,23 +81,23 @@ typedef int AuBlock;
 #else /* defined(linux)  */
 #ifndef sco
 #if defined(SVR4) || defined(SYSV)
-#define	AuUnBlockAudio(_x)						      \
-do									      \
-{									      \
-    if ((int) (_x) != (int) SIG_HOLD)					      \
-	(void) sigset(SIGALRM, (void (*)(int))(_x));			      \
+#define AuUnBlockAudio(_x)                                                    \
+do                                                                            \
+{                                                                             \
+    if ((int) (_x) != (int) SIG_HOLD)                                         \
+        (void) sigset(SIGALRM, (void (*)(int))(_x));                          \
 } while(0)
 
-#define	AuBlockAudio()		(int) sigset(SIGALRM, SIG_HOLD)
-#define signal			sigset
+#define AuBlockAudio()          (int) sigset(SIGALRM, SIG_HOLD)
+#define signal                  sigset
 #else
-#define	AuUnBlockAudio(_x)	sigsetmask(_x)
-#define	AuBlockAudio()		sigblock(sigmask(SIGALRM))
+#define AuUnBlockAudio(_x)      sigsetmask(_x)
+#define AuBlockAudio()          sigblock(sigmask(SIGALRM))
 #endif
 #endif /* sco */
 #endif /* defined(linux) */
 
-#define AuProtectedMalloc(_s)	xalloc(_s)
-#define AuProtectedFree(_p)	free(_p)
+#define AuProtectedMalloc(_s)   xalloc(_s)
+#define AuProtectedFree(_p)     free(_p)
 
 #endif /* !_AUVOXWARE_H_ */
