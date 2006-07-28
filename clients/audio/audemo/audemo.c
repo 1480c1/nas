@@ -1709,10 +1709,10 @@ fatalError(char *message, char *arg)
 }
 
 static int
-sortRoutine(_AuConst void *ap, _AuConst void *bp)
+sortRoutine(const void *ap, const void *bp)
 {
-    _AuConst char **a = (_AuConst char **)ap;
-    _AuConst char **b = (_AuConst char **)bp;
+    const char **a = (const char **)ap;
+    const char **b = (const char **)bp;
 
     return strcmp(strrchr(*a, '/') + 1, strrchr(*b, '/') + 1);
 }

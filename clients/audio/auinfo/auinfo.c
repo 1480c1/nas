@@ -58,10 +58,10 @@ static void print_actions PROTO((AuServer *));
 
 static int maxwidth = 0;		/* reset later */
 #define TITLELEN 24
-static _AuConst char *TITLEFMT = "%-24s";
+static const char *TITLEFMT = "%-24s";
 #define INDENTPADSTR "    "
 #define INDENTPADLEN (sizeof(INDENTPADSTR) - 1)
-static _AuConst char *INDENTPAD = INDENTPADSTR;
+static const char *INDENTPAD = INDENTPADSTR;
 
 int
 main (int argc, char **argv)
@@ -144,7 +144,7 @@ main (int argc, char **argv)
 
 typedef struct _nametable {
     int value;
-    _AuConst char *name;
+    const char *name;
     int len;
 } NameTable;
 
@@ -311,7 +311,7 @@ static NameTable *_lookup_name (register NameTable *tab, register int nents, reg
 
 
 static void _print_names (AuServer *aud, NameTable *tab, int nents,
-                          _AuConst char *title, int total,
+                          const char *title, int total,
 			  int (*getvaliter)(AuServer *, int, AuPointer),
 			  AuPointer p, AuBool isbit)
 {
@@ -347,7 +347,7 @@ static void _print_names (AuServer *aud, NameTable *tab, int nents,
     for (i = 0; i < total; i++) {
 	int val = (*getvaliter) (aud, i, p);
 	NameTable *nt = _lookup_name (tab, nents, val, isbit);
-	_AuConst char *f = fmt;
+	const char *f = fmt;
 
 	if (!nt)
 	    continue;

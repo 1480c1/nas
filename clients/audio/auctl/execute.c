@@ -73,7 +73,7 @@ int execute_command (AuServer *aud, int argc, char **argv, AuBool *donep)
 
 
 typedef struct _NameValue {
-    _AuConst char *name;
+    const char *name;
 #ifndef mips
     int (*proc) PROTO ((AuServer *, int, char **, AuPointer));
 #else
@@ -82,7 +82,7 @@ typedef struct _NameValue {
 } NameTable;
 
 static int 
-_do_parse (AuServer *aud, int argc, char **argv, _AuConst char *title,
+_do_parse (AuServer *aud, int argc, char **argv, const char *title,
            NameTable *tab, int ntab, AuPointer data)
 {
     int i;
@@ -292,7 +292,7 @@ _execute_list_linemode (AuServer *aud, int argc, char **argv, AuPointer data)
 
 static int _execute_help (AuServer *aud, int argc, char **argv)
 {
-    static _AuConst char * _AuConst msg[] = {
+    static const char * const msg[] = {
 "The following commands are supported:",
 "",
 "    help                             print this message",
@@ -310,7 +310,7 @@ static int _execute_help (AuServer *aud, int argc, char **argv)
 "",
 	(char *) 0
     };
-    _AuConst char * _AuConst *cpp;
+    const char * const *cpp;
 
     for (cpp = msg; *cpp; cpp++) 
 	printf ("%s\n", *cpp);

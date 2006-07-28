@@ -275,7 +275,7 @@ createWidgets(GlobalDataPtr g)
 {
     int             i;
     Widget          w;
-    _AuConst char  *s = NULL;
+    const char     *s = NULL;
 
     MakeWidget(g->form, g->top, formWidgetClass, "form");
 
@@ -286,7 +286,7 @@ createWidgets(GlobalDataPtr g)
 
     for (i = 0; i < AuServerNumWaveForms(g->aud); i++)
     {
-	_AuConst char  *p;
+	const char  *p;
 
 	p = AuWaveFormToString(AuServerWaveForm(g->aud, i));
 	MakeWidget(w, g->menu, smeBSBObjectClass, p);
