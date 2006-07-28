@@ -17,6 +17,7 @@ number                          [0-9]+
 [Dd][Ee][Bb][Uu][Gg]                    { return CDEBUG; }
 [Vv][Ee][Rr][Bb][Oo][Ss][Ee]            { return VERBOSE; }
 [Rr][Ee][Ll][Ee][Aa][Ss][Ee][Dd][Ee][Vv][Ii][Cc][Ee]   { return RELEASEDEVICE;}
+[Kk][Ee][Ee][Pp][Mm][Ii][Xx][Ee][Rr]    { return KEEPMIXER; }
 [Ii][Nn][Pp][Uu][Tt][Ss][Ee][Cc][Tt][Ii][Oo][Nn] { return INPUTSECTION; }
 [Oo][Uu][Tt][Pp][Uu][Tt][Ss][Ee][Cc][Tt][Ii][Oo][Nn] { return OUTPUTSECTION; }
 [Ee][Nn][Dd]                            { return ENDSECTION; }

@@ -29,7 +29,7 @@ extern int yylineno;
 %token <num> MINFRAGS MAXRATE MINRATE NUMCHANS MIXER DEVICE NUMBER 
 %token <num> CDEBUG VERBOSE
 %token <num> READWRITE FORCERATE AUTOOPEN GAIN GAINSCALE
-%token <num> RELEASEDEVICE OUTDEVTYPE MIXERINIT
+%token <num> RELEASEDEVICE KEEPMIXER OUTDEVTYPE MIXERINIT
 %token <ptr> STRING 
 
 %type <ptr> string
@@ -58,7 +58,18 @@ globstmt        : VERBOSE
                                 /* error - default to no */
                               NasConfig.DoDeviceRelease = FALSE;
                           } else 
-                            NasConfig.DoDeviceRelease = j; 
+                              NasConfig.DoDeviceRelease = j; 
+                        }
+                | KEEPMIXER string
+                        {
+                          int j;
+
+                          j = parsebool($2);
+                          if (j == -1) {
+                                /* error - default to yes */
+                              NasConfig.DoKeepMixer = TRUE;
+                          } else 
+                              NasConfig.DoKeepMixer = j; 
                         }
                 | MIXERINIT string
                         { ddaSetConfig(MIXERINIT, (void *)parsebool($2)); }  

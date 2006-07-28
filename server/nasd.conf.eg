@@ -18,6 +18,11 @@ Verbose
 # Only the voxware, hpux, and sun servers understand this for now.
 ReleaseDevice "yes"
 
+# set this to "yes" or "no" to indicate whether nasd should keep the mixer
+#  device open when releasing the audio device.
+# Only the voxware server understands this for now.
+KeepMixer "yes"
+
 # init the mixer on startup? Voxware only.
 MixerInit	"yes"			
 

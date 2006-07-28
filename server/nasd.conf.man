@@ -32,6 +32,10 @@ debug messages.
 Set to "YES" or "NO". Defines whether the server should release the audio
 device when finished playing or recording a sound. (voxware, hpux, sun)
 .PP
+.B KeepMixer "YES" | "NO"
+Set to "YES" or "NO". Defines whether the server should keep the mixer open
+when releasing the audio device. (voxware)
+.PP
 .B MixerInit "YES" | "NO"
 Set to "YES" or "NO".  Defines whether the server will init the mixer
 device on startup. Later changes of gain or input mode will change the
