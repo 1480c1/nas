@@ -14,9 +14,7 @@
 #include <audio/soundlib.h>
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -24,10 +22,7 @@ char           *message,
 }
 
 static AuBool
-EventHandler(aud, ev, handler)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
+EventHandler(AuServer *aud, AuEvent *ev, AuEventHandlerRec *handler)
 {
     AuBool         *done = (AuBool *) handler->data;
     AuElementNotifyEvent *event = (AuElementNotifyEvent *) ev;
@@ -41,9 +36,7 @@ AuEventHandlerRec *handler;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     AuServer       *aud;
     AuBucketID      bucket;
@@ -59,7 +52,7 @@ char          **argv;
     int             i;
 
     if (argc < 2)
-	fatalError("usage: playFromBckt filename [bucket offset] [number of samples]");
+	fatalError("usage: playFromBckt filename [bucket offset] [number of samples]", NULL);
 
     argc -= 2;
 
@@ -93,10 +86,10 @@ char          **argv;
 	}
 
     if (device == AuNone)
-	fatalError("Couldn't find an output device");
+	fatalError("Couldn't find an output device", NULL);
 
     if (!(flow = AuCreateFlow(aud, NULL)))
-	fatalError("Couldn't create flow");
+	fatalError("Couldn't create flow", NULL);
 
     AuMakeElementImportBucket(&elements[0], AuBucketSampleRate(ba), bucket,
 			      samples, offset, 0, NULL);
@@ -110,7 +103,7 @@ char          **argv;
     if (!(handler = AuRegisterEventHandler(aud, AuEventHandlerIDMask,
 					   0, flow, EventHandler,
 					   (AuPointer) &done)))
-	fatalError("Couldn't register event handler");
+	fatalError("Couldn't register event handler", NULL);
 
     AuStartFlow(aud, flow, NULL);
 

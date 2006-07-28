@@ -14,11 +14,7 @@
 #include <audio/soundlib.h>
 
 static void
-doneCB(aud, handler, ev, data)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
-AuPointer       data;
+doneCB(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev, AuPointer data)
 {
     int            *count = (int *) data;
 
@@ -26,9 +22,7 @@ AuPointer       data;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     AuServer       *aud;
     AuEvent         ev;

@@ -27,14 +27,14 @@
  * auplay -- a trivial program for playing audio files.
  */
 
-#include	<unistd.h>
-#include	<fcntl.h>
-#include	<stdio.h>
+#include    <unistd.h>
+#include    <fcntl.h>
+#include    <stdio.h>
 #include    <stdlib.h>
-#include	<signal.h>
+#include    <signal.h>
 #include    <string.h>
-#include	<audio/audiolib.h>
-#include	<audio/soundlib.h>
+#include    <audio/audiolib.h>
+#include    <audio/soundlib.h>
 
 #define FILENM_SIZE   256	/* max lenth of a filename on stdin */
 
@@ -46,8 +46,7 @@ static char    *progname;
 static AuFlowID auflowid = 0;
 
 void
-sighandler(i)
-int i;
+sighandler(int i)
 {
     char buf[BUFSIZ];
 
@@ -72,11 +71,8 @@ int i;
 #define	VOL(volume)		((1 << 16) * (volume) / 100)
 
 static void
-sync_play_cb(aud, handler, ev, data)
-AuServer       *aud;
-AuEventHandlerRec *handler;
-AuEvent        *ev;
-AuPointer       data;
+sync_play_cb(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev,
+             AuPointer data)
 {
     int            *d = (int *) data;
 
@@ -84,10 +80,8 @@ AuPointer       data;
 }
 
 static AuBool
-localAuSoundPlaySynchronousFromFile(aud, fname, volume)
-AuServer       *aud;
-_AuConst char  *fname;
-int             volume;
+localAuSoundPlaySynchronousFromFile(AuServer *aud, const char *fname,
+                                    int volume)
 {
     AuStatus        ret;
     AuEvent         ev;
@@ -110,10 +104,8 @@ int             volume;
     return AuTrue;
 }
 
-
-
 static void
-usage()
+usage(void)
 {
     fprintf(stderr,
        "Usage:  %s [-iIl] [-audio servername] [-volume percent] files ...\n",
@@ -122,8 +114,7 @@ usage()
 }
 
 static void
-do_file(fname)
-char           *fname;
+do_file(char *fname)
 {
     Sound       s;
 
@@ -155,9 +146,7 @@ char           *fname;
 	fprintf(stderr, "Couldn't play file \"%s\"\n", fname);
 }
 
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     int             i,
                     numfnames,

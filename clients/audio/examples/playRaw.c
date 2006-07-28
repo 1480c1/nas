@@ -28,9 +28,7 @@ typedef struct
 }               InfoRec, *InfoPtr;
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -38,10 +36,7 @@ char           *message,
 }
 
 static void
-sendFile(aud, i, numBytes)
-AuServer       *aud;
-InfoPtr         i;
-AuUint32        numBytes;
+sendFile(AuServer *aud, InfoPtr i, AuUint32 numBytes)
 {
     int             n;
 
@@ -54,10 +49,7 @@ AuUint32        numBytes;
 }
 
 static AuBool
-eventHandler(aud, ev, handler)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
+eventHandler(AuServer *aud, AuEvent *ev, AuEventHandlerRec *handler)
 {
     InfoPtr         i = (InfoPtr) handler->data;
 
@@ -88,9 +80,7 @@ AuEventHandlerRec *handler;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     AuDeviceID      device = AuNone;
     AuElement       elements[3];
@@ -118,10 +108,10 @@ char          **argv;
 	}
 
     if (device == AuNone)
-	fatalError("Couldn't find an output device");
+	fatalError("Couldn't find an output device", NULL);
 
     if (!(info.flow = AuCreateFlow(info.aud, NULL)))
-	fatalError("Couldn't create flow");
+	fatalError("Couldn't create flow", NULL);
 
     AuMakeElementImportClient(&elements[0], SAMPLE_RATE, DATA_FORMAT,
 			      NUM_TRACKS,

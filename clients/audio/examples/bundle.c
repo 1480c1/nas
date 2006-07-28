@@ -22,9 +22,7 @@
 #include <audio/soundlib.h>
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -32,10 +30,7 @@ char           *message,
 }
 
 static AuBool
-EventHandler(aud, ev, handler)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
+EventHandler(AuServer *aud, AuEvent *ev, AuEventHandlerRec *handler)
 {
     AuBool         *done = (AuBool *) handler->data;
     AuElementNotifyEvent *event = (AuElementNotifyEvent *) ev;
@@ -49,9 +44,7 @@ AuEventHandlerRec *handler;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     char           *file = argv[1];
     AuServer       *aud;
@@ -69,10 +62,10 @@ char          **argv;
     AuBool          done = AuFalse;
 
     if (argc < 2)
-	fatalError("usage: bundle filename");
+	fatalError("usage: bundle filename", NULL);
 
     if (!(s = SoundOpenFileForReading(file)))
-	fatalError("Can't open %s");
+	fatalError("Can't open %s", file);
 
     toTracks = SoundNumTracks(s) == 1 ? 2 : 1;
     SoundCloseFile(s);
@@ -91,13 +84,13 @@ char          **argv;
 	}
 
     if (device == AuNone)
-	fatalError("Couldn't find an output device");
+	fatalError("Couldn't find an output device", NULL);
 
     bucket = AuSoundCreateBucketFromFile(aud, file, AuAccessAllMasks, &ba,
 					 NULL);
 
     if (!(flow = AuCreateFlow(aud, NULL)))
-	fatalError("Couldn't create flow");
+	fatalError("Couldn't create flow", NULL);
 
     AuMakeElementImportBucket(&elements[0], AuBucketSampleRate(ba), bucket,
 			      AuUnlimitedSamples, 0, 0, NULL);
@@ -141,7 +134,7 @@ char          **argv;
     if (!(handler = AuRegisterEventHandler(aud, AuEventHandlerIDMask,
 					   0, flow, EventHandler,
 					   (AuPointer) &done)))
-	fatalError("Couldn't register event handler");
+	fatalError("Couldn't register event handler", NULL);
 
     AuStartFlow(aud, flow, NULL);
 

@@ -69,7 +69,7 @@ static AuServer *aud;
 static AuFlowID flow;
 
 static void
-usage()
+usage(void)
 {
     int             i;
 
@@ -96,9 +96,7 @@ usage()
 }
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -122,8 +120,7 @@ static void
 #if !(defined(SYSV) || defined(SVR4))
 stop()
 #else /* defined(SYSV) || defined(SVR4) */
-stop(sig)
-int sig;
+stop(int sig)
 #endif /* defined(SYSV) || defined(SVR4) */
 {
     AuStopFlow(aud, flow, NULL);
@@ -131,18 +128,13 @@ int sig;
 }
 
 static void
-finished(aud, handler, ev, data)
-AuServer       *aud;
-AuEventHandlerRec *handler;
-AuEvent        *ev;
-AuPointer       data;
+finished(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev, AuPointer data)
 {
     *(AuBool *) data = AuTrue;
 }
 
 static int
-convertMode(s)
-char           *s;
+convertMode(char *s)
 {
     if (!strcasecmp(s, "mic"))
 	return AuDeviceLineModeHigh;
@@ -155,8 +147,7 @@ char           *s;
 }
 
 static int
-convertDataFormat(s)
-char           *s;
+convertDataFormat(char *s)
 {
     int             f;
 
@@ -169,8 +160,7 @@ char           *s;
 }
 
 static int
-convertFileFormat(s)
-char           *s;
+convertFileFormat(char *s)
 {
     int             f;
 
@@ -183,9 +173,7 @@ char           *s;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     char           *arg,
                    *audioServer = NULL,
@@ -230,7 +218,7 @@ char          **argv;
     }
 
     if (!(aud = AuOpenServer(audioServer, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server", NULL);
 
     if (!filename)
 	usage();
@@ -255,7 +243,7 @@ char          **argv;
 	}
 
     if (inputDeviceId == AuNone)
-	fatalError("Audio server has no input devices");
+	fatalError("Audio server has no input devices", NULL);
 
     signal(SIGTERM, stop);
 
@@ -266,7 +254,7 @@ char          **argv;
 			      finished, (AuPointer) &done, mode, fileFormat,
 			      comment, rate, dataFormat, &flow,
 			      NULL, NULL))
-	fatalError("Can't record to file");
+	fatalError("Can't record to file", NULL);
 
     while (!done)
     {

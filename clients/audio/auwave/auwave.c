@@ -154,9 +154,7 @@ static String   defaultResources[] =
 };
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -164,19 +162,13 @@ char           *message,
 }
 
 static void
-quitCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+quitCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     exit(0);
 }
 
 static void
-startCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+startCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     AuElement       elements[3];
@@ -217,10 +209,7 @@ XtPointer       gp,
 }
 
 static void
-menuCB(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+menuCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     String          string;
@@ -230,10 +219,7 @@ XtPointer       gp,
 }
 
 static void
-setVol(w, gp, valuep)
-Widget          w;
-XtPointer       gp,
-                valuep;
+setVol(Widget w, XtPointer gp, XtPointer valuep)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     int             value = (int) valuep;
@@ -252,10 +238,7 @@ XtPointer       gp,
 }
 
 static void
-setFreq(w, gp, valuep)
-Widget          w;
-XtPointer       gp,
-                valuep;
+setFreq(Widget w, XtPointer gp, XtPointer valuep)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     int             value = (int) valuep;
@@ -277,10 +260,7 @@ XtPointer       gp,
 }
 
 static void
-setGain(w, gp, valuep)
-Widget          w;
-XtPointer       gp,
-                valuep;
+setGain(Widget w, XtPointer gp, XtPointer valuep)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     int             value = (int) valuep;
@@ -291,8 +271,7 @@ XtPointer       gp,
 }
 
 static void
-createWidgets(g)
-GlobalDataPtr   g;
+createWidgets(GlobalDataPtr g)
 {
     int             i;
     Widget          w;
@@ -338,8 +317,7 @@ GlobalDataPtr   g;
 }
 
 static void
-alignWidgets(g)
-GlobalDataPtr   g;
+alignWidgets(GlobalDataPtr g)
 {
     Dimension       w;
     Position        x,
@@ -369,11 +347,7 @@ GlobalDataPtr   g;
 /* Actions */
 
 static void
-updateFrequency(w, event, params, num_params)
-Widget          w;
-XEvent         *event;
-String         *params;
-Cardinal       *num_params;
+updateFrequency(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     GlobalDataPtr   g = globals;
     String          s;
@@ -382,12 +356,8 @@ Cardinal       *num_params;
     XtVaSetValues(g->freqSlider, XtNvalue, atoi(s), NULL);
 }
 
-
 static AuBool
-EventHandler(aud, ev, handler)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
+EventHandler(AuServer *aud, AuEvent *ev, AuEventHandlerRec *handler)
 {
     AuElementNotifyEvent *event = (AuElementNotifyEvent *) ev;
 
@@ -403,11 +373,7 @@ AuEventHandlerRec *handler;
 }
 
 static void
-quit(w, event, params, num_params)
-Widget          w;
-XEvent         *event;
-String         *params;
-Cardinal       *num_params;
+quit(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     GlobalDataPtr   g = globals;
 
@@ -419,9 +385,7 @@ Cardinal       *num_params;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     GlobalDataRec   globalData;
     GlobalDataPtr   g = &globalData;
@@ -443,12 +407,12 @@ char          **argv;
 	if (!strncmp(argv[1], "-a", 2))
 	    audioServer = argv[2];
 	else
-	    fatalError(USAGE);
+	    fatalError(USAGE, NULL);
     else if (argc != 1)
-	fatalError(USAGE);
+	fatalError(USAGE, NULL);
 
     if (!(g->aud = AuOpenServer(audioServer, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server %s", audioServer);
 
     g->dpy = XtDisplay(g->top);
     g->flow = 0;
@@ -475,7 +439,7 @@ char          **argv;
 		      NULL);
 
     if (!AuRegisterEventHandler(g->aud, 0, 0, 0, EventHandler, (AuPointer) g))
-	fatalError("Can't register event handler");
+	fatalError("Can't register event handler", NULL);
 
     /* handle delete window message */
     g->wm_delete_window = XInternAtom(g->dpy, "WM_DELETE_WINDOW", FALSE);

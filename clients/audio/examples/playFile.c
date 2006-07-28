@@ -13,9 +13,7 @@
 #include <audio/audiolib.h>
 #include <audio/soundlib.h>
 
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     char           *file = argv[1];
     int             volume = 100;

@@ -16,9 +16,7 @@
 #include <audio/soundlib.h>
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -26,11 +24,7 @@ char           *message,
 }
 
 static void
-doneCB(aud, handler, ev, data)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
-AuPointer       data;
+doneCB(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev, AuPointer data)
 {
     AuBool         *done = (AuBool *) data;
 
@@ -38,9 +32,7 @@ AuPointer       data;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     AuServer       *aud;
     AuBool          done;
@@ -50,11 +42,11 @@ char          **argv;
     int             i;
 
     if (!(aud = AuOpenServer(NULL, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't open audio server");
+	fatalError("Can't open audio server", NULL);
 
     if (!(bucket = AuCreateBucket(aud, AuFormatULAW8, 1, AuAccessAllMasks,
 				  8000, 80000, NULL, NULL)))
-	fatalError("Error creating bucket");
+	fatalError("Error creating bucket", NULL);
 
     /* look for a one track input device */
     for (i = 0; i < AuServerNumDevices(aud); i++)
@@ -67,7 +59,7 @@ char          **argv;
 	}
 
     if (!da)
-	fatalError("Couldn't find appropriate input device");
+	fatalError("Couldn't find appropriate input device", NULL);
 
     printf("Press return to begin recording\n");
     getchar();

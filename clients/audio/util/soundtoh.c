@@ -44,9 +44,7 @@
 #include <audio/sound.h>
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -85,7 +83,7 @@ main(int argc, char **argv)
     int             i;
 
     if (argc != 2)
-	fatalError("usage: soundtoh filename");
+	fatalError("usage: soundtoh filename", NULL);
 
     if (!(s = SoundOpenFileForReading(name)))
 	fatalError("Can't open file \"%s\"", name);

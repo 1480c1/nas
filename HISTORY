@@ -22,9 +22,17 @@ Version ??? (devel) 7/15/2006
           - remove unused portion of X11 server components (fonts,
             GC's, etc).
 
-        - added patch from Erik Auerswald correcting an issue where
-          the preset gain was not applied when the device was opened
-          (if ReleaseDevice is enabled).
+        - applied patches from Erik Auerswald:
+
+          - correcting an issue where the preset gain was not applied
+            when the device was opened (if ReleaseDevice is enabled).
+
+          - Adding a mixerkeep option (on be default) that causes NAS
+            to always keep the mixer device open so it can track
+            external changes to mixer settings.
+
+          - patches ANSI'fying the nas clients 
+
 
 Version 1.8 (stable) 06/03/2006
 

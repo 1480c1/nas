@@ -108,6 +108,8 @@ where options include:\n\
 #define MakeLabel(_w, _parent, _name)					      \
     MakeWidget(_w, _parent, labelWidgetClass, _name)
 
+typedef struct GlobalDataStruct *GlobalDataPtr;
+
 typedef struct
 {
     AuServer       *aud;
@@ -120,11 +122,11 @@ typedef struct
                     currentMode,
                     tracks,
                     volEl;
-    void            (*callback) ();
+    void            (*callback) (GlobalDataPtr);
     XtInputId       id;
 }               ServerRec, *ServerPtr;
 
-typedef struct
+typedef struct GlobalDataStruct
 {
     Display        *dpy;
     XtAppContext    appContext;
@@ -150,7 +152,7 @@ typedef struct
                     outBytes,
                     bufSize;
     float           latency;
-}               GlobalData, *GlobalDataPtr;
+}               GlobalData;
 
 static GlobalData globals;			/* for actions */
 
@@ -218,9 +220,7 @@ extern char    *ringinData,
                *busyData;
 
 static int
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -229,9 +229,7 @@ char           *message,
 }
 
 static void
-readData(g, e)
-GlobalDataPtr   g;
-AuElementNotifyEvent *e;
+readData(GlobalDataPtr g, AuElementNotifyEvent *e)
 {
     int             n;
 
@@ -240,7 +238,7 @@ AuElementNotifyEvent *e;
 	g->bufSize = e->num_bytes;
 
 	if (!(g->buf = (char *) malloc(g->bufSize)))
-	    fatalError("malloc failed");
+	    fatalError("malloc failed", NULL);
     }
     else
     {
@@ -252,7 +250,7 @@ AuElementNotifyEvent *e;
 	g->bufSize += e->num_bytes;
 
 	if (!(g->buf = (char *) realloc(g->buf, g->bufSize)))
-	    fatalError("malloc failed");
+	    fatalError("malloc failed", NULL);
     }
 
     n = AuReadElement(g->local.aud, e->flow, e->element_num, e->num_bytes,
@@ -262,8 +260,7 @@ AuElementNotifyEvent *e;
 }
 
 static void
-writeData(g)
-GlobalDataPtr   g;
+writeData(GlobalDataPtr g)
 {
     int             n;
 
@@ -295,10 +292,7 @@ GlobalDataPtr   g;
 }
 
 static AuBool
-EventHandler(aud, ev, handler)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
+EventHandler(AuServer *aud, AuEvent *ev, AuEventHandlerRec *handler)
 {
     GlobalDataPtr   g = (GlobalDataPtr) handler->data;
     AuElementNotifyEvent *event = (AuElementNotifyEvent *) ev;
@@ -349,11 +343,7 @@ AuEventHandlerRec *handler;
 }
 
 static void
-createEmptyBucket(g, aud, server, flow)
-GlobalDataPtr   g;
-AuServer       *aud;
-char           *server;
-AuFlowID        flow;
+createEmptyBucket(GlobalDataPtr g, AuServer *aud, char *server, AuFlowID flow)
 {
     char            buf[100];
     AuString        desc;
@@ -374,10 +364,7 @@ AuFlowID        flow;
 }
 
 static void
-showStatus(g, format, arg)
-GlobalDataPtr   g;
-char           *format,
-               *arg;
+showStatus(GlobalDataPtr g, char *format, char *arg)
 {
     char            buf[50];
 
@@ -386,8 +373,7 @@ char           *format,
 }
 
 static void
-makePhone(g)
-GlobalDataPtr   g;
+makePhone(GlobalDataPtr g)
 {
     AuElement       elements[3];
     ServerPtr       l = &g->local,
@@ -415,7 +401,7 @@ GlobalDataPtr   g;
 	}
 
     if (i == AuServerNumDevices(r->aud))
-	fatalError("Can't find output device");
+	fatalError("Can't find output device", NULL);
 
     AuMakeElementImportClient(&elements[0], SAMPLE_RATE, DATA_FORMAT,
 			      l->tracks, AuTrue, MAX_SAMPLES, LOW_WATER,
@@ -432,13 +418,8 @@ GlobalDataPtr   g;
 }
 
 static int
-getCallerInfo(g, user, server, flow, device, mult)
-GlobalDataPtr   g;
-char          **user,
-              **server;
-AuFlowID       *flow;
-int            *device,
-               *mult;
+getCallerInfo(GlobalDataPtr g, char **user, char **server, AuFlowID *flow,
+              int *device, int *mult)
 {
     int             n,
                     i;
@@ -467,10 +448,7 @@ int            *device,
 }
 
 static void
-callerId(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+callerId(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     AuFlowID        flow;
@@ -483,27 +461,25 @@ XtPointer       gp,
     if (getCallerInfo(g, &user, &server, &flow, &dev, &mult))
     {
 	sprintf(buf, "%s@%s", user, server);
-	showStatus(g, buf);
+	showStatus(g, buf, NULL);
 	free(user);
 	free(server);
     }
     else
-	showStatus(g, "No callers");
+	showStatus(g, "No callers", NULL);
 }
 
-static Boolean  doHangup();
+static Boolean doHangup(XtPointer g);
 
 static void
-remoteHangup(g)
-GlobalDataPtr   g;
+remoteHangup(GlobalDataPtr g)
 {
     g->local.volFlow = 0;
     XtAppAddWorkProc(g->appContext, doHangup, g);
 }
 
 static void
-remoteAnswered(g)
-GlobalDataPtr   g;
+remoteAnswered(GlobalDataPtr g)
 {
     ServerPtr       l = &g->local,
                     r = &g->remote;
@@ -516,7 +492,7 @@ GlobalDataPtr   g;
 
     while (!getCallerInfo(g, &user, &server, &l->volFlow, &dev, &l->volEl));
     sprintf(buf, "%s@%s", user, server);
-    showStatus(g, buf);
+    showStatus(g, buf, NULL);
     free(user);
     free(server);
     XtVaSetValues(g->volSlider, XtNvalue, DEFAULT_OUTPUT_VOLUME, NULL);
@@ -531,8 +507,7 @@ GlobalDataPtr   g;
 }
 
 static Bool
-ringRemote(g)
-GlobalDataPtr   g;
+ringRemote(GlobalDataPtr g)
 {
     AuBucketID      b;
     AuDeviceID      d;
@@ -579,7 +554,7 @@ GlobalDataPtr   g;
 	}
 
     if (i == AuServerNumDevices(r->aud))
-	fatalError("Can't find output device");
+	fatalError("Can't find output device", NULL);
 
     AuFreeBucketAttributes(r->aud, n, ba);
 
@@ -601,7 +576,7 @@ GlobalDataPtr   g;
 
     if (!(r->handler = AuRegisterEventHandler(r->aud, 0, 0, 0, EventHandler,
 					      (AuPointer) g)))
-	fatalError("AuRegisterEventHandler failed");
+	fatalError("AuRegisterEventHandler failed", NULL);
 
     createEmptyBucket(g, r->aud, AuServerString(g->local.aud), r->flow);
 
@@ -611,8 +586,7 @@ GlobalDataPtr   g;
 }
 
 static void
-ringLocal(g)
-GlobalDataPtr   g;
+ringLocal(GlobalDataPtr g)
 {
     AuElement       elements[3];
     AuElementAction actions[2];
@@ -636,7 +610,7 @@ GlobalDataPtr   g;
 	}
 
     if (i == AuServerNumDevices(l->aud))
-	fatalError("Can't find output device");
+	fatalError("Can't find output device", NULL);
 
     AuMakeElementImportBucket(&elements[0], ringoutRate, l->ringoutBucket,
 			      AuUnlimitedSamples, 0, 2, actions);
@@ -648,12 +622,11 @@ GlobalDataPtr   g;
 
     AuSetElements(l->aud, l->flow, AuTrue, 3, elements, NULL);
     AuStartFlow(l->aud, l->flow, NULL);
-    showStatus(g, "Ringing...");
+    showStatus(g, "Ringing...", NULL);
 }
 
 static void
-busySignal(g)
-GlobalDataPtr   g;
+busySignal(GlobalDataPtr g)
 {
     AuElement       elements[3];
     AuElementAction actions[2];
@@ -677,7 +650,7 @@ GlobalDataPtr   g;
 	}
 
     if (i == AuServerNumDevices(l->aud))
-	fatalError("Can't find output device");
+	fatalError("Can't find output device", NULL);
 
     AuMakeElementImportBucket(&elements[0], busyRate, l->busyBucket,
 			      AuUnlimitedSamples, 0, 2, actions);
@@ -689,14 +662,11 @@ GlobalDataPtr   g;
 
     AuSetElements(l->aud, l->flow, AuTrue, 3, elements, NULL);
     AuStartFlow(l->aud, l->flow, NULL);
-    showStatus(g, "Busy");
+    showStatus(g, "Busy", NULL);
 }
 
 static void
-call(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+call(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     int             i,
@@ -717,7 +687,7 @@ XtPointer       gp,
     }
 
     if (!(r->flow = AuCreateFlow(r->aud, NULL)))
-	fatalError("Couldn't create remote flow");
+	fatalError("Couldn't create remote flow", NULL);
 
     /* look for an input device */
     for (i = 0; i < AuServerNumDevices(r->aud); i++)
@@ -768,10 +738,7 @@ XtPointer       gp,
 }
 
 static void
-answer(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+answer(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     AuFlowID        flow;
@@ -786,22 +753,22 @@ XtPointer       gp,
 
     if (!getCallerInfo(g, &user, &server, &flow, &dev, &l->volEl))
     {
-	showStatus(g, "No callers");
+	showStatus(g, "No callers", NULL);
 	return;
     }
 
     sprintf(buf, "%s@%s", user, server);
-    showStatus(g, buf);
+    showStatus(g, buf, NULL);
 
     if (!(r->aud = AuOpenServer(server, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't open remote server");
+	fatalError("Can't open remote server", NULL);
 
     if (!(r->flow = AuCreateFlow(r->aud, NULL)))
-	fatalError("Couldn't create remote flow");
+	fatalError("Couldn't create remote flow", NULL);
 
     if (!(r->handler = AuRegisterEventHandler(r->aud, 0, 0, 0, EventHandler,
 					      (AuPointer) g)))
-	fatalError("AuRegisterEventHandler failed");
+	fatalError("AuRegisterEventHandler failed", NULL);
 
     makePhone(g);
 
@@ -828,9 +795,9 @@ XtPointer       gp,
 }
 
 static Boolean
-doHangup(g)
-GlobalDataPtr   g;
+doHangup(XtPointer gp)
 {
+    GlobalDataPtr   g = (GlobalDataPtr) gp;
     ServerPtr       l = &g->local,
                     r = &g->remote;
 
@@ -852,25 +819,18 @@ GlobalDataPtr   g;
     XtSetSensitive(g->hangup, False);
     XtSetSensitive(g->volSlider, False);
 
-    showStatus(g, "Disconnected");
+    showStatus(g, "Disconnected", NULL);
     return True;
 }
 
 static void
-hangup(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+hangup(Widget w, XtPointer gp, XtPointer call_data)
 {
-    GlobalDataPtr   g = (GlobalDataPtr) gp;
-    doHangup(g);
+    doHangup(gp);
 }
 
 static void
-quit(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+quit(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     if (g->remote.aud)
@@ -883,10 +843,7 @@ XtPointer       gp,
 }
 
 static void
-mode(w, gp, call_data)
-Widget          w;
-XtPointer       gp,
-                call_data;
+mode(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
     AuDeviceAttributes da;
@@ -911,10 +868,7 @@ XtPointer       gp,
 }
 
 static void
-adjustVolume(w, gp, volp)
-Widget          w;
-XtPointer	gp,
-		volp;
+adjustVolume(Widget w, XtPointer gp, XtPointer volp)
 {
     GlobalDataPtr   g = (GlobalDataPtr)gp;
     int             vol = (int)volp;
@@ -933,10 +887,7 @@ XtPointer	gp,
 }
 
 static void
-adjustInputGain(w, gp, gainp)
-Widget          w;
-XtPointer	gp,
-		gainp;
+adjustInputGain(Widget w, XtPointer gp, XtPointer gainp)
 {
     GlobalDataPtr   g = (GlobalDataPtr)gp;
     int             gain = (int)gainp;
@@ -954,8 +905,7 @@ XtPointer	gp,
 }
 
 static void
-createWidgets(g)
-GlobalDataPtr   g;
+createWidgets(GlobalDataPtr g)
 {
     Widget          w;
 
@@ -992,8 +942,7 @@ GlobalDataPtr   g;
 }
 
 static void
-alignWidgets(g)
-GlobalDataPtr   g;
+alignWidgets(GlobalDataPtr g)
 {
     Position        x,
                     maxX;
@@ -1016,11 +965,7 @@ GlobalDataPtr   g;
 }
 
 static void
-callAction(w, event, params, num_params)
-Widget          w;
-XEvent         *event;
-String         *params;
-Cardinal       *num_params;
+callAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     GlobalDataPtr   g = &globals;
 
@@ -1028,11 +973,7 @@ Cardinal       *num_params;
 }
 
 static void
-quitAction(w, event, params, num_params)
-Widget          w;
-XEvent         *event;
-String         *params;
-Cardinal       *num_params;
+quitAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     GlobalDataPtr   g = &globals;
 
@@ -1044,11 +985,7 @@ Cardinal       *num_params;
 }
 
 static void
-initLocalAudioServer(g, audioServer, ring, volume)
-GlobalDataPtr   g;
-char           *audioServer,
-               *ring;
-int             volume;
+initLocalAudioServer(GlobalDataPtr g, char *audioServer, char *ring, int volume)
 {
     ServerPtr       l = &g->local;
     AuDeviceAttributes *da;
@@ -1059,14 +996,14 @@ int             volume;
     char            buf[50];
 
     if (!(l->aud = AuOpenServer(audioServer, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server %s", audioServer);
 
     if (!(l->flow = AuCreateFlow(l->aud, NULL)))
-	fatalError("Couldn't create flow");
+	fatalError("Couldn't create flow", NULL);
 
     if (!(l->handler = AuRegisterEventHandler(l->aud, 0, 0, 0, EventHandler,
 					      (AuPointer) g)))
-	fatalError("AuRegisterEventHandler failed");
+	fatalError("AuRegisterEventHandler failed", NULL);
 
     /* look for an input device */
     for (i = 0; i < AuServerNumDevices(l->aud); i++)
@@ -1078,17 +1015,17 @@ int             volume;
 	}
 
     if (i == AuServerNumDevices(l->aud))
-	fatalError("Audio server has no input devices");
+	fatalError("Audio server has no input devices", NULL);
 
     if (AuDeviceUse(AuServerDevice(l->aud, i)) & AuComponentUseExclusiveMask)
-	fatalError("Audio server cannot record and play simultaneously");
+	fatalError("Audio server cannot record and play simultaneously", NULL);
 
     ba = AuListBuckets(l->aud, 0, NULL, &n, NULL);
 
     for (i = 0; i < n; i++)
 	if (!strncmp(RINGOUT, AuBucketDescription(&ba[i])->data,
 		     strlen(RINGOUT)))
-	    fatalError("auphone is already running on this server");
+	    fatalError("auphone is already running on this server", NULL);
 
     da = AuServerDevice(l->aud, l->inputDeviceNum);
 
@@ -1129,7 +1066,7 @@ int             volume;
 	    fatalError("Can't open ring %s", ring);
 
 	if (!(chunk = (char *) malloc(CHUNK_SIZE)))
-	    fatalError("malloc failed");
+	    fatalError("malloc failed", NULL);
 
 	sprintf(buf, "%s %d", RINGIN, volume);
 	AuSetString(&desc, AuStringLatin1, strlen(buf), buf);
@@ -1138,11 +1075,11 @@ int             volume;
 				      SoundNumTracks(s), AuAccessImportMask |
 				      AuAccessListMask, SoundSampleRate(s),
 				      SoundNumSamples(s), &desc, NULL)))
-	    fatalError("Can't create bucket");
+	    fatalError("Can't create bucket", NULL);
 
 	if (!(flow = AuGetScratchFlowToBucket(l->aud, bucket, &import,
 					      NULL)))
-	    fatalError("Error creating flow");
+	    fatalError("Error creating flow", NULL);
 
 	numBytes = SoundNumBytes(s);
 
@@ -1173,7 +1110,7 @@ int             volume;
 	    if (!AuSoundCreateBucketFromData(l->aud, s, ringinData,
 					     AuAccessImportMask |
 					     AuAccessListMask, NULL, NULL))
-		fatalError("Can't create bucket");
+		fatalError("Can't create bucket", NULL);
 
 	    SoundDestroy(s);
 	}
@@ -1198,9 +1135,7 @@ int             volume;
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     GlobalDataPtr   g = &globals;
     char           *audioServer = NULL,
@@ -1228,7 +1163,7 @@ char          **argv;
 
     XtVaSetValues(g->top, XtNiconPixmap, icon, NULL);
 
-#define ARG() (--argc ? *++argv : (char *) fatalError(USAGE))
+#define ARG() (--argc ? *++argv : (char *) fatalError(USAGE, NULL))
 
     while (--argc)
     {
@@ -1250,7 +1185,7 @@ char          **argv;
 		    g->latency = (float) atof(ARG());
 		    break;
 		default:
-		    fatalError(USAGE);
+		    fatalError(USAGE, NULL);
 	    }
     }
 

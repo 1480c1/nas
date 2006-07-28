@@ -12,9 +12,7 @@
 #include <audio/soundlib.h>
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -22,11 +20,7 @@ char           *message,
 }
 
 static void
-doneCB(aud, handler, ev, data)
-AuServer       *aud;
-AuEvent        *ev;
-AuEventHandlerRec *handler;
-AuPointer       data;
+doneCB(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev, AuPointer data)
 {
     AuBool         *done = (int *) data;
 
@@ -35,15 +29,13 @@ AuPointer       data;
 
 /* this function must return periodically to service audio events */
 static void
-doSomeWork()
+doSomeWork(void)
 {
     printf("doing some work\n");
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     AuServer       *aud;
     AuBucketID      bucket;
@@ -52,14 +44,14 @@ char          **argv;
     char           *file = argv[1];
 
     if (argc < 2)
-	fatalError("usage: plyBcktAsync file");
+	fatalError("usage: plyBcktAsync file", NULL);
 
     if (!(aud = AuOpenServer(NULL, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't open audio server");
+	fatalError("Can't open audio server", NULL);
 
     if (!(bucket = AuSoundCreateBucketFromFile(aud, file, AuAccessAllMasks,
 					       NULL, NULL)))
-	fatalError("Can't create bucket");
+	fatalError("Can't create bucket", NULL);
 
     AuSoundPlayFromBucket(aud, bucket, AuNone, AuFixedPointFromSum(1, 0),
 		      doneCB, (AuPointer) &done, 1, NULL, NULL, NULL, NULL);

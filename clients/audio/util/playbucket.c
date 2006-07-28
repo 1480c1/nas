@@ -31,9 +31,7 @@
 #define USAGE "usage: playbucket [-a audioServer] [-v volume] file"
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -78,17 +76,17 @@ main(int argc, char **argv)
 	    argc -= 2;
 	    break;
 	  default:
-	    fatalError(USAGE);
+	    fatalError(USAGE, NULL);
 	}
 
     if (argc != 2)
-	fatalError(USAGE);
+	fatalError(USAGE, NULL);
 
     if (!(s = SoundOpenFileForReading(*arg)))
 	fatalError("Can't open file %s", *arg);
 
     if (!(aud = AuOpenServer(audioServer, 0, NULL, 0, NULL, NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server", NULL);
 
     AuSetString(AuBucketDescription(&b),
 		AuStringLatin1, strlen(SoundComment(s)), SoundComment(s));

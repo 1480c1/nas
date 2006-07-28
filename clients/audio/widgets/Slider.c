@@ -57,8 +57,10 @@ static XtResource resources[] = {
     },
 };
 
-static void     Initialize();
-static Boolean  SetValues();
+static void     Initialize(Widget request, Widget new, ArgList args,
+                           Cardinal *num_args);
+static Boolean  SetValues(Widget current, Widget request, Widget new,
+                          ArgList in_args, Cardinal *in_num_args);
 
 SliderClassRec  sliderClassRec =
 {
@@ -210,7 +212,8 @@ Initialize(Widget request, Widget new, ArgList args, Cardinal *num_args)
 }
 
 static Boolean
-SetValues(Widget current, Widget request, Widget new, ArgList in_args, Cardinal *in_num_args)
+SetValues(Widget current, Widget request, Widget new, ArgList in_args,
+          Cardinal *in_num_args)
 {
     SliderWidget    w = (SliderWidget) new,
                     old = (SliderWidget) current;

@@ -29,7 +29,7 @@
 
 #include "config.h"
 
-#include	<stdio.h>
+#include <stdio.h>
 
 #if defined(HAVE_STDLIB_H)
 # include <stdlib.h> 
@@ -39,8 +39,8 @@
 # include <malloc.h>
 #endif
 
-#include	<audio/audiolib.h>
-#include	<audio/soundlib.h>
+#include <audio/audiolib.h>
+#include <audio/soundlib.h>
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
@@ -116,7 +116,7 @@ static String   defaultResources[] =
     NULL
 };
 
-static void     fatalError();
+static void     fatalError(char *message, char *arg);
 
 #define Invert(w)							       \
 {									       \
@@ -208,14 +208,12 @@ static int      VolumeListCount;
 }
 
 static          VolumeListId
-AddToVolumeList(flow, elementNumber)
-AuFlowID        flow;
-unsigned int    elementNumber;
+AddToVolumeList(AuFlowID flow, unsigned int elementNumber)
 {
     VolumeListPtr   p;
 
     if (!(p = (VolumeListPtr) malloc(sizeof(VolumeListRec))))
-	fatalError("malloc error in AddToVolumeList");
+	fatalError("malloc error in AddToVolumeList", NULL);
 
     p->flow = flow;
     p->elementNumber = elementNumber;
@@ -234,11 +232,7 @@ typedef struct
 
 /* ARGSUSED */
 static void
-doneCB(aud, handler, ev, d)
-AuServer       *aud;
-AuEventHandlerRec *handler;
-AuEvent        *ev;
-AuPointer       d;
+doneCB(AuServer *aud, AuEventHandlerRec *handler, AuEvent *ev, AuPointer d)
 {
     DonePrivPtr     data = (DonePrivPtr) d;
 
@@ -247,10 +241,7 @@ AuPointer       d;
 
 /* ARGSUSED */
 static void
-stopCB(w, g, data)
-Widget          w;
-XtPointer       g;
-XtPointer       data;
+stopCB(Widget w, XtPointer g, XtPointer data)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) g;
 
@@ -273,10 +264,7 @@ XtPointer       data;
 
 /* ARGSUSED */
 static void
-playCB(w, g, data)
-Widget          w;
-XtPointer       g;
-XtPointer       data;
+playCB(Widget w, XtPointer g, XtPointer data)
 {
     static DonePrivRec priv;
     GlobalDataPtr   globals = (GlobalDataPtr) g;
@@ -297,8 +285,7 @@ XtPointer       data;
 }
 
 static          Bool
-showInfo(globals)
-GlobalDataPtr   globals;
+showInfo(GlobalDataPtr globals)
 {
     Sound           s;
 
@@ -314,7 +301,7 @@ GlobalDataPtr   globals;
 }
 
 	if (!(p = buf = (char *) malloc(2000 + strlen(SoundComment(s)))))
-	    fatalError("Can't malloc text in showInfo");
+	    fatalError("Can't malloc text in showInfo", NULL);
 
 	PRINT(p, "   Filename: %s\n", globals->filename);
 	PRINT(p, "File Format: %s\n", SoundFileFormatString(s));
@@ -340,17 +327,13 @@ GlobalDataPtr   globals;
 
 /* ARGSUSED */
 static void
-quitCB(w, data, call_data)
-Widget          w;
-XtPointer       data;
-XtPointer       call_data;
+quitCB(Widget w, XtPointer data, XtPointer call_data)
 {
     exit(0);
 }
 
 static void
-adjustVolume(globals)
-GlobalDataPtr   globals;
+adjustVolume(GlobalDataPtr globals)
 {
     AuElementParameters *parms;
     VolumeListPtr   p = VolumeList;
@@ -361,7 +344,7 @@ GlobalDataPtr   globals;
 
     if (!(parms = (AuElementParameters *)
 	  malloc(sizeof(AuElementParameters) * VolumeListCount)))
-	fatalError("malloc error in adjustVolume");
+	fatalError("malloc error in adjustVolume", NULL);
 
     while (p)
     {
@@ -380,10 +363,7 @@ GlobalDataPtr   globals;
 
 /* ARGSUSED */
 static void
-scrollProcCB(w, data, cd)
-Widget          w;
-XtPointer       data;
-XtPointer       cd;
+scrollProcCB(Widget w, XtPointer data, XtPointer cd)
 {
     GlobalDataPtr   globals = (GlobalDataPtr) data;
     int             position = (int) cd;
@@ -411,10 +391,7 @@ XtPointer       cd;
 
 /* ARGSUSED */
 static void
-jumpProcCB(w, data, cd)
-Widget          w;
-XtPointer       data;
-XtPointer       cd;
+jumpProcCB(Widget w, XtPointer data, XtPointer cd)
 {
     int             newVolume;
     char            buf[50];
@@ -436,8 +413,7 @@ XtPointer       cd;
 }
 
 static          Dimension
-getFontCharWidth(w)
-Widget          w;
+getFontCharWidth(Widget w)
 {
     XFontStruct    *font;
 
@@ -446,8 +422,7 @@ Widget          w;
 }
 
 static          Dimension
-getFontCharHeight(w)
-Widget          w;
+getFontCharHeight(Widget w)
 {
     XFontStruct    *font;
 
@@ -458,7 +433,7 @@ Widget          w;
 static char    *progname;
 
 static void
-usage()
+usage(void)
 {
     fprintf(stderr,
 	    "Usage: %s [-audio servername] [-volume percentage] [-toolkitoption ...] file\n", APP_INSTANCE);
@@ -466,9 +441,7 @@ usage()
 }
 
 int
-main(argc, argv)
-int             argc;
-char          **argv;
+main(int argc, char **argv)
 {
     int             i;
     Dimension       infoWidth,
@@ -531,12 +504,12 @@ char          **argv;
 	    globals->filename = *argv;
     }
     if (!globals->filename)
-	fatalError("No sound file to play");
+	fatalError("No sound file to play", NULL);
 
 
     if (!(globals->aud = AuOpenServer(audioServerString, 0, NULL, 0, NULL,
 				      NULL)))
-	fatalError("Can't connect to audio server");
+	fatalError("Can't connect to audio server %s", audioServerString);
 
     for (i = 0; i < AuServerNumDevices(globals->aud); i++)
 	if ((AuDeviceKind(AuServerDevice(globals->aud, i)) ==
@@ -635,9 +608,7 @@ char          **argv;
 }
 
 static void
-fatalError(message, arg)
-char           *message,
-               *arg;
+fatalError(char *message, char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, ".\n");
