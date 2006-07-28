@@ -359,12 +359,17 @@ readMixerOutputGain(void)
             osLogMsg("readMixerOutputGain: "
                      "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_PCM)) failed: %s\n",
                      sndStatOut.mixer, mixerfd, strerror(errno));
+            return sndStatOut.gain;
         }
-        pcm_level = pcm_level >> 8;
     } else {
-        pcm_level = sndStatOut.gain;
+        return sndStatOut.gain;
     }
 
+    pcm_level = ((pcm_level & 0xFF) + (pcm_level >> 8)) / 2;
+    if (sndStatOut.gainScale) {
+        pcm_level *= 100;
+        pcm_level /= sndStatOut.gainScale;
+    }
     return pcm_level;
 }
 
@@ -378,12 +383,13 @@ readMixerInputMode(void)
             osLogMsg("readMixerInputMode: "
                      "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_RECSRC)) failed: "
                      "%s\n", sndStatOut.mixer, mixerfd, strerror(errno));
+            return 1<<SOUND_MIXER_LINE;
         }
         if (!(input_mode & (SOUND_MASK_MIC | SOUND_MIXER_LINE))) {
-            input_mode = 1<<SOUND_MIXER_LINE;
+            return 1<<SOUND_MIXER_LINE;
         }
     } else {
-        input_mode = 1<<SOUND_MIXER_LINE;
+        return 1<<SOUND_MIXER_LINE;
     }
 
     return input_mode;
@@ -400,55 +406,61 @@ readMixerInputGain(void)
     if (mixerfd != -1) {
         switch (recControlMode) {
         case useMixerIGain:
-            if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_IGAIN),&in_level) != -1) {
+            if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_IGAIN),&in_level) == -1) {
                 osLogMsg("readMixerInputGain: %s: "
                          "ioctl(MIXER_READ(SOUND_MIXER_IGAIN)) failed: %s\n",
                          sndStatOut.mixer, strerror(errno));
+                return sndStatIn.gain;
             }
-            in_level = in_level >> 8;
             break;
 
         case useMixerRecLev:
-            if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_RECLEV),&in_level) != -1){
+            if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_RECLEV),&in_level) == -1){
                 osLogMsg("readMixerInputGain: "
                          "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_RECLEV)) failed:"
                          " %s\n", sndStatOut.mixer, mixerfd, strerror(errno));
+                return sndStatIn.gain;
             }
-            in_level = in_level >> 8;
             break;
 
         case useMixerLineMic:
             if (recsrc & SOUND_MASK_LINE) {
                 if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_LINE), &in_level)
-                    != -1) {
+                    == -1) {
                     osLogMsg("readMixerInputGain: "
                              "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_LINE)) "
                              "failed: %s\n",
                              sndStatOut.mixer, mixerfd, strerror(errno));
+                    return sndStatIn.gain;
                 }
-                in_level = in_level >> 8;
             } else if (recsrc & SOUND_MASK_MIC) {
                 if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_MIC), &in_level)
-                    != -1) {
+                    == -1) {
                     osLogMsg("readMixerInputGain: "
                              "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_MIC)) "
                              "failed: %s\n",
                              sndStatOut.mixer, mixerfd, strerror(errno));
+                    return sndStatIn.gain;
                 }
-                in_level = in_level >> 8;
             } else {
-                in_level = sndStatIn.gain;
+                return sndStatIn.gain;
             }
             break;
 
         default:
             osLogMsg("readMixerInputGain: "
                      "unknown value %d of recControlMode\n", recControlMode);
+            return sndStatIn.gain;
         }
     } else {
-        in_level = sndStatIn.gain;
+        return sndStatIn.gain;
     }
 
+    in_level = ((in_level & 0xFF) + (in_level >> 8)) / 2;
+    if (sndStatIn.gainScale) {
+        in_level *= 100;
+        in_level /= sndStatIn.gainScale;
+    }
     return in_level;
 }
 
@@ -465,7 +477,7 @@ mixerInputModeToNAS(int input_mode)
         osLogMsg("mixerInputModeToNAS: input mode %d is neither LINE (%d) "
                  "nor MIC (%d)\n", input_mode, SOUND_MASK_LINE, SOUND_MASK_MIC);
 
-    return AuDeviceInputModeNone;
+    return AuDeviceInputModeLineIn;
 }
 
 static int
@@ -1077,6 +1089,11 @@ setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
         inputAttenuation = g;
     else
         inputAttenuation = 100;
+
+    if (sndStatIn.gainScale) {
+        inputAttenuation *= sndStatIn.gainScale;
+        inputAttenuation /= 100;
+    }
 
     if (lineMode == AuDeviceLineModeHigh) {
         recsrc = SOUND_MASK_MIC & recmask;

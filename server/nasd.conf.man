@@ -21,25 +21,28 @@ the input and output devices, for those server that undersand them.
 .PP
 .B verbose
 Sets a flag telling the server to report what it's trying to do with each
-setting in the config file.
+setting in the config file. This option is off by default.
 .PP
 .B debug <number>
 Sets the debug flag, which will provide a trace of the server's activities
 on stderr.  Set <num> to 0 to disable debug messages, 99 for *alot* of
-debug messages.
+debug messages. This option defaults to 0.
 .PP
 .B ReleaseDevice "YES" | "NO"
 Set to "YES" or "NO". Defines whether the server should release the audio
-device when finished playing or recording a sound. (voxware, hpux, sun)
+device when finished playing or recording a sound. This option defaults
+to "YES". (voxware, hpux, sun)
 .PP
 .B KeepMixer "YES" | "NO"
 Set to "YES" or "NO". Defines whether the server should keep the mixer open
-when releasing the audio device. (voxware)
+when releasing the audio device. Without an open mixer device the
+server will always report the default gain and line mode and cannot change
+them either. This option defaults to "YES". (voxware)
 .PP
 .B MixerInit "YES" | "NO"
 Set to "YES" or "NO".  Defines whether the server will init the mixer
 device on startup. Later changes of gain or input mode will change the
-mixer settings. (voxware)
+mixer settings. This option defaults to "YES". (voxware)
 .PP
 .B OutDevType "EXT" | "INT"
 For HPUX servers, define to "EXT" to use the external output device
@@ -65,7 +68,7 @@ Specifies the default volume (0-100). The default is 50.
 .B gainscale number
 This factor (expressed as a percentage) is applied to all volume-setting
 requests.  This lets the server transparently limit the actual
-maximum volume that can be set by clients.
+maximum volume that can be set by clients. The default is 100.
 .PP
 .B maxrate number
 The maximum number of samples per second that we'll drive the

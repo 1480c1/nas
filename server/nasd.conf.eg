@@ -7,7 +7,7 @@
 
 
 # set this to 0 for no debugging, a larger number equals more debugging
-#  info...
+#  info... (defaults to 0)
 Debug 0
 
 # be verbose, comment out if you don't want it
@@ -15,19 +15,23 @@ Verbose
 
 # set this to "yes" or "no" to indicate whether nasd should release the
 #  audio device when finished playing a sound.
+# defaults to "yes"
 # Only the voxware, hpux, and sun servers understand this for now.
 ReleaseDevice "yes"
 
 # set this to "yes" or "no" to indicate whether nasd should keep the mixer
 #  device open when releasing the audio device.
+# defaults to "yes"
 # Only the voxware server understands this for now.
 KeepMixer "yes"
 
 # init the mixer on startup? Voxware only.
+# defaults to "yes"
 MixerInit	"yes"			
 
 # This is used on hpux.  Set to "INT" to use the internal speaker,
 #  set to "EXT" to use the external device (headphone/speakers).
+# defaults to "EXT"
 OutDevType	"EXT"
 
 # These are all used by voxware, nowhere else yet.

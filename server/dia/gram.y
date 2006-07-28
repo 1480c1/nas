@@ -55,8 +55,8 @@ globstmt        : VERBOSE
 
                           j = parsebool($2);
                           if (j == -1) {
-                                /* error - default to no */
-                              NasConfig.DoDeviceRelease = FALSE;
+                                /* error - default to yes */
+                              NasConfig.DoDeviceRelease = TRUE;
                           } else 
                               NasConfig.DoDeviceRelease = j; 
                         }
