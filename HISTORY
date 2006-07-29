@@ -27,9 +27,12 @@ Version ??? (devel) 7/15/2006
           - correcting an issue where the preset gain was not applied
             when the device was opened (if ReleaseDevice is enabled).
 
-          - Adding a mixerkeep option (on be default) that causes NAS
+          - Adding a KeepMixer option (on by default) that causes NAS
             to always keep the mixer device open so it can track
             external changes to mixer settings.
+
+          - patch adding MixerReInit option that init's the mixer to
+            defaults every time nasd opens the audio device.
 
           - patches ANSI'fying the nas clients 
 

@@ -34,6 +34,7 @@ number                          [0-9]+
 [Mm][Ii][Xx][Ee][Rr]                    { return MIXER; }
 [Rr][Ee][Aa][Dd][Ww][Rr][Ii][Tt][Ee]    { return READWRITE; }
 [Mm][Ii][Xx][Ee][Rr][Ii][Nn][Ii][Tt]    { return MIXERINIT; }
+[Rr][Ee][Ii][Nn][Ii][Tt][Mm][Ii][Xx][Ee][Rr]    { return REINITMIXER; }
 [Oo][Uu][Tt][Dd][Ee][Vv][Tt][Yy][Pp][Ee]  { return OUTDEVTYPE; }
 [Ff][Oo][Rr][Cc][Ee][Rr][Aa][Tt][Ee]    { return FORCERATE; }
 [Aa][Uu][Tt][Oo][Oo][Pp][Ee][Nn]        { return AUTOOPEN; }

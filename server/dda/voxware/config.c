@@ -13,6 +13,7 @@
 
 extern SndStat sndStatOut, sndStatIn, *confStat;
 extern int VOXMixerInit;
+extern int VOXReInitMixer;
 
 void
 ddaSetConfig(int token, void *value)
@@ -175,6 +176,12 @@ ddaSetConfig(int token, void *value)
         num = (int) value;
 
         VOXMixerInit = num;
+        break;
+
+    case REINITMIXER:
+        num = (int) value;
+
+        VOXReInitMixer = num;
         break;
 
     default:                   /* ignore any other tokens */

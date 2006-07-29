@@ -29,7 +29,7 @@ extern int yylineno;
 %token <num> MINFRAGS MAXRATE MINRATE NUMCHANS MIXER DEVICE NUMBER 
 %token <num> CDEBUG VERBOSE
 %token <num> READWRITE FORCERATE AUTOOPEN GAIN GAINSCALE
-%token <num> RELEASEDEVICE KEEPMIXER OUTDEVTYPE MIXERINIT
+%token <num> RELEASEDEVICE KEEPMIXER OUTDEVTYPE MIXERINIT REINITMIXER
 %token <ptr> STRING 
 
 %type <ptr> string
@@ -73,6 +73,8 @@ globstmt        : VERBOSE
                         }
                 | MIXERINIT string
                         { ddaSetConfig(MIXERINIT, (void *)parsebool($2)); }  
+                | REINITMIXER string
+                        { ddaSetConfig(REINITMIXER, (void *)parsebool($2)); }  
                 | OUTDEVTYPE string
                         { ddaSetConfig(OUTDEVTYPE, (void *)$2); }  
                 ;

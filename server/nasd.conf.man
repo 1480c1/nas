@@ -44,6 +44,12 @@ Set to "YES" or "NO".  Defines whether the server will init the mixer
 device on startup. Later changes of gain or input mode will change the
 mixer settings. This option defaults to "YES". (voxware)
 .PP
+.B ReInitMixer "YES" | "NO"
+Set to "YES" or "NO". Defines whether the server will re-init the mixer
+device on every audio device open. The mixer is re-initialized only if it is
+initialized at startup (see \fBMixerInit\fR option). This option defaults
+to "NO". (voxware)
+.PP
 .B OutDevType "EXT" | "INT"
 For HPUX servers, define to "EXT" to use the external output device
 (headphone/speakers) or "INT" for the internal output device (internal

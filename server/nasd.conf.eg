@@ -29,6 +29,12 @@ KeepMixer "yes"
 # defaults to "yes"
 MixerInit	"yes"			
 
+# Initialize the mixer settings on every audio device open?
+# Settings are only initialized if MixerInit is set to "yes".
+# Voxware only.
+# defaults to "no"
+ReInitMixer "no"
+
 # This is used on hpux.  Set to "INT" to use the internal speaker,
 #  set to "EXT" to use the external device (headphone/speakers).
 # defaults to "EXT"

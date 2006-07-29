@@ -232,6 +232,7 @@ static int recmask = 0;         /* Supported recording sources */
 static int stereodevs = 0;      /* Channels supporting stereo */
 
 int VOXMixerInit = TRUE;        /* overridden by nasd.conf */
+int VOXReInitMixer = FALSE;     /* overridden by nasd.conf */
 
 /* end of VOXware driver mixer control variables */
 
@@ -480,6 +481,13 @@ mixerInputModeToNAS(int input_mode)
     return AuDeviceInputModeLineIn;
 }
 
+static void
+setMixerDefaults(void)
+{
+    setPhysicalOutputGain(auDefaultOutputGain);
+    setPhysicalInputGainAndLineMode(auDefaultInputGain, AuDeviceLineModeLow);
+}
+
 static int
 createServerComponents(AuUint32 * auServerDeviceListSize,
                        AuUint32 * auServerBucketListSize,
@@ -625,9 +633,7 @@ createServerComponents(AuUint32 * auServerDeviceListSize,
     if (!initialized) {
         initialized = AuTrue;
         if (!leave_mixer) {
-            setPhysicalOutputGain(auDefaultOutputGain);
-            setPhysicalInputGainAndLineMode(auDefaultInputGain,
-                                            AuDeviceLineModeLow);
+            setMixerDefaults();
         }
 
         /* JET - close the device if requested... only needs to happen
@@ -1194,6 +1200,9 @@ enableProcessFlow(void)
 
     if (relinquish_device) {
         openDevice(AuTrue);
+        if (VOXReInitMixer && VOXMixerInit) {
+            setMixerDefaults();
+        }
     }
 #ifdef sco
     if (!processFlowEnabled) {
