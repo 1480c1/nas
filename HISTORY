@@ -7,7 +7,7 @@ Version ??? (devel) 7/15/2006
           - allow the specification of a scaling factor to apply to
             the output gain
 
-          - add a proper return value in auvowware.c:initMixer()
+          - add a proper return value in auvoxware.c:initMixer()
 
           - mondo indentification of server/*
 
@@ -24,17 +24,29 @@ Version ??? (devel) 7/15/2006
 
         - applied patches from Erik Auerswald:
 
-          - correcting an issue where the preset gain was not applied
-            when the device was opened (if ReleaseDevice is enabled).
+          - adding an option to aupanel to specify the initially
+            controlled device.
+
+          - keeping gain and input mode changes consistent between
+            voxware server and mixer if possible.
+
+          - changing recording level controls of the voxware server
+            to use IGain or RecLev when available and select only
+            the specified recording source.
+
+          - fixing MixerInit option of the voxware server.
 
           - Adding a KeepMixer option (on by default) that causes NAS
             to always keep the mixer device open so it can track
             external changes to mixer settings.
 
-          - patch adding MixerReInit option that init's the mixer to
-            defaults every time nasd opens the audio device.
+          - patch adding ReInitMixer option that init's the mixer to
+            defaults every time nasd re-opens the audio device.
 
           - patches ANSI'fying the nas clients 
+
+          - extending the gainScale functionality to apply to the
+            input gain as well.
 
 
 Version 1.8 (stable) 06/03/2006
