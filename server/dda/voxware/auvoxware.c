@@ -853,10 +853,18 @@ openDevice(AuBool wait)
     if (mixerfd == -1) {
         while ((mixerfd = open(sndStatOut.mixer, O_RDWR | extramode,
                                0666)) == -1 && wait) {
-            osLogMsg("openDevice: waiting on mixer device\n");
-            sleep(1);
+            if ((errno == EAGAIN) || (errno == EBUSY)) {
+                osLogMsg("openDevice: waiting on mixer device %s\n",
+                         sndStatOut.mixer);
+                sleep(1);
+            } else {
+                osLogMsg("openDevice: could not open mixer device %s: %s\n",
+                         sndStatOut.mixer, strerror(errno));
+                break;
+            }
         }
-        osLogMsg("openDevice: opened mixer %s\n", sndStatOut.mixer);
+        if (mixerfd != -1)
+            osLogMsg("openDevice: opened mixer %s\n", sndStatOut.mixer);
     } else {
         if (NasConfig.DoDebug) {
             osLogMsg("openDevice: mixer device already open\n");

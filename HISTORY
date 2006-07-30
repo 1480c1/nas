@@ -24,6 +24,14 @@ Version ??? (devel) 7/15/2006
 
         - applied patches from Erik Auerswald:
 
+          - document nasd '-V' option in the man page
+
+          - opening the mixer device should be allowed to fail
+            according to
+            http://radscan.com/nas/nas-ml/msg01121.html. But right now
+            it may only fail on startup, not when re-opening the audio
+            device. The attached patch corrects this issue.
+
           - adding an option to aupanel to specify the initially
             controlled device.
 
