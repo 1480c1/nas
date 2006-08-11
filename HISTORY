@@ -24,6 +24,9 @@ Version ??? (devel) 7/15/2006
 
         - applied patches from Erik Auerswald:
 
+          - preserve configuration of input device in the voxware
+            server when ReleaseDevice is on, and no flow is active. 
+
           - document nasd '-V' option in the man page
 
           - opening the mixer device should be allowed to fail
