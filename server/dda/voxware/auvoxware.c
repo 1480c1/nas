@@ -754,8 +754,10 @@ setSampleRate(AuUint32 rate)
             sndStatOut.curSampleRate = rate;
     }
 
-    if (sndStatIn.fd == sndStatOut.fd)
+    if ((sndStatIn.fd == sndStatOut.fd) && (sndStatIn.fd != -1)) {
         sndStatIn = sndStatOut;
+        osLogMsg("setSampleRate(): setting sndStatIn = sndStatOut\n");
+    }
     else if (sndStatIn.curSampleRate != rate) {
         sndStatIn.curSampleRate = rate;
 
@@ -931,8 +933,8 @@ closeDevice(void)
             }
         } else {
             if (NasConfig.DoDebug)
-                osLogMsg("closeDevice IN %s en %d\n",
-                         sndStatOut.device, sndStatOut.howToOpen);
+                osLogMsg("closeDevice IN %s mode %d\n",
+                         sndStatIn.device, sndStatIn.howToOpen);
 
             while (close(sndStatIn.fd)) {
                 osLogMsg("closeDevice: waiting on input device\n");
