@@ -2,6 +2,9 @@ $Id$
 
 Version ??? (devel) 7/15/2006
 
+        - patch from Petr Salinge (via Steve McIntyre) adding
+          GNU/kFreeBSD support.
+
         - Patches from Paul Fox:
 
           - allow the specification of a scaling factor to apply to
