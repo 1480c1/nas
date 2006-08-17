@@ -224,12 +224,13 @@ static void closeDevice(void);
 static AuBool relinquish_device = 0;
 static AuBool leave_mixer = 0;
 static AuBool share_in_out = 0;
+static AuBool share_mixer = 0;
 
 static int recControlMode = 0;  /* how to control recording level */
-static int mixerfd = -1;        /* The mixer device */
+static int outmixerfd = -1;     /* The output device mixer device */
+static int inmixerfd = -1;      /* The input device mixer device */
 static int devmask = 0;         /* Bitmask for supported mixer devices */
 static int recmask = 0;         /* Supported recording sources */
-static int stereodevs = 0;      /* Channels supporting stereo */
 
 int VOXMixerInit = TRUE;        /* overridden by nasd.conf */
 int VOXReInitMixer = FALSE;     /* overridden by nasd.conf */
@@ -355,11 +356,11 @@ readMixerOutputGain(void)
 {
     int pcm_level = 0;
 
-    if (mixerfd != -1) {
-        if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_PCM), &pcm_level) == -1) {
+    if (outmixerfd != -1) {
+        if (ioctl(outmixerfd, MIXER_READ(SOUND_MIXER_PCM), &pcm_level) == -1) {
             osLogMsg("readMixerOutputGain: "
                      "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_PCM)) failed: %s\n",
-                     sndStatOut.mixer, mixerfd, strerror(errno));
+                     sndStatOut.mixer, outmixerfd, strerror(errno));
             return sndStatOut.gain;
         }
     } else {
@@ -379,11 +380,11 @@ readMixerInputMode(void)
 {
     int input_mode = 0;
 
-    if (mixerfd != -1) {
-        if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_RECSRC), &input_mode) == -1) {
+    if (inmixerfd != -1) {
+        if (ioctl(inmixerfd,MIXER_READ(SOUND_MIXER_RECSRC),&input_mode) == -1) {
             osLogMsg("readMixerInputMode: "
                      "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_RECSRC)) failed: "
-                     "%s\n", sndStatOut.mixer, mixerfd, strerror(errno));
+                     "%s\n", sndStatIn.mixer, inmixerfd, strerror(errno));
             return 1<<SOUND_MIXER_LINE;
         }
         if (!(input_mode & (SOUND_MASK_MIC | SOUND_MIXER_LINE))) {
@@ -404,43 +405,43 @@ readMixerInputGain(void)
     
     recsrc = readMixerInputMode();
 
-    if (mixerfd != -1) {
+    if (inmixerfd != -1) {
         switch (recControlMode) {
         case useMixerIGain:
-            if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_IGAIN),&in_level) == -1) {
+            if (ioctl(inmixerfd,MIXER_READ(SOUND_MIXER_IGAIN),&in_level) == -1){
                 osLogMsg("readMixerInputGain: %s: "
                          "ioctl(MIXER_READ(SOUND_MIXER_IGAIN)) failed: %s\n",
-                         sndStatOut.mixer, strerror(errno));
+                         sndStatIn.mixer, strerror(errno));
                 return sndStatIn.gain;
             }
             break;
 
         case useMixerRecLev:
-            if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_RECLEV),&in_level) == -1){
+            if (ioctl(inmixerfd,MIXER_READ(SOUND_MIXER_RECLEV),&in_level)==-1) {
                 osLogMsg("readMixerInputGain: "
                          "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_RECLEV)) failed:"
-                         " %s\n", sndStatOut.mixer, mixerfd, strerror(errno));
+                         " %s\n", sndStatIn.mixer, inmixerfd, strerror(errno));
                 return sndStatIn.gain;
             }
             break;
 
         case useMixerLineMic:
             if (recsrc & SOUND_MASK_LINE) {
-                if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_LINE), &in_level)
+                if (ioctl(inmixerfd, MIXER_READ(SOUND_MIXER_LINE), &in_level)
                     == -1) {
                     osLogMsg("readMixerInputGain: "
                              "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_LINE)) "
                              "failed: %s\n",
-                             sndStatOut.mixer, mixerfd, strerror(errno));
+                             sndStatIn.mixer, inmixerfd, strerror(errno));
                     return sndStatIn.gain;
                 }
             } else if (recsrc & SOUND_MASK_MIC) {
-                if (ioctl(mixerfd, MIXER_READ(SOUND_MIXER_MIC), &in_level)
+                if (ioctl(inmixerfd, MIXER_READ(SOUND_MIXER_MIC), &in_level)
                     == -1) {
                     osLogMsg("readMixerInputGain: "
                              "%s: ioctl(%d, MIXER_READ(SOUND_MIXER_MIC)) "
                              "failed: %s\n",
-                             sndStatOut.mixer, mixerfd, strerror(errno));
+                             sndStatIn.mixer, inmixerfd, strerror(errno));
                     return sndStatIn.gain;
                 }
             } else {
@@ -752,11 +753,15 @@ setSampleRate(AuUint32 rate)
               &(sndStatOut.curSampleRate));
         if (sndStatOut.forceRate)
             sndStatOut.curSampleRate = rate;
+        if (NasConfig.DoDebug)
+            osLogMsg("setSampleRate(): set output sample rate to %d\n",
+                     sndStatOut.curSampleRate);
     }
 
     if ((sndStatIn.fd == sndStatOut.fd) && (sndStatIn.fd != -1)) {
         sndStatIn = sndStatOut;
-        osLogMsg("setSampleRate(): setting sndStatIn = sndStatOut\n");
+        if (NasConfig.DoDebug)
+            osLogMsg("setSampleRate(): setting sndStatIn = sndStatOut\n");
     }
     else if (sndStatIn.curSampleRate != rate) {
         sndStatIn.curSampleRate = rate;
@@ -768,6 +773,9 @@ setSampleRate(AuUint32 rate)
         ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED, &(sndStatIn.curSampleRate));
         if (sndStatIn.forceRate)
             sndStatIn.curSampleRate = rate;
+        if (NasConfig.DoDebug)
+            osLogMsg("setSampleRate(): set input sample rate to %d\n",
+                     sndStatIn.curSampleRate);
     }
 #if defined(AUDIO_DRAIN)
     if (sndStatOut.isPCSpeaker)
@@ -790,6 +798,7 @@ openDevice(AuBool wait)
 {
     unsigned int extramode = 0;
     int retries;
+    int curSampleRate;
 
     setTimer(0);                /* no timers here */
 #if defined(__CYGWIN__)         /* we want the file to be created if necc under
@@ -799,6 +808,14 @@ openDevice(AuBool wait)
 
     if (NasConfig.DoDebug) {
         osLogMsg("openDevice\n");
+    }
+
+    curSampleRate = sndStatOut.curSampleRate;
+    if (NasConfig.DoDebug) {
+        osLogMsg("openDevice: current sample rate = %d\n", curSampleRate);
+        if (sndStatOut.curSampleRate != sndStatIn.curSampleRate)
+            osLogMsg("openDevice: sndStatOut.curSampleRate !="
+                     " sndStatIn.curSampleRate\n");
     }
 
     if (NasConfig.DoDebug) {
@@ -852,24 +869,56 @@ openDevice(AuBool wait)
         }
     }
 
-    if (mixerfd == -1) {
-        while ((mixerfd = open(sndStatOut.mixer, O_RDWR | extramode,
-                               0666)) == -1 && wait) {
-            if ((errno == EAGAIN) || (errno == EBUSY)) {
-                osLogMsg("openDevice: waiting on mixer device %s\n",
-                         sndStatOut.mixer);
-                sleep(1);
-            } else {
-                osLogMsg("openDevice: could not open mixer device %s: %s\n",
-                         sndStatOut.mixer, strerror(errno));
-                break;
+    if (outmixerfd == -1) {
+        if (sndStatOut.mixer[0] == '\0') {
+            osLogMsg("openDevice: no output mixer device specified\n");
+        } else {
+            while ((outmixerfd = open(sndStatOut.mixer, O_RDWR | extramode,
+                                   0666)) == -1 && wait) {
+                if ((errno == EAGAIN) || (errno == EBUSY)) {
+                    osLogMsg("openDevice: waiting on mixer device %s\n",
+                             sndStatOut.mixer);
+                    sleep(1);
+                } else {
+                    osLogMsg("openDevice: could not open output mixer device"
+                             " %s: %s\n", sndStatOut.mixer, strerror(errno));
+                    break;
+                }
             }
+            if (outmixerfd != -1)
+                osLogMsg("openDevice: opened mixer %s\n", sndStatOut.mixer);
         }
-        if (mixerfd != -1)
-            osLogMsg("openDevice: opened mixer %s\n", sndStatOut.mixer);
     } else {
         if (NasConfig.DoDebug) {
-            osLogMsg("openDevice: mixer device already open\n");
+            osLogMsg("openDevice: output mixer device already open\n");
+        }
+    }
+
+    if ((inmixerfd == -1) && !share_mixer) {
+        if (sndStatIn.mixer[0] != '\0') {
+            osLogMsg("openDevice: no input mixer device specified\n");
+        } else {
+            while ((inmixerfd = open(sndStatIn.mixer, O_RDWR | extramode,
+                                   0666)) == -1 && wait) {
+                if ((errno == EAGAIN) || (errno == EBUSY)) {
+                    osLogMsg("openDevice: waiting on mixer device %s\n",
+                             sndStatIn.mixer);
+                    sleep(1);
+                } else {
+                    osLogMsg("openDevice: could not open input mixer device"
+                             " %s: %s\n", sndStatIn.mixer, strerror(errno));
+                    break;
+                }
+            }
+            if (inmixerfd != -1)
+                osLogMsg("openDevice: opened mixer %s\n", sndStatIn.mixer);
+        }
+    } else {
+        if (share_mixer) {
+            inmixerfd = outmixerfd;
+        }
+        if (NasConfig.DoDebug) {
+            osLogMsg("openDevice: input mixer device already open\n");
         }
     }
 #endif
@@ -888,7 +937,7 @@ openDevice(AuBool wait)
         if (sndStatOut.fd != sndStatIn.fd) {
             ioctl(sndStatIn.fd, SNDCTL_DSP_SYNC, NULL);
 #ifndef sco
-            rate = sndStatOut.curSampleRate;
+            rate = sndStatIn.curSampleRate;
             ioctl(sndStatIn.fd, SNDCTL_DSP_SPEED,
                   &sndStatIn.curSampleRate);
             if (sndStatIn.forceRate)
@@ -897,7 +946,7 @@ openDevice(AuBool wait)
         }
     }
 
-    setSampleRate(sndStatIn.curSampleRate);
+    setSampleRate(curSampleRate);
 
     return AuTrue;
 }
@@ -949,21 +998,37 @@ closeDevice(void)
 
     if (NasConfig.DoKeepMixer) {
         if (NasConfig.DoDebug) {
-            osLogMsg("closeDevice: leaving mixerdevice open\n");
-        }
-    } else if (-1 == mixerfd) {
-        if (NasConfig.DoDebug) {
-            osLogMsg("closeDevice: mixerdevice already closed\n");
+            osLogMsg("closeDevice: leaving mixer device(s) open\n");
         }
     } else {
-        while (close(mixerfd)) {
-            osLogMsg("closeDevice: waiting on mixer device\n");
-            sleep(1);
+        if (-1 == outmixerfd) {
+            if (NasConfig.DoDebug) {
+                osLogMsg("closeDevice: output mixer device already closed\n");
+            }
+        } else {
+            while (close(outmixerfd)) {
+                osLogMsg("closeDevice: waiting on output mixer device\n");
+                sleep(1);
+            }
+            if (NasConfig.DoDebug) {
+                osLogMsg("closeDevice: closed output mixer device\n");
+            }
+            outmixerfd = -1;
         }
-        if (NasConfig.DoDebug) {
-            osLogMsg("closeDevice: closed mixer device\n");
+        if (-1 == inmixerfd) {
+            if (NasConfig.DoDebug) {
+                osLogMsg("closeDevice: input mixer device already closed\n");
+            }
+        } else {
+            while (!share_mixer && close(inmixerfd)) {
+                osLogMsg("closeDevice: waiting on input mixer device\n");
+                sleep(1);
+            }
+            if (NasConfig.DoDebug) {
+                osLogMsg("closeDevice: closed input mixer device\n");
+            }
+            inmixerfd = -1;
         }
-        mixerfd = -1;
     }
 
     sndStatIn.fd = -1;
@@ -1080,8 +1145,8 @@ setPhysicalOutputGain(AuFixedPoint gain)
     }
 
     gusvolume = g | (g << 8);
-    if (mixerfd != -1)
-        if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume) == -1)
+    if (outmixerfd != -1)
+        if (ioctl(outmixerfd, MIXER_WRITE(SOUND_MIXER_PCM), &gusvolume) == -1)
             osLogMsg("setPhysicalOutputGain: "
                      "%s: ioctl(MIXER_WRITE(SOUND_MIXER_PCM)) failed: %s\n",
                      sndStatOut.mixer, strerror(errno));
@@ -1123,54 +1188,54 @@ setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
 
     inputAttenuation = inputAttenuation << 8 | inputAttenuation;
 
-    if (mixerfd != -1) {
+    if (inmixerfd != -1) {
         switch (recControlMode) {
         case useMixerNone:
             break;
 
         case useMixerIGain:
             if (ioctl
-                (mixerfd, MIXER_WRITE(SOUND_MIXER_IGAIN),
+                (inmixerfd, MIXER_WRITE(SOUND_MIXER_IGAIN),
                  &inputAttenuation) == -1)
                 osLogMsg("setPhysicalInputGainAndLineMode: "
                          "%s: ioctl(MIXER_WRITE(SOUND_MIXER_IGAIN)) failed: "
-                         "%s\n", sndStatOut.mixer, strerror(errno));
+                         "%s\n", sndStatIn.mixer, strerror(errno));
             break;
 
         case useMixerRecLev:
             if (ioctl
-                (mixerfd, MIXER_WRITE(SOUND_MIXER_RECLEV),
+                (inmixerfd, MIXER_WRITE(SOUND_MIXER_RECLEV),
                  &inputAttenuation) == -1)
                 osLogMsg("setPhysicalInputGainAndLineMode: "
                          "%s: ioctl(MIXER_WRITE(SOUND_MIXER_RECLEV)) failed: "
-                         "%s\n", sndStatOut.mixer, strerror(errno));
+                         "%s\n", sndStatIn.mixer, strerror(errno));
             break;
 
         case useMixerLineMic:
             if (lineMode == AuDeviceLineModeHigh) {
-                if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &zero) ==
+                if (ioctl(inmixerfd, MIXER_WRITE(SOUND_MIXER_LINE), &zero) ==
                     -1)
                     osLogMsg("setPhysicalInputGainAndLineMode: "
                              "%s: ioctl(MIXER_WRITE(SOUND_MIXER_LINE)) failed: "
-                             "%s\n", sndStatOut.mixer, strerror(errno));
+                             "%s\n", sndStatIn.mixer, strerror(errno));
                 if (ioctl
-                    (mixerfd, MIXER_WRITE(SOUND_MIXER_MIC),
+                    (inmixerfd, MIXER_WRITE(SOUND_MIXER_MIC),
                      &inputAttenuation) == -1)
                     osLogMsg("setPhysicalInputGainAndLineMode: "
                              "%s: ioctl(MIXER_WRITE(SOUND_MIXER_MIC)) failed: "
-                             "%s\n", sndStatOut.mixer, strerror(errno));
+                             "%s\n", sndStatIn.mixer, strerror(errno));
             } else if (lineMode == AuDeviceLineModeLow) {
                 if (ioctl
-                    (mixerfd, MIXER_WRITE(SOUND_MIXER_LINE),
+                    (inmixerfd, MIXER_WRITE(SOUND_MIXER_LINE),
                      &inputAttenuation) == -1)
                     osLogMsg("setPhysicalInputGainAndLineMode: "
                              "%s: ioctl(MIXER_WRITE(SOUND_MIXER_LINE)) failed: "
-                             "%s\n", sndStatOut.mixer, strerror(errno));
-                if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &zero) ==
+                             "%s\n", sndStatIn.mixer, strerror(errno));
+                if (ioctl(inmixerfd, MIXER_WRITE(SOUND_MIXER_MIC), &zero) ==
                     -1)
                     osLogMsg("setPhysicalInputGainAndLineMode: "
                              "%s: ioctl(MIXER_WRITE(SOUND_MIXER_MIC)) failed: "
-                             "%s\n", sndStatOut.mixer, strerror(errno));
+                             "%s\n", sndStatIn.mixer, strerror(errno));
             }
             break;
 
@@ -1180,10 +1245,10 @@ setPhysicalInputGainAndLineMode(AuFixedPoint gain, AuUint8 lineMode)
             break;
         }
 
-        if (ioctl(mixerfd, MIXER_WRITE(SOUND_MIXER_RECSRC), &recsrc) == -1)
+        if (ioctl(inmixerfd, MIXER_WRITE(SOUND_MIXER_RECSRC), &recsrc) == -1)
             osLogMsg("setPhysicalInputGainAndLineMode: "
                      "%s: ioctl(MIXER_WRITE(SOUND_MIXER_RECSRC)) failed: %s\n",
-                     sndStatOut.mixer, strerror(errno));
+                     sndStatIn.mixer, strerror(errno));
     }
 }
 
@@ -1643,24 +1708,64 @@ initMixer(void)
     extramode = O_CREAT;
 #endif
 
-    if ((mixerfd = open(sndStatOut.mixer, O_RDWR | extramode,
-                        0666)) == -1) {
-        UNIDENTMSG;
-        osLogMsg("initMixer: could not open mixer device %s: %s\n",
-                 sndStatOut.mixer, strerror(errno));
-        return AuFalse;
+    /* open output mixer device */
+    if (sndStatOut.mixer[0] != '\0') {
+        if ((outmixerfd=open(sndStatOut.mixer, O_RDWR|extramode, 0666)) == -1) {
+            UNIDENTMSG;
+            osLogMsg("initMixer: could not open output mixer device %s: %s\n",
+                     sndStatOut.mixer, strerror(errno));
+            return AuFalse;
+        }
+        if (NasConfig.DoDebug)
+            osLogMsg("initMixer: opened output mixer device %s\n",
+                     sndStatOut.mixer, outmixerfd);
+    } else {
+        if (NasConfig.DoDebug)
+            osLogMsg("initMixer: no output mixer device specified\n");
     }
 
-    if (NasConfig.DoDebug)
-        osLogMsg("initMixer: opened mixer device %s\n",
-                 sndStatOut.mixer, mixerfd);
+    /* open input mixer device */
+    if (sndStatIn.mixer[0] != '\0') {
+        if (strcmp(sndStatIn.mixer, sndStatOut.mixer) != 0) {
+            if ((inmixerfd = open(sndStatIn.mixer, O_RDWR | extramode,
+                                0666)) == -1) {
+                UNIDENTMSG;
+                osLogMsg("initMixer: could not open input mixer device %s: %s\n"
+                         , sndStatIn.mixer, strerror(errno));
+                if (outmixerfd != -1) {
+                    osLogMsg("initMixer: using output mixer %s for input\n",
+                             sndStatOut.mixer);
+                    share_mixer = AuTrue;
+                    inmixerfd = outmixerfd;
+                    sndStatIn.mixer = sndStatOut.mixer;
+                } else {
+                    return AuFalse;
+                }
+            }
+        } else {
+            share_mixer = AuTrue;
+            inmixerfd = outmixerfd;
+            sndStatIn.mixer = sndStatOut.mixer;
+            if (NasConfig.DoDebug)
+                osLogMsg("initMixer: using the same mixer device for"
+                         " in- and output\n");
+        }
+        if (NasConfig.DoDebug)
+            osLogMsg("initMixer: opened input mixer device %s\n",
+                     sndStatIn.mixer, inmixerfd);
+    } else {
+        if (NasConfig.DoDebug)
+            osLogMsg("initMixer: no input mixer device specified\n");
+        return AuTrue;
+    }
 
-    if (ioctl(mixerfd, SOUND_MIXER_READ_DEVMASK, &devmask) == -1) {
+    /* get recording devices of input mixer */
+    if (ioctl(inmixerfd, SOUND_MIXER_READ_DEVMASK, &devmask) == -1) {
         osLogMsg("initMixer: %s: ioctl(SOUND_MIXER_READ_DEVMASK) failed: %s\n",
-                 sndStatOut.mixer, strerror(errno));
-        osLogMsg("initMixer: closing mixer device\n");
-        close(mixerfd);
-        mixerfd = -1;
+                 sndStatIn.mixer, strerror(errno));
+        osLogMsg("initMixer: closing input mixer device\n");
+        close(inmixerfd);
+        inmixerfd = -1;
     } else {
         if (devmask & (1 << SOUND_MIXER_IGAIN)) {
             recControlMode = useMixerIGain;
@@ -1672,23 +1777,16 @@ initMixer(void)
         } else {
             recControlMode = useMixerNone;
             osLogMsg("initMixer: %s: can't control recording level\n",
-                     sndStatOut.mixer);
+                     sndStatIn.mixer);
         }
 
         if (NasConfig.DoDebug)
             osLogMsg("initMixer: %s: using recording level control method %d\n",
-                     sndStatOut.mixer, recControlMode);
+                     sndStatIn.mixer, recControlMode);
 
-        if (ioctl(mixerfd, SOUND_MIXER_READ_RECMASK, &recmask) == -1) {
+        if (ioctl(inmixerfd, SOUND_MIXER_READ_RECMASK, &recmask) == -1) {
             osLogMsg("initMixer: %s: ioctl(SOUND_MIXER_READ_RECMASK) failed: "
-                     "%s\n", sndStatOut.mixer, strerror(errno));
-            return AuFalse;
-        }
-
-        if (ioctl(mixerfd, SOUND_MIXER_READ_STEREODEVS, &stereodevs) == -1) {
-            UNIDENTMSG;
-            osLogMsg("initMixer: %s: ioctl(SOUND_MIXER_READ_STEREODEVS) failed:"
-                     " %s\n", sndStatOut.mixer, strerror(errno));
+                     "%s\n", sndStatIn.mixer, strerror(errno));
             return AuFalse;
         }
     }
@@ -1813,10 +1911,15 @@ AuInitPhysicalDevices(void)
         if (!sndStatOut.isPCSpeaker) {
             if (initMixer() == AuFalse) {
                 osLogMsg("Init: initMixer failed\n");
-                if (mixerfd != -1) {
-                    osLogMsg("Init: closing mixer devcie\n");
-                    close(mixerfd);
-                    mixerfd = -1;
+                if (outmixerfd != -1) {
+                    osLogMsg("Init: closing output mixer device\n");
+                    close(outmixerfd);
+                    outmixerfd = -1;
+                }
+                if (inmixerfd != -1) {
+                    osLogMsg("Init: closing input mixer device\n");
+                    close(inmixerfd);
+                    inmixerfd = -1;
                 }
             } else {
                 if (NasConfig.DoDebug)

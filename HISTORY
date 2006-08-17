@@ -27,6 +27,45 @@ Version ??? (devel) 7/15/2006
 
         - applied patches from Erik Auerswald:
 
+          - a patch that:
+
+            Adds support for a different mixer for the input device to
+            the voxware server. Without this patch the mixer device
+            specified in the input section of the config file is not
+            used.
+
+            To use the same mixer for input and output just specify
+            the same device in the input- and output-section of the
+            config file. The empty string "" can be used to specify no
+            mixer device for the input- or output-section.  This is
+            documented in the nasd.conf man page.
+
+            The outputsection keyword is added to the nasd.conf man
+            page. 
+
+            fixed a bug in the support of two devices: If two devices
+            are used, and the sample rate of the input device can be
+            changed, the wrong sample size would be set by
+            openDevice().
+
+            remove the unused "stereodevs" variable.
+
+            NOTE: Prior to this patch, the mixer device parameter for
+                  the input section was completely ignored.  The
+                  default value for this ignored parameter was
+                  "/dev/mixer1".
+
+                  With this patch, this parameter is honored.  If your
+                  configuration depends on the input mixer being the
+                  same as the output mixer, you will need to edit your
+                  /etc/nas/nasd.conf and set the mixer parameter in
+                  the inputsection to '/dev/mixer', or to whatever
+                  mixer device your outputsection is using.
+
+                  If your system contains a /dev/mixer1 device (the
+                  default input mixer device), nasd will now use it.
+                  This is a good thing. :)
+
           - preserve configuration of input device in the voxware
             server when ReleaseDevice is on, and no flow is active. 
 

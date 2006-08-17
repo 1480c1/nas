@@ -17,7 +17,7 @@ There are up to three section in the config file. The first section
 deals with global options, some of which just turn on verbose messages
 when parsing the config file, and setting debug messages on. The
 remaining two sections will, if present, adjust various parameters of
-the input and output devices, for those server that undersand them.
+the input and output devices, for those servers that understand them.
 .PP
 .B verbose
 Sets a flag telling the server to report what it's trying to do with each
@@ -55,6 +55,10 @@ For HPUX servers, define to "EXT" to use the external output device
 (headphone/speakers) or "INT" for the internal output device (internal
 speaker).  Defaults to external.
 .PP
+.B outputsection
+Marks the beginning of the output section, which allows various parameters
+of the output device to be set up.
+.PP
 .B inputsection
 Marks the beginning of the input section, which allows various parameters
 of the input device to be set up.
@@ -67,6 +71,8 @@ Specifies what device is used. An example is \fBdevice "/dev/dsp"\fR.
 .PP
 .B mixer "mixername"
 Specifies what mixer device is used. An example is \fBmixer "/dev/mixer"\fR.
+If \fBmixername\fR is set to the empty string \fB""\fR no mixer is used in
+this section.
 .PP
 .B gain number
 Specifies the default volume (0-100). The default is 50.
