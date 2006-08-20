@@ -30,7 +30,6 @@ SOFTWARE.
  */
 
 
-extern unsigned long globalSerialNumber;
 extern unsigned long serverGeneration;
 
 #include <X11/Xosdefs.h>

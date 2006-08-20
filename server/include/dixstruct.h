@@ -77,7 +77,6 @@ typedef struct _WorkQueue {
 } WorkQueueRec;
 
 extern TimeStamp currentTime;
-extern TimeStamp lastDeviceEventTime;
 extern void CloseDownClient();
 
 extern TimeStamp ClientTimeToServerTime();

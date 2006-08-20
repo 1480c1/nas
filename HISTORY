@@ -16,6 +16,11 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - remove server/include/miscstruct.h
+
+          - various include file cleanups - removing unused
+            variables/structures, etc left over from X11.
+
           - removing old 'const' determination, correcting some proper
             uses of const.  'const' is expected to be supported by
             your compiler.

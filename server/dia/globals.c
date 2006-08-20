@@ -82,13 +82,10 @@ diaInitGlobals()
     serverClient = (ClientPtr) NULL;
     currentMaxClients = 0;
 
-    globalSerialNumber = 0;
     serverGeneration = 0;
 
     currentTime.months = 0;
     currentTime.milliseconds = 0;
-    lastDeviceEventTime.months = 0;
-    lastDeviceEventTime.milliseconds = 0;
 
 
     display = NULL;

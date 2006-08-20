@@ -21,11 +21,9 @@ GEXTERN ClientPtr *clients;
 GEXTERN ClientPtr serverClient;
 GEXTERN int currentMaxClients;  /* current size of clients array */
 
-GEXTERN unsigned long globalSerialNumber;
 GEXTERN unsigned long serverGeneration;
 
 GEXTERN TimeStamp currentTime;
-GEXTERN TimeStamp lastDeviceEventTime;
 
 GEXTERN char *display;
 

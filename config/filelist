@@ -616,7 +616,6 @@
 ./server/include/dix.h
 ./server/include/dixstruct.h
 ./server/include/misc.h
-./server/include/miscstruct.h
 ./server/include/opaque.h
 ./server/include/os.h
 ./server/include/osstruct.h
