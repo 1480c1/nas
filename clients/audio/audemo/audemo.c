@@ -152,9 +152,11 @@ static String   defaultResources[] =
     NULL
 };
 
-static char   **makeFileList();
-static int      getFileNames();
-static void     fatalError(), bucketQueryCB(), bucketRecordDismissCB(),
+static char   **makeFileList(char **fileNames, int nfiles);
+static int      getFileNames(char *dir, char ***fileNames, char *template);
+static void     fatalError(const char *message, const char *arg), 
+                bucketQueryCB(Widget w, XtPointer globalsp, XtPointer call_data),
+                bucketRecordDismissCB(Widget w, XtPointer globalsp, XtPointer call_data),
                 meterCB();
 
 #ifdef XT
@@ -1701,7 +1703,7 @@ main(int argc, char **argv)
 #endif						/* XT */
 
 static void
-fatalError(char *message, char *arg)
+fatalError(const char *message, const char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");

@@ -154,7 +154,7 @@ static String   defaultResources[] =
 };
 
 static void
-fatalError(char *message, char *arg)
+fatalError(const char *message, const char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");

@@ -1554,15 +1554,11 @@ int
 AuSendInitResponse(ClientPtr client)
 {
     extern ComponentPtr *auServerDevices,       /* array of devices */
-       *auServerBuckets,        /* array of server owned
+       *auServerBuckets;        /* array of server owned
                                  * buckets */
-       *auServerRadios;         /* array of server owned
-                                 * radios */
     extern AuUint32 auNumServerDevices, /* number of devices */
-        auNumServerBuckets,     /* number of server owned
+        auNumServerBuckets;     /* number of server owned
                                  * buckets */
-        auNumServerRadios;      /* number of server owned
-                                 * radios */
     extern unsigned char auFormats[],
             auElementTypes[], auWaveForms[], auActions[];
     int i;

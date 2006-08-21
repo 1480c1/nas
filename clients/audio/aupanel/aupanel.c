@@ -149,7 +149,7 @@ static String   defaultResources[] =
 };
 
 static void
-fatalError(char *message, char *arg)
+fatalError(const char *message, const char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -296,7 +296,6 @@ static void
 menuCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
-    int             i;
     String          string;
 
     XtVaGetValues(w, XtNlabel, &string, NULL);

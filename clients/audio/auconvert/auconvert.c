@@ -65,7 +65,7 @@ do									      \
 
 static struct
 {
-    char           *string;
+    const char     *string;
     int             value;
 }
                 dataFormats[] =
@@ -80,7 +80,7 @@ static struct
 };
 
 static void
-fatalError(char *message, char *arg)
+fatalError(const char *message, const char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -112,10 +112,9 @@ usage(void)
 }
 
 static int
-convertDataFormat(char *s)
+convertDataFormat(const char *s)
 {
-    int             f,
-                    i;
+    int             i;
 
     for (i = 0; i < sizeof(dataFormats) / sizeof(dataFormats[0]); i++)
 	if (!strcasecmp(s, dataFormats[i].string))
@@ -125,7 +124,7 @@ convertDataFormat(char *s)
 }
 
 static int
-convertFileFormat(char *s)
+convertFileFormat(const char *s)
 {
     int             f;
 

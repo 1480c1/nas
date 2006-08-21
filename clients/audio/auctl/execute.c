@@ -44,7 +44,7 @@ static AuInt32 _parse_long PROTO((char *, AuBool *));
 int execute_command (AuServer *aud, int argc, char **argv, AuBool *donep)
 {
     static struct {
-	char *name;
+	const char *name;
 	int (*proc) PROTO((AuServer *, int, char **));
 	AuBool done;
     } keytab[] = {
@@ -414,7 +414,7 @@ _execute_set_linemode (AuServer *aud, int argc, char **argv, AuPointer data)
     AuDeviceAttributes attr;
     AuStatus status;
     static struct {
-	char *name;
+	const char *name;
 	int value;
     } lmtab[] = {
 	{ "none",	AuDeviceLineModeNone },
@@ -481,7 +481,7 @@ static char *_lower_word (register char *s)
 
 static AuInt32 _parse_long (register char *s, register AuBool *ishexp)
 {
-    char *fmt = "%ld";
+    const char *fmt = "%ld";
     AuInt32 val = 0;
 
     if (*s == '0') s++;

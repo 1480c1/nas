@@ -12,7 +12,7 @@
 #include <audio/soundlib.h>
 
 static void
-fatalError(char *message, char *arg)
+fatalError(const char *message, const char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, "\n");
@@ -39,7 +39,6 @@ main(int argc, char **argv)
 {
     AuServer       *aud;
     AuBucketID      bucket;
-    AuDeviceID      device = AuNone;
     AuBool          done = AuFalse;
     char           *file = argv[1];
 

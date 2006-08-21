@@ -116,7 +116,7 @@ static String   defaultResources[] =
     NULL
 };
 
-static void     fatalError(char *message, char *arg);
+static void     fatalError(const char *message, const char *arg);
 
 #define Invert(w)							       \
 {									       \
@@ -608,7 +608,7 @@ main(int argc, char **argv)
 }
 
 static void
-fatalError(char *message, char *arg)
+fatalError(const char *message, const char *arg)
 {
     fprintf(stderr, message, arg);
     fprintf(stderr, ".\n");

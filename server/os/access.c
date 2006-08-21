@@ -254,7 +254,6 @@ int fd;
 #if !defined(TCPCONN) && !defined(UNIXCONN)
     return -1;
 #else
-    register int n;
     int len;
     caddr_t addr;
     int family;
@@ -619,8 +618,6 @@ unsigned length;                /* of bytes in pAddr */
 pointer pAddr;
 {
     int len;
-    register HOST *host;
-    int unixFamily;
 
     if (!AuthorizedClient(client))
         return (AuBadAccess);

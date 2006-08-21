@@ -496,23 +496,14 @@ createServerComponents(AuUint32 * auServerDeviceListSize,
                        AuUint32 * auServerMinRate,
                        AuUint32 * auServerMaxRate)
 {
-    AuDeviceID stereo, mono;
     ComponentPtr d, *p;
-    int i;
     AuUint8 formatIn, formatOut;
     AuUint32 bytesPerSampleIn, bytesPerSampleOut;
     static AuBool initialized = AuFalse;
     extern RESTYPE auComponentType;
     extern ComponentPtr *auServerDevices,       /* array of devices */
-       *auServerBuckets,        /* array of server owned buckets */
-       *auServerRadios,         /* array of server owned radios */
-        auDevices,              /* list of all devices */
-        auBuckets,              /* list of all buckets */
-        auRadios;               /* list of all radios */
-    extern AuUint32 auNumServerDevices, /* number of devices */
-        auNumActions,           /* number of defined actions */
-        auNumServerBuckets,     /* number of server owned buckets */
-        auNumServerRadios;      /* number of server owned radios */
+        auDevices;              /* list of all devices */
+    extern AuUint32 auNumServerDevices; /* number of devices */
 
 
     if (NasConfig.DoDebug) {
@@ -728,7 +719,6 @@ setFragmentSize(SndStat * sndStatPtr)
 static AuUint32
 setSampleRate(AuUint32 rate)
 {
-    int numSamplesIn, numSamplesOut;
     AuBlock l;
 
     setTimer(0);                /* JET - turn off the timer here so the
@@ -1267,7 +1257,6 @@ getPhysicalInputLineMode(void)
 static void
 enableProcessFlow(void)
 {
-    AuUint8 *p;
 
     if (NasConfig.DoDebug) {
         osLogMsg("enableProcessFlow();\n");
@@ -1600,7 +1589,6 @@ setWritePhysicalOutputFunction(CompiledFlowPtr flow, void (**funct) (void))
 static void
 setupSoundcard(SndStat * sndStatPtr)
 {
-    int samplesize;
 
     if (NasConfig.DoDebug) {
         osLogMsg("setupSoundcard(...);\n");
@@ -1701,7 +1689,6 @@ static AuBool
 initMixer(void)
 {
     unsigned int extramode = 0;
-    AuInt32 i;
 
 #if defined(__CYGWIN__)         /* we want the file to be created if necc under
                                    windows */
@@ -1798,12 +1785,10 @@ AuInitPhysicalDevices(void)
 {
     static AuBool AL_initialized = AuFalse;
     static AuUint8 *physicalBuffers;
-    int fd;
     AuUint32 physicalBuffersSize;
     extern AuUint8 *auPhysicalOutputBuffers;
     extern AuUint32 auPhysicalOutputBuffersSize;
     extern void AuProcessData();
-    char *nas_device_policy;
     unsigned int extramode = 0; /* for extra open modes (cygwin) */
 #if defined(AUDIO_GETINFO)
     audio_info_t spkrinf;
@@ -1853,7 +1838,6 @@ AuInitPhysicalDevices(void)
      */
     if (!AL_initialized) {
         int fd;
-        AuInt32 i;
 
         AL_initialized = AuTrue;
 

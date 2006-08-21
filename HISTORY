@@ -16,6 +16,13 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - clean up several of the client programs. Mostly adding
+            const to parameter/variable declarations. Additionally an
+            unsused variable was removed and some prototype in
+            audemo.c were fixed.
+
+          - remove some unused variables
+
           - remove server/include/miscstruct.h
 
           - various include file cleanups - removing unused

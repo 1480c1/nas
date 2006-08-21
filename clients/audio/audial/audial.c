@@ -161,7 +161,7 @@ usleep(unsigned int usecs)
 #endif						/* NEEDUSLEEP */
 
 static void
-fatalError(char *message, char *arg1)
+fatalError(const char *message, const char *arg1)
 {
     fprintf(stderr, message, arg1);
     fprintf(stderr, "\n");
