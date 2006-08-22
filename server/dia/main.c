@@ -61,7 +61,6 @@ SOFTWARE.
 #include "resource.h"
 #include "dixstruct.h"
 #include "opaque.h"
-#include "servermd.h"
 #include "site.h"
 #include "globals.h"
 #include "nasconf.h"

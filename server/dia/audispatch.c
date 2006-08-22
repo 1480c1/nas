@@ -26,7 +26,6 @@
 #include        "release.h"
 #include        "misc.h"
 #include        "dixstruct.h"
-#include        "servermd.h"    /* VENDOR release & strings */
 #include        <audio/audio.h>
 #include        <audio/Aproto.h>
 #include        "au.h"

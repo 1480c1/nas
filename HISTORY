@@ -16,6 +16,9 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - removes servermd.h. removes the inclusion of servermd.h in
+            3 files and its reference in 'config/filelist'.
+
           - clean up several of the client programs. Mostly adding
             const to parameter/variable declarations. Additionally an
             unsused variable was removed and some prototype in

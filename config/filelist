@@ -620,7 +620,6 @@
 ./server/include/os.h
 ./server/include/osstruct.h
 ./server/include/resource.h
-./server/include/servermd.h
 ./server/include
 ./server/os/hpsocket.c
 ./server/os/Imakefile

@@ -52,7 +52,6 @@ SOFTWARE.
 #include "dixstruct.h"
 #include "osstruct.h"
 #include "opaque.h"
-#include "servermd.h"
 
 extern void ProcessAudioEvents(), SendAuErrorToClient(),
 SwapConnClientPrefix(), ResetCurrentRequest(), WriteToClient();
