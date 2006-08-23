@@ -618,7 +618,6 @@
 ./server/include/misc.h
 ./server/include/opaque.h
 ./server/include/os.h
-./server/include/osstruct.h
 ./server/include/resource.h
 ./server/include
 ./server/os/hpsocket.c

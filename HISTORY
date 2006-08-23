@@ -16,6 +16,12 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - patch that modifies the two users of ostruct.h to directly
+            include os.h (which includes misc.h) and removes the
+            osstruct.h line in config/filelist. If an additional "svn
+            remove server/include/osstruct.h" is used we can get rid
+            of osstruct.h completely.
+
           - removes servermd.h. removes the inclusion of servermd.h in
             3 files and its reference in 'config/filelist'.
 

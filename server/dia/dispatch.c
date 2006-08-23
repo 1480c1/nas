@@ -50,7 +50,7 @@ SOFTWARE.
 #include        <audio/audio.h>
 #include        <audio/Aproto.h>
 #include "dixstruct.h"
-#include "osstruct.h"
+#include "os.h"
 #include "opaque.h"
 
 extern void ProcessAudioEvents(), SendAuErrorToClient(),

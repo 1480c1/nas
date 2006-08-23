@@ -151,7 +151,7 @@ static int unixDomainConnection = -1;
 #if !defined(AMOEBA) && !defined(_MINIX)
 #include <sys/uio.h>
 #endif
-#include "osstruct.h"
+#include "os.h"
 #include "osdep.h"
 #include "opaque.h"
 #include "dixstruct.h"
