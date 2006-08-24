@@ -16,6 +16,14 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - removed the declaration of FreeResource from the opaque.h
+            header file. All files which include opaque.h don't use
+            this function and this declaration is copied from
+            resource.h
+
+          - corrects several prototypes in resource.[ch] to match the
+            actual function definitions inside resource.c
+
           - patch that modifies the two users of ostruct.h to directly
             include os.h (which includes misc.h) and removes the
             osstruct.h line in config/filelist. If an additional "svn

@@ -77,7 +77,7 @@ SOFTWARE.
 #include "dixstruct.h"
 #include "opaque.h"
 
-extern void MarkClientException();
+extern void MarkClientException(ClientPtr client);
 
 #define SERVER_MINID 32
 
@@ -107,7 +107,7 @@ static RESTYPE lastResourceType;
 static RESTYPE lastResourceClass;
 static RESTYPE TypeAuMask;
 
-static void RebuildTable();
+static void RebuildTable(int client);
 
 typedef int (*DeleteType) ();
 
@@ -132,7 +132,7 @@ CreateNewResourceType(DeleteType deleteFunc)
 }
 
 RESTYPE
-CreateNewResourceClass()
+CreateNewResourceClass(void)
 {
     RESTYPE next = lastResourceClass >> 1;
 
@@ -481,7 +481,7 @@ FreeClientResources(ClientPtr client)
 }
 
 void
-FreeAllResources()
+FreeAllResources(void)
 {
     int i;
 

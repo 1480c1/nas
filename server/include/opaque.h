@@ -11,7 +11,6 @@ extern char dispatchException;
 #define DE_RESET     1
 #define DE_TERMINATE 2
 
-extern void FreeResource();
 extern long TimeOutValue;
 extern int argcGlobal;
 extern char **argvGlobal;

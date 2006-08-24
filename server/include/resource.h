@@ -62,13 +62,13 @@ typedef unsigned long RESTYPE;
 #define BAD_RESOURCE 0xe0000000
 
 RESTYPE CreateNewResourceType();
-RESTYPE CreateNewResourceClass();
-AuID FakeClientID();
+RESTYPE CreateNewResourceClass(void);
+AuID FakeClientID(register int client);
 Bool AddResource();
-void FreeResource();
+void FreeResource(AuID id, RESTYPE skipDeleteFuncType);
 void FreeClientResources();
 Bool LegalNewID();
-pointer LookupIDByType();
-pointer LookupIDByClass();
+pointer LookupIDByType(AuID id, RESTYPE rtype);
+pointer LookupIDByClass(AuID id, RESTYPE classes);
 
 #endif /* RESOURCE_H */
