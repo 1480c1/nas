@@ -125,13 +125,6 @@ void ddxUseMsg(void);
 #include <unistd.h>
 #endif
 
-#ifdef AIXV3
-#define AIXFILE "/tmp/aixfile"
-FILE *aixfd;
-int SyncOn = 0;
-extern int SelectWaitTime;
-#endif
-
 #ifdef DEBUG
 #ifndef SPECIAL_MALLOC
 /*#define MEMBUG - This breaks things with unknown CheckMemory call */
@@ -237,25 +230,6 @@ GetTimeInMillis(void)
 }
 #endif /* AMOEBA */
 #endif
-
-AdjustWaitForDelay(pointer waitTime, unsigned long newdelay)
-{
-    static struct timeval delay_val;
-    struct timeval **wt = (struct timeval **) waitTime;
-    unsigned long olddelay;
-
-    if (*wt == NULL) {
-        delay_val.tv_sec = newdelay / 1000;
-        delay_val.tv_usec = 1000 * (newdelay % 1000);
-        *wt = &delay_val;
-    } else {
-        olddelay = (*wt)->tv_sec * 1000 + (*wt)->tv_usec / 1000;
-        if (newdelay < olddelay) {
-            (*wt)->tv_sec = newdelay / 1000;
-            (*wt)->tv_usec = 1000 * (newdelay % 1000);
-        }
-    }
-}
 
 void
 UseMsg(void)
@@ -612,13 +586,6 @@ void
 ErrorF(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
        char *s6, char *s7, char *s8, char *s9)
 {                               /* limit of ten args */
-#ifdef AIXV3
-    fprintf(aixfd, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
-    fflush(aixfd);
-
-    if (SyncOn)
-        sync();
-#else
 #ifdef AMOEBA
     mu_lock(&print_lock);
 #endif
@@ -626,21 +593,7 @@ ErrorF(char *f, char *s0, char *s1, char *s2, char *s3, char *s4, char *s5,
 #ifdef AMOEBA
     mu_unlock(&print_lock);
 #endif
-#endif
 
     return;
 }
 
-#ifdef AIXV3
-void
-OpenDebug(void)
-{
-    if ((aixfd = fopen(AIXFILE, "w")) == NULL) {
-        fprintf(stderr, "open aixfile failed\n");
-        exit(-1);
-    }
-    chmod(AIXFILE, 00777);
-
-    return;
-}
-#endif

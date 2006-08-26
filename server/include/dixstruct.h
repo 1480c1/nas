@@ -79,8 +79,6 @@ typedef struct _WorkQueue {
 extern TimeStamp currentTime;
 extern void CloseDownClient();
 
-extern TimeStamp ClientTimeToServerTime();
-extern void UpdateCurrentTime();
-extern void UpdateCurrentTimeIf();
+extern void UpdateCurrentTimeIf(void);
 
 #endif /* DIXSTRUCT_H */

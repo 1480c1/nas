@@ -240,7 +240,6 @@ int _AuMakeStreamsConnection (
                               char **serveraddrp		/* return */
                               )
 {
-	char	netype[128], sysname[128], nodname[128];
 	char	*procname = "Aulib/_AuMakeStreamsConnection";
 	struct	utsname	 machine;
 	int	fd; 

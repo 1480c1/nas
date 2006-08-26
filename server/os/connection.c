@@ -506,7 +506,7 @@ MNX_open_tcp_socket(int *extra_fd)
 static struct sockaddr_un unsock;
 
 static int
-open_unix_socket()
+open_unix_socket(void)
 {
     int oldUmask;
     int request;
@@ -647,7 +647,7 @@ named_spipe(int fd, char *path)
 }
 
 static int
-open_isc_local()
+open_isc_local(void)
 {
     int fd = -1, fds = -1;
     long temp;
@@ -704,7 +704,7 @@ open_isc_local()
 
 
 static int
-accept_isc_local()
+accept_isc_local(void)
 {
     struct strrecvfd buf;
 
@@ -719,7 +719,7 @@ accept_isc_local()
 }
 
 static int
-open_xsight_local()
+open_xsight_local(void)
 {
     int fds = -1, fdr = -1;
     char pathS[64], pathR[64];
@@ -759,7 +759,7 @@ open_xsight_local()
 
 
 static int
-accept_xsight_local()
+accept_xsight_local(void)
 {
     char c;
     int fd;
@@ -788,7 +788,7 @@ accept_xsight_local()
 #endif /* SVR4 */
 
 static int
-open_att_local()
+open_att_local(void)
 {
     char *slave;
     int fd;
@@ -878,7 +878,7 @@ open_att_svr4_local()
 #endif /* SVR4 */
 
 static int
-accept_att_local()
+accept_att_local(void)
 {
     int newconn;
     int read_in;
@@ -913,7 +913,7 @@ accept_att_local()
 
 #ifdef SVR4
 static int
-accept_att_svr4_local()
+accept_att_svr4_local(void)
 {
     struct strrecvfd str;
 
@@ -1014,7 +1014,7 @@ int *fromlen;
 
 #ifdef DNETCONN
 static int
-open_dnet_socket()
+open_dnet_socket(void)
 {
     int request;
     struct sockaddr_dn dnsock;

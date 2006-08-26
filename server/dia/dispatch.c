@@ -74,7 +74,7 @@ extern void Swap32Write(), WriteSConnectionInfo();
 extern void WriteSConnSetupPrefix();
 extern char *ClientAuthorized();
 extern Bool InsertFakeRequest();
-static void KillAllClients();
+static void KillAllClients(void);
 extern void ProcessWorkQueue();
 
 extern int (*AuProcVector[256]) ();
@@ -96,26 +96,9 @@ char isItTimeToYield;
  */
 AuID clientErrorValue;          /* XXX this is a kludge */
 
-void
-UpdateCurrentTime()
-{
-    TimeStamp systime;
-
-    /* To avoid time running backwards, we must call GetTimeInMillis before
-     * calling ProcessInputEvents.
-     */
-    systime.months = currentTime.months;
-    systime.milliseconds = GetTimeInMillis();
-    if (systime.milliseconds < currentTime.milliseconds)
-        systime.months++;
-    ProcessAudioEvents();
-    if (CompareTimeStamps(systime, currentTime) == LATER)
-        currentTime = systime;
-}
-
 /* Like UpdateCurrentTime, but can't call ProcessInputEvents */
 void
-UpdateCurrentTimeIf()
+UpdateCurrentTimeIf(void)
 {
     TimeStamp systime;
 
@@ -288,7 +271,7 @@ CloseDownClient(register ClientPtr client)
 }
 
 static void
-KillAllClients()
+KillAllClients(void)
 {
     int i;
     for (i = 1; i < currentMaxClients; i++)

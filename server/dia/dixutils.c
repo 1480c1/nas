@@ -73,31 +73,6 @@ CompareTimeStamps(TimeStamp a, TimeStamp b)
     return SAMETIME;
 }
 
-#ifdef junk
-/*
- * convert client times to server TimeStamps
- */
-
-#define HALFMONTH ((unsigned long) 1<<31)
-TimeStamp
-ClientTimeToServerTime(CARD32 c)
-{
-    TimeStamp ts;
-    if (c == CurrentTime)
-        return currentTime;
-    ts.months = currentTime.months;
-    ts.milliseconds = c;
-    if (c > currentTime.milliseconds) {
-        if (((unsigned long) c - currentTime.milliseconds) > HALFMONTH)
-            ts.months -= 1;
-    } else if (c < currentTime.milliseconds) {
-        if (((unsigned long) currentTime.milliseconds - c) > HALFMONTH)
-            ts.months += 1;
-    }
-    return ts;
-}
-#endif /* junk */
-
 /* No-op Don't Do Anything : sometimes we need to be able to call a procedure
  * that doesn't do anything.  For example, on screen with only static
  * colormaps, if someone calls install colormap, it's easier to have a dummy

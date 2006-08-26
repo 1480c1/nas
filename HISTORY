@@ -16,6 +16,26 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - removes the 2 unused functions:
+
+            - server/dia/dispatch.c: void UpdateCurrentTime()
+            - server/dia/dixutils.c: TimeStamp ClientTimeToServerTime
+
+            and it changes one more occurence of () to (void).
+
+          - corrects some function declarations by changing () to
+            (void)
+
+          - removes some unsued variables in lib/audio/nameaddr.c and
+            and unused function in server/os/utils.c
+
+          - removed some old (and stupid) debug code for AIX: in
+            server/os/utils.c there is some code to redirect error
+            logging from stderr to and file in tmp on AIXV3. As
+            OpenDebug isn't called anywhere this is broken when AIXV3
+            is defined. Additionally this logfile is fixed in /tmp
+            which permissions 00777
+
           - removed the declaration of FreeResource from the opaque.h
             header file. All files which include opaque.h don't use
             this function and this declaration is copied from
