@@ -1514,7 +1514,7 @@ int
 AuInitSetupReply()
 {
     int len;
-    char *rel = release + 4;
+    char *rel = release;
     static char *string;
 
     if (!AuInitDevice(&auSetup, &len))
