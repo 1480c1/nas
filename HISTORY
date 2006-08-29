@@ -16,6 +16,12 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - removes the defined VENDOR_STRING and VENDOR_RELEASE from
+            server/include/site.h as they aren't used in the 3 files
+            including site.h.  Additionally the inclusions of site.h
+            was removed from server/dia/main.c as none of its defines
+            is used in main.c
+
           - removes the 2 unused functions:
 
             - server/dia/dispatch.c: void UpdateCurrentTime()

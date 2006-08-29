@@ -24,22 +24,6 @@ SOFTWARE.
 
 #ifndef SITE_H
 #define SITE_H
-/*
- * The vendor string identifies the vendor responsible for the
- * server executable.
- */
-#ifndef VENDOR_STRING
-#define VENDOR_STRING "MIT X Consortium"
-#endif
-
-/*
- * The vendor release number identifies, for the purpose of submitting
- * traceable bug reports, the release number of software produced
- * by the vendor.
- */
-#ifndef VENDOR_RELEASE
-#define VENDOR_RELEASE  5000
-#endif
 
 /*
  * The following constants contain default values for all of the variables 
