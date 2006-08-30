@@ -54,25 +54,6 @@ SOFTWARE.
 
 extern void IgnoreClient(), AttendClient();
 
-/*
- * CompareTimeStamps returns -1, 0, or +1 depending on if the first
- * argument is less than, equal to or greater than the second argument.
- */
-
-int
-CompareTimeStamps(TimeStamp a, TimeStamp b)
-{
-    if (a.months < b.months)
-        return EARLIER;
-    if (a.months > b.months)
-        return LATER;
-    if (a.milliseconds < b.milliseconds)
-        return EARLIER;
-    if (a.milliseconds > b.milliseconds)
-        return LATER;
-    return SAMETIME;
-}
-
 /* No-op Don't Do Anything : sometimes we need to be able to call a procedure
  * that doesn't do anything.  For example, on screen with only static
  * colormaps, if someone calls install colormap, it's easier to have a dummy
@@ -94,7 +75,7 @@ static WorkQueuePtr *workQueueLast = &workQueue;
 
 /* ARGSUSED */
 void
-ProcessWorkQueue()
+ProcessWorkQueue(void)
 {
     WorkQueuePtr q, n, p;
 

@@ -76,7 +76,7 @@ SOFTWARE.
 /* Initialize the globals, called from main */
 
 void
-diaInitGlobals()
+diaInitGlobals(void)
 {
     clients = (ClientPtr *) 0;
     serverClient = (ClientPtr) NULL;

@@ -62,7 +62,7 @@ from the X Consortium.
 #include "os.h"
 
 void
-osBecomeOrphan()
+osBecomeOrphan(void)
 {
     Pid_t child_id;
     int stat;
@@ -111,7 +111,7 @@ osBecomeOrphan()
 }
 
 void
-osBecomeDaemon()
+osBecomeDaemon(void)
 {
     register int i;
 
@@ -167,7 +167,7 @@ char *pidFile = "/var/run/nasd.pid";
 #endif
 
 int
-osStorePid()
+osStorePid(void)
 {
 #if defined(linux) || defined(CSRG_BASED) || defined(__QNXNTO__)
     int oldpid;

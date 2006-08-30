@@ -28,7 +28,7 @@
 #include        "au.h"
 
 extern AuBool AuInitPhysicalDevices();
-extern void AuCreateResourceTypes();
+extern void AuCreateResourceTypes(void);
 
 ComponentPtr *auServerDevices,  /* array of devices */
    *auServerBuckets,            /* array of server owned

@@ -829,7 +829,7 @@ open_att_local(void)
 
 #ifdef SVR4
 static int
-open_att_svr4_local()
+open_att_svr4_local(void)
 {
     int fd[2], tfd;
     char path[64];
@@ -1051,7 +1051,7 @@ open_dnet_socket(void)
  *****************/
 
 void
-CreateWellKnownSockets()
+CreateWellKnownSockets(void)
 {
     int request, i;
 #ifdef SVR4
@@ -2138,7 +2138,7 @@ static void AmoebaConnectorThread();
 static void AmoebaTCPConnectorThread();
 
 void
-CreateWellKnownSockets()
+CreateWellKnownSockets(void)
 {
     char host[100];
     char *getenv();

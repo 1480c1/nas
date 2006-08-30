@@ -27,17 +27,8 @@
 
 #include <audio/audio.h>			/* for AuInt32 and AuUint32 */
 
-/*
- * If we are being used outside the NCD-AUDIO sound library, then we'll need
- * some ANSIfication definitions.
- */
-
 #ifndef _SvxConst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _SvxConst const
-#else
-#define _SvxConst				/**/
-#endif
 #endif						/* _SvxConst */
 
 #ifndef _FUNCPROTOBEGIN

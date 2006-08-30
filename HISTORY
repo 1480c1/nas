@@ -16,6 +16,22 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - removes more unused defines and functions in server/ .
+            Additionally a k&r style function was convertd to ansi c
+            in swaprep.c
+
+          - converts more function declarations and their prototypes
+            without parameters from () to the (void) form
+
+          - attached patch changes all of the conditional
+            i.e. _AuConst definitions to only list const in the
+            externally visible header files. This is to preserve
+            compatibility if someone uses these definitions while
+            using the libaudio library.
+
+            [JET] The use of AuConst is deprecated (and is probably
+            not being used by anyone anyway).
+
           - removes the defined VENDOR_STRING and VENDOR_RELEASE from
             server/include/site.h as they aren't used in the 3 files
             including site.h.  Additionally the inclusions of site.h

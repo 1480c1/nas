@@ -50,7 +50,6 @@ SOFTWARE.
 #include <audio/audio.h>
 #include <audio/Aproto.h>
 #include "misc.h"
-#include "dixstruct.h"
 
 /* Byte swap a list of longs */
 

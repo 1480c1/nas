@@ -151,7 +151,7 @@ freeFlow(FlowPtr flow)
 }
 
 void
-AuCreateResourceTypes()
+AuCreateResourceTypes(void)
 {
     auComponentType = CreateNewResourceType(AuFreeComponent);
     auFlowType = CreateNewResourceType(freeFlow);

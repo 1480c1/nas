@@ -65,10 +65,10 @@ SOFTWARE.
 #include "nasconf.h"
 #include "release.h"
 
-extern void OsInit(), InitClient(), ResetWellKnownSockets(),
+extern void OsInit(void), InitClient(), ResetWellKnownSockets(),
 Dispatch(), FreeAllResources();
 extern int AuInitSetupReply();
-extern void AuInitProcVectors();
+extern void AuInitProcVectors(void);
 extern Bool InitClientResources();
 
 static char *AuServerName(void);

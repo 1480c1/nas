@@ -15,7 +15,7 @@
 /* Initialize the global config items */
 
 void
-diaInitGlobalConfig()
+diaInitGlobalConfig(void)
 {
     /* init all the default values */
     NasConfig.DoDebug = FALSE;

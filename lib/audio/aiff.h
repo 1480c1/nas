@@ -27,17 +27,8 @@
 
 #include <audio/audio.h>	/* for AuInt32 and AuUint32 */
 
-/*
- * If we are being used outside the NCD-AUDIO sound library, then we'll need
- * some ANSIfication definitions.
- */
-
 #ifndef _AiffConst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _AiffConst const
-#else
-#define _AiffConst				/**/
-#endif
 #endif						/* _AiffConst */
 
 #ifndef _FUNCPROTOBEGIN

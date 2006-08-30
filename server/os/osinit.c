@@ -83,7 +83,7 @@ int limitStackSpace = -1;
 int limitNoFile = -1;
 #endif
 
-OsInit()
+void OsInit(void)
 {
 #ifndef AMOEBA
     static Bool been_here = FALSE;

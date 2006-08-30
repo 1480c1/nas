@@ -45,11 +45,7 @@
 #define _AUFUNCPROTO_H_
 
 #ifndef _AuConst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _AuConst const
-#else
-#define _AuConst /**/
-#endif
 #endif /* _AuConst */
 
 

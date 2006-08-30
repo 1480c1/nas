@@ -41,7 +41,7 @@ AuFreeFlowElements(), AuProcessClockedFlows(),
 AuProcessStateChanges(), AuProcessUnclockedFlows(),
 AuSetInputGainAndLineMode(), AuSetOutputGainAndMode(),
 AuSetFeedbackGain(),
-CloseDownRetainedResources(), WriteEventsToClient(), WriteToClient();
+CloseDownRetainedResources(void), WriteEventsToClient(), WriteToClient();
 extern AuBool AuChangeElementState(), AuInitDevice(), AuMatchAttributes();
 extern int AuCompileFlow(), AuSetComponentAttributes();
 extern void AuGetOutputGainAndMode(), AuGetFeedbackGain(),

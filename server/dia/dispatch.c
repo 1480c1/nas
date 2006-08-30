@@ -70,12 +70,10 @@ extern void NotImplemented();
 extern Bool InitClientResources();
 
 extern int (*InitialVector[3]) ();
-extern void Swap32Write(), WriteSConnectionInfo();
 extern void WriteSConnSetupPrefix();
 extern char *ClientAuthorized();
 extern Bool InsertFakeRequest();
 static void KillAllClients(void);
-extern void ProcessWorkQueue();
 
 extern int (*AuProcVector[256]) ();
 extern int (*AuSwappedProcVector[256]) ();
@@ -199,7 +197,7 @@ ProcBadRequest(ClientPtr client)
 }
 
 void
-AuInitProcVectors()
+AuInitProcVectors(void)
 {
     int i;
 
@@ -286,7 +284,7 @@ KillAllClients(void)
  *    and  destroy their resources.
  *********************/
 void
-CloseDownRetainedResources()
+CloseDownRetainedResources(void)
 {
     register int i;
     register ClientPtr client;

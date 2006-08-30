@@ -212,8 +212,8 @@ static int UsingXdmcp = FALSE;
  * called when authorization is not enabled to add the
  * local host to the access list
  */
-
-EnableLocalHost()
+void
+EnableLocalHost(void)
 {
     if (!UsingXdmcp) {
         LocalHostEnabled = TRUE;
@@ -225,8 +225,8 @@ EnableLocalHost()
  * called at init time when XDMCP will be used; xdmcp always
  * adds local hosts manually when needed
  */
-
-AccessUsingXdmcp()
+void
+AccessUsingXdmcp(void)
 {
     UsingXdmcp = FALSE;
     LocalHostEnabled = FALSE;

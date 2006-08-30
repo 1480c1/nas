@@ -49,8 +49,6 @@ SOFTWARE.
 
 #include        <audio/audio.h>
 #include        <audio/Aproto.h>
-#include "misc.h"
-#include "resource.h"
 #include "dixstruct.h"
 
 extern void WriteToClient();

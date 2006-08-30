@@ -120,7 +120,7 @@ fillInEvent(int kind, int reason, FlowElementPtr el, auEvent * ev)
 }
 
 void
-ProcessAudioEvents()
+ProcessAudioEvents(void)
 {
     AuBlock l;
     EventQueuePtr p, next;

@@ -206,7 +206,6 @@ static void closeDevice(void);
 
 #define SERVER_CLIENT           0
 
-#define MIN_MINIBUF_SAMPLES     256
 #define MAX_MINIBUF_SAMPLES     1024    /* Must be a power of 2 */
 
 #define PhysicalOneTrackBufferSize \
@@ -321,18 +320,6 @@ extern AuInt32 auMinibufSamples;
 static void setPhysicalOutputGain(AuFixedPoint gain);
 static void setPhysicalInputGainAndLineMode(AuFixedPoint gain,
                                             AuUint8 lineMode);
-
-void
-setDebugOn(void)
-{
-    NasConfig.DoDebug = 1;
-}
-
-void
-setVerboseOn(void)
-{
-    NasConfig.DoVerbose = 1;
-}
 
 #ifdef sco
 
