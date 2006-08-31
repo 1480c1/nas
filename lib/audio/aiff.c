@@ -236,7 +236,7 @@ readChunk(
 }
 
 AiffInfo       *
-AiffOpenFileForReading(_AiffConst char *name)
+AiffOpenFileForReading(const char *name)
 {
     AiffInfo       *ai;
     AiffChunk       ck;
@@ -349,7 +349,7 @@ AiffOpenFileForReading(_AiffConst char *name)
 
 AiffInfo       *
 AiffOpenFileForWriting(
-                       _AiffConst char *name,
+                       const char *name,
                        AiffInfo       *ai
 
                        )

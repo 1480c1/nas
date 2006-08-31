@@ -59,7 +59,7 @@ readChunk(SvxChunk *c, FILE *fp)
 }
 
 SvxInfo        *
-SvxOpenFileForReading(_SvxConst char *name)
+SvxOpenFileForReading(const char *name)
 {
     SvxInfo        *si;
     SvxChunk        ck;
@@ -143,7 +143,7 @@ SvxOpenFileForReading(_SvxConst char *name)
 }
 
 SvxInfo *
-SvxOpenFileForWriting(_SvxConst char *name, SvxInfo *si)
+SvxOpenFileForWriting(const char *name, SvxInfo *si)
 {
     int             n;
 

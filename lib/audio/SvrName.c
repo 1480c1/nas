@@ -28,20 +28,20 @@
 #define DEFAULT_AUSERVER ":0"
 
 #ifdef AU_NOT_STDC_ENV
-extern _AuConst char *getenv();
+extern const char *getenv();
 #endif
 
-_AuConst char *
-AuServerName (_AuConst char *name)
+const char *
+AuServerName (const char *name)
 {
     if (name && name[0])
 	return name;
 
-    name = (_AuConst char *) getenv ("AUDIOSERVER");
+    name = (const char *) getenv ("AUDIOSERVER");
     if (name)
 	return name;
 
-    name = (_AuConst char *) getenv ("DISPLAY");
+    name = (const char *) getenv ("DISPLAY");
     if (name)
 	return name;
 

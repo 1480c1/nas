@@ -68,16 +68,16 @@ static int xferConnectionSetup();
  * the newly created AuServer back to the caller.
  */
 AuServer *AuOpenServer (
-	register _AuConst char *server,
+	register const char *server,
 	int num_authproto,
-	_AuConst char *authproto,
+	const char *authproto,
 	int num_authdata,
-	_AuConst char *authdata,
+	const char *authdata,
 	char **ret_svrmsg)
 {
 	register AuServer *aud;		/* New AuServer object being created */
 	register int i;
-	_AuConst char *server_name;	/* pointer to server name */
+	const char *server_name;	/* pointer to server name */
 	int endian;			/* to determine which endian. */
 	auConnClientPrefix client;	/* client information */
 	auConnSetupPrefix prefix;	/* prefix information */

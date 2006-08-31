@@ -106,7 +106,7 @@ _AUFUNCPROTOBEGIN
 extern          AuBucketID
 AuSoundCreateBucketFromFile(
 			    AuServer *,		/* server */
-			    _AuConst char *,	/* filename */
+			    const char *,	/* filename */
 			    AuUint32,	/* access */
 			    AuBucketAttributes **,	/* RETURN_attributes */
 			    AuStatus *		/* RETURN_status */
@@ -115,7 +115,7 @@ AuSoundCreateBucketFromFile(
 extern          AuBool
 AuSoundCreateFileFromBucket(
 			    AuServer *,		/* server */
-			    _AuConst char *,	/* filename */
+			    const char *,	/* filename */
 			    int,		/* file format */
 			    AuBucketID,		/* bucket */
 			    AuStatus *		/* RETURN_status */
@@ -168,7 +168,7 @@ AuSoundRecord(
 extern AuEventHandlerRec *
 AuSoundPlayFromFile(
 		    AuServer *,			/* server */
-		    _AuConst char *,		/* filename */
+		    const char *,		/* filename */
 		    AuDeviceID,			/* destination */
 		    AuFixedPoint,		/* volume */
 		    AuSoundCallback,		/* done_callback */
@@ -212,7 +212,7 @@ AuSoundRecordToData(
 extern AuEventHandlerRec *
 AuSoundRecordToFile(
 		    AuServer *,			/* server */
-		    _AuConst char *,		/* filename */
+		    const char *,		/* filename */
 		    AuDeviceID,			/* source */
 		    AuFixedPoint,		/* gain */
 		    AuSoundCallback,		/* done_callback */
@@ -230,7 +230,7 @@ AuSoundRecordToFile(
 extern AuEventHandlerRec *
 AuSoundRecordToFileN(
 		    AuServer *,			/* server */
-		    _AuConst char *,		/* filename */
+		    const char *,		/* filename */
 		    AuDeviceID,			/* source */
 		    AuFixedPoint,		/* gain */
                     AuUint32,		        /* num samples */	
@@ -249,7 +249,7 @@ AuSoundRecordToFileN(
 extern          AuBool
 AuSoundPlaySynchronousFromFile(
 			       AuServer *,	/* server */
-			       _AuConst char *,	/* filename */
+			       const char *,	/* filename */
 			       int		/* volume */
 );
 

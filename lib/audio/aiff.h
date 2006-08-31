@@ -86,12 +86,12 @@ _FUNCPROTOBEGIN
 
 extern AiffInfo *
 AiffOpenFileForReading(
-		       _AiffConst char *	/* file name */
+		       const char *		/* file name */
 );
 
 extern AiffInfo *
 AiffOpenFileForWriting(
-		       _AiffConst char *,	/* file name */
+		       const char *,		/* file name */
 		       AiffInfo *		/* info */
 );
 

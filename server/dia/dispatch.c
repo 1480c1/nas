@@ -47,8 +47,9 @@ SOFTWARE.
 
 ********************************************************/
 
-#include        <audio/audio.h>
-#include        <audio/Aproto.h>
+#include <audio/audio.h>
+#include <audio/Aproto.h>
+#include "misc.h"
 #include "dixstruct.h"
 #include "os.h"
 #include "opaque.h"

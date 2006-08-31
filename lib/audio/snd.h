@@ -34,11 +34,7 @@
 #include <audio/audio.h>	/* for AuInt32 and AuUint32 */
 
 #ifndef _SndConst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _SndConst const
-#else
-#define _SndConst				/**/
-#endif
 #endif						/* _SndConst */
 
 #ifndef _FUNCPROTOBEGIN
@@ -119,12 +115,12 @@ _FUNCPROTOBEGIN
 
 extern SndInfo *
 SndOpenFileForReading(
-		      _SndConst char *		/* file name */
+		      const char *		/* file name */
 );
 
 extern SndInfo *
 SndOpenFileForWriting(
-		      _SndConst char *,		/* file name */
+		      const char *,		/* file name */
 		      SndInfo *			/* info */
 );
 

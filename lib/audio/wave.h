@@ -31,17 +31,8 @@
 
 #include <audio/audio.h>	/* for AuInt32 and AuUint32 */
 
-/*
- * If we are being used outside the NCD-AUDIO sound library, then we'll need
- * some ANSIfication definitions.
- */
-
 #ifndef _WaveConst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _WaveConst const
-#else
-#define _WaveConst				/**/
-#endif
 #endif						/* _WaveConst */
 
 #ifndef _FUNCPROTOBEGIN
@@ -103,12 +94,12 @@ _FUNCPROTOBEGIN
 
 extern WaveInfo *
 WaveOpenFileForReading(
-		       _WaveConst char *	/* file name */
+		       const char *		/* file name */
 );
 
 extern WaveInfo *
 WaveOpenFileForWriting(
-		       _WaveConst char *,	/* file name */
+		       const char *,		/* file name */
 		       WaveInfo *		/* info */
 );
 

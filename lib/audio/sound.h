@@ -37,11 +37,7 @@
 #include	<audio/audio.h>
 
 #ifndef _SoundConst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _SoundConst const
-#else
-#define _SoundConst				/**/
-#endif
 #endif						/* _SoundConst */
 
 #ifndef _FUNCPROTOBEGIN
@@ -95,12 +91,12 @@ _FUNCPROTOBEGIN
 
 extern          Sound
 SoundOpenFileForReading(
-			_SoundConst char *	/* file name */
+			const char *		/* file name */
 );
 
 extern          Sound
 SoundOpenFileForWriting(
-			_SoundConst char *,	/* file name */
+			const char *,		/* file name */
 			Sound			/* sound */
 );
 
@@ -132,17 +128,17 @@ SoundCreate(
 	    int,				/* num tracks */
 	    int,				/* sample rate */
 	    int,				/* num samples */
-	    _SoundConst char *			/* comment */
+	    const char *			/* comment */
 );
 
 extern int
 SoundStringToFileFormat(
-			_SoundConst char *	/* string */
+			const char *		/* string */
 );
 
 extern int
 SoundAbbrevToFileFormat(
-			_SoundConst char *	/* string */
+			const char *		/* string */
 );
 
 extern int
@@ -220,6 +216,6 @@ typedef struct
 
 extern SoundFileInfoProc SoundFileGetProc(int format, int proc);
 
-extern _SoundConst int SoundNumFileFormats;
+extern const int SoundNumFileFormats;
 
 #endif						/* _SOUND_H_ */

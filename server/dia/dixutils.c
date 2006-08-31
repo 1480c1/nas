@@ -60,7 +60,7 @@ extern void IgnoreClient(), AttendClient();
  * procedure to call than to check if there's a procedure 
  */
 void
-NoopDDA()
+NoopDDA(pointer value, AuID id)
 {
 }
 

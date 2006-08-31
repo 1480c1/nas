@@ -103,9 +103,9 @@ FileWriteL(
 }
 
 char       *
-FileCommentFromFilename(_FileConst char *fname)
+FileCommentFromFilename(const char *fname)
 {
-    _FileConst char *f;
+    const char *f;
     char       *t;
 
     /* ignore piped files */

@@ -107,7 +107,7 @@ static _SoundConst SoundInfo _SoundFileInfo[] =
 #undef _oo
 #undef _VOIDP_
 
-_SoundConst int SoundNumFileFormats =
+const int SoundNumFileFormats =
 (sizeof(_SoundFileInfo) / sizeof(_SoundFileInfo[0]));
 
 char *SoundFileFormatString(Sound s)
@@ -375,7 +375,7 @@ soundToSvx(Sound s)
 }
 
 Sound
-SoundOpenFileForReading(_SoundConst char *name)
+SoundOpenFileForReading(const char *name)
 {
     Sound           s;
     int             i;
@@ -407,7 +407,7 @@ SoundOpenFileForReading(_SoundConst char *name)
 
 Sound
 SoundOpenFileForWriting(
-                        _SoundConst char *name,
+                        const char *name,
                         Sound           s
                         )
 {
@@ -501,7 +501,7 @@ SoundCreate(
             int numTracks,
             int sampleRate,
             int numSamples,
-            _SoundConst char *comment
+            const char *comment
             )
 {
     Sound           s;
@@ -561,7 +561,7 @@ SoundCreate(
 }
 
 int
-SoundStringToFileFormat(_SoundConst char *s)
+SoundStringToFileFormat(const char *s)
 {
     int             i;
 
@@ -573,7 +573,7 @@ SoundStringToFileFormat(_SoundConst char *s)
 }
 
 int
-SoundAbbrevToFileFormat(_SoundConst char *s)
+SoundAbbrevToFileFormat(const char *s)
 {
     int             i;
 

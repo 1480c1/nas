@@ -2,6 +2,9 @@ $Id$
 
 Version ??? (devel) 7/15/2006
 
+        - ANSI'fication of DeleteTypes (dia/resource.c) and NoopDDA.
+          Add proper header #includes where needed.
+
         - patch from Petr Salinge (via Steve McIntyre) adding
           GNU/kFreeBSD support.
 
@@ -15,6 +18,11 @@ Version ??? (devel) 7/15/2006
           - mondo indentification of server/*
 
         - Applied patches from Stefan Huehner:
+
+          - part two of the _.*Const removal patch. Some more defines
+            of _.*Const were removed which have been missed by the
+            last patch and the interval usage of _.*Const has been
+            simplified to just use const.
 
           - removes more unused defines and functions in server/ .
             Additionally a k&r style function was convertd to ansi c

@@ -62,6 +62,7 @@
 #include <errno.h>
 
 #include "nasconf.h"
+#include "misc.h"
 #include "dixstruct.h"          /* for RESTYPE */
 #include "os.h"                 /* for xalloc/xfree and NULL */
 #include "au.h"

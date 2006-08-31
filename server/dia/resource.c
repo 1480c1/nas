@@ -109,7 +109,7 @@ static RESTYPE TypeAuMask;
 
 static void RebuildTable(int client);
 
-typedef int (*DeleteType) ();
+typedef int (*DeleteType)(pointer, AuID);
 
 static DeleteType *DeleteFuncs = (DeleteType *) NULL;
 

@@ -127,34 +127,34 @@ AuLookupEventHandler(
  *			       STRING UTILITIES				     *
  *****************************************************************************/
 
-_AuConst char  * AUCDECL
+const char  * AUCDECL
 AuFormatToString(
 		 unsigned int			/* format */
 );
 
 int AUCDECL
 AuStringToFormat(
-		 _AuConst char *		/* string */
+		 const char *			/* string */
 );
 
-_AuConst char  * AUCDECL
+const char  * AUCDECL
 AuFormatToDefine(
 		 unsigned int			/* format */
 );
 
 int AUCDECL
 AuDefineToFormat(
-		 _AuConst char *		/* define */
+		 const char *			/* define */
 );
 
-_AuConst char  * AUCDECL
+const char  * AUCDECL
 AuWaveFormToString(
 		 unsigned int			/* waveform */
 );
 
 int AUCDECL
 AuStringToWaveForm(
-		 _AuConst char *		/* string */
+		 const char *			/* string */
 );
 
 /*****************************************************************************

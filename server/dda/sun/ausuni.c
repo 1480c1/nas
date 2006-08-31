@@ -77,6 +77,7 @@ from the copyright holder.
 #include <stdio.h>              /* for sprintf */
 #include <stdlib.h>             /* for getenv */
 #include <errno.h>
+#include "misc.h" 
 #include "dixstruct.h"          /* for RESTYPE */
 #include "os.h"                 /* for xalloc/xfree and NULL */
 #include "nasconf.h"

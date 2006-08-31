@@ -84,6 +84,6 @@ extern ClientPtr serverClient;
 extern int currentMaxClients;
 extern long *checkForInput[2];
 
-extern void NoopDDA();
+extern void NoopDDA(pointer, AuID);
 
 #endif /* DIX_H */

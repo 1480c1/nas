@@ -706,7 +706,7 @@ _AuReadEvents(
 
 int
 _AuConnectServer(
-    _AuConst char *, 		/* server_name */
+    const char *, 		/* server_name */
     char **, 			/* fullnamep */
     int *, 			/* svrnump */
     char **, 			/* auth_namep */

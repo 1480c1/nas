@@ -207,7 +207,7 @@ static struct
     "AuFormatLinearUnsigned16LSB",
   };
 
-_AuConst char  *
+const char  *
 AuFormatToString(unsigned int format)
 {
     int             i;
@@ -220,7 +220,7 @@ AuFormatToString(unsigned int format)
 }
 
 int
-AuStringToFormat(_AuConst char *s)
+AuStringToFormat(const char *s)
 {
     int             i;
 
@@ -231,7 +231,7 @@ AuStringToFormat(_AuConst char *s)
     return -1;
 }
 
-_AuConst char  *
+const char  *
 AuFormatToDefine(unsigned int format)
 {
     int             i;
@@ -244,7 +244,7 @@ AuFormatToDefine(unsigned int format)
 }
 
 int
-AuDefineToFormat(_AuConst char *s)
+AuDefineToFormat(const char *s)
 {
     int             i;
 
@@ -267,7 +267,7 @@ static struct
     AuWaveFormConstant, "Constant",
   };
 
-_AuConst char  *
+const char  *
 AuWaveFormToString(unsigned int waveform)
 {
     int             i;
@@ -280,7 +280,7 @@ AuWaveFormToString(unsigned int waveform)
 }
 
 int
-AuStringToWaveForm(_AuConst char *s)
+AuStringToWaveForm(const char *s)
 {
     int             i;
 

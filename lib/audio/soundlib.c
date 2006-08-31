@@ -42,7 +42,7 @@ extern int      AuMonitorRate,
 AuBucketID
 AuSoundCreateBucketFromFile(
                             AuServer       *aud,
-                            _SoundConst char *filename,
+                            const char *filename,
                             AuUint32   access,
                             AuBucketAttributes **ret_attr,
                             AuStatus       *ret_status
@@ -119,7 +119,7 @@ AuSoundCreateBucketFromFile(
 AuBool
 AuSoundCreateFileFromBucket(
                             AuServer       *aud,
-                            _AuConst char  *filename,
+                            const char  *filename,
                             int             fileFormat,
                             AuBucketID      bucket,
                             AuStatus       *ret_status
@@ -694,7 +694,7 @@ AuSoundRecord(
 AuEventHandlerRec *
 AuSoundPlayFromFile(
                     AuServer       *aud,
-                    _AuConst char  *filename,
+                    const char  *filename,
                     AuDeviceID      device,
                     AuFixedPoint    volume,
                     AuSoundCallback callback,
@@ -751,7 +751,7 @@ AuSoundPlayFromFile(
 AuEventHandlerRec *
 AuSoundRecordToFile(
                     AuServer       *aud,
-                    _AuConst char  *filename,
+                    const char  *filename,
                     AuDeviceID      device,
                     AuFixedPoint    gain,
                     AuSoundCallback callback,
@@ -778,7 +778,7 @@ AuSoundRecordToFile(
 AuEventHandlerRec *
 AuSoundRecordToFileN(
                      AuServer       *aud,
-                     _AuConst char  *filename,
+                     const char  *filename,
                      AuDeviceID      device,
                      AuFixedPoint    gain,
                      AuUint32 numSamples,
@@ -868,7 +868,7 @@ sync_play_cb(
 AuBool
 AuSoundPlaySynchronousFromFile(
                                AuServer       *aud,
-                               _AuConst char  *fname,
+                               const char  *fname,
                                int             volume
                                )
 {

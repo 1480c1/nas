@@ -82,12 +82,12 @@ _FUNCPROTOBEGIN
 
 extern SvxInfo *
 SvxOpenFileForReading(
-		      _SvxConst char *		/* file name */
+		      const char *		/* file name */
 );
 
 extern SvxInfo *
 SvxOpenFileForWriting(
-		      _SvxConst char *,		/* file name */
+		      const char *,		/* file name */
 		      SvxInfo *			/* info */
 );
 

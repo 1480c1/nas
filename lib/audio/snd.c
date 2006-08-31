@@ -126,7 +126,7 @@ SndFlushFile(SndInfo *si)
 }
 
 SndInfo        *
-SndOpenFileForReading(_SndConst char *name)
+SndOpenFileForReading(const char *name)
 {
     SndInfo        *si;
     int             size;
@@ -192,7 +192,7 @@ SndOpenFileForReading(_SndConst char *name)
 
 SndInfo        *
 SndOpenFileForWriting(
-                      _SndConst char *name,
+                      const char *name,
                       SndInfo        *si
                       )
 {

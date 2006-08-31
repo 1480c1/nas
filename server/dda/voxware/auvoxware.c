@@ -164,6 +164,7 @@ int dspin, dspout;
 static int debug_msg_indentation = 0;
 
 #include <errno.h>
+#include "misc.h"
 #include "dixstruct.h"          /* for RESTYPE */
 #include "os.h"                 /* for xalloc/xfree and NULL */
 #include <fcntl.h>

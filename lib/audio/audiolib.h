@@ -1013,9 +1013,9 @@ _AUFUNCPROTOBEGIN
  * AuServerName - this routine returns the that the library will use to
  * locate the audio server.
  */
-extern _AuConst char * AUCDECL
+extern const char * AUCDECL
 AuServerName(
-	     _AuConst char *			/* servername */
+	     const char *			/* servername */
 );
 
 /*
@@ -1024,11 +1024,11 @@ AuServerName(
  */
 extern AuServer * AUCDECL
 AuOpenServer(
-	     _AuConst char *,			/* servername */
+	     const char *,			/* servername */
 	     int,				/* num_authproto */
-	     _AuConst char *,			/* authproto */
+	     const char *,			/* authproto */
 	     int,				/* num_authdata */
-	     _AuConst char *,			/* authdata */
+	     const char *,			/* authdata */
 	     char **				/* server_message */
 );
 
@@ -1117,9 +1117,9 @@ AuGetErrorText(
 extern void AUCDECL
 AuGetErrorDatabaseText(
 		       AuServer *,		/* server */
-		       _AuConst char *,		/* name */
-		       _AuConst char *,		/* message */
-		       _AuConst char *,		/* default_string */
+		       const char *,		/* name */
+		       const char *,		/* message */
+		       const char *,		/* default_string */
 		       char *,			/* buffer_return */
 		       int			/* length */
 );

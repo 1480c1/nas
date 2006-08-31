@@ -103,7 +103,7 @@ FileWriteL(
 
 extern char	*
 FileCommentFromFilename(
-                        _FileConst char	*		/* file name */
+                        const char	*		/* file name */
 );
 
 _FUNCPROTOEND

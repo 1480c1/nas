@@ -66,7 +66,7 @@ readChunk(
 }
 
 WaveInfo       *
-WaveOpenFileForReading(_WaveConst char *name)
+WaveOpenFileForReading(const char *name)
 {
     RiffChunk       ck;
     RIFF_FOURCC     fourcc;
@@ -197,7 +197,7 @@ WaveOpenFileForReading(_WaveConst char *name)
 
 WaveInfo       *
 WaveOpenFileForWriting(
-                       _WaveConst char *name,
+                       const char *name,
                        WaveInfo       *wi
                        )
 {

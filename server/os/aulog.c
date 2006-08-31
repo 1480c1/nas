@@ -12,6 +12,7 @@
 #include "aulog.h"
 #include "NasConfig.h"
 
+#include "misc.h"
 #include "dixstruct.h"
 #include "globals.h"
 

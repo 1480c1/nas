@@ -44,7 +44,7 @@
 typedef char   *XPointer;
 #endif
 
-static _AuConst char * _AuConst _AuErrorList[] = {
+static const char * const _AuErrorList[] = {
     /* No error	*/		"no error",
     /* AuBadRequest */		"BadRequest",
     /* AuBadValue */		"BadValue",
@@ -252,9 +252,9 @@ void
 /*ARGSUSED*/
 AuGetErrorDatabaseText(
     AuServer *aud,
-    register _AuConst char *name,
-    register _AuConst char *type,
-    _AuConst char *defaultp,
+    register const char *name,
+    register const char *type,
+    const char *defaultp,
     char *buffer,
     int nbytes)
 {

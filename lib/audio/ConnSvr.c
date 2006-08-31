@@ -149,7 +149,7 @@ GetAuthorization(
                  int *auth_datalenp			/* RETURN */
                  );
 
-static char *copystring (register _AuConst char *src, int len)
+static char *copystring (register const char *src, int len)
 {
     char *dst = Aumalloc (len + 1);
 
@@ -306,7 +306,7 @@ _AuStartServer(int iserver, AuBool xname)
  *     o  TCP to local host
  */
 int _AuConnectServer (
-    _AuConst char *server_name,
+    const char *server_name,
     char **fullnamep,			/* RETURN */
     int *svrnump,			/* RETURN */
     char **auth_namep,			/* RETURN */
@@ -318,7 +318,7 @@ int _AuConnectServer (
     int family;
     int saddrlen;
     char *saddr;
-    _AuConst char *lastp, *p;		/* char pointers */
+    const char *lastp, *p;		/* char pointers */
     char *phostname = NULL;		/* start of host of server */
     char *psvrnum = NULL;		/* start of svrnum of server */
     const char *realtrans;		/* real audio transport prefix */
@@ -350,7 +350,7 @@ int _AuConnectServer (
       if (*p == '/') {
 	    int len = (p - server_name);
 	    char tmptransport[41];
-	    register _AuConst char *src;
+	    register const char *src;
 	    register char *dst;
 
 	    if (len >= sizeof tmptransport)    /* too AuInt32 */

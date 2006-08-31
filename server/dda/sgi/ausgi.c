@@ -33,6 +33,7 @@
 
 #define _BSD_SIGNALS
 
+#include "misc.h" 
 #include "dixstruct.h"          /* for RESTYPE */
 #include "os.h"                 /* for xalloc/xfree and NULL */
 #include <fcntl.h>

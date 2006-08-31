@@ -27,17 +27,8 @@
 
 #include <audio/audio.h>			/* for AuInt32 and AuUint32 */
 
-/*
- * If we are being used outside the NCD-AUDIO sound library, then we'll need
- * some ANSIfication definitions.
- */
-
 #ifndef _VocConst
-#if __STDC__ || defined(__cplusplus) || defined(c_plusplus) || (FUNCPROTO&4)
 #define _VocConst const
-#else
-#define _VocConst				/**/
-#endif
 #endif						/* _VocConst */
 
 #ifndef _FUNCPROTOBEGIN
@@ -88,12 +79,12 @@ _FUNCPROTOBEGIN
 
 extern VocInfo *
 VocOpenFileForReading(
-		      _VocConst char *		/* file name */
+		      const char *		/* file name */
 );
 
 extern VocInfo *
 VocOpenFileForWriting(
-		      _VocConst char *,		/* file name */
+		      const char *,		/* file name */
 		      VocInfo *			/* info */
 );
 

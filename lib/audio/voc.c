@@ -56,7 +56,7 @@
 }
 
 VocInfo        *
-VocOpenFileForReading(_VocConst char *name)
+VocOpenFileForReading(const char *name)
 {
     VocInfo        *vi;
     int             c,
@@ -154,7 +154,7 @@ VocOpenFileForReading(_VocConst char *name)
 
 VocInfo        *
 VocOpenFileForWriting(
-                      _VocConst char *name,
+                      const char *name,
                       VocInfo        *vi
                       )
 {
