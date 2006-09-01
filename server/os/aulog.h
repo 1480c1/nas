@@ -12,6 +12,6 @@
 #define LOG_BUFSIZE 4096
 #define LOG_FILENMSZ 1024
 
-void osLogMsg(char *fmt, ...);
+void osLogMsg(const char *fmt, ...);
 
 #endif /* AULOG_H_INCLUDED */

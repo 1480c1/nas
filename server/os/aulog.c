@@ -21,11 +21,10 @@
 #endif
 
 void
-osLogMsg(char *fmt, ...)
+osLogMsg(const char *fmt, ...)
 {
     va_list ap;
     static char buf[LOG_BUFSIZE];
-    static char errfile[LOG_FILENMSZ];
     static FILE *errfd = NULL;
 
     va_start(ap, fmt);

@@ -19,6 +19,12 @@ Version ??? (devel) 7/15/2006
 
         - Applied patches from Stefan Huehner:
 
+          - marks some read-only string and function parameters as
+            'const char*' instead of 'char *'. In addition an unused
+            buffer 'errfile' from aulog.c was removed.  As the two
+            release.h files are generated the NetAudio.tmpl was
+            modified to emit the 'const char *' declaration. 
+
           - part two of the _.*Const removal patch. Some more defines
             of _.*Const were removed which have been missed by the
             last patch and the interval usage of _.*Const has been

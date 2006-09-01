@@ -285,7 +285,7 @@ AuComplexProgramTarget(program)
 #ifndef WIN32
 #define BuildReleaseHeader()						    @@\
 release.h: $(TOP)/RELEASE				    		    @@\
-	@echo "static char *release = \"`cat $(TOP)/RELEASE`\";" > $@   @@\
+	@echo "static const char *release = \"`cat $(TOP)/RELEASE`\";" > $@   @@\
 						    			    @@\
 depend:: release.h				    			    @@\
 						    			    @@\
@@ -294,7 +294,7 @@ clean::			    			    			    @@\
 #else /* WIN32 */
 #define BuildReleaseHeader()						    @@\
 release.h: $(TOP)/RELEASE				    		    @@\
-	@echo static char *release = "Windows NT"; > $@   		    @@\
+	@echo static const char *release = "Windows NT"; > $@   		    @@\
 						    			    @@\
 depend:: release.h				    			    @@\
 						    			    @@\

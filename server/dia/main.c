@@ -89,7 +89,7 @@ NotImplemented()
  */
 
 static FILE *
-openConfigFile(char *path)
+openConfigFile(const char *path)
 {
     FILE *config;
 
@@ -104,7 +104,7 @@ int
 main(int argc, char *argv[])
 {
     int i;
-    char *config_file;
+    const char *config_file;
 
     /* Notice if we're restart.  Probably this is because we jumped through
      * uninitialized pointer */
