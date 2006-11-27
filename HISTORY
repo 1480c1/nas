@@ -1,6 +1,6 @@
 $Id$
 
-Version ??? (devel) 7/15/2006
+Version 1.8a (devel) 11/27/2006
 
         - Updated the Amd.h (machine definition file) with modern X11
           (X11R6.8) contents so it can build with Qt and other X11
