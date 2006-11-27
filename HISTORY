@@ -2,6 +2,11 @@ $Id$
 
 Version ??? (devel) 7/15/2006
 
+        - Updated the Amd.h (machine definition file) with modern X11
+          (X11R6.8) contents so it can build with Qt and other X11
+          software that makes use of X11's Xmd.h header file.  Problem
+          reported by Bernard Leak.
+
         - ANSI'fication of DeleteTypes (dia/resource.c) and NoopDDA.
           Add proper header #includes where needed.
 
@@ -111,6 +116,9 @@ Version ??? (devel) 7/15/2006
             GC's, etc).
 
         - applied patches from Erik Auerswald:
+
+          - Add patch adding a proper 'reset' action to
+            contrib/rc/nasd.
 
           - a patch that:
 
