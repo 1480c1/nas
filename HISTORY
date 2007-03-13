@@ -1,5 +1,18 @@
 $Id$
 
+??? 3/12/2007
+
+    - apply patch from Paul Fox, correcting a typo in auvoxware.c
+
+    - apply patch from Erik Auerswald
+
+      "With the attached patch the output and input device can be
+      disabled by specifying an empty string as device name. Yes, when
+      using an empty string for both devices there will be a NAS
+      server that can neither play nor record anything."
+
+
+
 Version 1.8a (devel) 11/27/2006
 
         - Updated the Amd.h (machine definition file) with modern X11

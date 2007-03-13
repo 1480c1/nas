@@ -873,7 +873,7 @@ openDevice(AuBool wait)
     }
 
     if ((inmixerfd == -1) && !share_mixer) {
-        if (sndStatIn.mixer[0] != '\0') {
+        if (sndStatIn.mixer[0] == '\0') {
             osLogMsg("openDevice: no input mixer device specified\n");
         } else {
             while ((inmixerfd = open(sndStatIn.mixer, O_RDWR | extramode,
