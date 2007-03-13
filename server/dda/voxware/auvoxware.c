@@ -802,48 +802,61 @@ openDevice(AuBool wait)
     }
 
 
-    if (sndStatOut.fd == -1) {
-        while ((sndStatOut.fd = open(sndStatOut.device,
-                                     sndStatOut.
-                                     howToOpen | O_SYNC | extramode,
-                                     0666)) == -1 && wait) {
-            osLogMsg("openDevice: waiting on output device\n");
-            sleep(1);
+    if (sndStatOut.device[0] != '\0') {
+        if (sndStatOut.fd == -1) {
+            while ((sndStatOut.fd = open(sndStatOut.device,
+                                         sndStatOut.
+                                         howToOpen | O_SYNC | extramode,
+                                         0666)) == -1 && wait) {
+                osLogMsg("openDevice: waiting on output device\n");
+                sleep(1);
+            }
+            setupSoundcard(&sndStatOut);
+        } else {
+            if (NasConfig.DoDebug) {
+                osLogMsg("openDevice: output device already open\n");
+            }
         }
-        setupSoundcard(&sndStatOut);
     } else {
         if (NasConfig.DoDebug) {
-            osLogMsg("openDevice: output device already open\n");
+            osLogMsg("openDevice: no output device specified\n");
         }
     }
 
 #if  !defined(__CYGWIN__)
-    if (sndStatIn.fd == -1 && !share_in_out) {
-        if (NasConfig.DoDebug)
-            osLogMsg("openDevice IN %s mode %d\n", sndStatIn.device,
-                     sndStatIn.howToOpen);
+    if (sndStatIn.device[0] != '\0') {
+        if (sndStatIn.fd == -1 && !share_in_out) {
+            if (NasConfig.DoDebug)
+                osLogMsg("openDevice IN %s mode %d\n", sndStatIn.device,
+                         sndStatIn.howToOpen);
 
-        retries = 0;
-        while ((sndStatIn.fd = open(sndStatIn.device,
-                                    sndStatIn.howToOpen | extramode,
-                                    0666)) == -1 && wait) {
-            osLogMsg("openDevice: waiting on input device, retry %d\n",
-                     retries);
-            sleep(1);
-            retries++;
+            retries = 0;
+            while ((sndStatIn.fd = open(sndStatIn.device,
+                                        sndStatIn.howToOpen | extramode,
+                                        0666)) == -1 && wait) {
+                osLogMsg("openDevice: waiting on input device, retry %d\n",
+                         retries);
+                sleep(1);
+                retries++;
 
-            if (retries >= 5) {
-                osLogMsg("openDevice: maximum retries exceeded, giving up\n");
-                sndStatIn.fd = -1;
-                break;
+                if (retries >= 5) {
+                    osLogMsg("openDevice: maximum retries exceeded, "
+                             "giving up\n");
+                    sndStatIn.fd = -1;
+                    break;
+                }
+            }
+            if (sndStatIn.fd != -1 && sndStatOut.fd != sndStatIn.fd)
+                setupSoundcard(&sndStatIn);
+        } else {
+            sndStatIn.fd = sndStatOut.fd;
+            if (NasConfig.DoDebug) {
+                osLogMsg("openDevice: input device already open\n");
             }
         }
-        if (sndStatIn.fd != -1 && sndStatOut.fd != sndStatIn.fd)
-            setupSoundcard(&sndStatIn);
     } else {
-        sndStatIn.fd = sndStatOut.fd;
         if (NasConfig.DoDebug) {
-            osLogMsg("openDevice: input device already open\n");
+            osLogMsg("openDevice: no input device specified\n");
         }
     }
 
@@ -1830,26 +1843,31 @@ AuInitPhysicalDevices(void)
         AL_initialized = AuTrue;
 
         if (sndStatOut.autoOpen) {
-            if (NasConfig.DoDebug)
-                osLogMsg("Init: openDevice OUT %s mode %d\n",
-                         sndStatOut.device, sndStatOut.howToOpen);
+            if (sndStatOut.device[0] != '\0') {
+                if (NasConfig.DoDebug)
+                    osLogMsg("Init: openDevice OUT %s mode %d\n",
+                             sndStatOut.device, sndStatOut.howToOpen);
 
-            if ((fd = open(sndStatOut.device,
-                           sndStatOut.howToOpen | O_SYNC | extramode,
-                           0)) == -1) {
-                UNIDENTMSG;
-                osLogMsg("Init: Output open(%s) failed: %s\n",
-                         sndStatOut.device, strerror(errno));
-                return AuFalse;
-            }
-            sndStatOut.fd = fd;
+                if ((fd = open(sndStatOut.device,
+                               sndStatOut.howToOpen | O_SYNC | extramode,
+                               0)) == -1) {
+                    UNIDENTMSG;
+                    osLogMsg("Init: Output open(%s) failed: %s\n",
+                             sndStatOut.device, strerror(errno));
+                    return AuFalse;
+                }
+                sndStatOut.fd = fd;
 #if defined(AUDIO_GETINFO)
-            if (sndStatOut.isPCSpeaker) {
-                ioctl(fd, AUDIO_GETINFO, &spkrinf);
-                spkrinf.play.encoding = AUDIO_ENCODING_RAW;
-                ioctl(fd, AUDIO_SETINFO, &spkrinf);
-            }
+                if (sndStatOut.isPCSpeaker) {
+                    ioctl(fd, AUDIO_GETINFO, &spkrinf);
+                    spkrinf.play.encoding = AUDIO_ENCODING_RAW;
+                    ioctl(fd, AUDIO_SETINFO, &spkrinf);
+                }
 #endif
+            } else {
+                if (NasConfig.DoDebug)
+                    osLogMsg("Init: no output device specified\n");
+            }
         }
 #ifdef DEBUGDSPOUT
         dspout = open("/tmp/dspout", O_WRONLY | O_CREAT, 00666);
@@ -1861,23 +1879,29 @@ AuInitPhysicalDevices(void)
 
         if (sndStatIn.autoOpen) {
 
-            if (NasConfig.DoDebug)
-                osLogMsg("Init: openDevice(1) IN %s mode %d\n",
-                         sndStatIn.device, sndStatIn.howToOpen);
+            if (sndStatIn.device[0] != '\0') {
+                if (NasConfig.DoDebug)
+                    osLogMsg("Init: openDevice(1) IN %s mode %d\n",
+                             sndStatIn.device, sndStatIn.howToOpen);
 
-            if ((fd =
-                 open(sndStatIn.device, sndStatIn.howToOpen | extramode,
-                      0)) != -1)
-                sndStatIn.fd = fd;
-            else {
-                sndStatIn.fd = sndStatOut.fd;
-                share_in_out = AuTrue;
-                osLogMsg("Init: Input open(%s) failed: %s, using output device\n", sndStatIn.device, strerror(errno));
+                if ((fd =
+                     open(sndStatIn.device, sndStatIn.howToOpen | extramode,
+                          0)) != -1)
+                    sndStatIn.fd = fd;
+                else {
+                    sndStatIn.fd = sndStatOut.fd;
+                    share_in_out = AuTrue;
+                    osLogMsg("Init: Input open(%s) failed: %s, using output device\n", sndStatIn.device, strerror(errno));
+                }
+            } else {
+                if (NasConfig.DoDebug)
+                    osLogMsg("Init: no input device specified\n");
             }
         }
 
-        setupSoundcard(&sndStatOut);
-        if (sndStatOut.fd != sndStatIn.fd)
+        if (sndStatOut.fd != -1)
+            setupSoundcard(&sndStatOut);
+        if ((sndStatIn.fd != -1) && (sndStatOut.fd != sndStatIn.fd))
             setupSoundcard(&sndStatIn);
 
         if (!sndStatOut.isPCSpeaker) {

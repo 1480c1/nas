@@ -68,6 +68,7 @@ Marks the end of the input section or output section.
 .PP
 .B device "devname"
 Specifies what device is used. An example is \fBdevice "/dev/dsp"\fR.
+With the voxware server you can use the empty string "" to disable the device.
 .PP
 .B mixer "mixername"
 Specifies what mixer device is used. An example is \fBmixer "/dev/mixer"\fR.
