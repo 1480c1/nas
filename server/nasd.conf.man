@@ -116,9 +116,9 @@ Forces the output rate to the current rate. The default is "no".
 Whether to open the device at init time (if ReleaseDevice = no).  The default is "yes".
 .PP
 .B readwrite "no"|"yes"
-Whether or not to open the device read/write.  The default is "yes".
-If set to "no", then for input devices, the device will be opened
-readonly, and for output devices, the the device will be opened writeonly.
+Whether or not to open the device read\-write.  The default is "no".
+If set to "yes", then the device will be opened read\-write.  There
+should be no need to set this to "yes", but...
 .SH "SEE ALSO"
 nas(1), nasd(1), auinfo(1), auplay(1), auctl(1)
 .SH BUGS
