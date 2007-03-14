@@ -251,39 +251,33 @@ SndStat sndStatIn = {
     32,                         /* maxFrags */
     "/dev/dsp1",                /* device */
     "/dev/mixer1",              /* mixer */
-#if defined(__CYGWIN__)
     O_RDONLY,                   /* howToOpen */
-#else
-    O_RDWR,                     /* howToOpen */
-#endif
     1,                          /* autoOpen */
     0,                          /* forceRate */
     0,                          /* isPCSpeaker */
     50,                         /* default gain */
     100                         /* gain reduction factor */
-}, sndStatOut = {
+};
+
+SndStat sndStatOut = {
 
     -1,                         /* fd */
-            16,                 /* wordSize */
-            1,                  /* isStereo */
-            0,                  /* curSampleRate */
-            4000,               /* minSampleRate */
-            44100,              /* maxSampleRate */
-            256,                /* fragSize */
-            3,                  /* minFrags */
-            32,                 /* maxFrags */
-            "/dev/dsp",         /* device */
-            "/dev/mixer",       /* mixer */
-#if defined(__CYGWIN__)
-            O_WRONLY,           /* howToOpen */
-#else
-            O_RDWR,             /* howToOpen */
-#endif
-            1,                  /* autoOpen */
-            0,                  /* forceRate */
-            0,                  /* isPCSpeaker */
-            50,                 /* default gain */
-            100                 /* gain reduction factor */
+    16,                         /* wordSize */
+    1,                          /* isStereo */
+    0,                          /* curSampleRate */
+    4000,                       /* minSampleRate */
+    44100,                      /* maxSampleRate */
+    256,                        /* fragSize */
+    3,                          /* minFrags */
+    32,                         /* maxFrags */
+    "/dev/dsp",                 /* device */
+    "/dev/mixer",               /* mixer */
+    O_WRONLY,                   /* howToOpen */
+    1,                          /* autoOpen */
+    0,                          /* forceRate */
+    0,                          /* isPCSpeaker */
+    50,                         /* default gain */
+    100                         /* gain reduction factor */
 };
 
 #define auDefaultInputGain      AuFixedPointFromSum(sndStatIn.gain, 0)

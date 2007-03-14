@@ -57,7 +57,7 @@ inputsection
 	forcerate	"no"			# forces input rate to current
 	autoOpen        "yes"			# whether to open the dev
 						# at init
-	readwrite	"no"			# open read only if "no"
+	readwrite	"no"			# open 'device' read/write?
 end
 
 # These are used by voxware only for now.
@@ -75,7 +75,7 @@ outputsection
 	forcerate	"no"			# forces output rate to current
 	autoOpen        "yes"			# whether to open the dev
 						# at init
-	readwrite	"yes"			# open write only if "no"
+	readwrite	"no"			# open 'device' read/write?
 end
 
 #

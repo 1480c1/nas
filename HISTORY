@@ -2,6 +2,17 @@ $Id$
 
 ??? 3/12/2007
 
+    - set the default open modes for the output audio device to
+      write-only, and for the input device, use read-only (already the
+      default).
+
+      These can still be changed in the nasd.conf file, if needed. 
+
+      Previously, the default was to open the output device
+      read-write, causing various issues with different
+      hardware/driver configurations.  There is no need to open this
+      device read-write anyway. 
+
     - apply patch from Paul Fox, correcting a typo in auvoxware.c
 
     - apply patch from Erik Auerswald
