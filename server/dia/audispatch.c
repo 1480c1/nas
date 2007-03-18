@@ -550,25 +550,31 @@ static int numDefaultActions[] = {
     0,                          /* AuElementTypeExportMonitor */
 };
 
-#define ADD_VAR(n)                                                            \
-{                                                                             \
-    AuUint8 *_t = (AuUint8 *) el;                                             \
-                                                                              \
-    varLen += (n);                                                            \
-    _t += (n);                                                                \
-    el = (auElement *) _t;                                                    \
+#define ADD_VAR(n)                                                       \
+{                                                                        \
+    AuUint8 *_t = (AuUint8 *) el;                                        \
+                                                                         \
+    varLen += (n);                                                       \
+    _t += (n);                                                           \
+    el = (auElement *) _t;                                               \
 }
 
-#define COMP_ACTIONS(num)                                                      \
-{                                                                              \
-    numActions += (num) ? (num) : numDefaultActions[el->type];                 \
-    ADD_VAR((num) * sizeof(auElementAction));                                  \
+#define COMP_ACTIONS(num)                                                \
+{                                                                        \
+    numActions += (num) ? (num) : numDefaultActions[el->type];           \
+    ADD_VAR((num) * sizeof(auElementAction));                            \
 }
 
-#define FREE_FLOW_ERROR(e, v)                                                  \
-{                                                                              \
-    AuFreeFlowElements(flow);                                                  \
-    AU_ERROR(e, v);                                                            \
+/* JET 3/17/2007 - Luigi Auriemma's nasbugs, attack #5.  Let's not be
+   stupid and free a flow, then deref data within the freed flow in
+   AU_ERROR().  
+*/
+
+#define FREE_FLOW_ERROR(e, v)                                            \
+{                                                                        \
+    CARD8 val = (v);                                                     \
+    AuFreeFlowElements(flow);                                            \
+    AU_ERROR(e, val);                                                    \
 }
 
 int
@@ -591,6 +597,20 @@ ProcAuSetElements(ClientPtr client)
 
     /* compute length of variable data and do some error checking */
     for (i = varLen = numActions = 0; i < stuff->numElements; i++, el++)
+      {
+        
+        /* JET 3/17/2007 - Luigi Auriemma's nasbugs, attack #4,
+           triggers this.  while counting actions, make sure we do not
+           stray beyond the stuff buffer.  If we do, then there wasn't
+           enough data supplied in the request.
+        */
+
+        if (el >= ((auElement *)&stuff[1] +  
+                   ((stuff->length << 2) - sizeof(auSetElementsReq))) ) 
+          { 
+            AU_ERROR(AuBadLength, 0);
+          }           
+        
         switch (el->type) {
         case AuElementTypeImportClient:
             COMP_ACTIONS(el->importclient.actions.num_actions);
@@ -628,6 +648,7 @@ ProcAuSetElements(ClientPtr client)
         default:
             AU_ERROR(AuBadElement, el->type);
         }
+      }
 
     /* size of element list */
     len = (stuff->length << 2) - sizeof(auSetElementsReq);

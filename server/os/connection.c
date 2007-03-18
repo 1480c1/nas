@@ -877,13 +877,19 @@ open_att_svr4_local(void)
 }
 #endif /* SVR4 */
 
+/* JET 3/17/2007 - Luigi Auriemma's nasbugs, attack #1, simple buffer
+   overflow.  Now we limit to _MAX_SALVENM.
+ */
+
+#define _MAX_SLAVENM    (256)
+
 static int
 accept_att_local(void)
 {
     int newconn;
     int read_in;
-    char length;
-    char path[64];
+    unsigned char length;
+    char path[_MAX_SLAVENM];
 
     /*
      * first get device-name
@@ -892,6 +898,9 @@ accept_att_local(void)
         Error("audio server: Can't read slave name length from USL client connection");
         return (-1);
     }
+
+    if (length >= _MAX_SLAVENM)
+      length = _MAX_SLAVENM - 1;
 
     if ((read_in = read(ptsFd, path, length)) <= 0) {
         Error("audio server: Can't read slave name from USL client connection");
@@ -1447,8 +1456,19 @@ pointer closure;
                               (struct sockaddr *) NULL,
                               (socklen_t *) NULL)) < 0)
             continue;
-        if (newconn > lastfdesc) {
-            ErrorConnMax(newconn);
+
+
+
+        /* JET 3/17/2007 - Luigi Auriemma's nasbugs, attack #8.  
+           shut down the client if the max is exceeded.  Note,
+           if the client does not send any data or disconnect,
+           ErrorConnMax() has been modified to return if a
+           timeout occurs.  If this happens the client will simply
+           be disconnected.
+        */
+
+        if (newconn >= lastfdesc - 1) {
+            ErrorConnMax(newconn); 
             close(newconn);
             continue;
         }
@@ -1526,6 +1546,7 @@ ErrorConnMax(register int fd)
     char byteOrder = 0;
     int whichbyte = 1;
     struct timeval waittime;
+    int rv = 0;
 #ifndef _MINIX
     long mask[mskcnt];
 #endif /* !_MINIX */
@@ -1538,12 +1559,17 @@ ErrorConnMax(register int fd)
     CLEARBITS(mask);
     BITSET(mask, fd);
 #ifdef hpux
-    (void) select(fd + 1, (int *) mask, (int *) NULL, (int *) NULL,
-                  &waittime);
+    rv = select(fd + 1, (int *) mask, (int *) NULL, (int *) NULL,
+                &waittime);
 #else
-    (void) select(fd + 1, (fd_set *) mask, (fd_set *) NULL,
-                  (fd_set *) NULL, &waittime);
+    rv =  select(fd + 1, (fd_set *) mask, (fd_set *) NULL,
+                 (fd_set *) NULL, &waittime);
 #endif
+
+    /* JET 3/17/2007, if we timed out, simply return */
+    if (rv == 0)
+        return;
+
     /* try to read the byte-order of the connection */
     (void) read(fd, &byteOrder, 1);
 #else

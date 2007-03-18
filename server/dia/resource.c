@@ -289,10 +289,22 @@ AddResource(AuID id, RESTYPE type, pointer value)
 
     client = CLIENT_ID(id);
     rrec = &clientTable[client];
+
+    /* JET 3/17/2007 - Luigi Auriemma's nasbugs, attack #2.  can
+       force nasd to terminate by specifying a non-existant clientid
+       to this request.  Normally all proto requests are made via
+       libaudio, in which case this situation should never happen.
+       However, if you talk protocol to the server directly... Well,
+       we will log the condition when it occurs, but will not
+       terminate the server.
+    
+       It occurs to me that X servers should be vulnerable to this
+       DOS, since this code is present in X11 too. :) */
+
     if (!rrec->buckets) {
-        ErrorF("AddResource(%x, %x, %x), client=%d \n",
+        ErrorF("AddResource(%x, %x, %x), client=%d (client not in use)\n",
                id, type, (unsigned long) value, client);
-        FatalError("client not in use\n");
+        return FALSE;
     }
     if ((rrec->elements >= 4 * rrec->buckets) &&
         (rrec->hashsize < MAXHASHSIZE))

@@ -1,6 +1,38 @@
 $Id$
 
 ??? 3/12/2007
+    
+    - fix a variety of problems that could result in a denial of
+      service by crashing the nasd server.  These attacks were
+      researched by Luigi Auriemma, who also provided a description of
+      the attacks and an exploit program, 'nasbugs'.
+
+      I have added his emailed report and the test attack code to the
+      nas repository in contrib/nasbugs if you are interested.  Thanks
+      to Luigi for finding these problems.  It sucked fixing them :)
+
+      Here is a list of the bugs tested as output by the nasbugs
+      program:
+
+      1 = accept_att_local buffer overflow through USL connection
+      2 = server termination through unexistent ID in AddResource
+      3 = bcopy crash caused by integer overflow in ProcAuWriteElement
+      4 = invalid memory pointer caused by big num_actions in ProcAuSetElements
+      5 = another invalid memory pointer caused by big num_actions in
+          ProcAuSetElements 
+      6 = invalid memory pointer in compileInputs
+      7 = exploits bug 3 in read mode (requires something playing on
+          the server) 
+      8 = NULL pointer caused by too much connections
+
+      Note on bug #2, X11 display servers should be vulnerable to a
+      DOS of this type as well (causing fatal 'client not in use'
+      errors in AddResource()).
+
+      Note on bug #8, the nasd server will not be able to accept
+      further client connections when the client table is full, until
+      the rejected clients disconnect their end of the socket and the
+      neccessary fd's are freed up.  It's better than coring though.
 
     - set the default open modes for the output audio device to
       write-only, and for the input device, use read-only (already the

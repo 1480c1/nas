@@ -209,6 +209,20 @@ createPort(AuUint32 format, AuUint32 numTracks, AuUint32 numSamples,
     dataSize = numSamples * sizeofFormat(format) * numTracks;
     minibufSize = auNativeBytesPerSample * auMinibufSamples * numTracks;
 
+    /* JET 3/17/2007 - Luigi Auriemma's nasbugs, attack #3, triggers
+       this. After the overflow the malloc will succeed, since it
+       becomes a small number when dataSize is very large.  dataSize,
+       however will remain large, and attempts to copy data into the
+       buffer from the client will eventually core (like in
+       ProcAuWriteElement) as the buffer is overrun */
+
+    /* check for a possible integer overflow first, before possibly
+       allocating a much smaller buffer than is really required. */
+    if (dataSize > (PAD4(sizeof(ComponentRec)) +
+                    PAD4(dataSize) +
+                    PAD4(minibufSize) * 2))
+      return NULL;
+
     /* the minibuf needs to be twice as large for output range checking */
     if (!(port = (ComponentPtr) aualloc(PAD4(sizeof(ComponentRec)) +
                                         PAD4(dataSize) +
@@ -649,6 +663,14 @@ AuCompileFlow(ClientPtr client, FlowPtr flow)
 
             /* compile the inputs for this output */
             inputCnt = 0;
+
+            /* JET 3/17/2007 - Luigi Auriemma's nasbugs, attack #6.
+               Make sure an invalid element number isn't going to be
+               used for output->firstInput.
+            */
+            if (output->firstInput > flow->numElements)
+              return AuBadElement;
+
             status = compileInputs(client, flow->elements, output,
                                    output->firstInput,
                                    AuFixedPointFromSum(1, 0),
