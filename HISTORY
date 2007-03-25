@@ -1,7 +1,10 @@
 $Id$
 
-??? 3/12/2007
+Version 1.8b (devel) 11/27/2007
     
+    - 1.8b devel release.  Final 1.9 in about 2 weeks, barring any
+      catastrophes.
+
     - fix a variety of problems that could result in a denial of
       service by crashing the nasd server.  These attacks were
       researched by Luigi Auriemma, who also provided a description of
@@ -53,7 +56,6 @@ $Id$
       disabled by specifying an empty string as device name. Yes, when
       using an empty string for both devices there will be a NAS
       server that can neither play nor record anything."
-
 
 
 Version 1.8a (devel) 11/27/2006
