@@ -1,6 +1,20 @@
 $Id$
 
-Version 1.8b (devel) 11/27/2007
+Version 1.9 (stable) 04/07/2007
+
+    - stable 1.9 release.  No code changes (other than RELEASE) since
+      1.8b devel release.
+
+    - In short: Fixes to several DOS attacks that could be carried out
+      aginst a nasd server, ANSI'fication of most of the server and
+      client code, and significant rework of input and output mixer
+      handling in the voxware (OSS) server.
+
+      Read below for more detail on the changes since the last stable
+      release (1.8).
+
+
+    Version 1.8b (devel) 03/25/2007
     
     - 1.8b devel release.  Final 1.9 in about 2 weeks, barring any
       catastrophes.
@@ -58,199 +72,190 @@ Version 1.8b (devel) 11/27/2007
       server that can neither play nor record anything."
 
 
-Version 1.8a (devel) 11/27/2006
+    Version 1.8a (devel) 11/27/2006
 
-        - Updated the Amd.h (machine definition file) with modern X11
-          (X11R6.8) contents so it can build with Qt and other X11
-          software that makes use of X11's Xmd.h header file.  Problem
-          reported by Bernard Leak.
+    - Updated the Amd.h (machine definition file) with modern X11
+      (X11R6.8) contents so it can build with Qt and other X11
+      software that makes use of X11's Xmd.h header file.  Problem
+      reported by Bernard Leak.
 
-        - ANSI'fication of DeleteTypes (dia/resource.c) and NoopDDA.
-          Add proper header #includes where needed.
+    - ANSI'fication of DeleteTypes (dia/resource.c) and NoopDDA.
+      Add proper header #includes where needed.
 
-        - patch from Petr Salinge (via Steve McIntyre) adding
-          GNU/kFreeBSD support.
+    - patch from Petr Salinge (via Steve McIntyre) adding GNU/kFreeBSD
+      support.
 
-        - Patches from Paul Fox:
+    - Patches from Paul Fox:
 
-          - allow the specification of a scaling factor to apply to
-            the output gain
+      - allow the specification of a scaling factor to apply to the
+        output gain
 
-          - add a proper return value in auvoxware.c:initMixer()
+      - add a proper return value in auvoxware.c:initMixer()
 
-          - mondo indentification of server/*
+      - mondo indentification of server/*
 
-        - Applied patches from Stefan Huehner:
+    - Applied patches from Stefan Huehner:
 
-          - marks some read-only string and function parameters as
-            'const char*' instead of 'char *'. In addition an unused
-            buffer 'errfile' from aulog.c was removed.  As the two
-            release.h files are generated the NetAudio.tmpl was
-            modified to emit the 'const char *' declaration. 
+      - marks some read-only string and function parameters as 'const
+        char*' instead of 'char *'. In addition an unused buffer
+        'errfile' from aulog.c was removed.  As the two release.h
+        files are generated the NetAudio.tmpl was modified to emit the
+        'const char *' declaration.
 
-          - part two of the _.*Const removal patch. Some more defines
-            of _.*Const were removed which have been missed by the
-            last patch and the interval usage of _.*Const has been
-            simplified to just use const.
+      - part two of the _.*Const removal patch. Some more defines of
+        _.*Const were removed which have been missed by the last patch
+        and the interval usage of _.*Const has been simplified to just
+        use const.
 
-          - removes more unused defines and functions in server/ .
-            Additionally a k&r style function was convertd to ansi c
-            in swaprep.c
+      - removes more unused defines and functions in server/ .
+        Additionally a k&r style function was convertd to ansi c in
+        swaprep.c
 
-          - converts more function declarations and their prototypes
-            without parameters from () to the (void) form
+      - converts more function declarations and their prototypes
+        without parameters from () to the (void) form
 
-          - attached patch changes all of the conditional
-            i.e. _AuConst definitions to only list const in the
-            externally visible header files. This is to preserve
-            compatibility if someone uses these definitions while
-            using the libaudio library.
+      - attached patch changes all of the conditional i.e. _AuConst
+        definitions to only list const in the externally visible
+        header files. This is to preserve compatibility if someone
+        uses these definitions while using the libaudio library.
 
-            [JET] The use of AuConst is deprecated (and is probably
-            not being used by anyone anyway).
+        [JET] The use of AuConst is deprecated (and is probably not
+              being used by anyone anyway).
 
-          - removes the defined VENDOR_STRING and VENDOR_RELEASE from
-            server/include/site.h as they aren't used in the 3 files
-            including site.h.  Additionally the inclusions of site.h
-            was removed from server/dia/main.c as none of its defines
-            is used in main.c
+      - removes the defined VENDOR_STRING and VENDOR_RELEASE from
+        server/include/site.h as they aren't used in the 3 files
+        including site.h.  Additionally the inclusions of site.h was
+        removed from server/dia/main.c as none of its defines is used
+        in main.c
 
-          - removes the 2 unused functions:
+      - removes the 2 unused functions:
 
-            - server/dia/dispatch.c: void UpdateCurrentTime()
-            - server/dia/dixutils.c: TimeStamp ClientTimeToServerTime
+        - server/dia/dispatch.c: void UpdateCurrentTime()
+        - server/dia/dixutils.c: TimeStamp ClientTimeToServerTime
 
-            and it changes one more occurence of () to (void).
+          and it changes one more occurence of () to (void).
 
-          - corrects some function declarations by changing () to
-            (void)
+      - corrects some function declarations by changing () to (void)
 
-          - removes some unsued variables in lib/audio/nameaddr.c and
-            and unused function in server/os/utils.c
+      - removes some unsued variables in lib/audio/nameaddr.c and
+        and unused function in server/os/utils.c
 
-          - removed some old (and stupid) debug code for AIX: in
-            server/os/utils.c there is some code to redirect error
-            logging from stderr to and file in tmp on AIXV3. As
-            OpenDebug isn't called anywhere this is broken when AIXV3
-            is defined. Additionally this logfile is fixed in /tmp
-            which permissions 00777
+      - removed some old (and stupid) debug code for AIX: in
+        server/os/utils.c there is some code to redirect error logging
+        from stderr to and file in tmp on AIXV3. As OpenDebug isn't
+        called anywhere this is broken when AIXV3 is
+        defined. Additionally this logfile is fixed in /tmp which
+        permissions 00777
 
-          - removed the declaration of FreeResource from the opaque.h
-            header file. All files which include opaque.h don't use
-            this function and this declaration is copied from
-            resource.h
+      - removed the declaration of FreeResource from the opaque.h
+        header file. All files which include opaque.h don't use this
+        function and this declaration is copied from resource.h
 
-          - corrects several prototypes in resource.[ch] to match the
-            actual function definitions inside resource.c
+      - corrects several prototypes in resource.[ch] to match the
+        actual function definitions inside resource.c
 
-          - patch that modifies the two users of ostruct.h to directly
-            include os.h (which includes misc.h) and removes the
-            osstruct.h line in config/filelist. If an additional "svn
-            remove server/include/osstruct.h" is used we can get rid
-            of osstruct.h completely.
+      - patch that modifies the two users of ostruct.h to directly
+        include os.h (which includes misc.h) and removes the
+        osstruct.h line in config/filelist. If an additional "svn
+        remove server/include/osstruct.h" is used we can get rid of
+        osstruct.h completely.
 
-          - removes servermd.h. removes the inclusion of servermd.h in
-            3 files and its reference in 'config/filelist'.
+      - removes servermd.h. removes the inclusion of servermd.h in 3
+        files and its reference in 'config/filelist'.
 
-          - clean up several of the client programs. Mostly adding
-            const to parameter/variable declarations. Additionally an
-            unsused variable was removed and some prototype in
-            audemo.c were fixed.
+      - clean up several of the client programs. Mostly adding const
+        to parameter/variable declarations. Additionally an unsused
+        variable was removed and some prototype in audemo.c were
+        fixed.
 
-          - remove some unused variables
+      - remove some unused variables
 
-          - remove server/include/miscstruct.h
+      - remove server/include/miscstruct.h
 
-          - various include file cleanups - removing unused
-            variables/structures, etc left over from X11.
+      - various include file cleanups - removing unused
+        variables/structures, etc left over from X11.
 
-          - removing old 'const' determination, correcting some proper
-            uses of const.  'const' is expected to be supported by
-            your compiler.
+      - removing old 'const' determination, correcting some proper
+        uses of const.  'const' is expected to be supported by your
+        compiler.
 
-          - ANSIfication of various NAS components.
+      - ANSIfication of various NAS components.
 
-          - remove unused portion of X11 server components (fonts,
-            GC's, etc).
+      - remove unused portion of X11 server components (fonts, GC's,
+        etc).
 
-        - applied patches from Erik Auerswald:
+    - applied patches from Erik Auerswald:
 
-          - Add patch adding a proper 'reset' action to
-            contrib/rc/nasd.
+      - Add patch adding a proper 'reset' action to contrib/rc/nasd.
 
-          - a patch that:
+      - a patch that:
 
-            Adds support for a different mixer for the input device to
-            the voxware server. Without this patch the mixer device
-            specified in the input section of the config file is not
-            used.
+        Adds support for a different mixer for the input device to the
+        voxware server. Without this patch the mixer device specified
+        in the input section of the config file is not used.
 
-            To use the same mixer for input and output just specify
-            the same device in the input- and output-section of the
-            config file. The empty string "" can be used to specify no
-            mixer device for the input- or output-section.  This is
-            documented in the nasd.conf man page.
+        To use the same mixer for input and output just specify the
+        same device in the input- and output-section of the config
+        file. The empty string "" can be used to specify no mixer
+        device for the input- or output-section.  This is documented
+        in the nasd.conf man page.
 
-            The outputsection keyword is added to the nasd.conf man
-            page. 
+        The outputsection keyword is added to the nasd.conf man page.
 
-            fixed a bug in the support of two devices: If two devices
-            are used, and the sample rate of the input device can be
-            changed, the wrong sample size would be set by
-            openDevice().
+        fixed a bug in the support of two devices: If two devices are
+        used, and the sample rate of the input device can be changed,
+        the wrong sample size would be set by openDevice().
 
-            remove the unused "stereodevs" variable.
+        remove the unused "stereodevs" variable.
 
-            NOTE: Prior to this patch, the mixer device parameter for
-                  the input section was completely ignored.  The
-                  default value for this ignored parameter was
-                  "/dev/mixer1".
+        NOTE: Prior to this patch, the mixer device parameter for the
+              input section was completely ignored.  The default value
+              for this ignored parameter was "/dev/mixer1".
 
-                  With this patch, this parameter is honored.  If your
-                  configuration depends on the input mixer being the
-                  same as the output mixer, you will need to edit your
-                  /etc/nas/nasd.conf and set the mixer parameter in
-                  the inputsection to '/dev/mixer', or to whatever
-                  mixer device your outputsection is using.
+              With this patch, this parameter is honored.  If your
+              configuration depends on the input mixer being the same
+              as the output mixer, you will need to edit your
+              /etc/nas/nasd.conf and set the mixer parameter in the
+              inputsection to '/dev/mixer', or to whatever mixer
+              device your outputsection is using.
 
-                  If your system contains a /dev/mixer1 device (the
-                  default input mixer device), nasd will now use it.
-                  This is a good thing. :)
+              If your system contains a /dev/mixer1 device (the
+              default input mixer device), nasd will now use it.  This
+              is a good thing. :)
 
-          - preserve configuration of input device in the voxware
-            server when ReleaseDevice is on, and no flow is active. 
+      - preserve configuration of input device in the voxware server
+        when ReleaseDevice is on, and no flow is active.
 
-          - document nasd '-V' option in the man page
+      - document nasd '-V' option in the man page
 
-          - opening the mixer device should be allowed to fail
-            according to
-            http://radscan.com/nas/nas-ml/msg01121.html. But right now
-            it may only fail on startup, not when re-opening the audio
-            device. The attached patch corrects this issue.
+      - opening the mixer device should be allowed to fail according
+        to http://radscan.com/nas/nas-ml/msg01121.html. But right now
+        it may only fail on startup, not when re-opening the audio
+        device. The attached patch corrects this issue.
 
-          - adding an option to aupanel to specify the initially
-            controlled device.
+      - adding an option to aupanel to specify the initially
+        controlled device.
 
-          - keeping gain and input mode changes consistent between
-            voxware server and mixer if possible.
+      - keeping gain and input mode changes consistent between voxware
+        server and mixer if possible.
 
-          - changing recording level controls of the voxware server
-            to use IGain or RecLev when available and select only
-            the specified recording source.
+      - changing recording level controls of the voxware server to use
+        IGain or RecLev when available and select only the specified
+        recording source.
 
-          - fixing MixerInit option of the voxware server.
+      - fixing MixerInit option of the voxware server.
 
-          - Adding a KeepMixer option (on by default) that causes NAS
-            to always keep the mixer device open so it can track
-            external changes to mixer settings.
+      - Adding a KeepMixer option (on by default) that causes NAS to
+        always keep the mixer device open so it can track external
+        changes to mixer settings.
 
-          - patch adding ReInitMixer option that init's the mixer to
-            defaults every time nasd re-opens the audio device.
+      - patch adding ReInitMixer option that init's the mixer to
+        defaults every time nasd re-opens the audio device.
 
-          - patches ANSI'fying the nas clients 
+      - patches ANSI'fying the nas clients 
 
-          - extending the gainScale functionality to apply to the
-            input gain as well.
+      - extending the gainScale functionality to apply to the input
+        gain as well.
 
 
 Version 1.8 (stable) 06/03/2006
