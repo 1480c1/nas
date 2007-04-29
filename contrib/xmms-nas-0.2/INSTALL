@@ -1,0 +1,22 @@
+ xmms-nas - Network Audio System input plugin for X MultiMedia System (xmms)
+<***************************************************************************>
+
+ Installing xmms-nas
+<*******************>
+
+Simply run the following commands:
+
+./configure
+make
+make install
+
+(If the configure script is not present, run
+ aclocal && automake && autoconf)
+
+ Notes
+<*****>
+
+The configure script tries to guess the correct location
+to install to by looking for the xmms binary.  If you get
+a warning because it guesses wrong, you'll have to set the
+correct path by giving ./configure the --libdir=<path> option.

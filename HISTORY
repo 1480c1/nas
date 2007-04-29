@@ -1,5 +1,12 @@
 $Id$
 
+???
+
+4/29/2005
+
+  - add Willem Monsuwe's xmms NAS plugin to the repository under
+    contrib/.  Not shipped as part of the src tarball.
+
 Version 1.9 (stable) 04/07/2007
 
     - stable 1.9 release.  No code changes (other than RELEASE) since

@@ -1,0 +1,10 @@
+ xmms-nas - Network Audio System output plugin for X MultiMedia System (xmms)
+<****************************************************************************>
+
+Willem Monsuwe <willem@stack.nl>
+
+
+ Credits
+<*******>
+
+Network Computing Devices, Inc.  for the nas library (and the horrible API)

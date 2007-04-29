@@ -1,0 +1,7 @@
+ xmms-nas - Network Audio System input plugin for X MultiMedia System (xmms)
+<***************************************************************************>
+
+- I need a more reliable way of measuring the current playing time.
+- Find out why the low water mark doesn't always seem to work.
+- Stop xmms from crashing when something goes wrong with the driver
+  (The library insists on exiting after a fatal error)
