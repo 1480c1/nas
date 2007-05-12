@@ -467,9 +467,9 @@ _execute_set_linemode (AuServer *aud, int argc, char **argv, AuPointer data)
 
 
 
-static char *_lower_word (register char *s)
+static char *_lower_word (char *s)
 {
-    register char *cp;
+    char *cp;
 
     for (cp = s; *cp; cp++) {
 	if (isupper(*cp))
@@ -479,7 +479,7 @@ static char *_lower_word (register char *s)
 }
 
 
-static AuInt32 _parse_long (register char *s, register AuBool *ishexp)
+static AuInt32 _parse_long (char *s, AuBool *ishexp)
 {
     const char *fmt = "%ld";
     AuInt32 val = 0;

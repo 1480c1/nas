@@ -376,7 +376,7 @@ ProcessCommandLine(int argc, char *argv[])
 void *
 Xalloc(unsigned long amount)
 {
-    register pointer ptr;
+    pointer ptr;
 
     if ((long) amount <= 0)
         return NULL;
@@ -414,7 +414,7 @@ Xcalloc(unsigned long amount)
  *****************/
 
 void *
-Xrealloc(register pointer ptr, unsigned long amount)
+Xrealloc(pointer ptr, unsigned long amount)
 {
 
 #ifdef MEMBUG
@@ -445,7 +445,7 @@ Xrealloc(register pointer ptr, unsigned long amount)
  *****************/
 
 void
-Xfree(register pointer ptr)
+Xfree(pointer ptr)
 {
     if (ptr)
         free((char *) ptr);
@@ -457,7 +457,7 @@ Xfree(register pointer ptr)
 void *
 debug_Xalloc(char *file, int line, unsigned long amount)
 {
-    register pointer ptr;
+    pointer ptr;
 
     if ((long) amount <= 0)
         return NULL;
@@ -493,7 +493,7 @@ unsigned long amount;
  *****************/
 
 void *
-debug_Xrealloc(char *file, int line, register pointer ptr,
+debug_Xrealloc(char *file, int line, pointer ptr,
                unsigned long amount)
 {
     if ((long) amount <= 0) {
@@ -519,7 +519,7 @@ debug_Xrealloc(char *file, int line, register pointer ptr,
  *****************/
 
 void
-debug_Xfree(char *file, int line, register pointer ptr)
+debug_Xfree(char *file, int line, pointer ptr)
 {
     if (ptr)
         debug_free(file, line, (char *) ptr);

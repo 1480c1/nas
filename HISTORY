@@ -2,6 +2,14 @@ $Id$
 
 ???
 
+5/11/2007
+
+  - remove useless 'register' declarations
+
+  - convert Swap32Write for K&R to ANSI.  Also, define it's buffer
+    pointer as AuUint32 rather than 'long', which is wrong, but works
+    accidentally.
+
 4/29/2005
 
   - add Willem Monsuwe's xmms NAS plugin to the repository under

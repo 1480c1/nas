@@ -35,7 +35,7 @@ _AuWriteElement(
                 AuStatus       *ret_status
                 )
 {
-    register auWriteElementReq *req;
+    auWriteElementReq *req;
 
     _AuLockServer();
     _AuGetReq(WriteElement, req, aud);

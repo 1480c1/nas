@@ -31,7 +31,7 @@ AuGetDeviceAttributes(
                       AuStatus       *ret_status
                       )
 {
-    register auResourceReq *req;
+    auResourceReq *req;
     auGetDeviceAttributesReply rep;
     auDeviceAttributes a;
     AuDeviceAttributes *attr;

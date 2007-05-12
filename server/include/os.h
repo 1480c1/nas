@@ -141,15 +141,15 @@ char *FindConfigFile();
 void FlushAllOutput();
 void FlushIfCriticalOutputPending();
 #ifndef CAHILL_MALLOC
-void Xfree(register pointer ptr);
+void Xfree(pointer ptr);
 void *Xalloc(unsigned long size);
 void *Xcalloc(unsigned long amount);
-void *Xrealloc(register pointer ptr, unsigned long amount);
+void *Xrealloc(pointer ptr, unsigned long amount);
 #else
-void debug_Xfree(char *file, int line, register pointer ptr);
+void debug_Xfree(char *file, int line, pointer ptr);
 void *debug_Xalloc(char *file, int line, unsigned long amount);
 void *debug_Xcalloc(char *file, int line, unsigned long amount);
-void *debug_Xrealloc(char *file, int line, register pointer ptr,
+void *debug_Xrealloc(char *file, int line, pointer ptr,
                      unsigned long amount);
 #endif
 long GetTimeInMillis();

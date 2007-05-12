@@ -30,7 +30,7 @@ AuCreateFlow(
              AuStatus *ret_status
              )
 {
-    register auResourceReq *req;
+    auResourceReq *req;
     AuFlowID        flow = AuAllocID(aud);
 
     if (ret_status)

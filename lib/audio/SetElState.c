@@ -32,7 +32,7 @@ AuSetElementStates(
                    AuStatus       *ret_status
                    )
 {
-    register auSetElementStatesReq *req;
+    auSetElementStatesReq *req;
     auElementState s;
     int i;
 

@@ -54,9 +54,9 @@ SOFTWARE.
 /* Byte swap a list of longs */
 
 void
-SwapLongs(register long *list, register unsigned long count)
+SwapLongs(long *list, unsigned long count)
 {
-    register char n;
+    char n;
 
     while (count >= 8) {
         swapl(list + 0, n);
@@ -81,9 +81,9 @@ SwapLongs(register long *list, register unsigned long count)
 /* Byte swap a list of shorts */
 
 void
-SwapShorts(register short *list, register unsigned long count)
+SwapShorts(short *list, unsigned long count)
 {
-    register char n;
+    char n;
 
     while (count >= 16) {
         swaps(list + 0, n);
@@ -116,7 +116,7 @@ SwapShorts(register short *list, register unsigned long count)
 void
 SwapConnClientPrefix(auConnClientPrefix * pCCP)
 {
-    register char n;
+    char n;
 
     swaps(&pCCP->majorVersion, n);
     swaps(&pCCP->minorVersion, n);

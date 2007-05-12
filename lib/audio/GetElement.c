@@ -33,7 +33,7 @@ AuGetElements(
               AuStatus       *ret_status
               )
 {
-    register auResourceReq *req;
+    auResourceReq *req;
     auGetElementsReply rep;
     AuElement      *elements;
     int             i;

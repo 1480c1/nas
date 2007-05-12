@@ -44,12 +44,12 @@
 
 void 
 AuSync(
-       register AuServer *aud,
+       AuServer *aud,
        AuBool          discard
        )
 {
     auGetCloseDownModeReply rep;
-    register auReq *req;
+    auReq *req;
 
     _AuLockServer();
 

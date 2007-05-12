@@ -128,7 +128,7 @@ alloca(size)                    /* returns pointer to storage */
 unsigned size;                  /* # bytes to allocate */
 {
     auto char probe;            /* probes stack depth: */
-    register char *depth = &probe;
+    char *depth = &probe;
 
 #if STACK_DIRECTION == 0
     if (STACK_DIR == 0)         /* unknown growth direction */
@@ -139,12 +139,12 @@ unsigned size;                  /* # bytes to allocate */
        was allocated from deeper in the stack than currently. */
 
     {
-        register header *hp;    /* traverses linked list */
+        header *hp;    /* traverses linked list */
 
         for (hp = last_alloca_header; hp != NULL;)
             if (STACK_DIR > 0 && hp->h.deep > depth
                 || STACK_DIR < 0 && hp->h.deep < depth) {
-                register header *np = hp->h.next;
+                header *np = hp->h.next;
 
                 Xfree((pointer) hp);    /* collect garbage */
 
@@ -161,7 +161,7 @@ unsigned size;                  /* # bytes to allocate */
     /* Allocate combined header + user data storage. */
 
     {
-        register pointer new = Xalloc(sizeof(header) + size);
+        pointer new = Xalloc(sizeof(header) + size);
         if (!new)
             return NULL;
         /* address of header */

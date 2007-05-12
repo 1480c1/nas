@@ -266,9 +266,9 @@ static NameTable _nt_linemodes[] = {
 
 #if TEXT_ALIGNMENT == TA_INDIVIDUAL
 #define ROUNDUP(n) ((((n) + 7) >> 3) << 3)
-static int _table_maxlen (register NameTable *tab, register int nents)
+static int _table_maxlen (NameTable *tab, int nents)
 {
-    register int m = 0;
+    int m = 0;
 
     while (nents > 0) {
 	if (tab->len > m)
@@ -284,7 +284,7 @@ static int _table_maxlen (register NameTable *tab, register int nents)
 #define ALL_COLUMN_WIDTH 24
 #endif
 
-static NameTable *_lookup_name (register NameTable *tab, register int nents, register int val, register AuBool isbit)
+static NameTable *_lookup_name (NameTable *tab, int nents, int val, AuBool isbit)
 /* isbit: use bit compare instead of equal? */
 {
     static NameTable nttmp;
@@ -402,9 +402,9 @@ static int _get_access (AuServer *aud, int i, AuPointer p)
     return (1 << i) & AuCommonAccess ((AuCommonPart *) p);
 }
 
-static void print_comp (AuServer *aud, register AuCommonPart *c)
+static void print_comp (AuServer *aud, AuCommonPart *c)
 {
-    register AuMask vmask = AuCommonValueMask (c);
+    AuMask vmask = AuCommonValueMask (c);
 
     if (vmask & AuCompCommonIDMask)
 	printf ("%s    ID:             0x%lx\n", INDENTPAD,

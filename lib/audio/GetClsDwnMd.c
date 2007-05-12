@@ -31,7 +31,7 @@ AuGetCloseDownMode(
                    )
 {
     auGetCloseDownModeReply rep;
-    register auReq *req;
+    auReq *req;
 
     _AuLockServer();
 

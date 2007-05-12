@@ -159,16 +159,16 @@ ReadRequestFromClient(client)
 ClientPtr client;
 {
     OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register ConnectionInputPtr oci = oc->input;
+    ConnectionInputPtr oci = oc->input;
     int fd = oc->fd;
-    register int gotnow, needed;
+    int gotnow, needed;
     int result;
-    register auReq *request;
+    auReq *request;
     Bool need_header;
 
     if (AvailableInput) {
         if (AvailableInput != oc) {
-            register ConnectionInputPtr aci = AvailableInput->input;
+            ConnectionInputPtr aci = AvailableInput->input;
             if (aci->size > BUFWATERMARK) {
                 xfree(aci->buffer);
                 xfree(aci);
@@ -306,14 +306,14 @@ char *data;
 int count;
 {
     OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register ConnectionInputPtr oci = oc->input;
+    ConnectionInputPtr oci = oc->input;
     int fd = oc->fd;
-    register auReq *request;
-    register int gotnow, moveup;
+    auReq *request;
+    int gotnow, moveup;
 
     if (AvailableInput) {
         if (AvailableInput != oc) {
-            register ConnectionInputPtr aci = AvailableInput->input;
+            ConnectionInputPtr aci = AvailableInput->input;
             if (aci->size > BUFWATERMARK) {
                 xfree(aci->buffer);
                 xfree(aci);
@@ -374,9 +374,9 @@ ResetCurrentRequest(client)
 ClientPtr client;
 {
     OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register ConnectionInputPtr oci = oc->input;
+    ConnectionInputPtr oci = oc->input;
     int fd = oc->fd;
-    register auReq *request;
+    auReq *request;
     int gotnow, needed;
 
     if (AvailableInput == oc)
@@ -413,7 +413,7 @@ OsCommPtr oc;
 char *extraBuf;
 int extraCount;                 /* do not modify... returned below */
 {
-    register ConnectionOutputPtr oco = oc->output;
+    ConnectionOutputPtr oco = oc->output;
     int connection = oc->fd;
     struct iovec iov[3];
     char padBuffer[3];
@@ -574,9 +574,9 @@ int extraCount;                 /* do not modify... returned below */
 void
 FlushAllOutput()
 {
-    register int index, base, mask;
+    int index, base, mask;
     OsCommPtr oc;
-    register ClientPtr client;
+    ClientPtr client;
 
     if (!NewOutputPending)
         return;
@@ -644,7 +644,7 @@ char *buf;
 int count;
 {
     OsCommPtr oc = (OsCommPtr) who->osPrivate;
-    register ConnectionOutputPtr oco = oc->output;
+    ConnectionOutputPtr oco = oc->output;
     int padBytes;
 
     if (!count)
@@ -683,7 +683,7 @@ int count;
 static ConnectionInputPtr
 AllocateInputBuffer(void)
 {
-    register ConnectionInputPtr oci;
+    ConnectionInputPtr oci;
 
     oci = (ConnectionInputPtr) xalloc(sizeof(ConnectionInput));
     if (!oci)
@@ -703,7 +703,7 @@ AllocateInputBuffer(void)
 static ConnectionOutputPtr
 AllocateOutputBuffer(void)
 {
-    register ConnectionOutputPtr oco;
+    ConnectionOutputPtr oco;
 
     oco = (ConnectionOutputPtr) xalloc(sizeof(ConnectionOutput));
     if (!oco)
@@ -722,8 +722,8 @@ void
 FreeOsBuffers(oc)
 OsCommPtr oc;
 {
-    register ConnectionInputPtr oci;
-    register ConnectionOutputPtr oco;
+    ConnectionInputPtr oci;
+    ConnectionOutputPtr oco;
 
 #ifndef _MINIX
     if (AvailableInput == oc)
@@ -781,8 +781,8 @@ OsCommPtr oc;
 void
 ResetOsBuffers()
 {
-    register ConnectionInputPtr oci;
-    register ConnectionOutputPtr oco;
+    ConnectionInputPtr oci;
+    ConnectionOutputPtr oco;
 
     while (oci = FreeInputs) {
         FreeInputs = oci->next;
@@ -825,10 +825,10 @@ int
 ReadRequestFromClient(client)
 ClientPtr client;
 {
-    register OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register xReq *request;
-    register int havenow, needed;
-    register char *p;
+    OsCommPtr oc = (OsCommPtr) client->osPrivate;
+    xReq *request;
+    int havenow, needed;
+    char *p;
     int stat, n, rv;
 
     oc->status &= ~REQ_PUSHBACK;
@@ -938,7 +938,7 @@ ClientPtr client;
 char *data;
 int count;
 {
-    register OsCommPtr oc = (OsCommPtr) client->osPrivate;
+    OsCommPtr oc = (OsCommPtr) client->osPrivate;
 
     oc->status |= REQ_PUSHBACK;
     WakeUpMainThread();
@@ -969,8 +969,8 @@ int count;
 ResetCurrentRequest(client)
 ClientPtr client;
 {
-    register OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register xReq *request;
+    OsCommPtr oc = (OsCommPtr) client->osPrivate;
+    xReq *request;
 
     oc->status |= REQ_PUSHBACK;
     WakeUpMainThread();
@@ -1007,7 +1007,7 @@ ClientPtr who;
 char *buf;
 int count;
 {
-    register OsCommPtr oc = (OsCommPtr) who->osPrivate;
+    OsCommPtr oc = (OsCommPtr) who->osPrivate;
     int padBytes;
 
     if (count == 0)
@@ -1127,11 +1127,11 @@ ReadRequestFromClient(client)
 ClientPtr client;
 {
     OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register ConnectionInputPtr oci, oci_r;
+    ConnectionInputPtr oci, oci_r;
     int fd = oc->fd;
-    register int gotnow, gotnow_r, needed;
+    int gotnow, gotnow_r, needed;
     int result;
-    register xReq *request;
+    xReq *request;
 
     if (GrabInProgress && !ASIO_FD_ISSET(fd, ASIO_READ, &GrabFdSet)) {
         YieldControl();
@@ -1346,9 +1346,9 @@ char *data;
 int count;
 {
     OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register ConnectionInputPtr oci;
+    ConnectionInputPtr oci;
     int fd = oc->fd;
-    register int gotnow, moveup;
+    int gotnow, moveup;
 
     oci = oc->input;
     if (oci) {
@@ -1394,7 +1394,7 @@ ResetCurrentRequest(client)
 ClientPtr client;
 {
     OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    register ConnectionInputPtr oci;
+    ConnectionInputPtr oci;
     int fd = oc->fd;
 
     oci = oc->inputFake;
@@ -1415,7 +1415,7 @@ OsCommPtr oc;
 char *extraBuf;
 int extraCount;                 /* do not modify... returned below */
 {
-    register ConnectionOutputPtr oco;
+    ConnectionOutputPtr oco;
     int fd = oc->fd;
     long padsize;
     char padBuffer[3];
@@ -1523,7 +1523,7 @@ void
 FlushAllOutput()
 {
     int i, index;
-    register ClientPtr client;
+    ClientPtr client;
     OsCommPtr oc;
 
     if (!NewOutputPending)
@@ -1562,7 +1562,7 @@ int count;
 char *buf;
 {
     OsCommPtr oc = (OsCommPtr) who->osPrivate;
-    register ConnectionOutputPtr oco;
+    ConnectionOutputPtr oco;
     int padBytes;
 
     if (!count)

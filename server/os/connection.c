@@ -1348,7 +1348,7 @@ ClientPtr client;
 char *auth_proto, *auth_string;
 unsigned short proto_n, string_n;
 {
-    register OsCommPtr priv;
+    OsCommPtr priv;
     union {
         struct sockaddr sa;
 #ifdef UNIXCONN
@@ -1414,11 +1414,11 @@ pointer closure;
 {
     long readyconnections;      /* mask of listeners that are ready */
     int curconn;                /* fd of listener that's ready */
-    register int newconn;       /* fd of new client */
+    int newconn;       /* fd of new client */
     long connect_time;
-    register int i;
-    register ClientPtr client;
-    register OsCommPtr oc;
+    int i;
+    ClientPtr client;
+    OsCommPtr oc;
 
 #ifdef TCP_NODELAY
     union {
@@ -1538,7 +1538,7 @@ pointer closure;
  ************/
 
 static void
-ErrorConnMax(register int fd)
+ErrorConnMax(int fd)
 {
     auConnSetupPrefix csp;
     char pad[3];
@@ -1619,7 +1619,7 @@ ErrorConnMax(register int fd)
 #ifndef _MINIX
 
 static void
-CloseDownFileDescriptor(register OsCommPtr oc)
+CloseDownFileDescriptor(OsCommPtr oc)
 {
     int connection = oc->fd;
 
@@ -1658,7 +1658,7 @@ CheckConnections()
 {
     long mask;
     long tmask[mskcnt];
-    register int curclient, curoff;
+    int curclient, curoff;
     int i;
     struct timeval notime;
     int r;
@@ -1871,7 +1871,7 @@ ClientPtr client;
 char *auth_proto, *auth_string;
 unsigned short proto_n, string_n;
 {
-    register OsCommPtr priv;
+    OsCommPtr priv;
     AuID auth_id;
     int len;
     int r;
@@ -1921,10 +1921,10 @@ ClientPtr clientUnused;
 pointer closure;
 {
     struct NewConnection *newConnP;
-    register int newconn;       /* fd of new client */
+    int newconn;       /* fd of new client */
     long connect_time;
-    register ClientPtr client;
-    register OsCommPtr oc;
+    ClientPtr client;
+    OsCommPtr oc;
     int i;
 
     newConnP = (struct NewConnection *) closure;
@@ -1989,7 +1989,7 @@ pointer closure;
 }
 
 static void
-CloseDownFileDescriptor(register OsCommPtr oc)
+CloseDownFileDescriptor(OsCommPtr oc)
 {
     int connection = oc->fd;
     int i;
@@ -2272,7 +2272,7 @@ ClientPtr client;
 char *auth_proto, *auth_string;
 unsigned short proto_n, string_n;
 {
-    register OsCommPtr priv;
+    OsCommPtr priv;
     AuID auth_id;
 
     auth_id = CheckAuthorization(proto_n, auth_proto,
@@ -2319,9 +2319,9 @@ EstablishNewConnections(clientUnused, closure)
 ClientPtr clientUnused;
 pointer closure;
 {
-    register ClientPtr newClient;
-    register OsCommPtr oc;
-    register int i;
+    ClientPtr newClient;
+    OsCommPtr oc;
+    int i;
     struct vc *vc;
     int index;
 
@@ -2377,7 +2377,7 @@ ClientPtr client;
 CloseDownConnection(client)
 ClientPtr client;
 {
-    register OsCommPtr oc;
+    OsCommPtr oc;
 
     dbprintf(("Connection closed\n"));
     oc = (OsCommPtr) client->osPrivate;
@@ -2645,7 +2645,7 @@ AmoebaConnectorThread()
 static void
 TcpIpReaderSignalCatcher(signum sig, thread_ustate * us, char *extra)
 {
-    register OsCommPtr oc = (OsCommPtr) extra;
+    OsCommPtr oc = (OsCommPtr) extra;
 
     dbprintf(("TcpIpReaderSignalCatcher(%d), number %d\n", sig,
               oc->number));
@@ -2663,7 +2663,7 @@ TcpIpReaderSignalCatcher(signum sig, thread_ustate * us, char *extra)
 static void
 TcpIpReaderThread(void *argptr, argsize argsize)
 {
-    register OsCommPtr oc;
+    OsCommPtr oc;
 
     if (argsize != sizeof(OsCommPtr))
         FatalError
@@ -2912,7 +2912,7 @@ int iovcnt;
         len = iov->iov_len;
         base = iov->iov_base;
         while (len > 0) {
-            register int nbytes;
+            int nbytes;
 
             nbytes = write(fd, base, len);
             if (nbytes < 0 && total == 0)

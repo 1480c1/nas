@@ -154,7 +154,7 @@ ClientResourceRec clientTable[MAXCLIENTS];
 Bool
 InitClientResources(ClientPtr client)
 {
-    register int i, j;
+    int i, j;
 
     if (client == serverClient) {
         lastResourceType = RT_LASTPREDEF;
@@ -192,7 +192,7 @@ InitClientResources(ClientPtr client)
 }
 
 static int
-Hash(int client, register AuID id)
+Hash(int client, AuID id)
 {
     id &= RESOURCE_ID_MASK;
     switch (clientTable[client].hashsize) {
@@ -213,10 +213,10 @@ Hash(int client, register AuID id)
 }
 
 static AuID
-AvailableID(register int client, register AuID id, register AuID maxid,
-            register AuID goodid)
+AvailableID(int client, AuID id, AuID maxid,
+            AuID goodid)
 {
-    register ResourcePtr res;
+    ResourcePtr res;
 
     if ((goodid >= id) && (goodid <= maxid))
         return goodid;
@@ -239,12 +239,12 @@ AvailableID(register int client, register AuID id, register AuID maxid,
  */
 
 AuID
-FakeClientID(register int client)
+FakeClientID(int client)
 {
-    register AuID id, maxid;
-    register ResourcePtr *resp;
-    register ResourcePtr res;
-    register int i;
+    AuID id, maxid;
+    ResourcePtr *resp;
+    ResourcePtr res;
+    int i;
     AuID goodid;
 
     id = clientTable[client].fakeID++;
@@ -284,8 +284,8 @@ Bool
 AddResource(AuID id, RESTYPE type, pointer value)
 {
     int client;
-    register ClientResourceRec *rrec;
-    register ResourcePtr res, *head;
+    ClientResourceRec *rrec;
+    ResourcePtr res, *head;
 
     client = CLIENT_ID(id);
     rrec = &clientTable[client];
@@ -329,10 +329,10 @@ AddResource(AuID id, RESTYPE type, pointer value)
 static void
 RebuildTable(int client)
 {
-    register int j;
-    register ResourcePtr res, next;
+    int j;
+    ResourcePtr res, next;
     ResourcePtr **tails, *resources;
-    register ResourcePtr **tptr, *rptr;
+    ResourcePtr **tptr, *rptr;
 
     /*
      * For now, preserve insertion order, since some ddx layers depend
@@ -373,9 +373,9 @@ void
 FreeResource(AuID id, RESTYPE skipDeleteFuncType)
 {
     int cid;
-    register ResourcePtr res;
-    register ResourcePtr *prev, *head;
-    register int *eltptr;
+    ResourcePtr res;
+    ResourcePtr *prev, *head;
+    int *eltptr;
     int elements;
     Bool gotOne = FALSE;
 
@@ -408,8 +408,8 @@ void
 FreeResourceByType(AuID id, RESTYPE type, Bool skipFree)
 {
     int cid;
-    register ResourcePtr res;
-    register ResourcePtr *prev, *head;
+    ResourcePtr res;
+    ResourcePtr *prev, *head;
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
         head = &clientTable[cid].resources[Hash(cid, id)];
@@ -439,7 +439,7 @@ Bool
 ChangeResourceValue(AuID id, RESTYPE rtype, pointer value)
 {
     int cid;
-    register ResourcePtr res;
+    ResourcePtr res;
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
         res = clientTable[cid].resources[Hash(cid, id)];
@@ -456,8 +456,8 @@ ChangeResourceValue(AuID id, RESTYPE rtype, pointer value)
 void
 FreeClientResources(ClientPtr client)
 {
-    register ResourcePtr *resources;
-    register ResourcePtr this;
+    ResourcePtr *resources;
+    ResourcePtr this;
     int j;
 
     /* This routine shouldn't be called with a null client, but just in
@@ -504,7 +504,7 @@ FreeAllResources(void)
 }
 
 Bool
-LegalNewID(AuID id, register ClientPtr client)
+LegalNewID(AuID id, ClientPtr client)
 {
     return ((client->clientAsMask == (id & ~RESOURCE_ID_MASK)) &&
             ((clientTable[client->index].expectID <= id) ||
@@ -518,7 +518,7 @@ pointer
 LookupIDByType(AuID id, RESTYPE rtype)
 {
     int cid;
-    register ResourcePtr res;
+    ResourcePtr res;
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
         res = clientTable[cid].resources[Hash(cid, id)];
@@ -538,7 +538,7 @@ pointer
 LookupIDByClass(AuID id, RESTYPE classes)
 {
     int cid;
-    register ResourcePtr res;
+    ResourcePtr res;
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets) {
         res = clientTable[cid].resources[Hash(cid, id)];

@@ -23,7 +23,7 @@
 #include <X11/Xos.h>
 
 static
-binaryEqual (register const char *a, register const char *b, int len)
+binaryEqual (const char *a, const char *b, int len)
 {
   while (len--)
     if (*a++ != *b++)

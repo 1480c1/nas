@@ -377,7 +377,7 @@ int
 WaitForSomething(pClientsReady)
 int *pClientsReady;
 {
-    register int i, wt, nt;
+    int i, wt, nt;
     struct timeval *wtp;
     long alwaysCheckForInput[2];
     int nready;
@@ -437,8 +437,8 @@ int *pClientsReady;
          */
         for (i = 0, nready = 0; i < maxClient; i++) {
             if (Clients[i] && Clients[i]->osPrivate) {
-                register OsCommPtr oc = (OsCommPtr) Clients[i]->osPrivate;
-                register int n;
+                OsCommPtr oc = (OsCommPtr) Clients[i]->osPrivate;
+                int n;
 
                 if (oc->status & CONN_KILLED) {
                     CloseDownClient(Clients[i]);

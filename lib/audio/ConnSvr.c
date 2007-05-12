@@ -149,7 +149,7 @@ GetAuthorization(
                  int *auth_datalenp			/* RETURN */
                  );
 
-static char *copystring (register const char *src, int len)
+static char *copystring (const char *src, int len)
 {
     char *dst = Aumalloc (len + 1);
 
@@ -350,8 +350,8 @@ int _AuConnectServer (
       if (*p == '/') {
 	    int len = (p - server_name);
 	    char tmptransport[41];
-	    register const char *src;
-	    register char *dst;
+	    const char *src;
+	    char *dst;
 
 	    if (len >= sizeof tmptransport)    /* too AuInt32 */
 	      goto bad;
@@ -1617,7 +1617,7 @@ MakeAmConnection(
 int _AuDisconnectServer (int server)
 {
 #ifdef AMOEBA
-    register XAmChanDesc *chandesc;
+    XAmChanDesc *chandesc;
 
     chandesc = XAmFdToChanDesc(server);
     if (chandesc->type == ACDT_TCPIP) {

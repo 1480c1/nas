@@ -50,9 +50,9 @@ without express or implied warranty.
  */
 
 void
-AuCloseServer (register AuServer *aud)
+AuCloseServer (AuServer *aud)
 {
-	register _AuExtension *ext;
+	_AuExtension *ext;
 
 	_AuFreeBucketCache(aud);
 

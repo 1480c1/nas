@@ -343,7 +343,7 @@ fprintf(stderr, "Trying to get the binding address for service %s on %s\n",
 #endif
 		if( strcmp(netconfigp->nc_netid, "starlan") == 0 )
 		{
-			register char *from, *to;
+			char *from, *to;
 			int	i, len;
 
 			from = to = netbufp->buf;
@@ -717,7 +717,7 @@ ConvertAddress(
                int len
                )
 {
-    register i;
+    i;
     char	*ptr;
     int     l, rl; 
     struct nd_hostservlist *nd_hostservlist;

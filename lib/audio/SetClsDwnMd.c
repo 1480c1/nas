@@ -31,7 +31,7 @@ AuSetCloseDownMode(
                    AuStatus       *ret_status
                    )
 {
-    register auSetCloseDownModeReq *req;
+    auSetCloseDownModeReq *req;
 
     if (ret_status)
 	*ret_status = AuSuccess;

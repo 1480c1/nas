@@ -68,15 +68,15 @@ static int xferConnectionSetup();
  * the newly created AuServer back to the caller.
  */
 AuServer *AuOpenServer (
-	register const char *server,
+	const char *server,
 	int num_authproto,
 	const char *authproto,
 	int num_authdata,
 	const char *authdata,
 	char **ret_svrmsg)
 {
-	register AuServer *aud;		/* New AuServer object being created */
-	register int i;
+	AuServer *aud;		/* New AuServer object being created */
+	int i;
 	const char *server_name;	/* pointer to server name */
 	int endian;			/* to determine which endian. */
 	auConnClientPrefix client;	/* client information */
@@ -369,7 +369,7 @@ _AuOCOutOfMemory (
 }
 
 void
-_AuFreeServerStructure(register AuServer *aud)
+_AuFreeServerStructure(AuServer *aud)
 {
     int                 i;
 

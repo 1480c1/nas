@@ -30,7 +30,7 @@ AuGetServerTime(
                 AuStatus       *ret_status
                 )
 {
-    register auReq *req;
+    auReq *req;
     auGetServerTimeReply rep;
 
     if (ret_status)

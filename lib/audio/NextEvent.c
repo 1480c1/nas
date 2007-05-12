@@ -47,12 +47,12 @@ without express or implied warranty.
 
 void
 AuNextEvent (
-             register AuServer *aud,
+             AuServer *aud,
              AuBool dequeue,
-             register AuEvent *event
+             AuEvent *event
              )
 {
-	register _AuQEvent *qelt;
+	_AuQEvent *qelt;
 	
 	_AuLockServer();
 	

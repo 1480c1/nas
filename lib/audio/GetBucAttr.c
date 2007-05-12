@@ -31,7 +31,7 @@ AuGetBucketAttributes(
                       AuStatus       *ret_status
                       )
 {
-    register auResourceReq *req;
+    auResourceReq *req;
     auGetBucketAttributesReply rep;
     auBucketAttributes a;
     AuBucketAttributes *attr;

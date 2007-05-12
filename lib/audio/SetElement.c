@@ -61,7 +61,7 @@ int             num_elements;
 AuElement      *elements;
 AuStatus       *ret_status;
 {
-    register auSetElementsReq *req;
+    auSetElementsReq *req;
     AuElement      *el;
     auElement       e;
     int             varLen,

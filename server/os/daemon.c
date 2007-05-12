@@ -113,7 +113,7 @@ osBecomeOrphan(void)
 void
 osBecomeDaemon(void)
 {
-    register int i;
+    int i;
 
     /*
      * Close standard file descriptors and get rid of controlling tty

@@ -27,9 +27,9 @@
 /* ARGSUSED */
 static AuBool
 _AuTypedEventPredicate (
-                        register AuServer   *aud,
-                        register AuEvent    *event,
-                        register AuPointer	arg
+                        AuServer   *aud,
+                        AuEvent    *event,
+                        AuPointer	arg
                         )
 {
     return (event->type == *(int *) arg);
@@ -38,11 +38,11 @@ _AuTypedEventPredicate (
 
 
 AuBool AuScanForTypedEvent (
-                            register AuServer   *aud,
-                            register int	mode,
-                            register AuBool	dequeue,
-                            register int	type,
-                            register AuEvent    *event
+                            AuServer   *aud,
+                            int	mode,
+                            AuBool	dequeue,
+                            int	type,
+                            AuEvent    *event
                             )
 {
     int tmp = type;

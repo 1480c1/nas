@@ -93,9 +93,9 @@ AuDispatchEvent(
 
 AuEventHandlerRec *
 AuLookupEventHandler(
-                     register AuServer *aud,
-                     register AuEvent *event,
-                     register AuEventHandlerRec *handler
+                     AuServer *aud,
+                     AuEvent *event,
+                     AuEventHandlerRec *handler
                      )
 {
     /*

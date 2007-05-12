@@ -36,7 +36,7 @@ AuCreateBucket(
                AuStatus *ret_status
                )
 {
-    register auResourceReq *req;
+    auResourceReq *req;
     auBucketAttributes b;
     AuBucketID      bucket = AuAllocID(aud);
 

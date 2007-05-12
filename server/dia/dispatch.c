@@ -114,10 +114,10 @@ UpdateCurrentTimeIf(void)
 void
 Dispatch()
 {
-    register int *clientReady;  /* array of request ready clients */
-    register int result;
-    register ClientPtr client;
-    register int nready;
+    int *clientReady;  /* array of request ready clients */
+    int result;
+    ClientPtr client;
+    int nready;
 
     nextFreeClientID = 1;
     nClients = 0;
@@ -225,7 +225,7 @@ extern int Ones();
 Bool terminateAtReset = FALSE;
 
 void
-CloseDownClient(register ClientPtr client)
+CloseDownClient(ClientPtr client)
 {
     if (!client->clientGone) {
         client->clientGone = TRUE;      /* so events aren't sent to client */
@@ -287,8 +287,8 @@ KillAllClients(void)
 void
 CloseDownRetainedResources(void)
 {
-    register int i;
-    register ClientPtr client;
+    int i;
+    ClientPtr client;
 
     for (i = 1; i < currentMaxClients; i++) {
         client = clients[i];
@@ -328,8 +328,8 @@ InitClient(ClientPtr client, int i, pointer ospriv)
 ClientPtr
 NextAvailableClient(pointer ospriv)
 {
-    register int i;
-    register ClientPtr client;
+    int i;
+    ClientPtr client;
     auReq data;
 
     i = nextFreeClientID;
@@ -358,10 +358,10 @@ NextAvailableClient(pointer ospriv)
 }
 
 int
-ProcInitialConnection(register ClientPtr client)
+ProcInitialConnection(ClientPtr client)
 {
     REQUEST(auReq);
-    register auConnClientPrefix *prefix;
+    auConnClientPrefix *prefix;
     int whichbyte = 1;
 
     prefix = (auConnClientPrefix *) ((char *) stuff + sz_auReq);
@@ -383,10 +383,10 @@ ProcInitialConnection(register ClientPtr client)
 }
 
 int
-ProcEstablishConnection(register ClientPtr client)
+ProcEstablishConnection(ClientPtr client)
 {
     char *reason, *auth_proto, *auth_string;
-    register auConnClientPrefix *prefix;
+    auConnClientPrefix *prefix;
     REQUEST(auReq);
 
     prefix = (auConnClientPrefix *) ((char *) stuff + sz_auReq);

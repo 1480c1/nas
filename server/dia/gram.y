@@ -170,9 +170,9 @@ number          : NUMBER                { $$ = $1; }
 RemoveDQuote(str)
 char *str;
 {
-    register char *i, *o;
-    register n;
-    register count;
+    char *i, *o;
+    int n;
+    int count;
 
     for (i = str + 1, o = str; *i && *i != '\"'; o++) {
         if (*i == '\\') {

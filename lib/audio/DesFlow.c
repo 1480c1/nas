@@ -31,7 +31,7 @@ AuDestroyFlow(
               AuStatus       *ret_status
               )
 {
-    register auResourceReq *req;
+    auResourceReq *req;
 
     if (ret_status)
 	*ret_status = AuSuccess;

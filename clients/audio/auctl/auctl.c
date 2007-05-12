@@ -97,7 +97,7 @@ main (int argc, char **argv)
 }
 
 
-static char *skip_space (register char *s)
+static char *skip_space (char *s)
 {
     if (!s) return NULL;
 
@@ -107,7 +107,7 @@ static char *skip_space (register char *s)
 }
 
 
-static char *skip_nonspace (register char *s)
+static char *skip_nonspace (char *s)
 {
     if (!s) return NULL;
 

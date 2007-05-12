@@ -46,7 +46,7 @@
  */
 
 AuBool AuScanEvents (
-                     register AuServer *aud,
+                     AuServer *aud,
                      int mode,
                      AuBool dequeue,
                      AuBool (*predicate)(
@@ -55,10 +55,10 @@ AuBool AuScanEvents (
                                          AuPointer /* arg */
                                          ), /* function to call */
                      AuPointer arg,
-                     register AuEvent *event		/* AuEvent to be filled in. */
+                     AuEvent *event		/* AuEvent to be filled in. */
                      )
 {
-    register _AuQEvent *prev, *qelt;
+    _AuQEvent *prev, *qelt;
     int n;			/* time through count */
 
     if (mode > AuEventsQueuedAfterFlush)

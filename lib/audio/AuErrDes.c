@@ -215,11 +215,11 @@ getResource(XrmDatabase db, char *name, XrmValue *value_ret)
 #endif						/* NO_XLIB */
 
 void
-AuGetErrorText(register AuServer *aud, register int code, 
+AuGetErrorText(AuServer *aud, int code, 
                char *buffer, int nbytes)
 {
     char buf[150];
-    register _AuExtension *ext;
+    _AuExtension *ext;
     _AuExtension *bext = (_AuExtension *)NULL;
 
     if (nbytes == 0) return;
@@ -252,8 +252,8 @@ void
 /*ARGSUSED*/
 AuGetErrorDatabaseText(
     AuServer *aud,
-    register const char *name,
-    register const char *type,
+    const char *name,
+    const char *type,
     const char *defaultp,
     char *buffer,
     int nbytes)

@@ -63,7 +63,7 @@ typedef unsigned long RESTYPE;
 
 RESTYPE CreateNewResourceType();
 RESTYPE CreateNewResourceClass(void);
-AuID FakeClientID(register int client);
+AuID FakeClientID(int client);
 Bool AddResource();
 void FreeResource(AuID id, RESTYPE skipDeleteFuncType);
 void FreeClientResources();

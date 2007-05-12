@@ -55,14 +55,12 @@ SOFTWARE.
 extern void WriteToClient();
 
 void
-Swap32Write(pClient, size, pbuf)
-ClientPtr pClient;
-int size;                       /* in bytes */
-register long *pbuf;
+Swap32Write(ClientPtr pClient, int size, AuUint32 *pbuf)
 {
-    register int i;
-    register char n;
+    int i;
+    char n;
 
+    /* size is in bytes */
     size >>= 2;
     for (i = 0; i < size; i++)
         /* brackets are mandatory here, because "swapl" macro expands

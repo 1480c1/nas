@@ -33,7 +33,7 @@ AuListBuckets(
               AuStatus       *ret_status
               )
 {
-    register auReq *req;
+    auReq *req;
     auListBucketsReply rep;
     auBucketAttributes a;
     AuBucketAttributes *list = NULL,

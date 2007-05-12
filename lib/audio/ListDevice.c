@@ -33,7 +33,7 @@ AuListDevices(
               AuStatus       *ret_status
               )
 {
-    register auReq *req;
+    auReq *req;
     auListDevicesReply rep;
     auDeviceAttributes a;
     AuDeviceAttributes *list = NULL,

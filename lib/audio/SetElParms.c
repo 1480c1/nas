@@ -32,7 +32,7 @@ AuSetElementParameters(
                        AuStatus *ret_status
                        )
 {
-    register auSetElementParametersReq *req;
+    auSetElementParametersReq *req;
     int i, total_parameters = 0;
     auElementParameters p;
 

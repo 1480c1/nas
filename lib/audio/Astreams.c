@@ -213,7 +213,7 @@ _AusErrorCall()
 
 
 static	void
-Que(register struct listenQue *head, register struct listenCall *lc, char flag)
+Que(struct listenQue *head, struct listenCall *lc, char flag)
 {
 	if(flag == CLEAR)
 		ClearCall(lc->CurrentCall);
@@ -237,7 +237,7 @@ Que(register struct listenQue *head, register struct listenCall *lc, char flag)
  */
 
 static void
-pQue(register struct listenQue *head, register struct listenCall *lc)
+pQue(struct listenQue *head, struct listenCall *lc)
 {
 	if (head->QueHead == (struct listenCall *) NULL) {
 		lc->NextCall = (struct listenCall *) NULL;
@@ -258,9 +258,9 @@ pQue(register struct listenQue *head, register struct listenCall *lc)
 
 
 static struct listenCall *
-deQue(register struct listenQue *head)
+deQue(struct listenQue *head)
 {
-	register struct listenCall *ret;
+	struct listenCall *ret;
 
 	if (head->QueHead == (struct listenCall *) NULL){
 		PRMSG("Fatal error. Queue is empty (shouldn't happen)\n",0,0);
@@ -888,8 +888,8 @@ LookForEvents(struct listenQue *FreeHead, struct listenQue *PendHead, int fd)
 	int	address;
 	short	port, nf;
 	struct t_discon disc;
-	register struct listenCall *current;
-	register struct t_call *call;
+	struct listenCall *current;
+	struct t_call *call;
 	int t;
 	char	buf[MAX_AUTO_BUF_LEN];
 	int	flag, i;
@@ -945,8 +945,8 @@ static int
 CheckListenQue(struct listenQue *FreeHead, struct listenQue *PendHead, 
                int fd, char *MoreConnections)
 {
-	register struct listenCall *current;
-	register struct t_call *call;
+	struct listenCall *current;
+	struct t_call *call;
 	int pid, nfd, n;
 	char	*retptr, *ptr;
 
@@ -1059,7 +1059,7 @@ static void
 RemoveCall(struct listenQue *freeq, struct listenQue *pendq, 
            struct t_discon *disc)
 {
-	register struct listenCall *p, *oldp;
+	struct listenCall *p, *oldp;
 
 	PRMSG( "Removing call, sequence # is %d", disc->sequence,0);
 	if (EMPTY(pendq)) {

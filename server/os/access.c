@@ -257,10 +257,10 @@ int fd;
     int len;
     caddr_t addr;
     int family;
-    register HOST *host;
+    HOST *host;
 
     struct utsname name;
-    register struct hostent *hp;
+    struct hostent *hp;
 
     union {
         struct sockaddr sa;
@@ -320,12 +320,12 @@ int fd;
 {
     char buf[2048], *cp, *cplim;
     struct ifconf ifc;
-    register int n;
+    int n;
     int len;
     pointer addr;
     int family;
-    register HOST *host;
-    register struct ifreq *ifr;
+    HOST *host;
+    struct ifreq *ifr;
 
 #ifdef DNETCONN
     struct dn_naddr *dnaddr = getnodeadd(0);
@@ -447,7 +447,7 @@ AddLocalHosts()
 ResetHosts(display)
 char *display;
 {
-    register HOST *host;
+    HOST *host;
     char hostname[120];
     char fname[32];
     FILE *fd;
@@ -470,7 +470,7 @@ char *display;
     int family;
     int len;
     pointer addr;
-    register struct hostent *hp;
+    struct hostent *hp;
 
     AccessEnabled = defeatAccessControl ? FALSE : DEFAULT_ACCESS_CONTROL;
     LocalHostEnabled = FALSE;
@@ -565,7 +565,7 @@ AuthorizedClient(ClientPtr client)
     nwio_tcpconf_t tcpconf;
 #endif
     pointer addr;
-    register HOST *host;
+    HOST *host;
 
     if (!client || defeatAccessControl)
         return TRUE;
@@ -665,7 +665,7 @@ pointer closure;
 static Bool
 NewHost(short family, pointer addr, int len)
 {
-    register HOST *host;
+    HOST *host;
 
     for (host = validhosts; host; host = host->next) {
         if (addrEqual(family, addr, len, host))
@@ -692,7 +692,7 @@ unsigned length;                /* of bytes in pAddr */
 pointer pAddr;
 {
     int len;
-    register HOST *host, **prev;
+    HOST *host, **prev;
 
     if (!AuthorizedClient(client))
         return (AuBadAccess);
@@ -735,9 +735,9 @@ int *pLen;
 BOOL *pEnabled;
 {
     int len;
-    register int n = 0;
-    register pointer ptr;
-    register HOST *host;
+    int n = 0;
+    pointer ptr;
+    HOST *host;
     int nHosts = 0;
 
     *pEnabled = AccessEnabled ? EnableAccess : DisableAccess;
@@ -809,15 +809,15 @@ CheckAddr(int family, pointer pAddr, unsigned length)
 
 InvalidHost(saddr, len)
 #ifdef AMOEBA
-register ipaddr_t *saddr;
+ipaddr_t *saddr;
 #else
-register struct sockaddr *saddr;
+struct sockaddr *saddr;
 #endif
 int len;
 {
     int family;
     pointer addr;
-    register HOST *selfhost, *host;
+    HOST *selfhost, *host;
 
     if (!AccessEnabled)         /* just let them in */
         return (0);
@@ -851,9 +851,9 @@ int len;
 static int
 ConvertAddr(saddr, len, addr)
 #ifdef AMOEBA
-register ipaddr_t *saddr;
+ipaddr_t *saddr;
 #else
-register struct sockaddr *saddr;
+struct sockaddr *saddr;
 #endif
 int *len;
 pointer *addr;

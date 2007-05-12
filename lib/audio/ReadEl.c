@@ -34,7 +34,7 @@ AuReadElement(
               AuStatus       *ret_status
               )
 {
-    register auReadElementReq *req;
+    auReadElementReq *req;
     auReadElementReply rep;
 
     if (ret_status)

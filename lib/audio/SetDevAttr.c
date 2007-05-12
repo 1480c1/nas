@@ -33,7 +33,7 @@ AuSetDeviceAttributes(
                       AuStatus       *ret_status
                       )
 {
-    register auResourceReq *req;
+    auResourceReq *req;
     auDeviceAttributes a;
     int             stringLen;
     AuMask	    savemask = AuDeviceValueMask(attr);

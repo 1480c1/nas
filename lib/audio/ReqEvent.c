@@ -41,13 +41,13 @@ without express or implied warranty.
 #include "Alibint.h"
 
 AuBool AuRequeueEvent (
-                       register AuServer *aud,
-                       register AuEvent *event,
-                       register int skip
+                       AuServer *aud,
+                       AuEvent *event,
+                       int skip
                        )
 {
-    register _AuQEvent *qelt;
-    register _AuQEvent *prev;
+    _AuQEvent *qelt;
+    _AuQEvent *prev;
 
     _AuLockServer ();
     if (!aud->qfree) {
