@@ -57,7 +57,6 @@ SOFTWARE.
 extern void ProcessAudioEvents(), SendAuErrorToClient(),
 SwapConnClientPrefix(), ResetCurrentRequest(), WriteToClient();
 extern int CompareTimeStamps(), WaitForSomething(), AuSendInitResponse();
-extern Bool ClientIsAsleep(), ClientSignal();
 
 #define mskcnt ((MAXCLIENTS + 31) / 32)
 #define BITMASK(i) (1 << ((i) & 31))
@@ -233,8 +232,6 @@ CloseDownClient(ClientPtr client)
 
         if (client->closeDownMode == AuCloseDownDestroy) {
             FreeClientResources(client);
-            if (ClientIsAsleep(client))
-                ClientSignal(client);
             if (client->index < nextFreeClientID)
                 nextFreeClientID = client->index;
             clients[client->index] = NullClient;
@@ -257,8 +254,6 @@ CloseDownClient(ClientPtr client)
     } else {
         /* really kill resources this time */
         FreeClientResources(client);
-        if (ClientIsAsleep(client))
-            ClientSignal(client);
         if (client->index < nextFreeClientID)
             nextFreeClientID = client->index;
         clients[client->index] = NullClient;

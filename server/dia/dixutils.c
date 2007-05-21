@@ -52,8 +52,6 @@ SOFTWARE.
 #include "misc.h"
 #include "dixstruct.h"
 
-extern void IgnoreClient(), AttendClient();
-
 /* No-op Don't Do Anything : sometimes we need to be able to call a procedure
  * that doesn't do anything.  For example, on screen with only static
  * colormaps, if someone calls install colormap, it's easier to have a dummy
@@ -127,82 +125,3 @@ pointer closure;
     return TRUE;
 }
 
-/*
- * Manage a queue of sleeping clients, awakening them
- * when requested, by using the OS functions IgnoreClient
- * and AttendClient.  Note that this *ignores* the troubles
- * with request data interleaving itself with events, but
- * we'll leave that until a later time.
- */
-
-typedef struct _SleepQueue {
-    struct _SleepQueue *next;
-    ClientPtr client;
-        Bool(*function) ();
-    pointer closure;
-} SleepQueueRec, *SleepQueuePtr;
-
-static SleepQueuePtr sleepQueue = NULL;
-
-Bool
-ClientSleep(client, function, closure)
-ClientPtr client;
-Bool(*function) ();
-pointer closure;
-{
-    SleepQueuePtr q;
-
-    q = (SleepQueuePtr) xalloc(sizeof *q);
-    if (!q)
-        return FALSE;
-
-    IgnoreClient(client);
-    q->next = sleepQueue;
-    q->client = client;
-    q->function = function;
-    q->closure = closure;
-    sleepQueue = q;
-    return TRUE;
-}
-
-Bool
-ClientSignal(client)
-ClientPtr client;
-{
-    SleepQueuePtr q;
-
-    for (q = sleepQueue; q; q = q->next)
-        if (q->client == client) {
-            return QueueWorkProc(q->function, q->client, q->closure);
-        }
-    return FALSE;
-}
-
-void
-ClientWakeup(ClientPtr client)
-{
-    SleepQueuePtr q, *prev;
-
-    prev = &sleepQueue;
-    while ((q = *prev)) {
-        if (q->client == client) {
-            *prev = q->next;
-            xfree(q);
-            if (!client->clientGone)
-                AttendClient(client);
-            break;
-        }
-        prev = &q->next;
-    }
-}
-
-Bool
-ClientIsAsleep(ClientPtr client)
-{
-    SleepQueuePtr q;
-
-    for (q = sleepQueue; q; q = q->next)
-        if (q->client == client)
-            return TRUE;
-    return FALSE;
-}

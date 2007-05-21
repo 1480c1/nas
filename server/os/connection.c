@@ -1773,65 +1773,6 @@ ListenToAllClients()
     }
 }
 
-/****************
- * IgnoreClient
- *    Removes one client from input masks.
- *    Must have cooresponding call to AttendClient.
- ****************/
-
-IgnoreClient(client)
-ClientPtr client;
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    int connection = oc->fd;
-
-    if (!GrabInProgress || GETBIT(AllClients, connection)) {
-        if (GETBIT(ClientsWithInput, connection))
-            BITSET(IgnoredClientsWithInput, connection);
-        else
-            BITCLEAR(IgnoredClientsWithInput, connection);
-        BITCLEAR(ClientsWithInput, connection);
-        BITCLEAR(AllSockets, connection);
-        BITCLEAR(AllClients, connection);
-        BITCLEAR(LastSelectMask, connection);
-    } else {
-        if (GETBIT(SavedClientsWithInput, connection))
-            BITSET(IgnoredClientsWithInput, connection);
-        else
-            BITCLEAR(IgnoredClientsWithInput, connection);
-        BITCLEAR(SavedClientsWithInput, connection);
-        BITCLEAR(SavedAllSockets, connection);
-        BITCLEAR(SavedAllClients, connection);
-    }
-    isItTimeToYield = TRUE;
-}
-
-/****************
- * AttendClient
- *    Adds one client back into the input masks.
- ****************/
-
-AttendClient(client)
-ClientPtr client;
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    int connection = oc->fd;
-
-    if (!GrabInProgress || GrabInProgress == client->index ||
-        GETBIT(GrabImperviousClients, connection)) {
-        BITSET(AllClients, connection);
-        BITSET(AllSockets, connection);
-        BITSET(LastSelectMask, connection);
-        if (GETBIT(IgnoredClientsWithInput, connection))
-            BITSET(ClientsWithInput, connection);
-    } else {
-        BITSET(SavedAllClients, connection);
-        BITSET(SavedAllSockets, connection);
-        if (GETBIT(IgnoredClientsWithInput, connection))
-            BITSET(SavedClientsWithInput, connection);
-    }
-}
-
 /* make client impervious to grabs; assume only executing client calls this */
 
 MakeClientGrabImpervious(client)
@@ -2053,25 +1994,6 @@ ListenToAllClients()
         GrabInProgress = 0;
         AnyClientsWithInput = TRUE;
     }
-}
-
-IgnoreClient(client)
-ClientPtr client;
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    int connection = oc->fd;
-
-    ASIO_FD_SET(connection, ASIO_READ, &IgnoreFdSet);
-}
-
-AttendClient(client)
-ClientPtr client;
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    int connection = oc->fd;
-
-    ASIO_FD_CLR(connection, ASIO_READ, &IgnoreFdSet);
-    AnyClientsWithInput = TRUE;
 }
 
 void
@@ -2394,23 +2316,6 @@ ClientPtr client;
 ListenToAllClients()
 {
     grabClient = NULL;
-}
-
-IgnoreClient(client)
-ClientPtr client;
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    oc->status |= IGNORE;
-}
-
-AttendClient(client)
-ClientPtr client;
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-    oc->status &= ~IGNORE;
-    if (am_avail(oc, VC_IN)) {
-        WakeUpMainThread();
-    }
 }
 
 /* These two are dummies -- and are never called at run-time */
