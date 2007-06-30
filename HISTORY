@@ -5,10 +5,19 @@ $Id$
 
 6/30/2007
 
-  - Apply patch from Erik Auerswald: the recent bug report from a
-    fedora 7 user showed a small bug with the input mixer code: If the
-    input mixer cannot control the input channels a wrong error
-    message is printed. The attached patch fixes this.
+  - remove mention of the auvoxware manpage from the filelist (for src
+    packaging), and remove the doc/html/auvoxware.1.html file.
+
+  - Apply patches from Erik Auerswald:
+
+    - the recent bug report from a fedora 7 user showed a small bug
+      with the input mixer code: If the input mixer cannot control the
+      input channels a wrong error message is printed. The attached
+      patch fixes this.
+
+    - remove auvoxware.man from the voxware Imakefile
+
+
 
 6/16/2007
 

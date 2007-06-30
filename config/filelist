@@ -427,7 +427,6 @@
 ./doc/html/aurecord.1.html
 ./doc/html/auscope.1.html
 ./doc/html/autool.1.html
-./doc/html/auvoxware.1.html
 ./doc/html/auwave.1.html
 ./doc/html/checkmail.1.html
 ./doc/html/issndfile.1.html
@@ -570,7 +569,6 @@
 ./server/dda/voxware/Imakefile
 ./server/dda/voxware/auvoxware.c
 ./server/dda/voxware/auvoxware.h
-./server/dda/voxware/auvoxware.man
 ./server/dda/voxware/config.h
 ./server/dda/voxware/config.c
 ./server/dda/voxware/sound.sh
