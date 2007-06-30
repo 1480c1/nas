@@ -37,6 +37,4 @@ OBJS = auvoxware.o config.o
 NormalLibraryObjectRule()
 NormalLibraryTarget(voxware,$(OBJS))
 
-InstallManPage(auvoxware,$(MANDIR))
-
 DependTarget()
