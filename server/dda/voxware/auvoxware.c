@@ -431,6 +431,10 @@ readMixerInputGain(void)
             }
             break;
 
+        case useMixerNone:
+            return sndStatIn.gain;
+            break;
+
         default:
             osLogMsg("readMixerInputGain: "
                      "unknown value %d of recControlMode\n", recControlMode);

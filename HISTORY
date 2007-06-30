@@ -3,6 +3,13 @@ $Id$
 
 ???
 
+6/30/2007
+
+  - Apply patch from Erik Auerswald: the recent bug report from a
+    fedora 7 user showed a small bug with the input mixer code: If the
+    input mixer cannot control the input channels a wrong error
+    message is printed. The attached patch fixes this.
+
 6/16/2007
 
   - more cleanup and removal of old/useless files.
