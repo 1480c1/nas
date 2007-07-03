@@ -1090,7 +1090,7 @@ intervalProc(int sig)
         sigaddset(&set, SIGALRM);
         sigprocmask(SIG_UNBLOCK, &set, NULL);
     }
-#endif
+#endif /* linux or cygwin */
     if (processFlowEnabled) {
         AuProcessData();
 #if defined(linux) || defined(__CYGWIN__)
@@ -1101,7 +1101,7 @@ intervalProc(int sig)
             sigaddset(&set, SIGALRM);
             sigprocmask(SIG_BLOCK, &set, NULL);
         }
-#endif
+#endif /* linux or cygwin */
         signal(SIGALRM, intervalProc);
     }
 #else
