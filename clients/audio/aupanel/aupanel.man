@@ -21,6 +21,11 @@ by the server is used. If it is a hexadecimal number (starting with \fI0x\fP)
 it is used as the resource identifier of the desired device. Otherwise,
 \fIid\fP should be the exact device name (e.g. Stereo Channel Output).
 You can use \fIauinfo\fP to query an audioserver for this information.
+.TP 8
+.BI "\-interval " seconds
+\fIaupanel\fP queries the device attributes in regular intervals with a default
+length of \fB10\fP seconds. With this option a different interval length can be
+specified. Using an interval length of \fB0\fP disables the automatic querying.
 .PP
 Additionally, options from the Athena Widget Set can be used.
 .SH AUPANEL AND THE ATHENA WIDGET SET

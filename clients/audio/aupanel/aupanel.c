@@ -55,8 +55,10 @@
 
 #define	APP_CLASS		"Aupanel"
 
+#define DEFAULT_QUERY_INTERVAL  10000UL
+
 #define USAGE "\
-usage: aupanel [-a audioserver] [-dev id]\
+usage: aupanel [-a audioserver] [-dev id] [-in seconds]\
 "
 
 #define MakeCommandButton(w, parent, label, callback)			       \
@@ -100,6 +102,8 @@ typedef struct
                     deviceNum,
                    *restoreValues;
     AuDeviceAttributes *da;
+    unsigned long   queryInterval;
+    XtIntervalId    queryTimerID;
 }               GlobalDataRec, *GlobalDataPtr;
 
 static String   defaultResources[] =
@@ -237,14 +241,31 @@ showDevice(GlobalDataPtr g)
 
 }
 
+static void timedQueryCB(XtPointer, XtIntervalId *);
+
 static void
 queryCB(Widget w, XtPointer gp, XtPointer call_data)
 {
     GlobalDataPtr   g = (GlobalDataPtr) gp;
 
+    if(g->queryInterval)
+        XtRemoveTimeOut(g->queryTimerID);
+
     AuFreeDeviceAttributes(g->aud, g->numDevices, g->da);
     g->da = AuListDevices(g->aud, 0, NULL, &g->numDevices, NULL);
     showDevice(g);
+
+    if(g->queryInterval)
+        g->queryTimerID = XtAppAddTimeOut(XtWidgetToApplicationContext(g->top),
+                                          g->queryInterval, timedQueryCB, gp);
+}
+
+static void
+timedQueryCB(XtPointer gp, XtIntervalId *queryIntervalID)
+{
+    GlobalDataPtr   g = (GlobalDataPtr) gp;
+
+    queryCB(g->top, gp, NULL);
 }
 
 static void
@@ -491,12 +512,19 @@ main(int argc, char **argv)
     g->top = XtVaAppInitialize(&appContext, APP_CLASS, NULL, ZERO,
 			       &argc, argv, defaultResources, NULL, 0);
 
+    g->queryInterval = DEFAULT_QUERY_INTERVAL;
+
     for (i = 1; i < argc; i++) {
         if (!strncmp(argv[i], "-a", 2)) {
             audioServer = argv[++i];
         } else if (!strncmp(argv[i], "-dev", 4)) {
             initialDeviceName = argv[++i];
             initialDevice = parse_device_id(initialDeviceName);
+        } else if (!strncmp(argv[i], "-in", 3)) {
+            int tmp = atoi(argv[++i]);
+            if (tmp >= 0) {
+                g->queryInterval = tmp * 1000;
+            }
         } else {
             fatalError(USAGE, NULL);
         }
@@ -533,6 +561,9 @@ main(int argc, char **argv)
     }
 
     showDevice(g);
+
+    g->queryTimerID = XtAppAddTimeOut(appContext, g->queryInterval,
+                                      timedQueryCB , g);
 
     XtAppMainLoop(appContext);
 
