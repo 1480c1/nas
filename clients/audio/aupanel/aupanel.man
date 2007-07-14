@@ -5,6 +5,7 @@ aupanel \- allows user adjustment of Network Audio System device attributes
 .IX aupanel#(1) "" "\fLaupanel\fP(1)"
 .SH SYNOPSIS
 \fBaupanel\fP [\fB\-audio\fP \fIservername\fP] [\fB\-device\fP \fIid\fP]
+[\fB\-interval\fP \fIseconds\fP]
 .SH DESCRIPTION
 \fIaupanel\fP provides an X-based window-oriented interface allowing the user
 to adjust the attributes of the devices provided by the Network Audio System service.
