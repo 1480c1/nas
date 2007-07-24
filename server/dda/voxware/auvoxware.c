@@ -1088,7 +1088,7 @@ intervalProc(int sig)
         sigset_t set;
         sigemptyset(&set);
         sigaddset(&set, SIGALRM);
-        sigprocmask(SIG_UNBLOCK, &set, NULL);
+        sigprocmask(SIG_BLOCK, &set, NULL);
     }
 #endif /* linux or cygwin */
     if (processFlowEnabled) {
@@ -1099,7 +1099,7 @@ intervalProc(int sig)
             sigset_t set;
             sigemptyset(&set);
             sigaddset(&set, SIGALRM);
-            sigprocmask(SIG_BLOCK, &set, NULL);
+            sigprocmask(SIG_UNBLOCK, &set, NULL);
         }
 #endif /* linux or cygwin */
         signal(SIGALRM, intervalProc);

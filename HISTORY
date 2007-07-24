@@ -2,6 +2,11 @@ $Id$
 
 ???
 
+7/24/2007
+
+  - apply patch from Yarda that corrects a problem with blocking and
+    unblocking signals in IntervalProc() (auvoxware).
+
 6/30/2007
 
   - remove mention of the auvoxware manpage from the filelist (for src
