@@ -1094,7 +1094,7 @@ intervalProc(int sig)
     if (processFlowEnabled) {
         AuProcessData();
 #if defined(linux) || defined(__CYGWIN__)
-        /* block the signal again */
+        /* unblock the signal after processing the data */
         {
             sigset_t set;
             sigemptyset(&set);
