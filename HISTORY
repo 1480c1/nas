@@ -7,6 +7,11 @@ $Id$
   - apply patch from Yarda that corrects a problem with blocking and
     unblocking signals in IntervalProc() (auvoxware).
 
+7/12/2007
+
+  - add automatic querying of device attributes to aupanel with a default
+    query interval of 10 seconds
+
 6/30/2007
 
   - remove mention of the auvoxware manpage from the filelist (for src
