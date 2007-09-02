@@ -177,8 +177,7 @@ static void (*_local_signal(int sig, void (*action) (int))) (int)
 
 #if !defined(AMOEBA) || !defined(_MINIX)
 int
-WaitForSomething(pClientsReady)
-int *pClientsReady;
+WaitForSomething(int *pClientsReady)
 {
     int i;
     struct timeval waittime, *wt;
@@ -318,8 +317,7 @@ int *pClientsReady;
 /*
  * This is not always a macro.
  */
-ANYSET(src)
-long *src;
+ANYSET(long *src)
 {
     int i;
 
@@ -340,7 +338,7 @@ semaphore init_sema;
  * finished the initialization
  */
 void
-WaitForInitialization()
+WaitForInitialization(void)
 {
     init_waiters++;
     sema_down(&init_sema);
@@ -355,13 +353,13 @@ static semaphore main_sema;
  * wake up the main thread when it has something to do.
  */
 void
-InitMainThread()
+InitMainThread(void)
 {
     sema_init(&main_sema, 0);
 }
 
 void
-WakeUpMainThread()
+WakeUpMainThread(void)
 {
     sema_up(&main_sema);
 }
@@ -374,8 +372,7 @@ SleepMainThread(interval timo)
 }
 
 int
-WaitForSomething(pClientsReady)
-int *pClientsReady;
+WaitForSomething(int *pClientsReady)
 {
     int i, wt, nt;
     struct timeval *wtp;
@@ -497,8 +494,7 @@ int *pClientsReady;
 static int timed_fwait();
 
 int
-WaitForSomething(pClientsReady)
-int *pClientsReady;
+WaitForSomething(int *pClientsReady)
 {
     long timeout;
     struct timeval waittime[2];
