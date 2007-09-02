@@ -618,8 +618,7 @@ static int tf_critical = FALSE;
 static int tf_expired = FALSE;
 
 void
-tf_handler(sig)
-int sig;
+tf_handler(int sig)
 {
     struct timeval tv;
 
