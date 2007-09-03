@@ -316,6 +316,77 @@ static void setPhysicalOutputGain(AuFixedPoint gain);
 static void setPhysicalInputGainAndLineMode(AuFixedPoint gain,
                                             AuUint8 lineMode);
 
+
+/* internal funtions for enabling/disabling intervalProc using sigaction
+   semantics */
+
+static void intervalProc(int sig);
+
+/* use this in disableIntervalProc() instead of SIG_IGN for testing */
+#if 0
+static void ignoreProc(int sig)
+{
+  osLogMsg("SIGNAL IGNORE: ENTRY\n");
+  return;
+}
+#endif
+
+static void enableIntervalProc(void)
+{
+    struct sigaction action;
+
+    action.sa_handler = (void (*)(int))intervalProc;
+    action.sa_flags = 0;
+    sigemptyset(&action.sa_mask);
+    sigaddset(&action.sa_mask, SIGALRM);
+
+    if (sigaction(SIGALRM, &action, NULL) == -1)
+        {
+          osLogMsg("enableIntervalProc: sigaction failed: %s\n", 
+                   strerror(errno));
+        }
+  
+    return;
+}
+
+static void disableIntervalProc(void)
+{
+    struct sigaction action;
+
+    action.sa_handler = (void (*)(int))SIG_IGN;
+    action.sa_flags = 0;
+
+    if (sigaction(SIGALRM, &action, NULL) == -1)
+        {
+          osLogMsg("disableIntervalProc: sigaction failed: %s\n", 
+                   strerror(errno));
+        }
+  
+    return;
+}
+
+AuBlock _AuBlockAudio(void)
+{                                                          
+    sigset_t set;
+
+    sigemptyset(&set); 
+    sigaddset(&set, SIGALRM);
+    sigprocmask(SIG_BLOCK, &set, NULL);
+    return 0;
+}
+
+void _AuUnBlockAudio(AuBlock _x)
+{
+    sigset_t set;
+
+    sigemptyset(&set);
+    sigaddset(&set, SIGALRM);
+    sigprocmask(SIG_UNBLOCK, &set, NULL);
+    return;
+}
+
+
+/* ### SCO ### */
 #ifdef sco
 
 AuBlock
@@ -1034,9 +1105,7 @@ serverReset(void)
     }
 
     setTimer(0);
-#ifndef sco
-    signal(SIGALRM, SIG_IGN);
-#endif /* sco */
+    disableIntervalProc(); 
 
 #if defined(AUDIO_DRAIN)
     if (sndStatOut.isPCSpeaker)
@@ -1064,46 +1133,18 @@ serverReset(void)
     }
 }
 
-
 static void
 intervalProc(int sig)
 {
     extern void AuProcessData();
 
-#ifndef sco
-    signal(SIGALRM, SIG_IGN);
+#if !defined(sco)
+    disableIntervalProc();   
 
-#if defined(linux) || defined(__CYGWIN__)
-    /* this looks funny and stupid, but BSD not only provide
-     * reliable signals but also block this signal while executing
-     * this handler
-     * So the timer may expires before the handler is ready
-     * and it will be recalled immediately again preventing us
-     * executing normal stuff
-     * this happens if we get blocked by the write, i.e.
-     * It will happen as our timer is a little bit to fast
-     * so we should really ignore signals
-     */
-    {
-        sigset_t set;
-        sigemptyset(&set);
-        sigaddset(&set, SIGALRM);
-        sigprocmask(SIG_BLOCK, &set, NULL);
-    }
-#endif /* linux or cygwin */
-    if (processFlowEnabled) {
+    if (processFlowEnabled)
         AuProcessData();
-#if defined(linux) || defined(__CYGWIN__)
-        /* unblock the signal after processing the data */
-        {
-            sigset_t set;
-            sigemptyset(&set);
-            sigaddset(&set, SIGALRM);
-            sigprocmask(SIG_UNBLOCK, &set, NULL);
-        }
-#endif /* linux or cygwin */
-        signal(SIGALRM, intervalProc);
-    }
+
+    enableIntervalProc();   
 #else
     if (!scoAudioBlocked && processFlowEnabled)
         AuProcessData();
@@ -1267,38 +1308,29 @@ enableProcessFlow(void)
             setMixerDefaults();
         }
     }
-#ifdef sco
+
+#if defined(sco)
     if (!processFlowEnabled) {
-#endif /* sco */
-
         processFlowEnabled = AuTrue;
-
-#ifndef sco
-        signal(SIGALRM, intervalProc);
-        if (NasConfig.DoDebug > 1) {
-            osLogMsg("enableProcessFlow() - set SIGALRM handler to intervalProc\n");
-        }
-#else
         setTimer(sndStatOut.curSampleRate);
+    }
+#else  /* sco */
+    processFlowEnabled = AuTrue;
 #endif /* sco */
 
-#ifdef sco
-    }
-#endif /* sco */
 }
 
 static void
 disableProcessFlow(void)
 {
-
 #ifndef sco
     int rate;
-    signal(SIGALRM, SIG_IGN);
 #endif /* sco */
 
     if (NasConfig.DoDebug) {
         osLogMsg("disableProcessFlow() - starting\n");
     }
+
 #ifdef sco
     if (processFlowEnabled) {
 #endif /* sco */
@@ -1958,7 +1990,9 @@ AuInitPhysicalDevices(void)
         return AuFalse;
     }
 #else
-    signal(SIGALRM, intervalProc);
+
+    enableIntervalProc(); 
+
 #endif /* sco */
 
     setTimer(0);

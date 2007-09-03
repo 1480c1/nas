@@ -75,9 +75,16 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <signal.h>
 
 typedef int AuBlock;
+
 #if defined(linux)  || defined(__CYGWIN__)
-#define        AuBlockAudio()          0
-#define        AuUnBlockAudio(_x)
+
+/* use functions defined in auvoxware.c.  These are also used by dia/ */
+AuBlock _AuBlockAudio(void);
+void    _AuUnblockAudio(AuBlock _x);
+
+#define AuBlockAudio()     _AuBlockAudio()
+#define AuUnBlockAudio(_x) _AuUnBlockAudio(_x)
+
 #else /* defined(linux)  */
 #ifndef sco
 #if defined(SVR4) || defined(SYSV)
