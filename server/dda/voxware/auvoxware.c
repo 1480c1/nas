@@ -197,10 +197,6 @@ static int debug_msg_indentation = 0;
 #include <audio/Aproto.h>
 #include "au.h"
 
-#ifdef sco
-static AuBool scoAudioBlocked = AuFalse;
-#endif /* sco */
-
 static AuBool processFlowEnabled;
 static void disableProcessFlow(void);
 static void closeDevice(void);
@@ -365,10 +361,13 @@ static void disableIntervalProc(void)
     return;
 }
 
+static AuBool audioBlocked = AuFalse;
+
 AuBlock _AuBlockAudio(void)
 {                                                          
     sigset_t set;
 
+    audioBlocked = AuTrue;
     sigemptyset(&set); 
     sigaddset(&set, SIGALRM);
     sigprocmask(SIG_BLOCK, &set, NULL);
@@ -379,6 +378,7 @@ void _AuUnBlockAudio(AuBlock _x)
 {
     sigset_t set;
 
+    audioBlocked = AuFalse;
     sigemptyset(&set);
     sigaddset(&set, SIGALRM);
     sigprocmask(SIG_UNBLOCK, &set, NULL);
@@ -392,14 +392,14 @@ void _AuUnBlockAudio(AuBlock _x)
 AuBlock
 AuBlockAudio(void)
 {
-    scoAudioBlocked = AuTrue;
+    audioBlocked = AuTrue;
     return 0;
 }
 
 void
 AuUnBlockAudio(AuBlock id)
 {
-    scoAudioBlocked = AuFalse;
+    audioBlocked = AuFalse;
 }
 
 #endif /* sco */
@@ -706,7 +706,7 @@ setTimer(AuInt32 rate)
     AuInt32 foo;
     struct itimerval ntval, otval;
 
-    if (NasConfig.DoDebug) {
+    if (NasConfig.DoDebug > 5) {
         osLogMsg("setTimer(rate = %d);\n", rate);
         IDENTMSG;
     }
@@ -1139,14 +1139,15 @@ intervalProc(int sig)
     extern void AuProcessData();
 
 #if !defined(sco)
-    disableIntervalProc();   
+    setTimer(0);                /* turn off the timer here so that
+                                   a potential race is avoided */
 
     if (processFlowEnabled)
         AuProcessData();
 
-    enableIntervalProc();   
+    setTimer(sndStatOut.curSampleRate);
 #else
-    if (!scoAudioBlocked && processFlowEnabled)
+    if (!audioBlocked && processFlowEnabled)
         AuProcessData();
 #endif /* sco */
 }

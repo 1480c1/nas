@@ -1,6 +1,14 @@
 $Id$
 
 ???
+10/15/2007
+
+  - modify intervalProc to stop/start the timer around AuProcessData()
+    calls, rather than simply disable the signal handler.  This should
+    ensure that we never lose a timer signal, and seems to fix the
+    reported nasd hangs under newer linux kernels (2.6.21+).
+
+  - remove a couple of old files from config/filelist.
 
 9/3/2007
 

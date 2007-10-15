@@ -571,10 +571,8 @@
 ./server/dda/voxware/auvoxware.h
 ./server/dda/voxware/config.h
 ./server/dda/voxware/config.c
-./server/dda/voxware/sound.sh
 ./server/dda/voxware
 ./server/dda
-./server/cygcompile.sh
 ./server/Imakefile
 ./server/nasd.man
 ./server/nasd.conf.eg
