@@ -1,34 +1,28 @@
 $Id$
 
-???
-10/15/2007
+
+Version 1.9a (devel) 10/27/2007
+
+  - this is a possible 1.9.1 (stable) release in a couple weeks. 
 
   - modify intervalProc to stop/start the timer around AuProcessData()
     calls, rather than simply disable the signal handler.  This should
     ensure that we never lose a timer signal, and seems to fix the
     reported nasd hangs under newer linux kernels (2.6.21+).
 
-  - remove a couple of old files from config/filelist.
-
-9/3/2007
+    The *BSD folks should make sure everything still works, it
+    should...
 
   - rework signal handling in the voxware (OSS) server.  This also
     allows DIA to block/unblock interrupts at he appropriate times
-    now.  There still seems to be a signal loss problem with the newer
-    (2.6.21+) linux kernels that require further investigation.
-
-
-7/24/2007
+    now.
 
   - apply patch from Yarda that corrects a problem with blocking and
-    unblocking signals in IntervalProc() (auvoxware).
-
-7/12/2007
+    unblocking signals in IntervalProc() (auvoxware). [jet - this
+    patch was removed in the patches further up]
 
   - add automatic querying of device attributes to aupanel with a default
     query interval of 10 seconds
-
-6/30/2007
 
   - remove mention of the auvoxware manpage from the filelist (for src
     packaging), and remove the doc/html/auvoxware.1.html file.
@@ -42,29 +36,23 @@ $Id$
 
     - remove auvoxware.man from the voxware Imakefile
 
+    - add automatic querying of device attributes to aupanel with a
+      default query 
 
+      - aupanel: add option -interval to synopsis section of man page
 
-6/16/2007
+    - make the nasd.conf man page formatting more consistent
 
   - more cleanup and removal of old/useless files.
 
-6/15/2007
-
   - remove useless nas.lsm file.
 
-  - remove xmms nas plugin from repository (contrib).  Not my project,
-    shouldn't be in nas unless it's abondoned.
-
   - sync up for copying repository to sourceforge.
-
-5/21/2007
 
   - Patch from Stefan Huehner:
 
     - remove SleepQueue functionality which is apparently not being
       used anywhere.
-
-5/11/2007
 
   - remove useless 'register' declarations
 
@@ -72,10 +60,6 @@ $Id$
     pointer as AuUint32 rather than 'long', which is wrong, but works
     accidentally.
 
-4/29/2005
-
-  - add Willem Monsuwe's xmms NAS plugin to the repository under
-    contrib/.  Not shipped as part of the src tarball.
 
 Version 1.9 (stable) 04/07/2007
 
