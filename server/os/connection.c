@@ -200,14 +200,19 @@ static void (*_local_signal(int sig, void (*action) (int))) (int)
 typedef long CCID;              /* mask of indices into client socket table */
 
 #ifndef X_UNIX_PATH
-#ifdef hpux
-#define X_UNIX_DIR      "/usr/spool/sockets/audio"
-#define X_UNIX_PATH     "/usr/spool/sockets/audio/"
-#define OLD_UNIX_DIR    "/tmp/.sockets"
-#else
-#define X_UNIX_DIR      "/tmp/.sockets"
-#define X_UNIX_PATH     "/tmp/.sockets/audio"
-#endif
+# ifdef hpux
+#  define X_UNIX_DIR      "/usr/spool/sockets/audio"
+#  define X_UNIX_PATH     "/usr/spool/sockets/audio/"
+#  define OLD_UNIX_DIR    "/tmp/.sockets"
+# else
+#  if defined(linux)
+#   define X_UNIX_DIR      "/var/run/nasd"
+#   define X_UNIX_PATH     "/var/run/nasd/audio"
+#  else
+#   define X_UNIX_DIR      "/tmp/.sockets"
+#   define X_UNIX_PATH     "/tmp/.sockets/audio"
+#  endif
+# endif
 #endif
 
 #ifdef SERVER_LOCALCONN

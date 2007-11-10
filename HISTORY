@@ -1,7 +1,43 @@
 $Id$
 
+Version 1.9.1 (stable) 11/10/2007
 
-Version 1.9a (devel) 10/27/2007
+  - per a request from Frank Büttner (fedora maintainer), and in the
+    interest of providing the 'least surprise' for a user, nasd will
+    no longer initialize the mixer settings at start up, by default.
+    The default value of 'InitMixer' is now set to 'NO' in the
+    /etc/nasd/conf file.
+
+    See https://bugzilla.redhat.com/show_bug.cgi?id=247468 for the
+    bug report.
+
+  - based on patch from Frank Büttner, nasd will create it's local
+    socket, and libaudio will look for it, in /var/run/nasd/audio*.
+    on Linux systems.  In reality, this should probably apply to all
+    'modern' unix systems (Solaris, *BSD, etc), but only Linux is
+    affected by this change now.
+
+    See https://bugzilla.redhat.com/show_bug.cgi?id=250453 for the bug
+    report. 
+
+    The downside is that /var/run is not writable by normal users, so
+    if a user is trying to run the nasd server, s/he will get an error
+    about being unable to bind to the socket, and nasd will not start.
+    The workaround is to run nasd with the '-pn' (partial network)
+    option.  This way, nasd will bind to a local TCP transport and
+    start successfully even if the local socket transport cannot be
+    initialized (though you will still see the error when nasd
+    starts).
+
+    Additionally, users on the local host trying to play sounds
+    through a server started this way may need to set their
+    AUDIOSERVER environment variable to 'localhost:0' for example,
+    rather than the default ':0' in order to play sounds.
+
+    Of course if nasd is started as root at system startup time, then
+    this is not a problem.
+
+  Version 1.9a (devel) 10/27/2007
 
   - this is a possible 1.9.1 (stable) release in a couple weeks. 
 
@@ -21,9 +57,6 @@ Version 1.9a (devel) 10/27/2007
     unblocking signals in IntervalProc() (auvoxware). [jet - this
     patch was removed in the patches further up]
 
-  - add automatic querying of device attributes to aupanel with a default
-    query interval of 10 seconds
-
   - remove mention of the auvoxware manpage from the filelist (for src
     packaging), and remove the doc/html/auvoxware.1.html file.
 
@@ -36,10 +69,10 @@ Version 1.9a (devel) 10/27/2007
 
     - remove auvoxware.man from the voxware Imakefile
 
-    - add automatic querying of device attributes to aupanel with a
-      default query 
+    - aupanel: add option -interval to synopsis section of man page
 
-      - aupanel: add option -interval to synopsis section of man page
+    - add automatic querying of device attributes to aupanel with a
+      default query interval of 10 seconds
 
     - make the nasd.conf man page formatting more consistent
 
@@ -57,8 +90,8 @@ Version 1.9a (devel) 10/27/2007
   - remove useless 'register' declarations
 
   - convert Swap32Write for K&R to ANSI.  Also, define it's buffer
-    pointer as AuUint32 rather than 'long', which is wrong, but works
-    accidentally.
+    pointer as AuUint32 rather than 'long', which was wrong, but
+    worked accidentally.
 
 
 Version 1.9 (stable) 04/07/2007

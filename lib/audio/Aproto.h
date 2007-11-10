@@ -99,7 +99,12 @@ SOFTWARE.
 
 #define AU_DEFAULT_TCP_PORT		8000
 #define AU_DEFAULT_DECNET_TASK		"AUDIO$"
-#define AU_DEFAULT_UNIX_PATH		"/tmp/.sockets/audio"
+
+#if defined(linux)
+# define AU_DEFAULT_UNIX_PATH		"/var/run/nasd/audio"
+#else
+# define AU_DEFAULT_UNIX_PATH		"/tmp/.sockets/audio"
+#endif
 
 #define auFalse				0
 #define auTrue				1

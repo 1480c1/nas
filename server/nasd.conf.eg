@@ -26,8 +26,8 @@ ReleaseDevice "yes"
 KeepMixer "yes"
 
 # init the mixer on startup? Voxware only.
-# defaults to "yes"
-MixerInit	"yes"			
+# defaults to "no"
+MixerInit "no"
 
 # Initialize the mixer settings on every audio device open?
 # Settings are only initialized if MixerInit is set to "yes".

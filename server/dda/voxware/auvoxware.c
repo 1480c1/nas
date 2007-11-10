@@ -228,7 +228,7 @@ static int inmixerfd = -1;      /* The input device mixer device */
 static int devmask = 0;         /* Bitmask for supported mixer devices */
 static int recmask = 0;         /* Supported recording sources */
 
-int VOXMixerInit = TRUE;        /* overridden by nasd.conf */
+int VOXMixerInit   = FALSE;     /* overridden by nasd.conf */
 int VOXReInitMixer = FALSE;     /* overridden by nasd.conf */
 
 /* end of VOXware driver mixer control variables */
