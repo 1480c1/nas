@@ -76,7 +76,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 typedef int AuBlock;
 
-#if defined(linux)  || defined(__CYGWIN__)
+#if defined(linux) || defined(__GNU__) || defined(__GLIBC__) || defined(__CYGWIN__)
 
 /* use functions defined in auvoxware.c.  These are also used by dia/ */
 AuBlock _AuBlockAudio(void);

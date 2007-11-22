@@ -24,7 +24,7 @@
 
 #include "../../../config/NetAudio.tmpl"
 
-#if defined(LinuxArchitecture) || defined(FreeBSDArchitecture)
+#if defined(LinuxArchitecture) || defined(FreeBSDArchitecture) || defined(GNUArchitecture)
  EXTRA_DEFINES = -DHAS_MKSTEMP
 #endif
 

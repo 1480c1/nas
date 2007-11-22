@@ -42,7 +42,7 @@ FILES = WaitFor.c connection.c io.c osinit.c access.c genalloca.c mitauth.c \
 #define OtherObjects iopreader.o
 #endif
 
-#if defined(HPArchitecture) && !defined(LinuxArchitecture)
+#if defined(HPArchitecture) && !defined(LinuxArchitecture) && !defined(GNUArchitecture)
 #define OtherSources hpsocket.c 
 #define OtherObjects hpsocket.o dbm.o 
 #endif
@@ -107,7 +107,7 @@ BuildIncludes($(HEADERS),,)
  DEPEND_DEFINES = $(DBM_DEFINES)
        LINTLIBS = ../dix/llib-ldix.ln
 
-#if defined(HPArchitecture) && !defined(LinuxArchitecture)
+#if defined(HPArchitecture) && !defined(LinuxArchitecture) && !defined(GNUArchitecture)
          DBMLIB = /usr/lib/libdbm.a
     XLIBSYSVDIR = $(TOP)/lib/X/sysV
 #endif /* HPArchitecture */
@@ -121,7 +121,7 @@ NormalLibraryTarget(os,$(OBJS))
 LintLibraryTarget(os,$(SRCS))
 NormalLintTarget($(SRCS))
 
-#if defined(HPArchitecture) && !defined(LinuxArchitecture)
+#if defined(HPArchitecture) && !defined(LinuxArchitecture) && !defined(GNUArchitecture)
 XCOMM
 XCOMM The following kludge is necessary because dbm already has a global 
 XCOMM routine named "bcopy" that is implemented in a silly way.  So, we have to 

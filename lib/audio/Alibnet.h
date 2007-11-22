@@ -135,7 +135,11 @@ without express or implied warranty.
 #ifdef NOFILE
 #define OPEN_MAX NOFILE
 #else
+#if defined(_POSIX_OPEN_MAX) && !defined(SCO)
+#define OPEN_MAX _POSIX_OPEN_MAX
+#else
 #define OPEN_MAX NOFILES_MAX
+#endif
 #endif
 #endif
 #endif

@@ -89,7 +89,7 @@ ALL1 = nasd
 #define BuildSGIServer
 #endif
 
-#if defined(HPArchitecture) && !defined(LinuxArchitecture)
+#if defined(HPArchitecture) && !defined(LinuxArchitecture) && !defined(GNUArchitecture)
 #define CanBuildAuServer        YES
 ALL1 = nasd
 #define BuildHPServer
@@ -99,6 +99,7 @@ ALL1 = nasd
 #if defined(i386SVR4Architecture) || defined(__FreeBSD_kernel__) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture) || defined(cygwinArchitecture) || defined(__DragonFly__)
 # define CanBuildAuServer	YES
 
+#if !defined(GNUMachArchitecture)
 # if defined(cygwinArchitecture)
 ALL1 = nasd.exe
 # else
@@ -106,6 +107,7 @@ ALL1 = nasd
 # endif
 
 # define BuildVoxServer
+# endif
 #endif
 
 ALL = $(ALL1)

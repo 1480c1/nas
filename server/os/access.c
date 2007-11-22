@@ -75,7 +75,7 @@ SOFTWARE.
 #include <netdnet/dnetdb.h>
 #endif
 
-#if (defined(SYSV386) && defined(SVR4)) || defined(ISC) || defined(linux)
+#if (defined(SYSV386) && defined(SVR4)) || defined(ISC) || defined(linux) || defined(__GNU__) || defined(__GLIBC__)
 #define USE_FALLBACK_DEFINESELF
 #endif
 
@@ -237,7 +237,7 @@ AccessUsingXdmcp(void)
  * the server always originate from remote clients.
  */
 #ifndef AMOEBA
-#if defined(SVR4) || defined (SYSV386) || defined (linux) || (defined (hpux) && ! defined (HAS_IFREQ)) || defined(USE_FALLBACK_DEFINESELF)
+#if defined(SVR4) || defined (SYSV386) || defined (linux) || defined(__GNU__) || defined(__GLIBC__) || defined (linux) || (defined (hpux) && ! defined (HAS_IFREQ)) || defined(USE_FALLBACK_DEFINESELF)
 /* Define this host for access control.  Find all the hosts the OS knows about 
  * for this fd and add them to the selfhosts list.
  * hpux, and some SYSV386 do not have SIOCGIFCONF ioctl;

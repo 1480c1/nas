@@ -1372,7 +1372,7 @@ disableProcessFlow(void)
 }
 
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
+#if defined(__GNUC__) && !defined(linux) && !defined(__GNU__) && !defined(__GLIBC__) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
         static void
@@ -1387,7 +1387,7 @@ monoToStereoLinearSigned16LSB(AuUint32 numSamples)
     }
 }
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
+#if defined(__GNUC__) && !defined(linux) && !defined(__GNU__) && !defined(__GLIBC__) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
         static void
@@ -1450,7 +1450,7 @@ writePhysicalOutputsMono(void)
     AuUnBlockAudio(l);
 }
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
+#if defined(__GNUC__) && !defined(linux) && !defined(__GNU__) && !defined(__GLIBC__) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
         static void
@@ -1465,7 +1465,7 @@ stereoToMonoLinearSigned16LSB(AuUint32 numSamples)
     }
 }
 
-#if defined(__GNUC__) && !defined(linux) && !defined(USL) && !defined(__CYGWIN__)
+#if defined(__GNUC__) && !defined(linux) && !defined(__GNU__) && !defined(__GLIBC__) && !defined(USL) && !defined(__CYGWIN__)
 inline
 #endif
         static void
