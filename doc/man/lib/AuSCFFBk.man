@@ -47,7 +47,7 @@
 Specifies the connection to the audio server.
 .IP \fIfilename\fP 1i
 Specifies the name of the file to use.
-.IP \fIfile format\fP 1i
+.IP "\fIfile format\fP" 1i
 Specifies the format of the file.
 Currently, the following file formats are supported: \fBSoundFileFormatSnd\fP, \fBSoundFileFormatVoc\fP, \fBSoundFileFormatWave\fP, \fBSoundFileFormatAiff\fP, \fBSoundFileFormatSvx\fP.
 .IP \fIbucket\fP 1i
