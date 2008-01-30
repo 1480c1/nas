@@ -35,16 +35,16 @@ osLogMsg(const char *fmt, ...)
 
 #if defined(DIA_USE_SYSLOG)
 
-    if (NasConfig.DoDebug) {    /* debugging to stderr if on */
+    if (NasConfig.DoDaemon) {   /* daemons use syslog */
+        openlog("nas", LOG_PID, LOG_DAEMON);
+        syslog(LOG_DEBUG, buf);
+        closelog();
+    } else {
         errfd = stderr;
         if (errfd != NULL) {
             fprintf(errfd, "%s", buf);
             fflush(errfd);
         }
-    } else {
-        openlog("nas", LOG_PID, LOG_DAEMON);
-        syslog(LOG_DEBUG, buf);
-        closelog();
     }
 
 #else /* we just send to stdout */
