@@ -56,14 +56,13 @@ Print version information and exit (ignoring other options).
 .TP 8
 .B \-b
 Fork a child to run in the background and exit (daemon mode).
+Messages are sent to syslog instead of stderr.
 .TP 8
 .B \-d \fIn\fP
 Enable debugging output at level \fIn\fP, where \fIn\fP is a positive
 integer.  The higher the level, the more output you will get.  A value
 of 0 [default] disables debugging output.  This option overrides the
-nasd.conf file setting.  When debugging is enabled, stderr is not
-closed by the nasd process, and all debugging messages are written
-there.
+nasd.conf file setting.
 .TP 8
 .B \-pn
 .TP 8
