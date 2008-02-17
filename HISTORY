@@ -8,6 +8,8 @@ $Id$
     missing lXt, so it results in symbol not found errors at runtime.
     I am including an Imakefile patch below that fixed this.
 
+  - use syslog if running as a daemon, stderr otherwise
+
 Version 1.9.1 (stable) 11/10/2007
 
   - per a request from Frank Büttner (fedora maintainer), and in the
