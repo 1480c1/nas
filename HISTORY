@@ -1,5 +1,13 @@
 $Id$
 
+???
+
+  - apply patch from sourceforge user moinakg:
+
+    Libaudio is built with missing linker flags on OpenSolaris like
+    missing lXt, so it results in symbol not found errors at runtime.
+    I am including an Imakefile patch below that fixed this.
+
 Version 1.9.1 (stable) 11/10/2007
 
   - per a request from Frank Büttner (fedora maintainer), and in the

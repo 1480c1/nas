@@ -150,7 +150,7 @@ XAULIB =
 XAULIB = -lXau
 #endif
 
-#if defined(LinuxArchitecture) || defined(GNUArchitecture) || defined(__FreeBSD_kernel__)
+#if defined(LinuxArchitecture) || defined(GNUArchitecture) || defined(SunArchitecture) || defined(__FreeBSD_kernel__)
 REQUIREDLIBS = -L$(USRLIBDIR) -lXt $(XAULIB) -lm 
 #endif
 
