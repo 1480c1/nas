@@ -30,6 +30,8 @@
 #include <audio/Aproto.h>
 #include "au.h"
 
+#include "nasconf.h"
+
 AuInt32 auMinibufSamples;
 AuUint32 auPhysicalOutputBuffersSize;
 AuUint8 *auPhysicalOutputBuffers;
@@ -1100,8 +1102,9 @@ AuBool isInput;
 
     /* sanity - 6/20/2004, for bug report by Tobias Diedrich */
     if (!elementRate) {
-        osLogMsg("doSetup: elementRate == 0! Forcing to %d\n",
-                 auSetup.minSampleRate);
+        if (NasConfig.DoDebug > 10)
+            osLogMsg("doSetup: elementRate == 0! Forcing to %d\n",
+                     auSetup.minSampleRate);
         elementRate = auSetup.minSampleRate;
     }
 
