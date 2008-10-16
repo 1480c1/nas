@@ -327,7 +327,6 @@ server is %d.%d!\r\n",
 /*
  * and done mucking with the server
  */
-	_AuUnlockServer();		/* didn't exist, so didn't lock */
 	_AuUnlockMutex(_init_mutex);
 
 /*
