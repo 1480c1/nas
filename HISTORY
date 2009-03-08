@@ -1,14 +1,41 @@
 $Id$
 
-???
+Version 1.9.2 (stable) 03/07/2009
+
+  - overdue 1.9.2 release.
+
+  - patch from Aleksey Cheusov:
+
+    "fix for "libpthread: Unlocking unlocked mutex" seen on NetBSD-4"
+
+    libaudio: OpenSvr.c: The server mutex was being unlocked, even
+    though it was never locked in the first place.
+
+  - Hugo Vanwoerkom reported thousands of diagnostics in his syslog:
+    "doSetup: elementRate == 0! Forcing to 5000".  Fix doSetup to only
+    warn about this when the debug level is above 10.
+
+  - auerswald:
+
+    document syslog usage
+
+    use syslog if running as a daemon, stderr otherwise
+
+    add syslog-usage-change to HISTORY file
+
+  - steve_mcintyre:
+
+    Minor man page fix ported from the Debian packages.
+
+    Multiple minor portability changes ported over from the Debian
+    packages. Cope with Hurd and GNU/KFreeBSD and other systems using
+    glibc
 
   - apply patch from sourceforge user moinakg:
 
     Libaudio is built with missing linker flags on OpenSolaris like
     missing lXt, so it results in symbol not found errors at runtime.
     I am including an Imakefile patch below that fixed this.
-
-  - use syslog if running as a daemon, stderr otherwise
 
 Version 1.9.1 (stable) 11/10/2007
 
