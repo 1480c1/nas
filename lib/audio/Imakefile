@@ -144,13 +144,13 @@ install::
 InstallNonExec(AuErrorDB,$(LIBDIR))
 #endif
 
-#if defined(HPArchitecture) && !defined(LinuxArchitecture) && !defined(GNUArchitecture)
+#if defined(HPArchitecture) && !defined(LinuxArchitecture) && !defined(GNUArchitecture) && !defined(DarwinArchitecture)
 XAULIB = 
 #else
 XAULIB = -lXau
 #endif
 
-#if defined(LinuxArchitecture) || defined(GNUArchitecture) || defined(SunArchitecture) || defined(__FreeBSD_kernel__)
+#if defined(LinuxArchitecture) || defined(GNUArchitecture) || defined(SunArchitecture) || defined(__FreeBSD_kernel__) || defined(DarwinArchitecture)
 REQUIREDLIBS = -L$(USRLIBDIR) -lXt $(XAULIB) -lm 
 #endif
 
