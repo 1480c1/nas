@@ -53,8 +53,33 @@ EXTRA_LOAD_FLAGS=/link /nodefaultlib:libc /*/force:multiple /debug:full /debugty
 /* CDEBUGFLAGS=/Zi */
 #endif /* WIN32 */
 
-#define DebugLibX		NO
+/*
+ * Older X11 systems used to define SharedLibX and friends if the
+ * installed X11 system was built with shared libs.   Newer X11's use
+ * SharedLibX11 instead.  Same for {Normal|Debug|Profile}LibX.  
+ * So... check for these and set appropriately.  This should work on both
+ * the old and new schemes.
+ */
+#if !defined(NormalLibX) && defined(NormalLibX11)
+# define NormalLibX             NormalLibX11
+#endif
+#if !defined(SharedLibX) && defined(SharedLibX11)
+# define SharedLibX             SharedLibX11
+#endif
+#if !defined(DebugLibX) && defined(DebugLibX11)
+# define DebugLibX              DebugLibX11
+#endif
+#if !defined(ProfileLibX) && defined(ProfileLibX11)
+# define ProfileLibX            ProfileLibX11
+#endif
+
+#if !defined(DebugLibX)
+# define DebugLibX		NO
+#endif
+
+#if !defined(ProfileLibX)
 #define ProfileLibX		NO
+#endif
 
 #if HasSharedLibraries
 #define NormalLibAudio          NormalLibX
