@@ -1,5 +1,26 @@
 $Id$
 
+Version 1.9.3 (stable) 05/13/2011
+
+  - overdue 1.9.3 maint release
+
+  - Older X11 systems used to define SharedLibX and friends if the
+    installed X11 system was built with shared lib support.  Newer
+    X11's use SharedLibX11 instead.  Same for
+    {Normal|Debug|Profile}LibX.  So check for these and set
+    appropriately in NetAudio.tmpl.
+
+    Shared lib installations should deal with libXau dependancies
+    correctly now. 
+
+  - auerswald:
+
+    Added MacOS X aka Darwin to list of systems that need to
+    explicitely link libaudio.so against libXau. This enables building
+    of the shared library libaudio.so on MacOS X.
+
+    There is currently no NAS server for MacOS X.
+
 Version 1.9.2 (stable) 03/07/2009
 
   - overdue 1.9.2 release.
