@@ -53,6 +53,10 @@ EXTRA_LOAD_FLAGS=/link /nodefaultlib:libc /*/force:multiple /debug:full /debugty
 /* CDEBUGFLAGS=/Zi */
 #endif /* WIN32 */
 
+/* Some recent xorg breakage? We do not need to preprocess man pages. */
+#undef DontPreprocessManPages
+#define DontPreprocessManPages YES
+
 /*
  * Older X11 systems used to define SharedLibX and friends if the
  * installed X11 system was built with shared libs.   Newer X11's use
