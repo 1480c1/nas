@@ -37,7 +37,7 @@ osLogMsg(const char *fmt, ...)
 
     if (NasConfig.DoDaemon) {   /* daemons use syslog */
         openlog("nas", LOG_PID, LOG_DAEMON);
-        syslog(LOG_DEBUG, buf);
+        syslog(LOG_DEBUG, "%s", buf);
         closelog();
     } else {
         errfd = stderr;
