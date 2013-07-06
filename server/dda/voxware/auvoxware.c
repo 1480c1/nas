@@ -1326,6 +1326,8 @@ disableProcessFlow(void)
 {
 #ifndef sco
     int rate;
+
+    processFlowEnabled = AuFalse;
 #endif /* sco */
 
     if (NasConfig.DoDebug) {
@@ -1358,7 +1360,9 @@ disableProcessFlow(void)
         oneMoreTick();
 #endif
 
+#ifdef sco
         processFlowEnabled = AuFalse;
+#endif
 
         if (relinquish_device)
             closeDevice();
