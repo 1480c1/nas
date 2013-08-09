@@ -50,6 +50,9 @@ SOFTWARE.
 
 #include <audio/audio.h>
 #include <audio/Aos.h>
+#include <audio/Aproto.h>
+#include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "nasconf.h"
@@ -298,6 +301,26 @@ ProcessCommandLine(int argc, char *argv[])
 
     for (i = 1; i < argc; i++) {
         if (argv[i][0] == ':') {
+            char *check;
+            long display_value;
+            errno = 0;
+            display_value = strtol(argv[i]+1, &check, 10);
+            if (errno) {
+                Error("Unable to parse display number");
+                continue;
+            }
+            if (check[0] != '\0') {
+                fprintf(stderr, "Listen port offset must be a number.\n");
+                continue;
+            }
+            if (display_value > USHRT_MAX - AU_DEFAULT_TCP_PORT) {
+                fprintf(stderr, "Ignoring too big listen port offset.\n");
+                continue;
+            }
+            if (display_value < 0) {
+                fprintf(stderr, "Ignoring negative listen port offset.\n");
+                continue;
+            }
             display = argv[i];
             display++;
         } else if (strcmp(argv[i], "-aa") == 0)
