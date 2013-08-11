@@ -1368,7 +1368,7 @@ AuInitPhysicalDevices()
         /* pebl: We cannot just concat "ctl" on variable device, so
            make a copy and concat "ctl".  (free it again) */
         if (!(devicectl = (char *) aualloc(strlen(device) +
-                                           strlen("ctl"))))
+                                           strlen("ctl") + 1)))
             return AuFalse;
         sprintf(devicectl, "%sctl", device);
 

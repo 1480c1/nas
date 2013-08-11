@@ -101,7 +101,7 @@ void OsInit(void)
         /* hack test to decide where to log errors */
         if (write(2, fname, 0)) {
             FILE *err;
-            sprintf(fname, ADMPATH, display);
+            snprintf(fname, sizeof fname, ADMPATH, display);
             /*
              * uses stdio to avoid os dependencies here,
              * a real os would use

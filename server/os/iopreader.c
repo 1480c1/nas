@@ -49,7 +49,8 @@ InitializeIOPServerReader()
      */
     if (AuServerHostName == NULL)
         FatalError("No hostname, no screen\n");
-    sprintf(host, "%s/%s/%s", HOST_DIR, AuServerHostName, DEF_IOPSVRNAME);
+    snprintf(host, sizeof host, "%s/%s/%s", HOST_DIR, AuServerHostName,
+             DEF_IOPSVRNAME);
     if ((err = name_lookup(host, &iopcap)) != STD_OK)
         FatalError("Cannot find IOP server %s: %s\n", host, err_why(err));
 

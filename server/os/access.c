@@ -478,9 +478,9 @@ char *display;
         validhosts = host->next;
         FreeHost(host);
     }
-    strcpy(fname, "/etc/X");
-    strcat(fname, display);
-    strcat(fname, ".hosts");
+    strncpy(fname, "/etc/X", sizeof fname); fname[sizeof fname - 1] = '\0';
+    strncat(fname, display, sizeof fname - strlen(fname) - 1);
+    strncat(fname, ".hosts", sizeof fname - strlen(fname) - 1);
     if (fd = fopen(fname, "r")) {
         while (fgets(hostname, sizeof(hostname), fd)) {
             if (ptr = index(hostname, '\n'))

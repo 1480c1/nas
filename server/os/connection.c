@@ -534,8 +534,10 @@ open_unix_socket(void)
         chmod(X_UNIX_DIR, 0777 | S_ISVTX);
 #endif
 
-    strcpy(unsock.sun_path, X_UNIX_PATH);
-    strcat(unsock.sun_path, display);
+    strncpy(unsock.sun_path, X_UNIX_PATH, sizeof unsock.sun_path);
+    unsock.sun_path[sizeof unsock.sun_path - 1] = '\0';
+    strncat(unsock.sun_path, display,
+            sizeof unsock.sun_path - strlen(unsock.sun_path) - 1);
 #ifdef BSD44SOCKETS
     unsock.sun_len = strlen(unsock.sun_path);
 #endif
@@ -550,12 +552,15 @@ open_unix_socket(void)
         static char oldLinkName[256];
 
         uname(&systemName);
-        strcpy(oldLinkName, OLD_UNIX_DIR);
+        strncpy(oldLinkName, OLD_UNIX_DIR, sizeof oldLinkName);
+        oldLinkName[sizeof oldLinkName - 1] = '\0';
         if (!mkdir(oldLinkName, 0777))
             chown(oldLinkName, 2, 3);
-        strcat(oldLinkName, "/");
-        strcat(oldLinkName, systemName.nodename);
-        strcat(oldLinkName, display);
+        strncat(oldLinkName, "/", sizeof oldLinkName - strlen(oldLinkName) - 1);
+        strncat(oldLinkName, systemName.nodename,
+                sizeof oldLinkName - strlen(oldLinkName) - 1);
+        strncat(oldLinkName, display,
+                sizeof oldLinkName - strlen(oldLinkName) - 1);
         unlink(oldLinkName);
         symlink(unsock.sun_path, oldLinkName);
     }
@@ -568,8 +573,8 @@ open_unix_socket(void)
         i = strlen(unsock.sun_path);
         buffer = (char *) malloc(i + 80);
         if (buffer) {
-            sprintf(buffer, "Error creating unix socket: %s\n",
-                    unsock.sun_path);
+            snprintf(buffer, i+80, "Error creating unix socket: %s\n",
+                     unsock.sun_path);
             Error(buffer);
             free(buffer);
         } else
@@ -591,7 +596,7 @@ open_unix_socket(void)
         i = strlen(unsock.sun_path);
         buffer = (char *) malloc(i + 80);
         if (buffer) {
-            sprintf(buffer, "Error binding unix socket: %s\n",
+            snprintf(buffer, i+80, "Error binding unix socket: %s\n",
                     unsock.sun_path);
             Error(buffer);
             free(buffer);
@@ -669,15 +674,15 @@ open_isc_local(void)
     mkdir(AUDIO_ISC_DIR, 0777);
     chmod(AUDIO_ISC_DIR, 0777);
 
-    strcpy(path, AUDIO_ISC_PATH);
+    strncpy(path, AUDIO_ISC_PATH, sizeof path); path[sizeof path - 1] = '\0';
 #else /* SVR4_ACP && UNIXCONN */
     mkdir(X_UNIX_DIR, 0777);
     chmod(X_UNIX_DIR, 0777);
 
-    strcpy(path, X_UNIX_PATH);
+    strncpy(path, X_UNIX_PATH, sizeof path); path[sizeof path - 1] = '\0';
 #endif /* SVR4_ACP && UNIXCONN */
 
-    strcat(path, display);
+    strncat(path, display, sizeof path - strlen(path) - 1);
 
     if (unlink(path) < 0 && errno != ENOENT) {
         ErrorF("audio server: ISC listener pipe  in use (%s)\n", path);
@@ -729,8 +734,8 @@ open_xsight_local(void)
     int fds = -1, fdr = -1;
     char pathS[64], pathR[64];
 
-    sprintf(pathS, "%s%sS", AUDIO_XSIGHT_PATH, display);
-    sprintf(pathR, "%s%sR", AUDIO_XSIGHT_PATH, display);
+    snprintf(pathS, sizeof pathS, "%s%sS", AUDIO_XSIGHT_PATH, display);
+    snprintf(pathR, sizeof pathR, "%s%sR", AUDIO_XSIGHT_PATH, display);
 
     if ((unlink(pathS) < 0 && errno != ENOENT) ||
         (unlink(pathR) < 0 && errno != ENOENT)) {
@@ -802,8 +807,9 @@ open_att_local(void)
     mkdir(AUDIO_STREAMS_DIR, 0777);
     chmod(AUDIO_STREAMS_DIR, 0777);
 
-    strcpy(path, AUDIO_STREAMS_PATH);
-    strcat(path, display);
+    strncpy(path, AUDIO_STREAMS_PATH, sizeof path);
+    path[sizeof path - 1] = '\0';
+    strncat(path, display, sizeof path - strlen(path) - 1);
 
     if ((unlink(path) < 0 && errno != ENOENT)) {
         ErrorF("audio server: USL listener pipe in use (%s)\n", path);
@@ -842,8 +848,9 @@ open_att_svr4_local(void)
     mkdir(AUDIO_STREAMS_DIR, 0777);
     chmod(AUDIO_STREAMS_DIR, 0777);
 
-    strcpy(path, AUDIO_NSTREAMS_PATH);
-    strcat(path, display);
+    strncpy(path, AUDIO_NSTREAMS_PATH, sizeof path);
+    path[sizeof path - 1] = '\0';
+    strncat(path, display, sizeof path - strlen(path) - 1);
 
     if ((unlink(path) < 0 && errno != ENOENT)) {
         ErrorF("audio server: SVR4 named listener pipe in use (%s)\n",
@@ -1039,7 +1046,8 @@ open_dnet_socket(void)
     }
     bzero((char *) &dnsock, sizeof(dnsock));
     dnsock.sdn_family = AF_DECnet;
-    sprintf(dnsock.sdn_objname, "AUDIO$%d", atoi(display));
+    snprintf(dnsock.sdn_objname, sizeof(dnsock.sdn_objname), "AUDIO$%d",
+             atoi(display));
     dnsock.sdn_objnamel = strlen(dnsock.sdn_objname);
     if (bind(request, (struct sockaddr *) &dnsock, sizeof(dnsock))) {
         Error("Binding DECnet socket");
@@ -1293,31 +1301,35 @@ AuthAudit(int client, Bool letin, struct sockaddr *saddr, int len,
 {
     char addr[128];
 
-    if (!len)
-        strcpy(addr, "local host");
+    if (!len) {
+        strncpy(addr, "local host", sizeof addr);
+        addr[sizeof addr - 1] = '\0';
+    }
     else
         switch (saddr->sa_family) {
         case AF_UNSPEC:
 #ifdef UNIXCONN
         case AF_UNIX:
 #endif
-            strcpy(addr, "local host");
+            strncpy(addr, "local host", sizeof addr);
+            addr[sizeof addr - 1] = '\0';
             break;
 #ifdef TCPCONN
         case AF_INET:
-            sprintf(addr, "IP %s port %d",
+            snprintf(addr, sizeof addr, "IP %s port %d",
                     inet_ntoa(((struct sockaddr_in *) saddr)->sin_addr),
                     (int) ntohs(((struct sockaddr_in *) saddr)->sin_port));
             break;
 #endif
 #ifdef DNETCONN
         case AF_DECnet:
-            sprintf(addr, "DN %s",
+            snprintf(addr, sizeof addr, "DN %s",
                     dnet_ntoa(&((struct sockaddr_dn *) saddr)->sdn_add));
             break;
 #endif
         default:
-            strcpy(addr, "unknown address");
+            strncpy(addr, "unknown address", sizeof addr);
+            addr[sizeof addr - 1] = '\0';
         }
     if (letin)
         AuditF("client %d connected from %s\n", client, addr);
@@ -2115,7 +2127,7 @@ CreateWellKnownSockets(void)
         if (AuServerHostName == NULL)
             FatalError
                     ("AUDIOHOST not set, or server host name not given\n");
-        sprintf(host, "%s/%s:%s", DEF_AUSVRDIR, AuServerHostName,
+        snprintf(host, sizeof host, "%s/%s:%s", DEF_AUSVRDIR, AuServerHostName,
                 0 /* port */ );
 
         uniqport(&Au.cap_port);
@@ -2366,13 +2378,13 @@ OsCommStatus(int status)
 
     buf[0] = '\0';
     if (status == 0)
-        sprintf(buf, "NONE");
+        snprintf(buf, sizeof buf, "NONE");
     if (status & CONN_KILLED)
-        sprintf(buf, "%s KILLED", buf);
+        strncat(buf, " KILLED", sizeof buf - strlen(buf) - 1);
     if (status & REQ_PUSHBACK)
-        sprintf(buf, "%s PUSHBACK", buf);
+        strncat(buf, " PUSHBACK", sizeof buf - strlen(buf) - 1);
     if (status & IGNORE)
-        sprintf(buf, "%s IGNORE", buf);
+        strncat(buf, " IGNORE", sizeof buf - strlen(buf) - 1);
     return buf;
 }
 
@@ -2466,7 +2478,8 @@ AmoebaConnectorThread()
 
         case STD_INFO:
             rep.h_status = STD_OK;
-            sprintf(repb, "audio server on %s", AuServerHostName);
+            snprintf(repb, REPLY_BUFSIZE, "audio server on %s",
+                     AuServerHostName);
             rep.h_size = strlen(repb);
             putrep(&rep, repb, rep.h_size);
             break;
@@ -2631,9 +2644,9 @@ AmoebaTCPConnectorThread(void)
     int result;
     int looping = 0;
 
-    strncpy(name, AuTcpServerName, BUFSIZ);
+    strncpy(name, AuTcpServerName, BUFSIZ); name[BUFSIZ-1] = '\0';
     if ((err = name_lookup(name, &svrcap)) != STD_OK) {
-        sprintf(name, "%s/%s", TCP_SVR_NAME, AuTcpServerName);
+        snprintf(name, BUFSIZ, "%s/%s", TCP_SVR_NAME, AuTcpServerName);
         if ((err = name_lookup(name, &svrcap)) != STD_OK)
             FatalError("Lookup %s failed: %s\n", AuTcpServerName,
                        err_why(err));

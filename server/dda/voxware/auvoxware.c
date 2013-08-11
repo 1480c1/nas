@@ -1445,7 +1445,8 @@ writePhysicalOutputsMono(void)
     {
         char tempbuf[80];
 
-        sprintf(tempbuf, "\nwriteMono buf: %d size: %d\n", buf, bufSize);
+        snprintf(tempbuf, sizeof tempbuf, "\nwriteMono buf: %d size: %d\n",
+                 buf, bufSize);
         write(dspout, tempbuf, strlen(tempbuf));
         write(dspout, buf, bufSize);
     }
@@ -1524,7 +1525,8 @@ writePhysicalOutputsStereo(void)
     {
         char tempbuf[80];
 
-        sprintf(tempbuf, "\nwriteStereo buf: %d size: %d\n", buf, bufSize);
+        snprintf(tempbuf, sizeof tempbuf, "\nwriteStereo buf: %d size: %d\n",
+                 buf, bufSize);
         write(dspout, tempbuf, strlen(tempbuf));
         write(dspout, buf, bufSize);
     }
@@ -1586,7 +1588,7 @@ readPhysicalInputs(void)
 #ifdef DEBUGDSPIN
     {
         char tempbuf[80];
-        sprintf(tempbuf, "\nreadInputs buf: %d size: %d\n",
+        snprintf(tempbuf, sizeof tempbuf, "\nreadInputs buf: %d size: %d\n",
                 stereoInputDevice->minibuf,
                 stereoInputDevice->bytesPerSample * auMinibufSamples);
         write(dspin, tempbuf, strlen(tempbuf));

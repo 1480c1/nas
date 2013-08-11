@@ -29,7 +29,7 @@ osLogMsg(const char *fmt, ...)
 
     va_start(ap, fmt);
 
-    (void) vsprintf(buf, fmt, ap);
+    (void) vsnprintf(buf, sizeof buf, fmt, ap);
 
     va_end(ap);
 
