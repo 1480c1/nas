@@ -421,10 +421,16 @@ MNX_open_tcp_socket(int *extra_fd)
 
     /* Allow the audio server to run on a different IP device with the 
      * TCP_DEVICE environment variable, otherwise we take the default.
+     * A different IP device is specified via its number concatenated
+     * to the TCP device name, so check that the default TCP device is
+     * a prefix of the value read from the TCP_DEVICE environment
+     * variable.
      */
     tcp_dev = getenv("TCP_DEVICE");
-    if (tcp_dev == NULL)
+    if (!tcp_dev || strncmp(tcp_dev, TCP_DEVICE, strlen(TCP_DEVICE))) {
+        fprintf(stderr, "Ignoring invalid TCP_DEVICE environment variable.\n");
         tcp_dev = TCP_DEVICE;
+    }
 
     fd = open(tcp_dev, O_RDWR);
     if (fd == -1) {
