@@ -22,6 +22,7 @@
  * $NCDId: @(#)auevents.c,v 1.9 1994/04/21 21:50:59 greg Exp $
  */
 
+#include        <stdlib.h>
 #include        "misc.h"
 #include        "dixstruct.h"
 
