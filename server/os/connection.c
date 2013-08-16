@@ -68,7 +68,10 @@ SOFTWARE.
 #if defined(__CYGWIN__)
 #define S_IFSOCK        _IFSOCK
 #define S_IFMT          _IFMT
+#endif /* __CYGWIN__ */
 
+#if defined(__CYGWIN__) || defined(linux)
+#include <stdlib.h>
 #include <limits.h>
 #include <string.h>
 #include <sys/types.h>
@@ -77,7 +80,7 @@ SOFTWARE.
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#endif
+#endif /* defined(__CYGWIN__) || defined(linux) */
 
 
 
