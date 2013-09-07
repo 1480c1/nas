@@ -2494,7 +2494,7 @@ char          **argv;
     g = globals = &globalData;
     r = &g->recordDialog;
     g->top = XtVaAppInitialize(&appContext, APP_CLASS, NULL, ZERO,
-			       &argc, argv, defaultResources, NULL, 0);
+			       &argc, argv, defaultResources, NULL, NULL);
     XtAppAddActions(appContext, actions, XtNumber(actions));
 
     while (--argc)

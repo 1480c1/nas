@@ -510,7 +510,7 @@ main(int argc, char **argv)
     char           *initialDeviceName = NULL;
 
     g->top = XtVaAppInitialize(&appContext, APP_CLASS, NULL, ZERO,
-			       &argc, argv, defaultResources, NULL, 0);
+			       &argc, argv, defaultResources, NULL, NULL);
 
     g->queryInterval = DEFAULT_QUERY_INTERVAL;
 

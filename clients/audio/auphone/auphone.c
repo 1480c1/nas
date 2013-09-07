@@ -1151,7 +1151,7 @@ main(int argc, char **argv)
     double          atof();
 
     g->top = XtVaAppInitialize(&g->appContext, APP_CLASS, NULL, ZERO,
-			       &argc, argv, defaultResources, NULL, 0);
+			       &argc, argv, defaultResources, NULL, NULL);
     XtAppAddActions(g->appContext, actions, XtNumber(actions));
 
     g->dpy = XtDisplay(g->top);

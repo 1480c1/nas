@@ -1641,7 +1641,7 @@ main(int argc, char **argv)
 
     globals->topLevel = XtVaAppInitialize(&appContext, APP_CLASS, NULL, ZERO,
 					  &argc, argv, defaultResources,
-					  NULL, 0);
+					  NULL, NULL);
 
     globals->volume = DEFAULT_VOLUME;
     globals->numFiles = 0;

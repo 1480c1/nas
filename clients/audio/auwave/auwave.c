@@ -400,7 +400,7 @@ main(int argc, char **argv)
 
     globals = g;
     g->top = XtVaAppInitialize(&appContext, APP_CLASS, NULL, ZERO,
-			       &argc, argv, defaultResources, NULL, 0);
+			       &argc, argv, defaultResources, NULL, NULL);
     XtAppAddActions(appContext, actions, XtNumber(actions));
 
     if (argc == 3)
