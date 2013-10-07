@@ -1,5 +1,37 @@
 $Id$
 
+Version 1.9.4 (stable) 10/07/2013
+
+  - auerswald
+
+    - Fix several potential security issues in the NAS server reported
+      by Hamid Zamani <me@hamidx9.ir> to the NAS mailing list.
+
+      See http://radscan.com/pipermail/nas/2013-August/001270.html for
+      a description. In addition, CVE numbers have been defined for
+      these issues:
+
+      CVE-2013-4256
+      CVE-2013-4257
+      CVE-2013-4258
+
+    - Fixed some warnings while building some of the clients.
+
+    - narrow a possible race condition in
+      auvoxware.c:disableProcessFlow() reported by Paul Fox.
+
+  - steve_mcintyre
+
+    - add a format string to aulog.c (found using -Wformat-security
+      warnings) 
+
+    - Don't preprocess man pages
+
+  - Add proper includes in server/os/connection.c to prevent some
+    compile warnings and a possible server coredump under the right
+    conditions on x86_64 Linux systems.
+
+
 Version 1.9.3 (stable) 05/13/2011
 
   - overdue 1.9.3 maint release
