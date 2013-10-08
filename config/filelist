@@ -282,7 +282,6 @@
 ./doc/man
 ./doc/pdf/library.pdf
 ./doc/pdf/overview.pdf
-./doc/pdf/title.pdf
 ./doc/pdf/xcon94paper.pdf
 ./doc/pdf
 ./doc/html/AuAnyEvent.3.html
@@ -446,7 +445,6 @@
 ./doc/library.ps
 ./doc/overview.ps
 ./doc/protocol.txt
-./doc/title.ps
 ./doc/xcon94paper.ps
 ./doc/xcon94slide.ps
 ./doc/Makefile

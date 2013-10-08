@@ -25,26 +25,8 @@
 /*---------------------------------------------------------
  Hewlett Packard Device Dependent Server Version 1.0
 
- CHANGES :      Author : J D Brister (University of Manchester, Computer Graphics Unit)
-                                                                                                                                                
- (C) Copyright 1995, The University of Manchester, United Kingdom
- 
-  THIS SOFTWARE IS PROVIDED `AS-IS'.  THE UNIVERSITY OF MANCHESTER,
- DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING WITHOUT
- LIMITATION ALL IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- PARTICULAR PURPOSE, OR NONINFRINGEMENT.  IN NO EVENT SHALL THE UNIVERSITY
- OF MANCHESTER, BE LIABLE FOR ANY DAMAGES WHATSOEVER, INCLUDING
- SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES, INCLUDING LOSS OF USE, DATA,
- OR PROFITS, EVEN IF ADVISED OF THE POSSIBILITY THEREOF, AND REGARDLESS OF
- WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
- CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.                                               
-
- This program may be used freely within the UK academic community, but it must not be used 
- for commercial gain without the written permission of the authors.
-
- EMail :  cgu-info@cgu.mcc.ac.uk
-
- NOTE : THIS SERVER MUST BE RUN AS ROOT.
+ CHANGES : Author : J D Brister (University of Manchester, Computer
+ Graphics Unit) NOTE : THIS SERVER MUST BE RUN AS ROOT.
 -----------------------------------------------------------*/
 
 
