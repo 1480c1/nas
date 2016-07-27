@@ -96,10 +96,10 @@ ALL1 = nasd
 #endif
 
 
-#if defined(i386SVR4Architecture) || defined(__FreeBSD_kernel__) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture) || defined(cygwinArchitecture) || defined(__DragonFly__)
+#if defined(i386SVR4Architecture) || defined(__FreeBSD_kernel__) || defined(__FreeBSD__) || defined(FreeBSDArchitecture) || defined(LinuxArchitecture) || defined(i386BsdArchitecture) || defined(USLArchitecture) || defined(cygwinArchitecture) || defined(__DragonFly__) || defined(GNUArchitecture)
 # define CanBuildAuServer	YES
 
-#if !defined(GNUMachArchitecture)
+#if !defined(GNUMachArchitecture) || defined(GNUArchitecture)
 # if defined(cygwinArchitecture)
 ALL1 = nasd.exe
 # else
