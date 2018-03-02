@@ -174,6 +174,8 @@ getFileDataBase(const char *filename)
 	}
     }
 
+    fclose(fp);
+
     return (XrmDatabase) db;
 }
 
